@@ -1,0 +1,55 @@
+From bd4cb862c9d05f1ffca3e55d8a3cedea560b1e09 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Apr 2012 01:56:30 -0400
+Subject: [PATCH] add API to control whether a player affects spawning of
+ nearby mobs
+
+---
+ src/main/java/org/bukkit/entity/HumanEntity.java   |   13 +++++++++++++
+ .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 ++++++++
+ 2 files changed, 21 insertions(+)
+
+diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
+index 7ad0cf8..38984ee 100644
+--- a/src/main/java/org/bukkit/entity/HumanEntity.java
++++ b/src/main/java/org/bukkit/entity/HumanEntity.java
+@@ -146,4 +146,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+      * @return Whether they are blocking.
+      */
+     public boolean isBlocking();
++
++    /**
++     * Setting this to false prevents players from activating mob spawners and
++     * allows mobs to randomly spawn and despawn near them (which normally can't happen).
++     * @param yes true to prevent this player from affecting mob spawning
++     */
++    public void setAffectsSpawning(boolean yes);
++
++    /**
++     * @return whether this player can activate mob spawners and prevent
++     *         random spawning and despawning near them.
++     */
++    public boolean getAffectsSpawning();
+ }
+diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+index 4a4032b..f4f75d9 100644
+--- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
++++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+@@ -645,6 +645,14 @@ public class TestPlayer implements Player {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+ 
++    public void setAffectsSpawning(boolean yes) {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
++    public boolean getAffectsSpawning() {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
+     public boolean addPotionEffect(PotionEffect effect) {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+-- 
+1.7.9.5
+

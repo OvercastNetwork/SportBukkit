@@ -1,0 +1,181 @@
+From 648af4cf9cec5c984a409e5cf70e1f75d1eba780 Mon Sep 17 00:00:00 2001
+From: Chad Waters <authorblues@gmail.com>
+Date: Thu, 28 Jun 2012 11:35:47 -0400
+Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
+
+---
+ src/main/java/net/minecraft/server/BlockTNT.java   |   40 +++++++++++++++++---
+ .../java/net/minecraft/server/EntityCreeper.java   |   25 ++++++------
+ .../java/net/minecraft/server/EntityFireball.java  |   10 ++---
+ .../java/net/minecraft/server/EntityTNTPrimed.java |   10 ++---
+ 4 files changed, 53 insertions(+), 32 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
+index 212b3a1..42a12f7 100644
+--- a/src/main/java/net/minecraft/server/BlockTNT.java
++++ b/src/main/java/net/minecraft/server/BlockTNT.java
+@@ -2,8 +2,13 @@ package net.minecraft.server;
+ 
+ import java.util.Random;
+ 
+-public class BlockTNT extends Block {
++// CraftBukkit start
++import org.bukkit.entity.Explosive;
++import org.bukkit.event.entity.ExplosionPrimeEvent;
++// CraftBukkit end
+ 
++public class BlockTNT extends Block {
++    boolean removeBlock = false; // CraftBukkit
+     public BlockTNT(int i, int j) {
+         super(i, j, Material.TNT);
+     }
+@@ -35,20 +40,39 @@ public class BlockTNT extends Block {
+         if (!world.isStatic) {
+             EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
+ 
+-            entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
+-            world.addEntity(entitytntprimed);
++            // CraftBukkit start - allow exploded TNT to cancel priming
++            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) entitytntprimed.getBukkitEntity());
++            world.getServer().getPluginManager().callEvent(event);
++
++            if (!event.isCancelled()) {
++                entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
++                world.addEntity(entitytntprimed);
++            } else {
++                this.a(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
++            }
++            // CraftBukkit end
+         }
+     }
+ 
+     public void postBreak(World world, int i, int j, int k, int l) {
++        removeBlock = true; // CraftBukkit - TNT priming may be cancelled
+         if (!world.isStatic) {
+             if ((l & 1) == 0) {
+                 this.a(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
+             } else {
++                // CraftBukkit start - fire ExplosionPrimeEvent
+                 EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
+ 
+-                world.addEntity(entitytntprimed);
+-                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++                ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) entitytntprimed.getBukkitEntity());
++                world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    removeBlock = false;
++                } else {
++                    world.addEntity(entitytntprimed);
++                    world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++                }
++                // CraftBukkit end
+             }
+         }
+     }
+@@ -60,7 +84,11 @@ public class BlockTNT extends Block {
+     public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman) {
+         if (entityhuman.U() != null && entityhuman.U().id == Item.FLINT_AND_STEEL.id) {
+             this.postBreak(world, i, j, k, 1);
+-            world.setTypeId(i, j, k, 0);
++            // CraftBukkit start - don't remove block if TNT priming is cancelled
++            if (removeBlock) { 
++                world.setTypeId(i, j, k, 0);
++            }
++            // CraftBukkit end
+             return true;
+         } else {
+             return super.interact(world, i, j, k, entityhuman);
+diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
+index 10bb292..6b4af22 100644
+--- a/src/main/java/net/minecraft/server/EntityCreeper.java
++++ b/src/main/java/net/minecraft/server/EntityCreeper.java
+@@ -58,9 +58,19 @@ public class EntityCreeper extends EntityMonster {
+             this.b = this.fuseTicks;
+             int i = this.A();
+ 
++            // CraftBukkit start - fire ExplosionPrimeEvent
++            float radius = this.isPowered() ? 6.0F : 3.0F;
+             if (i > 0 && this.fuseTicks == 0) {
+-                this.world.makeSound(this, "random.fuse", 1.0F, 0.5F);
++                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
++                this.world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    i = 0;
++                } else {
++                    this.world.makeSound(this, "random.fuse", 1.0F, 0.5F);
++                }
+             }
++            // CraftBukkit end
+ 
+             this.fuseTicks += i;
+             if (this.fuseTicks < 0) {
+@@ -69,19 +79,10 @@ public class EntityCreeper extends EntityMonster {
+ 
+             if (this.fuseTicks >= 30) {
+                 this.fuseTicks = 30;
+-                // CraftBukkit start
+-                float radius = this.isPowered() ? 6.0F : 3.0F;
+-
+-                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
+-                this.world.getServer().getPluginManager().callEvent(event);
+-
+-                if (!event.isCancelled()) {
+-                    this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire());
++                if (!this.world.isStatic) {
++                    this.world.createExplosion(this, this.locX, this.locY, this.locZ, radius, false); // CraftBukkit
+                     this.die();
+-                } else {
+-                    this.fuseTicks = 0;
+                 }
+-                // CraftBukkit end
+             }
+         }
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityFireball.java b/src/main/java/net/minecraft/server/EntityFireball.java
+index 92abbdf..fe685df 100644
+--- a/src/main/java/net/minecraft/server/EntityFireball.java
++++ b/src/main/java/net/minecraft/server/EntityFireball.java
+@@ -197,14 +197,10 @@ public class EntityFireball extends Entity {
+             if (movingobjectposition.entity != null && movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 4)) {
+                 ;
+             }
+-            // CraftBukkit start
+-            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(this.world.getServer(), this));
+-            this.world.getServer().getPluginManager().callEvent(event);
+ 
+-            if (!event.isCancelled()) {
+-                // give 'this' instead of (Entity) null so we know what causes the damage
+-                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire());
+-            }
++            // CraftBukkit start
++            // give 'this' instead of (Entity) null so we know what causes the damage
++            this.world.createExplosion(this, this.locX, this.locY, this.locZ, yield, isIncendiary);
+             // CraftBukkit end
+             this.die();
+         }
+diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
+index cfd5ac1..0d0634b 100644
+--- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
++++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
+@@ -80,13 +80,9 @@ public class EntityTNTPrimed extends Entity {
+ 
+         CraftServer server = this.world.getServer();
+ 
+-        ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) CraftEntity.getEntity(server, this));
+-        server.getPluginManager().callEvent(event);
+-
+-        if (!event.isCancelled()) {
+-            // give 'this' instead of (Entity) null so we know what causes the damage
+-            this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire());
+-        }
++        Explosive explosive = (Explosive) CraftEntity.getEntity(server, this);
++        // give 'this' instead of (Entity) null so we know what causes the damage
++        this.world.createExplosion(this, this.locX, this.locY, this.locZ, explosive.getYield(), explosive.isIncendiary());
+         // CraftBukkit end
+     }
+ 
+-- 
+1.7.9.5
+

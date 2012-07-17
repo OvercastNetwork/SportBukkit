@@ -1,0 +1,79 @@
+From 6c9a94a03c696712591298d88279d052e2d33c0d Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Apr 2012 03:17:31 -0400
+Subject: [PATCH] implement player collision API
+
+---
+ .../java/net/minecraft/server/EntityLiving.java    |    2 +-
+ .../java/net/minecraft/server/EntityPlayer.java    |   14 ++++++++++++++
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java |    9 +++++++++
+ 3 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index ea1fd3e..3991d89 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -1161,7 +1161,7 @@ public abstract class EntityLiving extends Entity {
+         // MethodProfiler.a("push"); // CraftBukkit - not in production code
+         List list1 = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+ 
+-        if (list1 != null && list1.size() > 0) {
++        if (this.e_() && list1 != null && list1.size() > 0) { // CraftBukkit
+             for (int j = 0; j < list1.size(); ++j) {
+                 Entity entity = (Entity) list1.get(j);
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index fe70384..67297d1 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -37,6 +37,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public int ping;
+     public boolean viewingCredits = false;
+ 
++    public boolean collidesWithEntities = true; // CraftBukkit
++
+     public EntityPlayer(MinecraftServer minecraftserver, World world, String s, ItemInWorldManager iteminworldmanager) {
+         super(world);
+         iteminworldmanager.player = this;
+@@ -131,6 +133,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.height = 0.0F;
+     }
+ 
++    // CraftBukkit start
++    @Override
++    public boolean e_() {
++        return this.collidesWithEntities && super.e_();
++    }
++
++    @Override
++    public boolean o_() {
++        return this.collidesWithEntities && super.o_();
++    }
++    // CraftBukkit end
++
+     public float getHeadHeight() {
+         return 1.62F;
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index ec269fc..c2701e4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -830,6 +830,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         getHandle().updateAbilities();
+     }
+ 
++    public void setCollidesWithEntities(boolean yes) {
++        getHandle().collidesWithEntities = yes;
++        getHandle().bf = yes;
++    }
++
++    public boolean getCollidesWithEntities() {
++        return getHandle().collidesWithEntities;
++    }
++
+     public boolean getAllowFlight() {
+         return getHandle().abilities.canFly;
+     }
+-- 
+1.7.9.5
+

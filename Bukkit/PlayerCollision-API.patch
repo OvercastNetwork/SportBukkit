@@ -1,0 +1,53 @@
+From 830a9041df1eb6277682e97304108ae46fbb883e Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Apr 2012 01:39:04 -0400
+Subject: [PATCH] add API to control whether a player can push other entities
+
+---
+ src/main/java/org/bukkit/entity/Player.java        |   12 ++++++++++++
+ .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 ++++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index b06edc4..31c8a5f 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -514,4 +514,16 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * @param value True to fly.
+      */
+     public void setFlying(boolean value);
++
++    /**
++     * Change whether this player can push other entities
++     * @param yes true to push other entities, which is the default
++     */
++    public void setCollidesWithEntities(boolean yes);
++
++    /**
++     * Whether this player can push other entities
++     * @return true if the player can push other entities
++     */
++    public boolean getCollidesWithEntities();
+ }
+diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+index 4a4032b..ed7d821 100644
+--- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
++++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+@@ -645,6 +645,14 @@ public class TestPlayer implements Player {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+ 
++    public void setCollidesWithEntities(boolean yes) {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
++    public boolean getCollidesWithEntities() {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
+     public boolean addPotionEffect(PotionEffect effect) {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+-- 
+1.7.9.5
+

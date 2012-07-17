@@ -1,0 +1,140 @@
+From 2696fb5c43cd7f822e1cfd34e1bfab8bfa67e762 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Apr 2012 02:14:35 -0400
+Subject: [PATCH] implement affectsSpawning API
+
+---
+ .../java/net/minecraft/server/EntityHuman.java     |    1 +
+ .../java/net/minecraft/server/EntityLiving.java    |    2 +-
+ .../java/net/minecraft/server/SpawnerCreature.java |    8 +++++-
+ .../net/minecraft/server/TileEntityMobSpawner.java |    2 +-
+ src/main/java/net/minecraft/server/World.java      |   29 ++++++++++++++++++++
+ .../craftbukkit/entity/CraftHumanEntity.java       |    8 ++++++
+ 6 files changed, 47 insertions(+), 3 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index c552f00..763ac35 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -41,6 +41,7 @@ public abstract class EntityHuman extends EntityLiving {
+     public boolean sleeping;
+     public boolean fauxSleeping;
+     public String spawnWorld = "";
++    public boolean affectsSpawning = true; // CraftBukkit
+ 
+     public HumanEntity getBukkitEntity() {
+         return (HumanEntity) super.getBukkitEntity();
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index ea1fd3e..1f1a03a 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -1211,7 +1211,7 @@ public abstract class EntityLiving extends Entity {
+     }
+ 
+     protected void aG() {
+-        EntityHuman entityhuman = this.world.findNearbyPlayer(this, -1.0D);
++        EntityHuman entityhuman = this.world.findNearbyPlayerWhoAffectsSpawning(this, -1.0D); // CraftBukkit
+ 
+         if (entityhuman != null) {
+             double d0 = entityhuman.locX - this.locX;
+diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java b/src/main/java/net/minecraft/server/SpawnerCreature.java
+index 29ca51e..2a56541 100644
+--- a/src/main/java/net/minecraft/server/SpawnerCreature.java
++++ b/src/main/java/net/minecraft/server/SpawnerCreature.java
+@@ -62,6 +62,12 @@ public final class SpawnerCreature {
+ 
+             for (i = 0; i < world.players.size(); ++i) {
+                 EntityHuman entityhuman = (EntityHuman) world.players.get(i);
++
++                // CraftBukkit start
++                if (!entityhuman.affectsSpawning)
++                    continue;
++                //CraftBukkit end
++                
+                 int k = MathHelper.floor(entityhuman.locX / 16.0D);
+ 
+                 j = MathHelper.floor(entityhuman.locZ / 16.0D);
+@@ -148,7 +154,7 @@ public final class SpawnerCreature {
+                                                     float f1 = (float) i3;
+                                                     float f2 = (float) j3 + 0.5F;
+ 
+-                                                    if (world.findNearbyPlayer((double) f, (double) f1, (double) f2, 24.0D) == null) {
++                                                    if (world.findNearbyPlayerWhoAffectsSpawning((double) f, (double) f1, (double) f2, 24.0D) == null) { // CraftBukkit
+                                                         float f3 = f - (float) chunkcoordinates.x;
+                                                         float f4 = f1 - (float) chunkcoordinates.y;
+                                                         float f5 = f2 - (float) chunkcoordinates.z;
+diff --git a/src/main/java/net/minecraft/server/TileEntityMobSpawner.java b/src/main/java/net/minecraft/server/TileEntityMobSpawner.java
+index 137ae9c..5cefeb1 100644
+--- a/src/main/java/net/minecraft/server/TileEntityMobSpawner.java
++++ b/src/main/java/net/minecraft/server/TileEntityMobSpawner.java
+@@ -18,7 +18,7 @@ public class TileEntityMobSpawner extends TileEntity {
+     }
+ 
+     public boolean c() {
+-        return this.world.findNearbyPlayer((double) this.x + 0.5D, (double) this.y + 0.5D, (double) this.z + 0.5D, 16.0D) != null;
++        return this.world.findNearbyPlayerWhoAffectsSpawning((double) this.x + 0.5D, (double) this.y + 0.5D, (double) this.z + 0.5D, 16.0D) != null; // CraftBukkit
+     }
+ 
+     public void q_() {
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index dc8a5f7..e26faf1 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -2704,6 +2704,35 @@ public class World implements IBlockAccess {
+         return entityhuman;
+     }
+ 
++    // CraftBukkit start - find players with their spawning flag set
++
++    public EntityHuman findNearbyPlayerWhoAffectsSpawning(Entity entity, double radius) {
++        return this.findNearbyPlayerWhoAffectsSpawning(entity.locX, entity.locY, entity.locZ, radius);
++    }
++
++    public EntityHuman findNearbyPlayerWhoAffectsSpawning(double x, double y, double z, double radius) {
++        double nearestRadius = -1.0D;
++        EntityHuman entityhuman = null;
++
++        for (int i = 0; i < this.players.size(); ++i) {
++            EntityHuman nearestPlayer = (EntityHuman) this.players.get(i);
++
++            if (nearestPlayer == null || nearestPlayer.dead || !nearestPlayer.affectsSpawning) {
++                continue;
++            }
++
++            double distance = nearestPlayer.e(x, y, z);
++
++            if ((radius < 0.0D || distance < radius * radius) && (nearestRadius == -1.0D || distance < nearestRadius)) {
++                nearestRadius = distance;
++                entityhuman = nearestPlayer;
++            }
++        }
++
++        return entityhuman;
++    }
++    // CraftBukkit end
++
+     public EntityHuman a(String s) {
+         for (int i = 0; i < this.players.size(); ++i) {
+             if (s.equals(((EntityHuman) this.players.get(i)).name)) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 10020c1..d3053e8 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -306,6 +306,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+         return getHandle().P();
+     }
+ 
++    public void setAffectsSpawning(boolean yes) {
++        getHandle().affectsSpawning = yes;
++    }
++
++    public boolean getAffectsSpawning() {
++        return getHandle().affectsSpawning;
++    }
++
+     public boolean setWindowProperty(InventoryView.Property prop, int value) {
+         return false;
+     }
+-- 
+1.7.9.5
+

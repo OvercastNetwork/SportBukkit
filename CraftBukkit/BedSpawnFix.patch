@@ -1,0 +1,41 @@
+From 3a6c3bc5d19316a693fe682ec30f63326bbda97e Mon Sep 17 00:00:00 2001
+From: EdGruberman <ed@rjump.com>
+Date: Thu, 12 Jul 2012 15:00:29 -0700
+Subject: [PATCH] Fix NPE when trying to reset bed spawn location to default
+
+---
+ .../java/net/minecraft/server/EntityHuman.java     |    1 +
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java |    5 +++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index c552f00..3f245cc 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -1026,6 +1026,7 @@ public abstract class EntityHuman extends EntityLiving {
+             this.spawnWorld = this.world.worldData.name; // CraftBukkit
+         } else {
+             this.b = null;
++            this.spawnWorld = ""; // CraftBukkit
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c2f38d0..1571668 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -581,6 +581,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     public void setBedSpawnLocation(Location location) {
++        if (location == null) {
++            getHandle().setRespawnPosition(null);
++            getHandle().spawnWorld = "";
++            return;
++        }
+         getHandle().setRespawnPosition(new ChunkCoordinates(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+         getHandle().spawnWorld = location.getWorld().getName();
+     }
+-- 
+1.7.9.5
+

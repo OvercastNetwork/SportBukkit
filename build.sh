@@ -28,7 +28,7 @@ function apply_patches {
     sed --in-place "s#<artifactId>$project_lower</artifactId>#<artifactId>pgm-$project_lower</artifactId>#" pom.xml
     sed --in-place "s#<name>$project</name>#<name>PGM-$project</name>#" pom.xml
     # apply patches
-    git apply --ignore-space-change --ignore-whitespace $DIR/$project/*.patch
+    git apply $DIR/$project/*.patch
 }
 
 apply_patches Bukkit

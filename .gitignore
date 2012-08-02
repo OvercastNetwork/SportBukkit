@@ -1,1 +1,9 @@
+# Mac OSX generated files
+.DS_Store
+
+# Vim generated files
+*~
+*.swp
+
+# Miscellaneous
 build

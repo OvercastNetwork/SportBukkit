@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# update.sh
+#
+# Updates the cloned version of Bukkit & CraftBukkit in the build/ directory,
+# or newly clones them if they do not already exist there.  This should be the
+# first script run when setting up the PGM-CraftBukkit build environment.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 if [ ! -d "build" ]; then
     mkdir build
 fi
@@ -12,13 +21,7 @@ function update {
     else
         git clone git://github.com/Bukkit/$1.git
     fi
-
-    echo "Switching to a staging branch..."
-    git checkout master # can't update a branch you are already on
-    git checkout -B staging origin/master --force
 }
 
 update Bukkit
 update CraftBukkit
-
-

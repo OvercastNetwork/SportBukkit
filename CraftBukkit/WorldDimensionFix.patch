@@ -1,0 +1,25 @@
+From a2dae17a6ed5b96783ffd54321eecf304885b1b1 Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Thu, 2 Aug 2012 19:37:52 -0700
+Subject: [PATCH 2/2] Use the proper dimension when importing a world.
+
+---
+ .../java/net/minecraft/server/WorldServer.java     |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index ab98604..dd79681 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -39,7 +39,7 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
+     public final int dimension;
+ 
+     public WorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, String s, int i, WorldSettings worldsettings, MethodProfiler methodprofiler, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) {
+-        super(idatamanager, s, worldsettings, WorldProvider.byDimension(i), methodprofiler, gen, env);
++        super(idatamanager, s, worldsettings, WorldProvider.byDimension(env.getId()), methodprofiler, gen, env);
+         this.dimension = i;
+         this.pvpMode = minecraftserver.getPvP();
+         // CraftBukkit end
+-- 
+1.7.8.msysgit.0
+

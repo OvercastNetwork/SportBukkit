@@ -19,5 +19,5 @@ fi
 cd "$DIR/build/$1"
 
 echo "Switching to a staging branch for $1..."
-git checkout master # can't update a branch you are already on
-git checkout -B staging origin/master --force
+git reset --hard # reset modified files
+git clean -fd . # reset untracked files

@@ -21,14 +21,14 @@ function apply_patches {
     $DIR/checkout.sh $project
 
     cd $DIR/build/$project
-    echo "Editing the pom.xml for $project..."
-    
-    # change pom.xml to tc.oc
-    sed --in-place "s#<groupId>org.bukkit</groupId>#<groupId>tc.oc</groupId>#" pom.xml
-    sed --in-place "s#<artifactId>$project_lower</artifactId>#<artifactId>pgm-$project_lower</artifactId>#" pom.xml
-    sed --in-place "s#<name>$project</name>#<name>PGM-$project</name>#" pom.xml
-    # apply patches
-    git apply $DIR/$project/*.patch
+
+    echo "Applying patches..."
+    git apply --ignore-space-change --ignore-whitespace --whitespace=fix $DIR/$project/*.patch
+
+    if [ $? -ne 0 ]; then
+        echo "Failed to apply patches...exiting now"
+        exit 1
+    fi
 }
 
 apply_patches Bukkit

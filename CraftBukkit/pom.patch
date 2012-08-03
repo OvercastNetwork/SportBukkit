@@ -12,7 +12,7 @@ diff --git a/pom.xml b/pom.xml
 index e061ce6..03f33a9 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -1,11 +1,11 @@
+@@ -1,6 +1,6 @@
  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
@@ -21,7 +21,7 @@ index e061ce6..03f33a9 100644
 +  <groupId>tc.oc</groupId>
 +  <artifactId>pgm-craftbukkit</artifactId>
    <packaging>jar</packaging>
-   <version>1.3.1-R0.1-SNAPSHOT</version>
+@@ -8,4 +8,4 @@
 -  <name>CraftBukkit</name>
 +  <name>PGM-CraftBukkit</name>
    <url>http://www.bukkit.org</url>

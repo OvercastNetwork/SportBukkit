@@ -23,7 +23,7 @@ function apply_patches {
     cd $DIR/build/$project
 
     echo "Applying patches..."
-    git apply --ignore-space-change --ignore-whitespace --whitespace=fix $DIR/$project/*.patch
+    git apply --ignore-space-change --ignore-whitespace --whitespace=fix --unidiff-zero $DIR/$project/*.patch
 
     if [ $? -ne 0 ]; then
         echo "Failed to apply patches...exiting now"

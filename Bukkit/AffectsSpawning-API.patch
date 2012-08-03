@@ -1,22 +1,22 @@
 From bd4cb862c9d05f1ffca3e55d8a3cedea560b1e09 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
-Date: Sat, 28 Apr 2012 01:56:30 -0400
+Date: Thu, 2 Aug 2012 17:12:10 -0700
 Subject: [PATCH] add API to control whether a player affects spawning of
  nearby mobs
 
 ---
  src/main/java/org/bukkit/entity/HumanEntity.java   |   13 +++++++++++++
  .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 ++++++++
- 2 files changed, 21 insertions(+)
+ 2 files changed, 21 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index 7ad0cf8..38984ee 100644
+index e1f9f5a..3c75763 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
-@@ -146,4 +146,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
-      * @return Whether they are blocking.
+@@ -153,4 +153,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+      * @return Experience required to level up
       */
-     public boolean isBlocking();
+     public int getExpToLevel();
 +
 +    /**
 +     * Setting this to false prevents players from activating mob spawners and
@@ -32,7 +32,7 @@ index 7ad0cf8..38984ee 100644
 +    public boolean getAffectsSpawning();
  }
 diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-index 4a4032b..f4f75d9 100644
+index 4de6dd2..4e93322 100644
 --- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
 +++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
 @@ -645,6 +645,14 @@ public class TestPlayer implements Player {

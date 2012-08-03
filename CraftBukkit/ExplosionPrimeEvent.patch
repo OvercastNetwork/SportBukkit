@@ -4,39 +4,33 @@ Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 ---
- src/main/java/net/minecraft/server/BlockTNT.java   |   42 +++++++++++++++++---
- .../java/net/minecraft/server/EntityCreeper.java   |   26 ++++++------
+ src/main/java/net/minecraft/server/BlockTNT.java   |   35 ++++++++++++++++---
+ .../java/net/minecraft/server/EntityCreeper.java   |   26 +++++++-------
  .../java/net/minecraft/server/EntityFireball.java  |   10 +----
- .../java/net/minecraft/server/EntityTNTPrimed.java |   10 +---
- 4 files changed, 54 insertions(+), 34 deletions(-)
+ .../java/net/minecraft/server/EntityTNTPrimed.java |   10 ++----
+ 4 files changed, 47 insertions(+), 34 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index df7bb64..701bd55 100644
+index df7bb64..7bbf667 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
-@@ -2,8 +2,13 @@ package net.minecraft.server;
- 
+@@ -3,7 +3,7 @@ package net.minecraft.server;
  import java.util.Random;
  
--public class BlockTNT extends Block {
-+// CraftBukkit start
-+import org.bukkit.entity.Explosive;
-+import org.bukkit.event.entity.ExplosionPrimeEvent;
-+// CraftBukkit end
- 
-+public class BlockTNT extends Block {
+ public class BlockTNT extends Block {
+-
 +    boolean removeBlock = false; // CraftBukkit
      public BlockTNT(int i, int j) {
          super(i, j, Material.TNT);
          this.a(CreativeModeTab.d);
-@@ -36,18 +41,39 @@ public class BlockTNT extends Block {
+@@ -36,18 +36,37 @@ public class BlockTNT extends Block {
          if (!world.isStatic) {
              EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
  
 -            entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
 -            world.addEntity(entitytntprimed);
 +            // CraftBukkit start - allow exploded TNT to cancel priming
-+            ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) entitytntprimed.getBukkitEntity());
++            org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +            world.getServer().getPluginManager().callEvent(event);
 +
 +            if (!event.isCancelled()) {
@@ -53,14 +47,12 @@ index df7bb64..701bd55 100644
 +        removeBlock = true; // CraftBukkit - TNT priming may be cancelled
          if (!world.isStatic) {
              if ((l & 1) == 1) {
-+                this.a(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
-+            } else {
 +                // CraftBukkit start - fire ExplosionPrimeEvent
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
  
 -                world.addEntity(entitytntprimed);
 -                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
-+                ExplosionPrimeEvent event = new ExplosionPrimeEvent((Explosive) entitytntprimed.getBukkitEntity());
++                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                world.getServer().getPluginManager().callEvent(event);
 +
 +                if (event.isCancelled()) {
@@ -73,7 +65,7 @@ index df7bb64..701bd55 100644
              }
          }
      }
-@@ -55,7 +81,11 @@ public class BlockTNT extends Block {
+@@ -55,7 +74,11 @@ public class BlockTNT extends Block {
      public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
          if (entityhuman.bC() != null && entityhuman.bC().id == Item.FLINT_AND_STEEL.id) {
              this.postBreak(world, i, j, k, 1);

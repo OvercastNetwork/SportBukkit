@@ -18,7 +18,7 @@ function apply_patches {
     project=$1
     project_lower=`echo $project | tr '[A-Z]' '[a-z]'`
 
-    $DIR/checkout.sh $project
+    $DIR/checkout.sh $project | tee
 
     cd $DIR/build/$project
 
@@ -28,6 +28,8 @@ function apply_patches {
     if [ $? -ne 0 ]; then
         echo "Failed to apply patches...exiting now"
         exit 1
+    else
+        echo "Applied patches successfully!"
     fi
 }
 

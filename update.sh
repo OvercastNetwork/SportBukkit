@@ -8,16 +8,19 @@
 # first script run when setting up the PGM-CraftBukkit build environment.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-if [ ! -d "build" ]; then
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory script is in
+
+if [ ! -d $DIR/build ]; then
     mkdir build
 fi
 
-cd build
-
 function update {
     echo "Updating $1..."
-    if [ -d $1 ]; then
-        cd $1; git fetch origin master; cd ..
+    if [ -d $DIR/build/$1 ]; then
+        cd $DIR/build/$1
+
+        $DIR/checkout.sh $1
+        git pull origin master
     else
         git clone git://github.com/Bukkit/$1.git
     fi

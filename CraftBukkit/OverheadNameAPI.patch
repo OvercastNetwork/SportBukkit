@@ -1,4 +1,4 @@
-From 99263b32d3884bf0934a1e97eb568dd3b6882dea Mon Sep 17 00:00:00 2001
+From d57d46d3817abb8d91b2fe07287a4f859297b12f Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
@@ -6,8 +6,8 @@ Subject: [PATCH] Implement the overhead name API.
 ---
  .../java/net/minecraft/server/EntityPlayer.java    |    2 +
  .../minecraft/server/Packet20NamedEntitySpawn.java |   12 ++++--
- .../org/bukkit/craftbukkit/entity/CraftPlayer.java |   41 ++++++++++++++++++++
- 3 files changed, 51 insertions(+), 4 deletions(-)
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java |   38 ++++++++++++++++++++
+ 3 files changed, 48 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
 index e5a30da..0387bac 100644
@@ -54,10 +54,10 @@ index 25d4ab8..7af7b1c 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b190604..170f36e 100644
+index b190604..4592b17 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -189,6 +189,47 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -189,6 +189,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  
@@ -84,20 +84,17 @@ index b190604..170f36e 100644
 +
 +        // Change the name on the client side
 +        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
-+        EntityTracker tracker = ((WorldServer) entity.world).tracker;
++        Packet20NamedEntitySpawn spawnpacket = new Packet20NamedEntitySpawn(getHandle());
 +        for (int i = 0; i < server.getHandle().players.size(); ++i) {
-+            EntityPlayer entityplayer = (EntityPlayer) server.getHandle().players.get(i);
-+            if (entityplayer.netServerHandler == null || entityplayer == getHandle()) continue;
++            EntityPlayer otherplayer = (EntityPlayer) server.getHandle().players.get(i);
++            if (otherplayer.netServerHandler == null || otherplayer == getHandle()) continue;
 +
-+            if (entityplayer.getBukkitEntity().canSee(this)) {
-+                // destroy the old player
-+                entityplayer.netServerHandler.sendPacket(destroypacket);
++            if (otherplayer.getBukkitEntity().canSee(this)) {
++                // destroy the old avatar
++                otherplayer.netServerHandler.sendPacket(destroypacket);
 +
-+                // create the new player with the specified overhead name
-+                EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(entityplayer.id);
-+                if (entry != null) {
-+                    entry.updatePlayer(getHandle());
-+                }
++                // create the new one
++                otherplayer.netServerHandler.sendPacket(spawnpacket);
 +            }
 +        }
 +    }

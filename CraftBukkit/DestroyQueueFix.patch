@@ -1,0 +1,79 @@
+From 2f5794d0ff6cc28b1a63854c9e3f95590071abd5 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@bzextreme.com>
+Date: Sat, 4 Aug 2012 14:10:55 -0500
+Subject: [PATCH] Fix the Vanish API not always showing players correctly.
+ Fixes BUKKIT-2078
+
+If you call player.hidePlayer(other) then player.showPlayer(other), other should be visible to player. However, this does not work due to the fact that 1.3.1 now sends batches of entity destroy packets every tick, not instantly and individually like in previous versions.
+
+Since the destroy packet is added to the queue but not sent, a Packet20NamedEntitySpawn is sent first, then a Packet29DestroyEntity is sent afterwards when the queue is processed on the next tick.
+
+A fix for this would be to clear the queue for a player when showPlayer(other) is called to make sure there are no extra Packet29DestroyEntity hanging around.
+---
+ .../java/net/minecraft/server/EntityPlayer.java    |   30 +++++++++++--------
+ .../net/minecraft/server/EntityTrackerEntry.java   |    1 +
+ 2 files changed, 18 insertions(+), 13 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index e5a30da..10c00ac 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -178,19 +178,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             }
+         }
+ 
+-        if (!this.g.isEmpty()) {
+-            i = Math.min(this.g.size(), 127);
+-            int[] aint = new int[i];
+-            Iterator iterator2 = this.g.iterator();
+-            int j = 0;
+-
+-            while (iterator2.hasNext() && j < i) {
+-                aint[j++] = ((Integer) iterator2.next()).intValue();
+-                iterator2.remove();
+-            }
+-
+-            this.netServerHandler.sendPacket(new Packet29DestroyEntity(aint));
+-        }
++        this.emptyDestroyEntityQueue(); // Craftbukkit - move code into method to prevent code duplication
+     }
+ 
+     public void g() {
+@@ -770,6 +758,22 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         }
+     }
+ 
++    public void emptyDestroyEntityQueue() {
++        if (!this.g.isEmpty()) {
++            int i = Math.min(this.g.size(), 127);
++            int[] aint = new int[i];
++            Iterator iterator2 = this.g.iterator();
++            int j = 0;
++
++            while (iterator2.hasNext() && j < i) {
++                aint[j++] = ((Integer) iterator2.next()).intValue();
++                iterator2.remove();
++            }
++
++            this.netServerHandler.sendPacket(new Packet29DestroyEntity(aint));
++        }
++    }
++
+     @Override
+     public String toString() {
+         return super.toString() + "(" + this.name + " at " + this.locX + "," + this.locY + "," + this.locZ + ")";
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index c504d35..81353f1 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -244,6 +244,7 @@ public class EntityTrackerEntry {
+                     this.trackedPlayers.add(entityplayer);
+                     Packet packet = this.b();
+ 
++                    entityplayer.emptyDestroyEntityQueue();
+                     entityplayer.netServerHandler.sendPacket(packet);
+                     this.j = this.tracker.motX;
+                     this.k = this.tracker.motY;
+-- 
+1.7.8.msysgit.0
+

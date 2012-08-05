@@ -1,0 +1,81 @@
+From 568d2215d407b8ea24aaadb124efe0376880e52b Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sun, 5 Aug 2012 14:47:40 -0700
+Subject: [PATCH] Remove the entity destroy queue.
+
+---
+ .../java/net/minecraft/server/EntityPlayer.java    |    6 +++---
+ .../net/minecraft/server/EntityTrackerEntry.java   |   12 +++++++++---
+ 2 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index e5a30da..1d34d25 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -26,7 +26,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public double d;
+     public double e;
+     public final List chunkCoordIntPairQueue = new LinkedList();
+-    public final List g = new LinkedList();
++    //public final List g = new LinkedList();
+     private int ch = -99999999;
+     private int ci = -99999999;
+     private boolean cj = true;
+@@ -178,7 +178,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             }
+         }
+ 
+-        if (!this.g.isEmpty()) {
++        /*if (!this.g.isEmpty()) {
+             i = Math.min(this.g.size(), 127);
+             int[] aint = new int[i];
+             Iterator iterator2 = this.g.iterator();
+@@ -190,7 +190,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             }
+ 
+             this.netServerHandler.sendPacket(new Packet29DestroyEntity(aint));
+-        }
++        }*/
+     }
+ 
+     public void g() {
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index c504d35..b71daee 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -216,7 +216,9 @@ public class EntityTrackerEntry {
+         while (iterator.hasNext()) {
+             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
+ 
+-            entityplayer.g.add(Integer.valueOf(this.tracker.id));
++            if(entityplayer.netServerHandler != null) {
++                entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(new int[]{ this.tracker.id }));
++            }
+         }
+     }
+ 
+@@ -290,7 +292,9 @@ public class EntityTrackerEntry {
+                 }
+             } else if (this.trackedPlayers.contains(entityplayer)) {
+                 this.trackedPlayers.remove(entityplayer);
+-                entityplayer.g.add(Integer.valueOf(this.tracker.id));
++                if(entityplayer.netServerHandler != null) {
++                    entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(new int[]{ this.tracker.id }));
++                }
+             }
+         }
+     }
+@@ -424,7 +428,9 @@ public class EntityTrackerEntry {
+     public void clear(EntityPlayer entityplayer) {
+         if (this.trackedPlayers.contains(entityplayer)) {
+             this.trackedPlayers.remove(entityplayer);
+-            entityplayer.g.add(Integer.valueOf(this.tracker.id));
++            if(entityplayer.netServerHandler != null) {
++                entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(new int[]{ this.tracker.id }));
++            }
+         }
+     }
+ }
+-- 
+1.7.8.msysgit.0
+

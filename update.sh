@@ -22,6 +22,7 @@ function update {
         $DIR/checkout.sh $1
         git pull origin master
     else
+        cd $DIR/build
         git clone git://github.com/Bukkit/$1.git
     fi
 }

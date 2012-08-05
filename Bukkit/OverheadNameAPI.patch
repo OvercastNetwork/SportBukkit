@@ -1,0 +1,65 @@
+From f667fc4f220873f3ecef3473f11ef196d5203fa4 Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sat, 4 Aug 2012 10:33:42 -0700
+Subject: [PATCH] Add the overhead name API for setting the name above a
+ player's avatar in game.
+
+---
+ src/main/java/org/bukkit/entity/Player.java        |   21 ++++++++++++++++++++
+ .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 +++++++
+ 2 files changed, 29 insertions(+), 0 deletions(-)
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 784e689..b93f902 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -69,6 +69,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public void setPlayerListName(String name);
+ 
+     /**
++     * Gets the name that is shown above a player's avatar in game.
++     *
++     * @return the player's overhead name
++     */
++    public String getOverheadName();
++
++    /**
++     * Sets the name that is shown above a player's avatar in game.
++     * <p />
++     * The name cannot be longer than 16 characters, but {@link ChatColor} is supported.
++     * <p />
++     * If the value is null, the name will be identical to {@link #getName()}.
++     * <p />
++     * TODO: add more info
++     *
++     * @param name new overhead name
++     * @throws IllegalArgumentException if the length of the name is too long
++     */
++    public void setOverheadName(String name);
++
++    /**
+      * Set the target of the player's compass.
+      *
+      * @param loc Location to point to
+diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+index 4de6dd2..1966dcd 100644
+--- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
++++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
+@@ -53,6 +53,14 @@ public class TestPlayer implements Player {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+ 
++    public String getOverheadName() {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
++    public void setOverheadName(String name) {
++        throw new UnsupportedOperationException("Not supported yet.");
++    }
++
+     public void setCompassTarget(Location loc) {
+         throw new UnsupportedOperationException("Not supported yet.");
+     }
+-- 
+1.7.8.msysgit.0
+

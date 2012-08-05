@@ -1,13 +1,14 @@
-From 77cf6a3a4f515c058389184c1fb2845bba9d4641 Mon Sep 17 00:00:00 2001
+From 3b2dccef1fc8504f51ae4d46a405808da0650f88 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
-Date: Sun, 5 Aug 2012 00:54:09 -0500
+Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
 
 ---
  .../java/net/minecraft/server/EntityPlayer.java    |    2 +
+ .../net/minecraft/server/EntityTrackerEntry.java   |   10 ++++-
  .../minecraft/server/Packet20NamedEntitySpawn.java |   12 ++++--
- .../org/bukkit/craftbukkit/entity/CraftPlayer.java |   43 ++++++++++++++++++++
- 3 files changed, 53 insertions(+), 4 deletions(-)
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java |   42 ++++++++++++++++++++
+ 4 files changed, 60 insertions(+), 6 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
 index e5a30da..0387bac 100644
@@ -29,6 +30,32 @@ index e5a30da..0387bac 100644
      }
  
      public void a(NBTTagCompound nbttagcompound) {
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index c504d35..4e4d4a9 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -226,13 +226,19 @@ public class EntityTrackerEntry {
+         }
+     }
+ 
++    // CraftBukkit start
+     public void updatePlayer(EntityPlayer entityplayer) {
++        this.updatePlayer(entityplayer, false);
++    }
++    // CraftBukkit end
++
++    public void updatePlayer(EntityPlayer entityplayer, boolean force) { // CraftBukkit - signature changed
+         if (entityplayer != this.tracker) {
+             double d0 = entityplayer.locX - (double) (this.xLoc / 32);
+             double d1 = entityplayer.locZ - (double) (this.zLoc / 32);
+ 
+-            if (d0 >= (double) (-this.b) && d0 <= (double) this.b && d1 >= (double) (-this.b) && d1 <= (double) this.b) {
+-                if (!this.trackedPlayers.contains(entityplayer) && this.d(entityplayer)) {
++            if (force || (d0 >= (double) (-this.b) && d0 <= (double) this.b && d1 >= (double) (-this.b) && d1 <= (double) this.b)) { // CraftBukkit
++                if (force || (!this.trackedPlayers.contains(entityplayer) && this.d(entityplayer))) { // CraftBukkit
+                     // CraftBukkit start
+                     if (tracker instanceof EntityPlayer) {
+                         Player player = ((EntityPlayer) tracker).getBukkitEntity();
 diff --git a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
 index 25d4ab8..7af7b1c 100644
 --- a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
@@ -54,18 +81,18 @@ index 25d4ab8..7af7b1c 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b190604..af259e9 100644
+index b190604..1ef8935 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
+@@ -8,6 +8,7 @@ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.util.HashSet;
++import java.util.Iterator;
+ import java.util.LinkedHashMap;
  import java.util.List;
  import java.util.Map;
- import java.util.Set;
-+import java.util.Iterator;
- import java.util.logging.Level;
- import java.util.logging.Logger;
- 
-@@ -189,6 +190,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -189,6 +190,47 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  
@@ -90,24 +117,23 @@ index b190604..af259e9 100644
 +
 +        getHandle().overheadName = name;
 +
++        if (getHandle().netServerHandler == null) return;
++        
 +        // Change the name on the client side
 +        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
-+        Packet20NamedEntitySpawn spawnpacket = new Packet20NamedEntitySpawn(getHandle());
 +
 +        EntityTracker tracker = ((WorldServer) entity.world).tracker;
 +        EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(getHandle().id);
 +
-+        Iterator iterator = entry.trackedPlayers.iterator();
-+        while (iterator.hasNext()) {
-+            EntityPlayer entityplayer = (EntityPlayer) iterator.next();
-+
-+            if (entityplayer.netServerHandler == null || entityplayer == getHandle()) continue;
++        for (Iterator it = server.getHandle().players.iterator(); it.hasNext(); ) {
++            EntityPlayer otherplayer = (EntityPlayer) it.next();
++            if (otherplayer.netServerHandler == null || otherplayer == getHandle()) continue;
 +
 +            // destroy the old player entity
-+            entityplayer.netServerHandler.sendPacket(destroypacket);
++            otherplayer.netServerHandler.sendPacket(destroypacket);
 +
 +            // create the new one
-+            entityplayer.netServerHandler.sendPacket(spawnpacket);
++            entry.updatePlayer(otherplayer, true);
 +        }
 +    }
 +
@@ -115,5 +141,5 @@ index b190604..af259e9 100644
      public boolean equals(Object obj) {
          if (!(obj instanceof OfflinePlayer)) {
 -- 
-1.7.9.5
+1.7.8.msysgit.0
 

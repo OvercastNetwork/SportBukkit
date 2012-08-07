@@ -11,7 +11,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/
 index b190604..5685181 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -168,8 +168,10 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -168,8 +168,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
          // Collisions will make for invisible people
          for (int i = 0; i < server.getHandle().players.size(); ++i) {
@@ -21,6 +21,7 @@ index b190604..5685181 100644
 +            if (player.listName.equals(name) && getHandle() != player) {
 +                // throw new IllegalArgumentException(name + " is already assigned as a player list name for someone"); - Try and fix instead of erroring out
 +                server.getHandle().disconnect(player);
++                break;
              }
          }
 

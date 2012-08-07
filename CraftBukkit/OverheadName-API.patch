@@ -90,13 +90,13 @@ index b190604..3681619 100644
 +
 +        getHandle().overheadName = name;
 +
-+        if (getHandle().netServerHandler == null) return;
-+        
-+        // Change the name on the client side
-+        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
-+
++        // try to update the other players of this change
 +        EntityTracker tracker = ((WorldServer) entity.world).tracker;
 +        EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(getHandle().id);
++
++        if (getHandle().netServerHandler == null || entry == null) return;
++
++        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
 +
 +        for (Iterator it = server.getHandle().players.iterator(); it.hasNext(); ) {
 +            EntityPlayer otherplayer = (EntityPlayer) it.next();

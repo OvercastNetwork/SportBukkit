@@ -1,0 +1,25 @@
+From 2e566913a11da2b040b2bd4d253b008d9fe6530e Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 9 Aug 2012 10:31:25 -0500
+Subject: [PATCH] Force chunk loading (empty chunks will load now)
+
+---
+ .../net/minecraft/server/ChunkProviderServer.java  |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+index 7b76b4c..a976bc9 100644
+--- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
++++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
+@@ -23,7 +23,7 @@ public class ChunkProviderServer implements IChunkProvider {
+     public Chunk emptyChunk;
+     public IChunkProvider chunkProvider; // CraftBukkit
+     private IChunkLoader e;
+-    public boolean forceChunkLoad = false; // true -> false
++    public boolean forceChunkLoad = true; // false -> true
+     public LongHashtable<Chunk> chunks = new LongHashtable<Chunk>();
+     public List chunkList = new ArrayList();
+     public WorldServer world;
+-- 
+1.7.9.5
+

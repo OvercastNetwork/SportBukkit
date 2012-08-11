@@ -1,0 +1,27 @@
+From 326603541466b8ce856fd294917ed546da85b3a2 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 11 Aug 2012 12:16:46 -0500
+Subject: [PATCH] Fix TNT phantom blocks
+
+---
+ .../java/net/minecraft/server/WorldServer.java     |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index dd79681..3b3eabd 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -746,7 +746,9 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
+         while (iterator.hasNext()) {
+             EntityHuman entityhuman = (EntityHuman) iterator.next();
+ 
+-            if (entityhuman.e(d0, d1, d2) < 4096.0D) {
++            // Craftbukkit - Send packet to everyone in the dimension, not just nearby
++            //if (entityhuman.e(d0, d1, d2) < 4096.0D) {
++            if(entityhuman.dimension == this.dimension) {
+                 ((EntityPlayer) entityhuman).netServerHandler.sendPacket(new Packet60Explosion(d0, d1, d2, f, explosion.blocks, (Vec3D) explosion.b().get(entityhuman)));
+             }
+         }
+-- 
+1.7.9.5
+

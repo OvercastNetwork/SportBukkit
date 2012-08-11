@@ -31,25 +31,6 @@ index e1f9f5a..3c75763 100644
 +     */
 +    public boolean getAffectsSpawning();
  }
-diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-index 4de6dd2..4e93322 100644
---- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-+++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-@@ -645,6 +645,14 @@ public class TestPlayer implements Player {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
- 
-+    public void setAffectsSpawning(boolean yes) {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-+    public boolean getAffectsSpawning() {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-     public boolean addPotionEffect(PotionEffect effect) {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
--- 
+--
 1.7.9.5
 

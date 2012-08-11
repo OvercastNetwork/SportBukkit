@@ -28,26 +28,9 @@ index b06edc4..31c8a5f 100644
 +     * @return true if the player can push other entities
 +     */
 +    public boolean getCollidesWithEntities();
- }
-diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-index 4a4032b..ed7d821 100644
---- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-+++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-@@ -645,6 +645,14 @@ public class TestPlayer implements Player {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
- 
-+    public void setCollidesWithEntities(boolean yes) {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-+    public boolean getCollidesWithEntities() {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-     public boolean addPotionEffect(PotionEffect effect) {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
--- 
+
+    /**
+     * Sets the speed at which a client will fly. Negative values indicate reverse directions.
+--
 1.7.9.5
 

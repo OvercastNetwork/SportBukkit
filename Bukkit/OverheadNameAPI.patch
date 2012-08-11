@@ -15,7 +15,7 @@ index 784e689..b93f902 100644
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -69,6 +69,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void setPlayerListName(String name);
- 
+
      /**
 +     * Gets the name that is shown above a player's avatar in game.
 +     *
@@ -41,25 +41,6 @@ index 784e689..b93f902 100644
       * Set the target of the player's compass.
       *
       * @param loc Location to point to
-diff --git a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-index 4de6dd2..1966dcd 100644
---- a/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-+++ b/src/test/java/org/bukkit/plugin/messaging/TestPlayer.java
-@@ -53,6 +53,14 @@ public class TestPlayer implements Player {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
- 
-+    public String getOverheadName() {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-+    public void setOverheadName(String name) {
-+        throw new UnsupportedOperationException("Not supported yet.");
-+    }
-+
-     public void setCompassTarget(Location loc) {
-         throw new UnsupportedOperationException("Not supported yet.");
-     }
--- 
+--
 1.7.8.msysgit.0
 

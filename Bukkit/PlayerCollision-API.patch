@@ -5,8 +5,7 @@ Subject: [PATCH] add API to control whether a player can push other entities
 
 ---
  src/main/java/org/bukkit/entity/Player.java        |   12 ++++++++++++
- .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 ++++++++
- 2 files changed, 20 insertions(+)
+ 1 files changed, 12 insertions(+)
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
 index b06edc4..31c8a5f 100644

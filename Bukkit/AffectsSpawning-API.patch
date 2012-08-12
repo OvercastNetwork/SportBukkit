@@ -6,8 +6,7 @@ Subject: [PATCH] add API to control whether a player affects spawning of
 
 ---
  src/main/java/org/bukkit/entity/HumanEntity.java   |   13 +++++++++++++
- .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 ++++++++
- 2 files changed, 21 insertions(+), 0 deletions(-)
+ 1 files changed, 13 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
 index e1f9f5a..3c75763 100644

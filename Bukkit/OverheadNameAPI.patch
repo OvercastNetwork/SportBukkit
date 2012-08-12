@@ -6,8 +6,7 @@ Subject: [PATCH] Add the overhead name API for setting the name above a
 
 ---
  src/main/java/org/bukkit/entity/Player.java        |   21 ++++++++++++++++++++
- .../org/bukkit/plugin/messaging/TestPlayer.java    |    8 +++++++
- 2 files changed, 29 insertions(+), 0 deletions(-)
+ 1 files changed, 21 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
 index 784e689..b93f902 100644

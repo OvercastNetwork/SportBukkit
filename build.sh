@@ -23,14 +23,16 @@ function apply_patches {
     cd $DIR/build/$project
 
     echo "Applying patches..."
-    git apply --ignore-space-change --ignore-whitespace --whitespace=fix --unidiff-zero $DIR/$project/*.patch
+    for f in $DIR/$project/*.patch; do
+        echo "Applying `basename $f`"
+        git apply --ignore-space-change --ignore-whitespace --whitespace=nowarn --unidiff-zero $f
+        if [ $? -ne 0 ]; then
+            echo "Failed to apply patch...exiting now"
+            exit 1
+        fi
+    done
 
-    if [ $? -ne 0 ]; then
-        echo "Failed to apply patches...exiting now"
-        exit 1
-    else
-        echo "Applied patches successfully!"
-    fi
+    echo "Applied patches successfully!"
 }
 
 apply_patches Bukkit

@@ -5,7 +5,7 @@ Subject: [PATCH] Temporary fix for empty chunks
 
 ---
  .../java/net/minecraft/server/EntityPlayer.java    |   27 +++++++++++++++++---
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
 index b8696b5..e2c95f6 100644
@@ -31,7 +31,6 @@ index b8696b5..e2c95f6 100644
 +                            for(int y = 0; y < 256; y++) {
 +                                if(chunk.getTypeId(x, y, z) != 0) {
 +                                    this.netServerHandler.sendPacket(new Packet51MapChunk(chunk, true, 0xffff));
-+                                    removed++;
 +                                    arraylist2.remove(obj);
 +                                    x = 16;
 +                                    z = 16;

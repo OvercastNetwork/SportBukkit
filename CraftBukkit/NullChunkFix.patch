@@ -4,16 +4,16 @@ Date: Sun, 12 Aug 2012 21:26:54 -0500
 Subject: [PATCH] Temporary fix for empty chunks
 
 ---
- .../java/net/minecraft/server/EntityPlayer.java    |   27 +++++++++++++++++---
+ .../java/net/minecraft/server/EntityPlayer.java    |   26 ++++++++++++++++---
  1 file changed, 22 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
 index b8696b5..e2c95f6 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -167,11 +167,30 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -167,11 +167,29 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
- 
+
              if (!arraylist.isEmpty()) {
 -                // CraftBukkit start - don't use map chunk bulk for now TODO: fix this
 -                for (Object object : arraylist) {
@@ -43,8 +43,8 @@ index b8696b5..e2c95f6 100644
 -                // this.netServerHandler.sendPacket(new Packet56MapChunkBulk(arraylist));
 +                this.netServerHandler.sendPacket(new Packet56MapChunkBulk(arraylist2));
                  // CraftBukkit end
- 
+
                  Iterator iterator1 = arraylist1.iterator();
--- 
+--
 1.7.9.6 (Apple Git-31.1)
 

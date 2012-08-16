@@ -14,7 +14,7 @@ index dd79681..3b3eabd 100644
 @@ -746,7 +746,9 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
          while (iterator.hasNext()) {
              EntityHuman entityhuman = (EntityHuman) iterator.next();
- 
+
 -            if (entityhuman.e(d0, d1, d2) < 4096.0D) {
 +            // Craftbukkit - Send packet to everyone in the dimension, not just nearby
 +            //if (entityhuman.e(d0, d1, d2) < 4096.0D) {
@@ -22,6 +22,6 @@ index dd79681..3b3eabd 100644
                  ((EntityPlayer) entityhuman).netServerHandler.sendPacket(new Packet60Explosion(d0, d1, d2, f, explosion.blocks, (Vec3D) explosion.b().get(entityhuman)));
              }
          }
--- 
+--
 1.7.9.5
 

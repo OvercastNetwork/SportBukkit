@@ -13,7 +13,7 @@ index ba24800..39ac719 100644
 --- a/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
 +++ b/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
 @@ -60,6 +60,23 @@ public abstract class ServerConfigurationManagerAbstract {
- 
+
      public void a(INetworkManager inetworkmanager, EntityPlayer entityplayer) {
          this.a(entityplayer);
 +
@@ -36,6 +36,6 @@ index ba24800..39ac719 100644
          entityplayer.spawnIn(this.server.getWorldServer(entityplayer.dimension));
          entityplayer.itemInWorldManager.a((WorldServer) entityplayer.world);
          String s = "local";
--- 
+--
 1.7.8.msysgit.0
 

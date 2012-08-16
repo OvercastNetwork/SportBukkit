@@ -25,16 +25,16 @@ index e061ce6..03f33a9 100644
 -  <name>CraftBukkit</name>
 +  <name>PGM-CraftBukkit</name>
    <url>http://www.bukkit.org</url>
- 
+
    <properties>
 @@ -49,5 +49,5 @@
- 
+
    <dependencies>
      <dependency>
 -      <groupId>org.bukkit</groupId>
 -      <artifactId>bukkit</artifactId>
 +      <groupId>tc.oc</groupId>
 +      <artifactId>pgm-bukkit</artifactId>
--- 
+--
 1.7.8.msysgit.0
 

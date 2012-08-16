@@ -24,7 +24,7 @@ index e5a30da..1d34d25 100644
 @@ -178,7 +178,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
          }
- 
+
 -        if (!this.g.isEmpty()) {
 +        /*if (!this.g.isEmpty()) {
              i = Math.min(this.g.size(), 127);
@@ -32,12 +32,12 @@ index e5a30da..1d34d25 100644
              Iterator iterator2 = this.g.iterator();
 @@ -190,7 +190,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
- 
+
              this.netServerHandler.sendPacket(new Packet29DestroyEntity(aint));
 -        }
 +        }*/
      }
- 
+
      public void g() {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 index c504d35..b71daee 100644
@@ -46,14 +46,14 @@ index c504d35..b71daee 100644
 @@ -216,7 +216,9 @@ public class EntityTrackerEntry {
          while (iterator.hasNext()) {
              EntityPlayer entityplayer = (EntityPlayer) iterator.next();
- 
+
 -            entityplayer.g.add(Integer.valueOf(this.tracker.id));
 +            if(entityplayer.netServerHandler != null) {
 +                entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(new int[]{ this.tracker.id }));
 +            }
          }
      }
- 
+
 @@ -290,7 +292,9 @@ public class EntityTrackerEntry {
                  }
              } else if (this.trackedPlayers.contains(entityplayer)) {
@@ -76,6 +76,6 @@ index c504d35..b71daee 100644
          }
      }
  }
--- 
+--
 1.7.8.msysgit.0
 

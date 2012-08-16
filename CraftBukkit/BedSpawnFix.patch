@@ -19,14 +19,14 @@ index 2b09abc..e3d7106 100644
 +            this.spawnWorld = ""; // CraftBukkit
          }
      }
- 
+
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index dd82cb3..334cf71 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -586,6 +586,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
- 
+
      public void setBedSpawnLocation(Location location) {
 +        if (location == null) {
 +            getHandle().setRespawnPosition(null);

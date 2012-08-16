@@ -27,7 +27,7 @@ index e5a30da..0387bac 100644
          this.listName = this.name; // CraftBukkit
 +        this.overheadName = this.name; // CraftBukkit
      }
- 
+
      public void a(NBTTagCompound nbttagcompound) {
 diff --git a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
 index 25d4ab8..7af7b1c 100644
@@ -36,7 +36,7 @@ index 25d4ab8..7af7b1c 100644
 @@ -24,11 +24,15 @@ public class Packet20NamedEntitySpawn extends Packet {
      public Packet20NamedEntitySpawn(EntityHuman entityhuman) {
          this.a = entityhuman.id;
- 
+
 -        // CraftBukkit start - limit name length to 16 characters
 -        if (entityhuman.name.length() > 16) {
 -            this.b = entityhuman.name.substring(0, 16);
@@ -52,7 +52,7 @@ index 25d4ab8..7af7b1c 100644
 +            this.b = name;
          }
          // CraftBukkit end
- 
+
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index b190604..3681619 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
@@ -68,7 +68,7 @@ index b190604..3681619 100644
 @@ -189,6 +190,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
- 
+
 +    public String getOverheadName() {
 +        return getHandle().overheadName;
 +    }
@@ -110,6 +110,6 @@ index b190604..3681619 100644
      @Override
      public boolean equals(Object obj) {
          if (!(obj instanceof OfflinePlayer)) {
--- 
+--
 1.7.8.msysgit.0
 

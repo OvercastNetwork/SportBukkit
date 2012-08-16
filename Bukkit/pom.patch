@@ -22,8 +22,8 @@ index abfedfd..e808330 100644
 -    <name>Bukkit</name>
 +    <name>PGM-Bukkit</name>
      <url>http://www.bukkit.org</url>
- 
+
      <properties>
--- 
+--
 1.7.8.msysgit.0
 

@@ -16,7 +16,7 @@ index df7bb64..7bbf667 100644
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,7 +3,7 @@ package net.minecraft.server;
  import java.util.Random;
- 
+
  public class BlockTNT extends Block {
 -
 +    boolean removeBlock = false; // CraftBukkit
@@ -26,7 +26,7 @@ index df7bb64..7bbf667 100644
 @@ -36,18 +36,37 @@ public class BlockTNT extends Block {
          if (!world.isStatic) {
              EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
- 
+
 -            entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
 -            world.addEntity(entitytntprimed);
 +            // CraftBukkit start - allow exploded TNT to cancel priming
@@ -42,14 +42,14 @@ index df7bb64..7bbf667 100644
 +            // CraftBukkit end
          }
      }
- 
+
      public void postBreak(World world, int i, int j, int k, int l) {
 +        removeBlock = true; // CraftBukkit - TNT priming may be cancelled
          if (!world.isStatic) {
              if ((l & 1) == 1) {
 +                // CraftBukkit start - fire ExplosionPrimeEvent
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F));
- 
+
 -                world.addEntity(entitytntprimed);
 -                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
 +                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
@@ -71,7 +71,7 @@ index df7bb64..7bbf667 100644
              this.postBreak(world, i, j, k, 1);
 -            world.setTypeId(i, j, k, 0);
 +            // CraftBukkit start - don't remove block if TNT priming is cancelled
-+            if (removeBlock) { 
++            if (removeBlock) {
 +                world.setTypeId(i, j, k, 0);
 +            }
 +            // CraftBukkit end
@@ -85,7 +85,7 @@ index 175be78..b1b42f2 100644
 @@ -56,9 +56,19 @@ public class EntityCreeper extends EntityMonster {
              this.e = this.fuseTicks;
              int i = this.p();
- 
+
 +            // CraftBukkit start - fire ExplosionPrimeEvent
 +            float radius = this.isPowered() ? 6.0F : 3.0F;
              if (i > 0 && this.fuseTicks == 0) {
@@ -100,7 +100,7 @@ index 175be78..b1b42f2 100644
 +                }
              }
 +            // CraftBukkit end
- 
+
              this.fuseTicks += i;
              if (this.fuseTicks < 0) {
 @@ -68,18 +78,8 @@ public class EntityCreeper extends EntityMonster {
@@ -151,9 +151,9 @@ index a45f4c5..c38506f 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 @@ -73,13 +73,9 @@ public class EntityTNTPrimed extends Entity {
- 
+
          org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
- 
+
 -        ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this));
 -        server.getPluginManager().callEvent(event);
 -
@@ -166,7 +166,7 @@ index a45f4c5..c38506f 100644
 +        this.world.createExplosion(this, this.locX, this.locY, this.locZ, explosive.getYield(), explosive.isIncendiary());
          // CraftBukkit end
      }
- 
--- 
+
+--
 1.7.9.5
 

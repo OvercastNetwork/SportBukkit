@@ -20,4 +20,4 @@ cd "$DIR/build/$1"
 
 echo "Switching to a staging branch for $1..."
 git reset --hard # reset modified files
-git clean -fd . # reset untracked files
+git clean -fd --quiet . # reset untracked files

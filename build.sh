@@ -25,7 +25,7 @@ function apply_patches {
     echo "Applying patches..."
     for f in $DIR/$project/*.patch; do
         echo "Applying `basename $f`"
-        git apply --ignore-space-change --ignore-whitespace --whitespace=nowarn --unidiff-zero $f
+        patch -Np1 --ignore-whitespace -F3 --quiet < $f
         if [ $? -ne 0 ]; then
             echo "Failed to apply patch...exiting now"
             exit 1

@@ -4,32 +4,46 @@ Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] implement player collision API
 
 ---
- .../java/net/minecraft/server/EntityLiving.java    |    2 +-
- .../java/net/minecraft/server/EntityPlayer.java    |   14 ++++++++++++++
- .../org/bukkit/craftbukkit/entity/CraftPlayer.java |    9 +++++++++
- 3 files changed, 24 insertions(+), 1 deletions(-)
+ src/main/java/net/minecraft/server/EntityHuman.java        |  2 +-
+ src/main/java/net/minecraft/server/EntityLiving.java       |  2 +-
+ src/main/java/net/minecraft/server/EntityPlayer.java       | 14 ++++++++++++++
+ .../java/org/bukkit/craftbukkit/entity/CraftPlayer.java    |  9 +++++++++
+ 4 files changed, 25 insertions(+), 2 deletions(-)
 
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index a269b00..08c641b 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -331,7 +331,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+         if (this.getHealth() > 0) {
+             List list = this.world.getEntities(this, this.boundingBox.grow(1.0D, 0.0D, 1.0D));
+ 
+-            if (list != null) {
++            if (this.M() && list != null) { // CraftBukkit
+                 Iterator iterator = list.iterator();
+ 
+                 while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 6d98fe7..2f562e7 100644
+index a62c98f..4c2a499 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -1128,7 +1128,7 @@ public abstract class EntityLiving extends Entity {
          if (!this.world.isStatic) {
              List list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
-
+ 
 -            if (list != null && !list.isEmpty()) {
 +            if (this.M() && list != null && !list.isEmpty()) { // CraftBukkit
                  Iterator iterator = list.iterator();
-
+ 
                  while (iterator.hasNext()) {
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index e5a30da..9959e3c 100644
+index 9fe2d0b..5f6b7a1 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -50,6 +50,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public boolean keepLevel = false;
      // CraftBukkit end
-
+ 
 +    public boolean collidesWithEntities = true; // CraftBukkit
 +
      public EntityPlayer(MinecraftServer minecraftserver, World world, String s, ItemInWorldManager iteminworldmanager) {
@@ -38,7 +52,7 @@ index e5a30da..9959e3c 100644
 @@ -131,6 +133,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.height = 0.0F;
      }
-
+ 
 +    // CraftBukkit start
 +    @Override
 +    public boolean M() {
@@ -55,13 +69,13 @@ index e5a30da..9959e3c 100644
          return 1.62F;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index dd82cb3..d4669cc 100644
+index 50c6875..947ab10 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -843,6 +843,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -854,6 +854,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getHandle().updateAbilities();
      }
-
+ 
 +    public void setCollidesWithEntities(boolean yes) {
 +        getHandle().collidesWithEntities = yes;
 +        getHandle().m = yes;
@@ -74,6 +88,6 @@ index dd82cb3..d4669cc 100644
      public boolean getAllowFlight() {
          return getHandle().abilities.canFly;
      }
---
+-- 
 1.7.9.5
 

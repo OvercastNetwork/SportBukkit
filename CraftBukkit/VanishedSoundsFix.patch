@@ -1,0 +1,87 @@
+From 95346d526b232297c5326afe43055378950c6fc3 Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Thu, 30 Aug 2012 10:49:36 -0700
+Subject: [PATCH] Fix BUKKIT-2210: Vanished players are still generating
+ movement sounds for normal players
+
+CraftBukkit sends sounds that originate from an entity to every player, regardless of that entity's visibility to the player.  Propagate the originator through methods to the actual packet sending, then check whether the entity is visible before sending the packet.
+---
+ .../server/ServerConfigurationManagerAbstract.java        | 15 +++++++++++++--
+ src/main/java/net/minecraft/server/World.java             |  6 ++++--
+ src/main/java/net/minecraft/server/WorldManager.java      |  9 ++++++++-
+ 3 files changed, 25 insertions(+), 5 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java b/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
+index aa9c317..ab280b9 100644
+--- a/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
++++ b/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
+@@ -601,13 +601,24 @@ public abstract class ServerConfigurationManagerAbstract {
+         this.sendPacketNearby((EntityHuman) null, d0, d1, d2, d3, i, packet);
+     }
+ 
+-    public void sendPacketNearby(EntityHuman entityhuman, double d0, double d1, double d2, double d3, int i, Packet packet) {
++    public void sendPacketNearby(Entity entity, double d0, double d1, double d2, double d3, int i, Packet packet) { // CraftBukkit EntityHuman -> Entity
+         Iterator iterator = this.players.iterator();
+ 
+         while (iterator.hasNext()) {
+             EntityPlayer entityplayer = (EntityPlayer) iterator.next();
+ 
+-            if (entityplayer != entityhuman && entityplayer.dimension == i) {
++            // CraftBukkit start - don't send packet to a player who can not see the originator when sending sounds
++            boolean shouldSend = true;
++            if(packet instanceof Packet62NamedSoundEffect) {
++                if(entity instanceof EntityPlayer) {
++                    shouldSend = entityplayer.getBukkitEntity().canSee(((EntityPlayer) entity).getBukkitEntity());
++                }
++            } else {
++                shouldSend = entityplayer != entity;
++            }
++
++            if (shouldSend && entityplayer.dimension == i) {
++                // CraftBukkit end
+                 double d4 = d0 - entityplayer.locX;
+                 double d5 = d1 - entityplayer.locY;
+                 double d6 = d2 - entityplayer.locZ;
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index d987441..97fd5b6 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -764,9 +764,11 @@ public abstract class World implements IBlockAccess {
+             Iterator iterator = this.x.iterator();
+ 
+             while (iterator.hasNext()) {
+-                IWorldAccess iworldaccess = (IWorldAccess) iterator.next();
++                // CraftBukkit start
++                WorldManager worldmanager = (WorldManager) iterator.next(); // the only implementation of IWorldAccess is WorldManager
+ 
+-                iworldaccess.a(s, entity.locX, entity.locY - (double) entity.height, entity.locZ, f, f1);
++                worldmanager.broadcastSoundFrom(entity, s, entity.locX, entity.locY - (double) entity.height, entity.locZ, f, f1);
++                // CraftBukkit end
+             }
+         }
+     }
+diff --git a/src/main/java/net/minecraft/server/WorldManager.java b/src/main/java/net/minecraft/server/WorldManager.java
+index e70e5ab..f285d4c 100644
+--- a/src/main/java/net/minecraft/server/WorldManager.java
++++ b/src/main/java/net/minecraft/server/WorldManager.java
+@@ -23,9 +23,16 @@ public class WorldManager implements IWorldAccess {
+     }
+ 
+     public void a(String s, double d0, double d1, double d2, float f, float f1) {
++        // CraftBukkit - logic moved to broadcastSoundFrom
++        this.broadcastSoundFrom((Entity) null, s, d0, d1, d2, f, f1);
++    }
++
++    // CraftBukkit start
++    public void broadcastSoundFrom(Entity entity, String s, double d0, double d1, double d2, float f, float f1) {
+         // CraftBukkit - this.world.dimension
+-        this.server.getServerConfigurationManager().sendPacketNearby(d0, d1, d2, f > 1.0F ? (double) (16.0F * f) : 16.0D, this.world.dimension, new Packet62NamedSoundEffect(s, d0, d1, d2, f, f1));
++        this.server.getServerConfigurationManager().sendPacketNearby(entity, d0, d1, d2, f > 1.0F ? (double) (16.0F * f) : 16.0D, this.world.dimension, new Packet62NamedSoundEffect(s, d0, d1, d2, f, f1));
+     }
++    // CraftBukkit end
+ 
+     public void a(int i, int j, int k, int l, int i1, int j1) {}
+ 
+-- 
+1.7.11.msysgit.1
+

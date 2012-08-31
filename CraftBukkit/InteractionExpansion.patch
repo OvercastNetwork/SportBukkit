@@ -1,0 +1,27 @@
+From a0f61dcdb77e2a05255e3a5b00874a168789e5cf Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Fri, 31 Aug 2012 12:30:14 -0700
+Subject: [PATCH] Allow for more complex logic by using M() method when
+ determining whether a player should show up when looking
+ for nearby players.
+
+---
+ src/main/java/net/minecraft/server/World.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index d987441..036e33c 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -2415,7 +2415,7 @@ public abstract class World implements IBlockAccess {
+         for (int i = 0; i < this.players.size(); ++i) {
+             EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
+             // CraftBukkit start - fixed an NPE
+-            if (entityhuman1 == null || entityhuman1.dead) {
++            if (entityhuman1 == null || !entityhuman1.M()) { // CraftBukkit allow for more complex logic by using M()
+                 continue;
+             }
+             // CraftBukkit end
+-- 
+1.7.11.msysgit.1
+

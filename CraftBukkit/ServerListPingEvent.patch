@@ -1,0 +1,26 @@
+From 19371126228adbb3f05bab4deea45095b78dd7b8 Mon Sep 17 00:00:00 2001
+From: Daniel <ZetaetaDaniel@gmail.com>
+Date: Sat, 12 May 2012 16:07:34 +0100
+Subject: [PATCH] Adds ability to set the number of online players sent in
+ ServerListPingEvent
+
+---
+ .../java/net/minecraft/server/NetLoginHandler.java |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/NetLoginHandler.java b/src/main/java/net/minecraft/server/NetLoginHandler.java
+index 7c201a8..be4a08e 100644
+--- a/src/main/java/net/minecraft/server/NetLoginHandler.java
++++ b/src/main/java/net/minecraft/server/NetLoginHandler.java
+@@ -135,7 +135,7 @@ public class NetLoginHandler extends NetHandler {
+         try {
+             // CraftBukkit start
+             org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), this.server.getServerConfigurationManager().getPlayerCount(), this.server.getServerConfigurationManager().getMaxPlayers());
+-            String s = pingEvent.getMotd() + "\u00A7" + this.server.getServerConfigurationManager().getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
++            String s = pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers();
+             // CraftBukkit end
+
+             InetAddress inetaddress = null;
+--
+1.7.4.4
+

@@ -5,16 +5,16 @@ Subject: [PATCH] Prevent buffer overflow when writing response data on RCON
  query, fixes BUKKIT-2459
 
 ---
- .../net/minecraft/server/RemoteStatusListener.java |  293 ++++++++++++++++++++
- 1 files changed, 293 insertions(+), 0 deletions(-)
+ .../net/minecraft/server/RemoteStatusListener.java |  295 ++++++++++++++++++++
+ 1 files changed, 295 insertions(+), 0 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
 
 diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java
 new file mode 100644
-index 0000000..e71a977
+index 0000000..798d436
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/RemoteStatusListener.java
-@@ -0,0 +1,293 @@
+@@ -0,0 +1,295 @@
 +package net.minecraft.server;
 +
 +import java.io.IOException;
@@ -31,6 +31,11 @@ index 0000000..e71a977
 +import java.util.Iterator;
 +import java.util.Map;
 +import java.util.Map.Entry;
++import net.minecraft.server.IMinecraftServer;
++import net.minecraft.server.RemoteConnectionThread;
++import net.minecraft.server.RemoteStatusChallenge;
++import net.minecraft.server.RemoteStatusReply;
++import net.minecraft.server.StatusChallengeUtils;
 +
 +public class RemoteStatusListener extends RemoteConnectionThread {
 +
@@ -51,120 +56,116 @@ index 0000000..e71a977
 +    private RemoteStatusReply cachedReply;
 +    private long cacheTime;
 +
-+    public RemoteStatusListener(IMinecraftServer iminecraftserver) {
-+        super(iminecraftserver);
-+        this.bindPort = iminecraftserver.a("query.port", 0);
-+        this.motd = iminecraftserver.t();
-+        this.serverPort = iminecraftserver.u();
-+        this.localAddress = iminecraftserver.v();
-+        this.maxPlayers = iminecraftserver.y();
-+        this.worldName = iminecraftserver.I();
++    public RemoteStatusListener(IMinecraftServer var1) {
++        super(var1);
++        this.bindPort = var1.a("query.port", 0);
++        this.motd = var1.u();
++        this.serverPort = var1.v();
++        this.localAddress = var1.w();
++        this.maxPlayers = var1.z();
++        this.worldName = var1.J();
 +        this.cacheTime = 0L;
 +        this.hostname = "0.0.0.0";
 +        if (0 != this.motd.length() && !this.hostname.equals(this.motd)) {
 +            this.hostname = this.motd;
-+        } else {
++        }
++        else {
 +            this.motd = "0.0.0.0";
-+
 +            try {
-+                InetAddress inetaddress = InetAddress.getLocalHost();
-+
-+                this.hostname = inetaddress.getHostAddress();
-+            } catch (UnknownHostException unknownhostexception) {
-+                this.warning("Unable to determine local host IP, please set server-ip in \'" + iminecraftserver.c() + "\' : " + unknownhostexception.getMessage());
++                InetAddress var2 = InetAddress.getLocalHost();
++                this.hostname = var2.getHostAddress();
++            }
++            catch (UnknownHostException var3) {
++                this.warning("Unable to determine local host IP, please set server-ip in \'" + var1.b_() + "\' : " + var3.getMessage());
 +            }
 +        }
-+
 +        if (0 == this.bindPort) {
 +            this.bindPort = this.serverPort;
 +            this.info("Setting default query port to " + this.bindPort);
-+            iminecraftserver.a("query.port", Integer.valueOf(this.bindPort));
-+            iminecraftserver.a("debug", Boolean.valueOf(false));
-+            iminecraftserver.a();
++            var1.a("query.port", (Object)Integer.valueOf(this.bindPort));
++            var1.a("debug", (Object)Boolean.valueOf(false));
++            var1.a();
 +        }
-+
 +        this.p = new HashMap();
 +        this.cachedReply = new RemoteStatusReply(1460);
 +        this.challenges = new HashMap();
 +        this.t = (new Date()).getTime();
 +    }
 +
-+    private void send(byte[] abyte, DatagramPacket datagrampacket) {
++    private void send(byte[] var1, DatagramPacket var2) {
 +        // CraftBukkit start - catch possible exceptions
 +        try {
-+            this.socket.send(new DatagramPacket(abyte, abyte.length, datagrampacket.getSocketAddress()));
++            this.socket.send(new DatagramPacket(var1, var1.length, var2.getSocketAddress()));
 +        } catch (Exception e) {
 +            this.warning("Could not send data: " + e.getMessage());
 +        }
 +        // CraftBukkit end
 +    }
 +
-+    private boolean parsePacket(DatagramPacket datagrampacket) {
-+        byte[] abyte = datagrampacket.getData();
-+        int i = datagrampacket.getLength();
-+        SocketAddress socketaddress = datagrampacket.getSocketAddress();
-+
-+        this.debug("Packet len " + i + " [" + socketaddress + "]");
-+        if (3 <= i && -2 == abyte[0] && -3 == abyte[1]) {
-+            this.debug("Packet \'" + StatusChallengeUtils.a(abyte[2]) + "\' [" + socketaddress + "]");
-+            switch (abyte[2]) {
-+            case 0:
-+                if (!this.hasChallenged(datagrampacket).booleanValue()) {
-+                    this.debug("Invalid challenge [" + socketaddress + "]");
-+                    return false;
-+                } else if (15 == i) {
-+                    this.send(this.getFullReply(datagrampacket), datagrampacket);
-+                    this.debug("Rules [" + socketaddress + "]");
-+                } else {
-+                    RemoteStatusReply remotestatusreply = new RemoteStatusReply(1460);
-+
-+                    remotestatusreply.write((int) 0);
-+                    remotestatusreply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
-+                    remotestatusreply.write(this.localAddress);
-+                    remotestatusreply.write("SMP");
-+                    remotestatusreply.write(this.worldName);
-+                    remotestatusreply.write(Integer.toString(this.d()));
-+                    remotestatusreply.write(Integer.toString(this.maxPlayers));
-+                    remotestatusreply.write((short) this.serverPort);
-+                    remotestatusreply.write(this.hostname);
-+                    this.send(remotestatusreply.getBytes(), datagrampacket);
-+                    this.debug("Status [" + socketaddress + "]");
-+                }
-+
-+            case 9:
-+                this.createChallenge(datagrampacket);
-+                this.debug("Challenge [" + socketaddress + "]");
-+                return true;
-+
-+            default:
-+                return true;
++    private boolean parsePacket(DatagramPacket var1) {
++        byte[] var2 = var1.getData();
++        int var3 = var1.getLength();
++        SocketAddress var4 = var1.getSocketAddress();
++        this.debug("Packet len " + var3 + " [" + var4 + "]");
++        if (3 <= var3 && -2 == var2[0] && -3 == var2[1]) {
++            this.debug("Packet \'" + StatusChallengeUtils.a(var2[2]) + "\' [" + var4 + "]");
++            switch (var2[2]) {
++                case 0:
++                    if (!this.hasChallenged(var1).booleanValue()) {
++                        this.debug("Invalid challenge [" + var4 + "]");
++                        return false;
++                    }
++                    else if (15 == var3) {
++                        this.send(this.getFullReply(var1), var1);
++                        this.debug("Rules [" + var4 + "]");
++                    }
++                    else {
++                        RemoteStatusReply var5 = new RemoteStatusReply(1460);
++                        var5.write((int)0);
++                        var5.write(this.getIdentityToken(var1.getSocketAddress()));
++                        var5.write(this.localAddress);
++                        var5.write("SMP");
++                        var5.write(this.worldName);
++                        var5.write(Integer.toString(this.d()));
++                        var5.write(Integer.toString(this.maxPlayers));
++                        var5.write((short)this.serverPort);
++                        var5.write(this.hostname);
++                        this.send(var5.getBytes(), var1);
++                        this.debug("Status [" + var4 + "]");
++                    }
++                case 9:
++                    this.createChallenge(var1);
++                    this.debug("Challenge [" + var4 + "]");
++                    return true;
++                default:
++                    return true;
 +            }
-+        } else {
-+            this.debug("Invalid packet [" + socketaddress + "]");
++        }
++        else {
++            this.debug("Invalid packet [" + var4 + "]");
 +            return false;
 +        }
 +    }
 +
-+    private byte[] getFullReply(DatagramPacket datagrampacket) {
-+        long i = System.currentTimeMillis();
-+
-+        if (i < this.cacheTime + 5000L) {
-+            byte[] abyte = this.cachedReply.getBytes();
-+            byte[] abyte1 = this.getIdentityToken(datagrampacket.getSocketAddress());
-+
-+            abyte[1] = abyte1[0];
-+            abyte[2] = abyte1[1];
-+            abyte[3] = abyte1[2];
-+            abyte[4] = abyte1[3];
-+            return abyte;
-+        } else {
-+            this.cacheTime = i;
++    private byte[] getFullReply(DatagramPacket var1) {
++        long var2 = System.currentTimeMillis();
++        if (var2 < this.cacheTime + 5000L) {
++            byte[] var7 = this.cachedReply.getBytes();
++            byte[] var8 = this.getIdentityToken(var1.getSocketAddress());
++            var7[1] = var8[0];
++            var7[2] = var8[1];
++            var7[3] = var8[2];
++            var7[4] = var8[3];
++            return var7;
++        }
++        else {
++            this.cacheTime = var2;
 +            this.cachedReply.reset();
-+            this.cachedReply.write((int) 0);
-+            this.cachedReply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
++            this.cachedReply.write((int)0);
++            this.cachedReply.write(this.getIdentityToken(var1.getSocketAddress()));
 +            this.cachedReply.write("splitnum");
-+            this.cachedReply.write((int) 128);
-+            this.cachedReply.write((int) 0);
++            this.cachedReply.write((int)128);
++            this.cachedReply.write((int)0);
 +            this.cachedReply.write("hostname");
 +            this.cachedReply.write(this.localAddress);
 +            this.cachedReply.write("gametype");
@@ -185,60 +186,55 @@ index 0000000..e71a977
 +            this.cachedReply.write("" + this.serverPort);
 +            this.cachedReply.write("hostip");
 +            this.cachedReply.write(this.hostname);
-+            this.cachedReply.write((int) 0);
-+            this.cachedReply.write((int) 1);
++            this.cachedReply.write((int)0);
++            this.cachedReply.write((int)1);
 +            this.cachedReply.write("player_");
-+            this.cachedReply.write((int) 0);
-+            String[] astring = this.server.getPlayers();
++            this.cachedReply.write((int)0);
++            String[] var4 = this.server.getPlayers();
++
 +            // CraftBukkit start - use int instead of byte to prevent overflow
-+            int b0 = astring.length;
++            int var5 = (byte)var4.length;
 +
-+            for (int b1 = b0 - 1; b1 >= 0; --b1) {
++            for (int var6 = var5 - 1; var6 >= 0; --var6) {
 +                // CraftBukkit end
-+                this.cachedReply.write(astring[b1]);
++                this.cachedReply.write(var4[var6]);
 +            }
-+
-+            this.cachedReply.write((int) 0);
++            this.cachedReply.write((int)0);
 +            return this.cachedReply.getBytes();
 +        }
 +    }
 +
-+    private byte[] getIdentityToken(SocketAddress socketaddress) {
-+        return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getIdentityToken();
++    private byte[] getIdentityToken(SocketAddress var1) {
++        return ((RemoteStatusChallenge)this.challenges.get(var1)).getIdentityToken();
 +    }
 +
-+    private Boolean hasChallenged(DatagramPacket datagrampacket) {
-+        SocketAddress socketaddress = datagrampacket.getSocketAddress();
-+
-+        if (!this.challenges.containsKey(socketaddress)) {
++    private Boolean hasChallenged(DatagramPacket var1) {
++        SocketAddress var2 = var1.getSocketAddress();
++        if (!this.challenges.containsKey(var2)) {
 +            return Boolean.valueOf(false);
-+        } else {
-+            byte[] abyte = datagrampacket.getData();
-+
-+            return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getToken() != StatusChallengeUtils.c(abyte, 7, datagrampacket.getLength()) ? Boolean.valueOf(false) : Boolean.valueOf(true);
++        }
++        else {
++            byte[] var3 = var1.getData();
++            return ((RemoteStatusChallenge)this.challenges.get(var2)).getToken() != StatusChallengeUtils.c(var3, 7, var1.getLength()) ? Boolean.valueOf(false) : Boolean.valueOf(true);
 +        }
 +    }
 +
-+    private void createChallenge(DatagramPacket datagrampacket) {
-+        RemoteStatusChallenge remotestatuschallenge = new RemoteStatusChallenge(this, datagrampacket);
-+
-+        this.challenges.put(datagrampacket.getSocketAddress(), remotestatuschallenge);
-+        this.send(remotestatuschallenge.getChallengeResponse(), datagrampacket);
++    private void createChallenge(DatagramPacket var1) {
++        RemoteStatusChallenge var2 = new RemoteStatusChallenge(this, var1);
++        this.challenges.put(var1.getSocketAddress(), var2);
++        this.send(var2.getChallengeResponse(), var1);
 +    }
 +
 +    private void cleanChallenges() {
 +        if (this.running) {
-+            long i = System.currentTimeMillis();
-+
-+            if (i >= this.clearedTime + 30000L) {
-+                this.clearedTime = i;
-+                Iterator iterator = this.challenges.entrySet().iterator();
-+
-+                while (iterator.hasNext()) {
-+                    Entry entry = (Entry) iterator.next();
-+
-+                    if (((RemoteStatusChallenge) entry.getValue()).isExpired(i).booleanValue()) {
-+                        iterator.remove();
++            long var1 = System.currentTimeMillis();
++            if (var1 >= this.clearedTime + 30000L) {
++                this.clearedTime = var1;
++                Iterator var3 = this.challenges.entrySet().iterator();
++                while (var3.hasNext()) {
++                    Entry var4 = (Entry)var3.next();
++                    if (((RemoteStatusChallenge)var4.getValue()).isExpired(var1).booleanValue()) {
++                        var3.remove();
 +                    }
 +                }
 +            }
@@ -249,22 +245,25 @@ index 0000000..e71a977
 +        this.info("Query running on " + this.motd + ":" + this.bindPort);
 +        this.clearedTime = System.currentTimeMillis();
 +        this.o = new DatagramPacket(this.n, this.n.length);
-+
 +        try {
 +            while (this.running) {
 +                try {
 +                    this.socket.receive(this.o);
 +                    this.cleanChallenges();
 +                    this.parsePacket(this.o);
-+                } catch (SocketTimeoutException sockettimeoutexception) {
++                }
++                catch (SocketTimeoutException var7) {
 +                    this.cleanChallenges();
-+                } catch (PortUnreachableException portunreachableexception) {
++                }
++                catch (PortUnreachableException var8) {
 +                    ;
-+                } catch (IOException ioexception) {
-+                    this.a(ioexception);
++                }
++                catch (IOException var9) {
++                    this.a(var9);
 +                }
 +            }
-+        } finally {
++        }
++        finally {
 +            this.e();
 +        }
 +    }
@@ -275,15 +274,16 @@ index 0000000..e71a977
 +                if (this.g()) {
 +                    super.a();
 +                }
-+            } else {
-+                this.warning("Invalid query port " + this.bindPort + " found in \'" + this.server.c() + "\' (queries disabled)");
++            }
++            else {
++                this.warning("Invalid query port " + this.bindPort + " found in \'" + this.server.b_() + "\' (queries disabled)");
 +            }
 +        }
 +    }
 +
-+    private void a(Exception exception) {
++    private void a(Exception var1) {
 +        if (this.running) {
-+            this.warning("Unexpected exception, buggy JRE? (" + exception.toString() + ")");
++            this.warning("Unexpected exception, buggy JRE? (" + var1.toString() + ")");
 +            if (!this.g()) {
 +                this.error("Failed to recover from buggy JRE, shutting down!");
 +                this.running = false;
@@ -297,18 +297,19 @@ index 0000000..e71a977
 +            this.a(this.socket);
 +            this.socket.setSoTimeout(500);
 +            return true;
-+        } catch (SocketException socketexception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Socket): " + socketexception.getMessage());
-+        } catch (UnknownHostException unknownhostexception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Unknown Host): " + unknownhostexception.getMessage());
-+        } catch (Exception exception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (E): " + exception.getMessage());
 +        }
-+
++        catch (SocketException var2) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Socket): " + var2.getMessage());
++        }
++        catch (UnknownHostException var3) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Unknown Host): " + var3.getMessage());
++        }
++        catch (Exception var4) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (E): " + var4.getMessage());
++        }
 +        return false;
 +    }
 +}
-\ No newline at end of file
--- 
+--
 1.7.4.4
 

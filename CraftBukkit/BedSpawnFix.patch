@@ -9,33 +9,32 @@ Subject: [PATCH] Fix NPE when trying to reset bed spawn location to default
  2 files changed, 6 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 2b09abc..e3d7106 100644
+index 9665716..fc243d9 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1045,6 +1045,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
-             this.spawnWorld = this.world.worldData.getName();
+@@ -1055,6 +1055,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+             this.spawnWorld = this.world.worldData.getName(); // CraftBukkit
          } else {
              this.c = null;
 +            this.spawnWorld = ""; // CraftBukkit
+             this.d = false;
          }
      }
-
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index dd82cb3..334cf71 100644
+index 3449446..35f49a8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -586,6 +586,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -602,6 +602,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
 
-     public void setBedSpawnLocation(Location location) {
+     public void setBedSpawnLocation(Location location, boolean override) {
 +        if (location == null) {
-+            getHandle().setRespawnPosition(null);
++            getHandle().setRespawnPosition(null, override);
 +            getHandle().spawnWorld = "";
 +            return;
 +        }
-         getHandle().setRespawnPosition(new ChunkCoordinates(location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+         getHandle().setRespawnPosition(new ChunkCoordinates(location.getBlockX(), location.getBlockY(), location.getBlockZ()), override);
          getHandle().spawnWorld = location.getWorld().getName();
      }
----
-1.7.9.5
-
+--
+1.7.4.4

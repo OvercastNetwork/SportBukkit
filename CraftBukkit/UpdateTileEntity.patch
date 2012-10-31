@@ -37,14 +37,14 @@ index 64515d1..072144a 100644
                      return;
                  }
 @@ -164,7 +164,7 @@ public class ItemInWorldManager {
- 
+
                  if (blockEvent.isCancelled()) {
                      // Let the client know the block still exists
 -                    ((EntityPlayer) this.player).netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, this.world));
 +                    this.player.getBukkitEntity().refreshBlock(i, j, k, this.world);
                      return;
                  }
- 
+
 @@ -214,7 +214,7 @@ public class ItemInWorldManager {
              }
          // CraftBukkit start - force blockreset to client
@@ -55,7 +55,7 @@ index 64515d1..072144a 100644
          }
      }
 @@ -279,7 +279,7 @@ public class ItemInWorldManager {
- 
+
              if (event.isCancelled()) {
                  // Let the client know the block still exists
 -                ((EntityPlayer) this.player).netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, this.world));
@@ -65,7 +65,7 @@ index 64515d1..072144a 100644
          }
 @@ -296,7 +296,7 @@ public class ItemInWorldManager {
              boolean flag = this.d(i, j, k);
- 
+
              if (this.isCreative()) {
 -                this.player.netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, this.world));
 +                this.player.getBukkitEntity().refreshBlock(i, j, k, this.world); // CraftBukkit - refresh the block correctly
@@ -102,16 +102,16 @@ index b27cc15..58b2ade 100644
                  double d4 = this.player.locX - ((double) i + 0.5D);
 @@ -563,7 +563,7 @@ public class NetServerHandler extends NetHandler {
                  double d7 = d4 * d4 + d5 * d5 + d6 * d6;
- 
+
                  if (d7 < 256.0D) {
 -                    this.player.netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, worldserver));
 +                    this.player.getBukkitEntity().refreshBlock(i, j, k, worldserver); // CraftBukkit - refresh block correctly
                  }
              }
- 
+
 @@ -654,7 +654,7 @@ public class NetServerHandler extends NetHandler {
          }
- 
+
          if (flag) {
 -            this.player.netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, worldserver));
 +            this.player.getBukkitEntity().refreshBlock(i, j, k, worldserver); // CraftBukkit - refresh block correctly
@@ -121,11 +121,11 @@ index b27cc15..58b2ade 100644
 @@ -679,7 +679,7 @@ public class NetServerHandler extends NetHandler {
                  ++i;
              }
- 
+
 -            this.player.netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, worldserver));
 +            this.player.getBukkitEntity().refreshBlock(i, j, k, worldserver); // CraftBukkit - refresh block correctly
          }
- 
+
          itemstack = this.player.inventory.getItemInHand();
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index 1b88232..8f1a73e 100644
@@ -134,12 +134,12 @@ index 1b88232..8f1a73e 100644
 @@ -281,6 +281,17 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          playEffect(loc, effect, datavalue);
      }
- 
+
 +    public void refreshBlock(int x, int y, int z, net.minecraft.server.World world) {
 +        this.getHandle().netServerHandler.sendPacket(new Packet53BlockChange(x, y, z, world));
 +        TileEntity tileEntity = world.getTileEntity(x, y, z);
 +        if (tileEntity != null) {
-+            Packet updateTileEntity = tileEntity.e();
++            Packet updateTileEntity = tileEntity.l();
 +            if (updateTileEntity != null) {
 +                this.getHandle().netServerHandler.sendPacket(updateTileEntity);
 +            }
@@ -149,6 +149,6 @@ index 1b88232..8f1a73e 100644
      public void sendBlockChange(Location loc, Material material, byte data) {
          sendBlockChange(loc, material.getId(), data);
      }
--- 
+--
 1.7.11.msysgit.1
 

@@ -1,4 +1,4 @@
-From 99cb9f0e09a77e5c439765ffc0c6d8612c50f2fc Mon Sep 17 00:00:00 2001
+From 39c15418d03114993458ecd29e0da5a15217fd7c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 21 Aug 2012 19:51:54 -0500
 Subject: [PATCH] Allow spawning of ender pearls
@@ -6,16 +6,16 @@ Subject: [PATCH] Allow spawning of ender pearls
 ---
  .../net/minecraft/server/EntityEnderPearl.java     |    4 ++++
  .../java/org/bukkit/craftbukkit/CraftWorld.java    |    2 ++
- 2 files changed, 6 insertions(+)
+ 2 files changed, 6 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityEnderPearl.java b/src/main/java/net/minecraft/server/EntityEnderPearl.java
-index d7351e6..df57783 100644
+index cc897ac..509e2bc 100644
 --- a/src/main/java/net/minecraft/server/EntityEnderPearl.java
 +++ b/src/main/java/net/minecraft/server/EntityEnderPearl.java
-@@ -17,6 +17,10 @@ public class EntityEnderPearl extends EntityProjectile {
+@@ -16,6 +16,10 @@ public class EntityEnderPearl extends EntityProjectile {
          super(world, entityliving);
      }
- 
+
 +    public EntityEnderPearl(World world, double d0, double d1, double d2) {
 +        super(world, d0, d1, d2);
 +    }
@@ -24,10 +24,10 @@ index d7351e6..df57783 100644
          if (movingobjectposition.entity != null) {
              movingobjectposition.entity.damageEntity(DamageSource.projectile(this, this.shooter), 0);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 33db5ce..943bc24 100644
+index 4509116..08e0796 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -823,6 +823,8 @@ public class CraftWorld implements World {
+@@ -829,6 +829,8 @@ public class CraftWorld implements World {
                  entity = new EntitySnowball(world, x, y, z);
              } else if (Egg.class.isAssignableFrom(clazz)) {
                  entity = new EntityEgg(world, x, y, z);
@@ -36,6 +36,5 @@ index 33db5ce..943bc24 100644
              } else if (Arrow.class.isAssignableFrom(clazz)) {
                  entity = new EntityArrow(world);
                  entity.setPositionRotation(x, y, z, 0, 0);
--- 
-1.7.9.5
-
+--
+1.7.4.4

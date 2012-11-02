@@ -1,17 +1,17 @@
-From 326603541466b8ce856fd294917ed546da85b3a2 Mon Sep 17 00:00:00 2001
+From fd032f11220ef3a923a2a53744e89ad9dd06dbb6 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 11 Aug 2012 12:16:46 -0500
 Subject: [PATCH] Fix TNT phantom blocks
 
 ---
  .../java/net/minecraft/server/WorldServer.java     |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index dd79681..3b3eabd 100644
+index f9e246c..4e32b84 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
-@@ -746,7 +746,9 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
+@@ -779,7 +779,9 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
          while (iterator.hasNext()) {
              EntityHuman entityhuman = (EntityHuman) iterator.next();
 
@@ -23,5 +23,4 @@ index dd79681..3b3eabd 100644
              }
          }
 --
-1.7.9.5
-
+1.7.4.4

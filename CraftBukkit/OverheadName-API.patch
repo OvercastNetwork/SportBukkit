@@ -1,4 +1,4 @@
-From 265e411f10c7d817a4bf1fcaf5d17980e827b1a9 Mon Sep 17 00:00:00 2001
+From 6f139121107ee5554d2a6692472d4dd1eb1aec51 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
@@ -10,10 +10,10 @@ Subject: [PATCH] Implement the overhead name API.
  3 files changed, 49 insertions(+), 4 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index e5a30da..0387bac 100644
+index 2ceeac0..2ac2923 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -43,6 +43,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -42,6 +42,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      // CraftBukkit start
      public String displayName;
      public String listName;
@@ -21,7 +21,7 @@ index e5a30da..0387bac 100644
      public org.bukkit.Location compassTarget;
      public int newExp = 0;
      public int newLevel = 0;
-@@ -73,6 +74,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -74,6 +75,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.height = 0.0F;
          this.displayName = this.name; // CraftBukkit
          this.listName = this.name; // CraftBukkit
@@ -54,7 +54,7 @@ index 25d4ab8..7af7b1c 100644
          // CraftBukkit end
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b190604..3681619 100644
+index a1e9f85..cc8ca85 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -8,6 +8,7 @@ import java.io.IOException;
@@ -65,7 +65,7 @@ index b190604..3681619 100644
  import java.util.LinkedHashMap;
  import java.util.List;
  import java.util.Map;
-@@ -189,6 +190,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -190,6 +191,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
 
@@ -111,5 +111,5 @@ index b190604..3681619 100644
      public boolean equals(Object obj) {
          if (!(obj instanceof OfflinePlayer)) {
 --
-1.7.8.msysgit.0
+1.7.4.4
 

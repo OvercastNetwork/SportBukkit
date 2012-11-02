@@ -1,4 +1,4 @@
-From 3a6c3bc5d19316a693fe682ec30f63326bbda97e Mon Sep 17 00:00:00 2001
+From e1e81f3efc30ab61ca589030dc33b05a0efc963b Mon Sep 17 00:00:00 2001
 From: EdGruberman <ed@rjump.com>
 Date: Thu, 2 Aug 2012 16:10:15 -0700
 Subject: [PATCH] Fix NPE when trying to reset bed spawn location to default
@@ -21,10 +21,10 @@ index 9665716..fc243d9 100644
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3449446..35f49a8 100644
+index a1e9f85..1253251 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -602,6 +602,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -606,6 +606,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
 
      public void setBedSpawnLocation(Location location, boolean override) {

@@ -1,4 +1,4 @@
-From 1ce09ab301a4d14dcc2457cc6afc7e1304532cd8 Mon Sep 17 00:00:00 2001
+From f4d2c8439f5753e06b2414872262d4c4f673137a Mon Sep 17 00:00:00 2001
 From: Score_Under <seejay.11@gmail.com>
 Date: Wed, 3 Oct 2012 03:30:38 +0100
 Subject: [PATCH] Fix clientside sign blanking If a block break on a sign or
@@ -9,13 +9,13 @@ Subject: [PATCH] Fix clientside sign blanking If a block break on a sign or
  tile entity.
 
 ---
- src/main/java/net/minecraft/server/ItemInWorldManager.java   | 12 ++++++------
- src/main/java/net/minecraft/server/NetServerHandler.java     | 12 ++++++------
- src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java | 11 +++++++++++
+ .../net/minecraft/server/ItemInWorldManager.java   |   12 ++++++------
+ .../net/minecraft/server/NetServerHandler.java     |   12 ++++++------
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java |   11 +++++++++++
  3 files changed, 23 insertions(+), 12 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/ItemInWorldManager.java b/src/main/java/net/minecraft/server/ItemInWorldManager.java
-index 64515d1..072144a 100644
+index 025c25a..e83373c 100644
 --- a/src/main/java/net/minecraft/server/ItemInWorldManager.java
 +++ b/src/main/java/net/minecraft/server/ItemInWorldManager.java
 @@ -117,7 +117,7 @@ public class ItemInWorldManager {
@@ -63,20 +63,20 @@ index 64515d1..072144a 100644
                  return false;
              }
          }
-@@ -296,7 +296,7 @@ public class ItemInWorldManager {
+@@ -301,7 +301,7 @@ public class ItemInWorldManager {
              boolean flag = this.d(i, j, k);
 
              if (this.isCreative()) {
 -                this.player.netServerHandler.sendPacket(new Packet53BlockChange(i, j, k, this.world));
 +                this.player.getBukkitEntity().refreshBlock(i, j, k, this.world); // CraftBukkit - refresh the block correctly
              } else {
-                 ItemStack itemstack = this.player.bC();
+                 ItemStack itemstack = this.player.bP();
                  boolean flag1 = this.player.b(Block.byId[l]);
 diff --git a/src/main/java/net/minecraft/server/NetServerHandler.java b/src/main/java/net/minecraft/server/NetServerHandler.java
-index b27cc15..58b2ade 100644
+index 3374639..1301383 100644
 --- a/src/main/java/net/minecraft/server/NetServerHandler.java
 +++ b/src/main/java/net/minecraft/server/NetServerHandler.java
-@@ -541,20 +541,20 @@ public class NetServerHandler extends NetHandler {
+@@ -543,20 +543,20 @@ public class NetServerHandler extends NetHandler {
                  // CraftBukkit start
                  if (i1 < this.server.getSpawnRadius() && !flag) {
                      CraftEventFactory.callPlayerInteractEvent(this.player, Action.LEFT_CLICK_BLOCK, i, j, k, l, this.player.inventory.getItemInHand());
@@ -100,7 +100,7 @@ index b27cc15..58b2ade 100644
                  }
              } else if (packet14blockdig.e == 3) {
                  double d4 = this.player.locX - ((double) i + 0.5D);
-@@ -563,7 +563,7 @@ public class NetServerHandler extends NetHandler {
+@@ -565,7 +565,7 @@ public class NetServerHandler extends NetHandler {
                  double d7 = d4 * d4 + d5 * d5 + d6 * d6;
 
                  if (d7 < 256.0D) {
@@ -108,7 +108,7 @@ index b27cc15..58b2ade 100644
 +                    this.player.getBukkitEntity().refreshBlock(i, j, k, worldserver); // CraftBukkit - refresh block correctly
                  }
              }
-
+         }
 @@ -654,7 +654,7 @@ public class NetServerHandler extends NetHandler {
          }
 
@@ -128,7 +128,7 @@ index b27cc15..58b2ade 100644
 
          itemstack = this.player.inventory.getItemInHand();
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 1b88232..8f1a73e 100644
+index a1e9f85..17da361 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -281,6 +281,17 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -150,5 +150,4 @@ index 1b88232..8f1a73e 100644
          sendBlockChange(loc, material.getId(), data);
      }
 --
-1.7.11.msysgit.1
-
+1.7.4.4

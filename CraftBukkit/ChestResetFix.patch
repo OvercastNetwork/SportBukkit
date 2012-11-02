@@ -1,7 +1,8 @@
-From 11a962a76048777e2e070ad9a9178a794ea1fdca Mon Sep 17 00:00:00 2001
+From a21cbb6ad601dad5cf3f0ff03cf7a80d4d9490b5 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
-Date: Sun, 28 Oct 2012 18:45:54 -0500
-Subject: [PATCH] e
+Date: Mon, 10 Sep 2012 16:20:27 -0500
+Subject: [PATCH] Fix a player's container not being reset before opening a
+ chest
 
 ---
  src/main/java/net/minecraft/server/BlockChest.java |  295 ++++++++++++++++++++
@@ -310,6 +311,5 @@ index 0000000..1f58349
 +    }
 +}
 \ No newline at end of file
--- 
+--
 1.7.4.4
-

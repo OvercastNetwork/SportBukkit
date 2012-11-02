@@ -1,4 +1,4 @@
-From 2696fb5c43cd7f822e1cfd34e1bfab8bfa67e762 Mon Sep 17 00:00:00 2001
+From 88368d6c48e01ea1f92247dbbeac99d7abc16d9f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] implement affectsSpawning API
@@ -25,10 +25,10 @@ index 9665716..908520c 100644
      public HumanEntity getBukkitEntity() {
          return (HumanEntity) super.getBukkitEntity();
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 884a797..3dd9ba2 100644
+index d6a4c16..5eb80e2 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1366,7 +1366,7 @@ public abstract class EntityLiving extends Entity {
+@@ -1368,7 +1368,7 @@ public abstract class EntityLiving extends Entity {
 
      protected void bh() {
          if (!this.persistent) {
@@ -38,7 +38,7 @@ index 884a797..3dd9ba2 100644
              if (entityhuman != null) {
                  double d0 = entityhuman.locX - this.locX;
 diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java b/src/main/java/net/minecraft/server/SpawnerCreature.java
-index 52f9323..e6d7e31 100644
+index 3ae2e83..2c207da 100644
 --- a/src/main/java/net/minecraft/server/SpawnerCreature.java
 +++ b/src/main/java/net/minecraft/server/SpawnerCreature.java
 @@ -37,6 +37,12 @@ public final class SpawnerCreature {
@@ -54,7 +54,7 @@ index 52f9323..e6d7e31 100644
                  int k = MathHelper.floor(entityhuman.locX / 16.0D);
 
                  j = MathHelper.floor(entityhuman.locZ / 16.0D);
-@@ -125,7 +131,7 @@ public final class SpawnerCreature {
+@@ -128,7 +134,7 @@ public final class SpawnerCreature {
                                                      float f1 = (float) i3;
                                                      float f2 = (float) j3 + 0.5F;
 
@@ -137,4 +137,3 @@ index 05f0abb..1ed0dae 100644
      }
 --
 1.7.4.4
-

@@ -1,4 +1,4 @@
-From 19371126228adbb3f05bab4deea45095b78dd7b8 Mon Sep 17 00:00:00 2001
+From 6b7163bbc266c529da1aa8ac19ae17537d91632d Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:34 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in

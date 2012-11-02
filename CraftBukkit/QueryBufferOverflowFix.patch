@@ -1,4 +1,4 @@
-From cd3333620c962d3c51246b3dbff562a7fbdd232f Mon Sep 17 00:00:00 2001
+From b615882a175ca5a5a8cc2a43d8b772e8bf32d16d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 2 Sep 2012 12:28:34 -0500
 Subject: [PATCH] Prevent buffer overflow when writing response data on RCON
@@ -312,4 +312,3 @@ index 0000000..798d436
 +}
 --
 1.7.4.4
-

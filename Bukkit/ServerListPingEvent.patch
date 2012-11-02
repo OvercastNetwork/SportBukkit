@@ -1,18 +1,18 @@
-From ef00aa077ba697fad6a2ee5d177e04c188ed8ab4 Mon Sep 17 00:00:00 2001
+From 2be23c2348143fa7f02b292924783d0c1f9c6dc8 Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:48 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in
  ServerListPingEvent
 
 ---
- .../org/bukkit/event/server/ServerListPingEvent.java    |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ .../bukkit/event/server/ServerListPingEvent.java   |   15 ++++++++++++---
+ 1 files changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 index ddbdaee..142727e 100644
 --- a/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
 +++ b/src/main/java/org/bukkit/event/server/ServerListPingEvent.java
-@@ -11,7 +11,7 @@
+@@ -11,7 +11,7 @@ public class ServerListPingEvent extends ServerEvent {
      private static final HandlerList handlers = new HandlerList();
      private final InetAddress address;
      private String motd;
@@ -21,7 +21,7 @@ index ddbdaee..142727e 100644
      private int maxPlayers;
 
      public ServerListPingEvent(final InetAddress address, final String motd, final int numPlayers, final int maxPlayers) {
-@@ -58,9 +58,18 @@ public int getNumPlayers() {
+@@ -58,9 +58,18 @@ public class ServerListPingEvent extends ServerEvent {
      }
 
      /**
@@ -41,7 +41,7 @@ index ddbdaee..142727e 100644
       */
      public int getMaxPlayers() {
          return maxPlayers;
-@@ -69,7 +78,7 @@ public int getMaxPlayers() {
+@@ -69,7 +78,7 @@ public class ServerListPingEvent extends ServerEvent {
      /**
       * Set the maximum number of players sent.
       *
@@ -51,4 +51,4 @@ index ddbdaee..142727e 100644
      public void setMaxPlayers(int maxPlayers) {
          this.maxPlayers = maxPlayers;
 --
-1.7.10
+1.7.4.4

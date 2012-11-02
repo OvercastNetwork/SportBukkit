@@ -1,18 +1,18 @@
-From f667fc4f220873f3ecef3473f11ef196d5203fa4 Mon Sep 17 00:00:00 2001
+From 69357f384443057484b8d4d0329502c07113f49d Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:33:42 -0700
 Subject: [PATCH] Add the overhead name API for setting the name above a
  player's avatar in game.
 
 ---
- src/main/java/org/bukkit/entity/Player.java        |   21 ++++++++++++++++++++
+ src/main/java/org/bukkit/entity/Player.java |   21 +++++++++++++++++++++
  1 files changed, 21 insertions(+), 0 deletions(-)
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 784e689..b93f902 100644
+index 73a9ea4..5940490 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -69,6 +69,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -70,6 +70,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void setPlayerListName(String name);
 
      /**
@@ -41,5 +41,4 @@ index 784e689..b93f902 100644
       *
       * @param loc Location to point to
 --
-1.7.8.msysgit.0
-
+1.7.4.4

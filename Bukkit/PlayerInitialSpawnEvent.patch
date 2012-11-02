@@ -1,4 +1,4 @@
-From bdd4e846f5efc0323e9720e6cc4bfe0e01b16e47 Mon Sep 17 00:00:00 2001
+From 996b96e08b273a70c145c163bc1e7b2c88efb5b1 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 18:25:44 -0700
 Subject: [PATCH] Add PlayerInitialSpawnEvent for changing a player's spawn
@@ -59,5 +59,4 @@ index 0000000..2a9e776
 +    }
 +}
 --
-1.7.8.msysgit.0
-
+1.7.4.4

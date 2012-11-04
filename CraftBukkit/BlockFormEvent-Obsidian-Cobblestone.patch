@@ -1,4 +1,4 @@
-From 605ee6a382bf9fd52bb2aae8515866c9c955312f Mon Sep 17 00:00:00 2001
+From 820c3a55ea22db97dbf5b9263399161d72fb1e9f Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Fri, 5 Oct 2012 12:00:26 -0700
 Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
@@ -11,7 +11,7 @@ Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
-index 0000000..98cf4e4
+index 0000000..3ac9be9
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
 @@ -0,0 +1,250 @@
@@ -99,7 +99,7 @@ index 0000000..98cf4e4
 +    }
 +
 +    private Vec3D g(IBlockAccess iblockaccess, int i, int j, int k) {
-+        Vec3D vec3d = Vec3D.a(0.0D, 0.0D, 0.0D);
++        Vec3D vec3d = iblockaccess.getVec3DPool().create(0.0D, 0.0D, 0.0D);
 +        int l = this.d(iblockaccess, i, j, k);
 +
 +        for (int i1 = 0; i1 < 4; ++i1) {

@@ -1,0 +1,25 @@
+From 4122dec9491cdd80aff0b1cc3f3c5a3211bc3700 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Mon, 12 Nov 2012 20:53:11 -0600
+Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
+ every InventoryClickEvent
+
+---
+ .../net/minecraft/server/NetServerHandler.java     |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/NetServerHandler.java b/src/main/java/net/minecraft/server/NetServerHandler.java
+index 3374639..daf29da 100644
+--- a/src/main/java/net/minecraft/server/NetServerHandler.java
++++ b/src/main/java/net/minecraft/server/NetServerHandler.java
+@@ -1193,6 +1193,7 @@ public class NetServerHandler extends NetHandler {
+                     this.player.netServerHandler.sendPacket((Packet) (new Packet103SetSlot(this.player.activeContainer.windowId, 0, itemstack)));
+                 // CraftBukkit end
+             }
++            server.getPluginManager().callEvent(new InventoryClickedEvent(inventory, type, packet102windowclick.slot, packet102windowclick.button != 0, packet102windowclick.shift == 1)); // CraftBukkit
+         }
+     }
+
+--
+1.7.4.4
+

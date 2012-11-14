@@ -1,0 +1,896 @@
+From 57b9346fd2646f4bd02732bdde29ffcdfea44d65 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 14 Nov 2012 15:23:50 -0600
+Subject: [PATCH] Add necessary files from mc-dev
+
+---
+ src/main/java/net/minecraft/server/BlockChest.java |  340 ++++++++++++++++++++
+ .../java/net/minecraft/server/BlockFluids.java     |  236 ++++++++++++++
+ .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++
+ 3 files changed, 861 insertions(+), 0 deletions(-)
+ create mode 100644 src/main/java/net/minecraft/server/BlockChest.java
+ create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
+ create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
+
+diff --git a/src/main/java/net/minecraft/server/BlockChest.java b/src/main/java/net/minecraft/server/BlockChest.java
+new file mode 100644
+index 0000000..d723be5
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockChest.java
+@@ -0,0 +1,340 @@
++package net.minecraft.server;
++
++import java.util.Iterator;
++import java.util.Random;
++
++public class BlockChest extends BlockContainer {
++
++    private Random a = new Random();
++
++    protected BlockChest(int i) {
++        super(i, Material.WOOD);
++        this.textureId = 26;
++        this.a(CreativeModeTab.c);
++        this.a(0.0625F, 0.0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
++    }
++
++    public boolean c() {
++        return false;
++    }
++
++    public boolean b() {
++        return false;
++    }
++
++    public int d() {
++        return 22;
++    }
++
++    public void updateShape(IBlockAccess iblockaccess, int i, int j, int k) {
++        if (iblockaccess.getTypeId(i, j, k - 1) == this.id) {
++            this.a(0.0625F, 0.0F, 0.0F, 0.9375F, 0.875F, 0.9375F);
++        } else if (iblockaccess.getTypeId(i, j, k + 1) == this.id) {
++            this.a(0.0625F, 0.0F, 0.0625F, 0.9375F, 0.875F, 1.0F);
++        } else if (iblockaccess.getTypeId(i - 1, j, k) == this.id) {
++            this.a(0.0F, 0.0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
++        } else if (iblockaccess.getTypeId(i + 1, j, k) == this.id) {
++            this.a(0.0625F, 0.0F, 0.0625F, 1.0F, 0.875F, 0.9375F);
++        } else {
++            this.a(0.0625F, 0.0F, 0.0625F, 0.9375F, 0.875F, 0.9375F);
++        }
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        super.onPlace(world, i, j, k);
++        this.d_(world, i, j, k);
++        int l = world.getTypeId(i, j, k - 1);
++        int i1 = world.getTypeId(i, j, k + 1);
++        int j1 = world.getTypeId(i - 1, j, k);
++        int k1 = world.getTypeId(i + 1, j, k);
++
++        if (l == this.id) {
++            this.d_(world, i, j, k - 1);
++        }
++
++        if (i1 == this.id) {
++            this.d_(world, i, j, k + 1);
++        }
++
++        if (j1 == this.id) {
++            this.d_(world, i - 1, j, k);
++        }
++
++        if (k1 == this.id) {
++            this.d_(world, i + 1, j, k);
++        }
++    }
++
++    public void postPlace(World world, int i, int j, int k, EntityLiving entityliving) {
++        int l = world.getTypeId(i, j, k - 1);
++        int i1 = world.getTypeId(i, j, k + 1);
++        int j1 = world.getTypeId(i - 1, j, k);
++        int k1 = world.getTypeId(i + 1, j, k);
++        byte b0 = 0;
++        int l1 = MathHelper.floor((double) (entityliving.yaw * 4.0F / 360.0F) + 0.5D) & 3;
++
++        if (l1 == 0) {
++            b0 = 2;
++        }
++
++        if (l1 == 1) {
++            b0 = 5;
++        }
++
++        if (l1 == 2) {
++            b0 = 3;
++        }
++
++        if (l1 == 3) {
++            b0 = 4;
++        }
++
++        if (l != this.id && i1 != this.id && j1 != this.id && k1 != this.id) {
++            world.setData(i, j, k, b0);
++        } else {
++            if ((l == this.id || i1 == this.id) && (b0 == 4 || b0 == 5)) {
++                if (l == this.id) {
++                    world.setData(i, j, k - 1, b0);
++                } else {
++                    world.setData(i, j, k + 1, b0);
++                }
++
++                world.setData(i, j, k, b0);
++            }
++
++            if ((j1 == this.id || k1 == this.id) && (b0 == 2 || b0 == 3)) {
++                if (j1 == this.id) {
++                    world.setData(i - 1, j, k, b0);
++                } else {
++                    world.setData(i + 1, j, k, b0);
++                }
++
++                world.setData(i, j, k, b0);
++            }
++        }
++    }
++
++    public void d_(World world, int i, int j, int k) {
++        if (!world.isStatic) {
++            int l = world.getTypeId(i, j, k - 1);
++            int i1 = world.getTypeId(i, j, k + 1);
++            int j1 = world.getTypeId(i - 1, j, k);
++            int k1 = world.getTypeId(i + 1, j, k);
++            boolean flag = true;
++            int l1;
++            int i2;
++            boolean flag1;
++            byte b0;
++            int j2;
++
++            if (l != this.id && i1 != this.id) {
++                if (j1 != this.id && k1 != this.id) {
++                    b0 = 3;
++                    if (Block.q[l] && !Block.q[i1]) {
++                        b0 = 3;
++                    }
++
++                    if (Block.q[i1] && !Block.q[l]) {
++                        b0 = 2;
++                    }
++
++                    if (Block.q[j1] && !Block.q[k1]) {
++                        b0 = 5;
++                    }
++
++                    if (Block.q[k1] && !Block.q[j1]) {
++                        b0 = 4;
++                    }
++                } else {
++                    l1 = world.getTypeId(j1 == this.id ? i - 1 : i + 1, j, k - 1);
++                    i2 = world.getTypeId(j1 == this.id ? i - 1 : i + 1, j, k + 1);
++                    b0 = 3;
++                    flag1 = true;
++                    if (j1 == this.id) {
++                        j2 = world.getData(i - 1, j, k);
++                    } else {
++                        j2 = world.getData(i + 1, j, k);
++                    }
++
++                    if (j2 == 2) {
++                        b0 = 2;
++                    }
++
++                    if ((Block.q[l] || Block.q[l1]) && !Block.q[i1] && !Block.q[i2]) {
++                        b0 = 3;
++                    }
++
++                    if ((Block.q[i1] || Block.q[i2]) && !Block.q[l] && !Block.q[l1]) {
++                        b0 = 2;
++                    }
++                }
++            } else {
++                l1 = world.getTypeId(i - 1, j, l == this.id ? k - 1 : k + 1);
++                i2 = world.getTypeId(i + 1, j, l == this.id ? k - 1 : k + 1);
++                b0 = 5;
++                flag1 = true;
++                if (l == this.id) {
++                    j2 = world.getData(i, j, k - 1);
++                } else {
++                    j2 = world.getData(i, j, k + 1);
++                }
++
++                if (j2 == 4) {
++                    b0 = 4;
++                }
++
++                if ((Block.q[j1] || Block.q[l1]) && !Block.q[k1] && !Block.q[i2]) {
++                    b0 = 5;
++                }
++
++                if ((Block.q[k1] || Block.q[i2]) && !Block.q[j1] && !Block.q[l1]) {
++                    b0 = 4;
++                }
++            }
++
++            world.setData(i, j, k, b0);
++        }
++    }
++
++    public int a(int i) {
++        return 4;
++    }
++
++    public boolean canPlace(World world, int i, int j, int k) {
++        int l = 0;
++
++        if (world.getTypeId(i - 1, j, k) == this.id) {
++            ++l;
++        }
++
++        if (world.getTypeId(i + 1, j, k) == this.id) {
++            ++l;
++        }
++
++        if (world.getTypeId(i, j, k - 1) == this.id) {
++            ++l;
++        }
++
++        if (world.getTypeId(i, j, k + 1) == this.id) {
++            ++l;
++        }
++
++        return l > 1 ? false : (this.l(world, i - 1, j, k) ? false : (this.l(world, i + 1, j, k) ? false : (this.l(world, i, j, k - 1) ? false : !this.l(world, i, j, k + 1))));
++    }
++
++    private boolean l(World world, int i, int j, int k) {
++        return world.getTypeId(i, j, k) != this.id ? false : (world.getTypeId(i - 1, j, k) == this.id ? true : (world.getTypeId(i + 1, j, k) == this.id ? true : (world.getTypeId(i, j, k - 1) == this.id ? true : world.getTypeId(i, j, k + 1) == this.id)));
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        super.doPhysics(world, i, j, k, l);
++        TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(i, j, k);
++
++        if (tileentitychest != null) {
++            tileentitychest.h();
++        }
++    }
++
++    public void remove(World world, int i, int j, int k, int l, int i1) {
++        TileEntityChest tileentitychest = (TileEntityChest) world.getTileEntity(i, j, k);
++
++        if (tileentitychest != null) {
++            for (int j1 = 0; j1 < tileentitychest.getSize(); ++j1) {
++                ItemStack itemstack = tileentitychest.getItem(j1);
++
++                if (itemstack != null) {
++                    float f = this.a.nextFloat() * 0.8F + 0.1F;
++                    float f1 = this.a.nextFloat() * 0.8F + 0.1F;
++
++                    EntityItem entityitem;
++
++                    for (float f2 = this.a.nextFloat() * 0.8F + 0.1F; itemstack.count > 0; world.addEntity(entityitem)) {
++                        int k1 = this.a.nextInt(21) + 10;
++
++                        if (k1 > itemstack.count) {
++                            k1 = itemstack.count;
++                        }
++
++                        itemstack.count -= k1;
++                        entityitem = new EntityItem(world, (double) ((float) i + f), (double) ((float) j + f1), (double) ((float) k + f2), new ItemStack(itemstack.id, k1, itemstack.getData()));
++                        float f3 = 0.05F;
++
++                        entityitem.motX = (double) ((float) this.a.nextGaussian() * f3);
++                        entityitem.motY = (double) ((float) this.a.nextGaussian() * f3 + 0.2F);
++                        entityitem.motZ = (double) ((float) this.a.nextGaussian() * f3);
++                        if (itemstack.hasTag()) {
++                            entityitem.itemStack.setTag((NBTTagCompound) itemstack.getTag().clone());
++                        }
++                    }
++                }
++            }
++        }
++
++        super.remove(world, i, j, k, l, i1);
++    }
++
++    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
++        Object object = (TileEntityChest) world.getTileEntity(i, j, k);
++
++        if (object == null) {
++            return true;
++        } else if (world.t(i, j + 1, k)) {
++            return true;
++        } else if (n(world, i, j, k)) {
++            return true;
++        } else if (world.getTypeId(i - 1, j, k) == this.id && (world.t(i - 1, j + 1, k) || n(world, i - 1, j, k))) {
++            return true;
++        } else if (world.getTypeId(i + 1, j, k) == this.id && (world.t(i + 1, j + 1, k) || n(world, i + 1, j, k))) {
++            return true;
++        } else if (world.getTypeId(i, j, k - 1) == this.id && (world.t(i, j + 1, k - 1) || n(world, i, j, k - 1))) {
++            return true;
++        } else if (world.getTypeId(i, j, k + 1) == this.id && (world.t(i, j + 1, k + 1) || n(world, i, j, k + 1))) {
++            return true;
++        } else {
++            if (world.getTypeId(i - 1, j, k) == this.id) {
++                object = new InventoryLargeChest("container.chestDouble", (TileEntityChest) world.getTileEntity(i - 1, j, k), (IInventory) object);
++            }
++
++            if (world.getTypeId(i + 1, j, k) == this.id) {
++                object = new InventoryLargeChest("container.chestDouble", (IInventory) object, (TileEntityChest) world.getTileEntity(i + 1, j, k));
++            }
++
++            if (world.getTypeId(i, j, k - 1) == this.id) {
++                object = new InventoryLargeChest("container.chestDouble", (TileEntityChest) world.getTileEntity(i, j, k - 1), (IInventory) object);
++            }
++
++            if (world.getTypeId(i, j, k + 1) == this.id) {
++                object = new InventoryLargeChest("container.chestDouble", (IInventory) object, (TileEntityChest) world.getTileEntity(i, j, k + 1));
++            }
++
++            if (world.isStatic) {
++                return true;
++            } else {
++                entityhuman.openContainer((IInventory) object);
++                return true;
++            }
++        }
++    }
++
++    public TileEntity a(World world) {
++        return new TileEntityChest();
++    }
++
++    private static boolean n(World world, int i, int j, int k) {
++        Iterator iterator = world.a(EntityOcelot.class, AxisAlignedBB.a().a((double) i, (double) (j + 1), (double) k, (double) (i + 1), (double) (j + 2), (double) (k + 1))).iterator();
++
++        EntityOcelot entityocelot;
++
++        do {
++            if (!iterator.hasNext()) {
++                return false;
++            }
++
++            EntityOcelot entityocelot1 = (EntityOcelot) iterator.next();
++
++            entityocelot = (EntityOcelot) entityocelot1;
++        } while (!entityocelot.isSitting());
++
++        return true;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
+new file mode 100644
+index 0000000..3471487
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockFluids.java
+@@ -0,0 +1,236 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public abstract class BlockFluids extends Block {
++
++    protected BlockFluids(int i, Material material) {
++        super(i, (material == Material.LAVA ? 14 : 12) * 16 + 13, material);
++        float f = 0.0F;
++        float f1 = 0.0F;
++
++        this.a(0.0F + f1, 0.0F + f, 0.0F + f1, 1.0F + f1, 1.0F + f, 1.0F + f1);
++        this.b(true);
++    }
++
++    public boolean c(IBlockAccess iblockaccess, int i, int j, int k) {
++        return this.material != Material.LAVA;
++    }
++
++    public static float d(int i) {
++        if (i >= 8) {
++            i = 0;
++        }
++
++        return (float) (i + 1) / 9.0F;
++    }
++
++    public int a(int i) {
++        return i != 0 && i != 1 ? this.textureId + 1 : this.textureId;
++    }
++
++    protected int f_(World world, int i, int j, int k) {
++        return world.getMaterial(i, j, k) == this.material ? world.getData(i, j, k) : -1;
++    }
++
++    protected int d(IBlockAccess iblockaccess, int i, int j, int k) {
++        if (iblockaccess.getMaterial(i, j, k) != this.material) {
++            return -1;
++        } else {
++            int l = iblockaccess.getData(i, j, k);
++
++            if (l >= 8) {
++                l = 0;
++            }
++
++            return l;
++        }
++    }
++
++    public boolean b() {
++        return false;
++    }
++
++    public boolean c() {
++        return false;
++    }
++
++    public boolean a(int i, boolean flag) {
++        return flag && i == 0;
++    }
++
++    public boolean a_(IBlockAccess iblockaccess, int i, int j, int k, int l) {
++        Material material = iblockaccess.getMaterial(i, j, k);
++
++        return material == this.material ? false : (l == 1 ? true : (material == Material.ICE ? false : super.a_(iblockaccess, i, j, k, l)));
++    }
++
++    public AxisAlignedBB e(World world, int i, int j, int k) {
++        return null;
++    }
++
++    public int d() {
++        return 4;
++    }
++
++    public int getDropType(int i, Random random, int j) {
++        return 0;
++    }
++
++    public int a(Random random) {
++        return 0;
++    }
++
++    private Vec3D g(IBlockAccess iblockaccess, int i, int j, int k) {
++        Vec3D vec3d = iblockaccess.getVec3DPool().create(0.0D, 0.0D, 0.0D);
++        int l = this.d(iblockaccess, i, j, k);
++
++        for (int i1 = 0; i1 < 4; ++i1) {
++            int j1 = i;
++            int k1 = k;
++
++            if (i1 == 0) {
++                j1 = i - 1;
++            }
++
++            if (i1 == 1) {
++                k1 = k - 1;
++            }
++
++            if (i1 == 2) {
++                ++j1;
++            }
++
++            if (i1 == 3) {
++                ++k1;
++            }
++
++            int l1 = this.d(iblockaccess, j1, j, k1);
++            int i2;
++
++            if (l1 < 0) {
++                if (!iblockaccess.getMaterial(j1, j, k1).isSolid()) {
++                    l1 = this.d(iblockaccess, j1, j - 1, k1);
++                    if (l1 >= 0) {
++                        i2 = l1 - (l - 8);
++                        vec3d = vec3d.add((double) ((j1 - i) * i2), (double) ((j - j) * i2), (double) ((k1 - k) * i2));
++                    }
++                }
++            } else if (l1 >= 0) {
++                i2 = l1 - l;
++                vec3d = vec3d.add((double) ((j1 - i) * i2), (double) ((j - j) * i2), (double) ((k1 - k) * i2));
++            }
++        }
++
++        if (iblockaccess.getData(i, j, k) >= 8) {
++            boolean flag = false;
++
++            if (flag || this.a_(iblockaccess, i, j, k - 1, 2)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j, k + 1, 3)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i - 1, j, k, 4)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i + 1, j, k, 5)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j + 1, k - 1, 2)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j + 1, k + 1, 3)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i - 1, j + 1, k, 4)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i + 1, j + 1, k, 5)) {
++                flag = true;
++            }
++
++            if (flag) {
++                vec3d = vec3d.a().add(0.0D, -6.0D, 0.0D);
++            }
++        }
++
++        vec3d = vec3d.a();
++        return vec3d;
++    }
++
++    public void a(World world, int i, int j, int k, Entity entity, Vec3D vec3d) {
++        Vec3D vec3d1 = this.g(world, i, j, k);
++
++        vec3d.c += vec3d1.c;
++        vec3d.d += vec3d1.d;
++        vec3d.e += vec3d1.e;
++    }
++
++    public int r_() {
++        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? 30 : 0);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        this.l(world, i, j, k);
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        this.l(world, i, j, k);
++    }
++
++    private void l(World world, int i, int j, int k) {
++        if (world.getTypeId(i, j, k) == this.id) {
++            if (this.material == Material.LAVA) {
++                boolean flag = false;
++
++                if (flag || world.getMaterial(i, j, k - 1) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i, j, k + 1) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i - 1, j, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i + 1, j, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i, j + 1, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag) {
++                    int l = world.getData(i, j, k);
++
++                    if (l == 0) {
++                        world.setTypeId(i, j, k, Block.OBSIDIAN.id);
++                    } else if (l <= 4) {
++                        world.setTypeId(i, j, k, Block.COBBLESTONE.id);
++                    }
++
++                    this.fizz(world, i, j, k);
++                }
++            }
++        }
++    }
++
++    protected void fizz(World world, int i, int j, int k) {
++        world.makeSound((double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
++
++        for (int l = 0; l < 8; ++l) {
++            world.addParticle("largesmoke", (double) i + Math.random(), (double) j + 1.2D, (double) k + Math.random(), 0.0D, 0.0D, 0.0D);
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java
+new file mode 100644
+index 0000000..858b584
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/RemoteStatusListener.java
+@@ -0,0 +1,285 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import java.net.DatagramPacket;
++import java.net.DatagramSocket;
++import java.net.InetAddress;
++import java.net.PortUnreachableException;
++import java.net.SocketAddress;
++import java.net.SocketException;
++import java.net.SocketTimeoutException;
++import java.net.UnknownHostException;
++import java.util.Date;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.Map;
++import java.util.Map.Entry;
++
++public class RemoteStatusListener extends RemoteConnectionThread {
++
++    private long clearedTime;
++    private int bindPort;
++    private int serverPort;
++    private int maxPlayers;
++    private String localAddress;
++    private String worldName;
++    private DatagramSocket socket = null;
++    private byte[] n = new byte[1460];
++    private DatagramPacket o = null;
++    private Map p;
++    private String hostname;
++    private String motd;
++    private Map challenges;
++    private long t;
++    private RemoteStatusReply cachedReply;
++    private long cacheTime;
++
++    public RemoteStatusListener(IMinecraftServer iminecraftserver) {
++        super(iminecraftserver);
++        this.bindPort = iminecraftserver.a("query.port", 0);
++        this.motd = iminecraftserver.u();
++        this.serverPort = iminecraftserver.v();
++        this.localAddress = iminecraftserver.w();
++        this.maxPlayers = iminecraftserver.z();
++        this.worldName = iminecraftserver.J();
++        this.cacheTime = 0L;
++        this.hostname = "0.0.0.0";
++        if (0 != this.motd.length() && !this.hostname.equals(this.motd)) {
++            this.hostname = this.motd;
++        } else {
++            this.motd = "0.0.0.0";
++
++            try {
++                InetAddress inetaddress = InetAddress.getLocalHost();
++
++                this.hostname = inetaddress.getHostAddress();
++            } catch (UnknownHostException unknownhostexception) {
++                this.warning("Unable to determine local host IP, please set server-ip in \'" + iminecraftserver.b_() + "\' : " + unknownhostexception.getMessage());
++            }
++        }
++
++        if (0 == this.bindPort) {
++            this.bindPort = this.serverPort;
++            this.info("Setting default query port to " + this.bindPort);
++            iminecraftserver.a("query.port", Integer.valueOf(this.bindPort));
++            iminecraftserver.a("debug", Boolean.valueOf(false));
++            iminecraftserver.a();
++        }
++
++        this.p = new HashMap();
++        this.cachedReply = new RemoteStatusReply(1460);
++        this.challenges = new HashMap();
++        this.t = (new Date()).getTime();
++    }
++
++    private void send(byte[] abyte, DatagramPacket datagrampacket) {
++        this.socket.send(new DatagramPacket(abyte, abyte.length, datagrampacket.getSocketAddress()));
++    }
++
++    private boolean parsePacket(DatagramPacket datagrampacket) {
++        byte[] abyte = datagrampacket.getData();
++        int i = datagrampacket.getLength();
++        SocketAddress socketaddress = datagrampacket.getSocketAddress();
++
++        this.debug("Packet len " + i + " [" + socketaddress + "]");
++        if (3 <= i && -2 == abyte[0] && -3 == abyte[1]) {
++            this.debug("Packet \'" + StatusChallengeUtils.a(abyte[2]) + "\' [" + socketaddress + "]");
++            switch (abyte[2]) {
++            case 0:
++                if (!this.hasChallenged(datagrampacket).booleanValue()) {
++                    this.debug("Invalid challenge [" + socketaddress + "]");
++                    return false;
++                } else if (15 == i) {
++                    this.send(this.getFullReply(datagrampacket), datagrampacket);
++                    this.debug("Rules [" + socketaddress + "]");
++                } else {
++                    RemoteStatusReply remotestatusreply = new RemoteStatusReply(1460);
++
++                    remotestatusreply.write((int) 0);
++                    remotestatusreply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
++                    remotestatusreply.write(this.localAddress);
++                    remotestatusreply.write("SMP");
++                    remotestatusreply.write(this.worldName);
++                    remotestatusreply.write(Integer.toString(this.d()));
++                    remotestatusreply.write(Integer.toString(this.maxPlayers));
++                    remotestatusreply.write((short) this.serverPort);
++                    remotestatusreply.write(this.hostname);
++                    this.send(remotestatusreply.getBytes(), datagrampacket);
++                    this.debug("Status [" + socketaddress + "]");
++                }
++
++            case 9:
++                this.createChallenge(datagrampacket);
++                this.debug("Challenge [" + socketaddress + "]");
++                return true;
++
++            default:
++                return true;
++            }
++        } else {
++            this.debug("Invalid packet [" + socketaddress + "]");
++            return false;
++        }
++    }
++
++    private byte[] getFullReply(DatagramPacket datagrampacket) {
++        long i = System.currentTimeMillis();
++
++        if (i < this.cacheTime + 5000L) {
++            byte[] abyte = this.cachedReply.getBytes();
++            byte[] abyte1 = this.getIdentityToken(datagrampacket.getSocketAddress());
++
++            abyte[1] = abyte1[0];
++            abyte[2] = abyte1[1];
++            abyte[3] = abyte1[2];
++            abyte[4] = abyte1[3];
++            return abyte;
++        } else {
++            this.cacheTime = i;
++            this.cachedReply.reset();
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
++            this.cachedReply.write("splitnum");
++            this.cachedReply.write((int) 128);
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write("hostname");
++            this.cachedReply.write(this.localAddress);
++            this.cachedReply.write("gametype");
++            this.cachedReply.write("SMP");
++            this.cachedReply.write("game_id");
++            this.cachedReply.write("MINECRAFT");
++            this.cachedReply.write("version");
++            this.cachedReply.write(this.server.getVersion());
++            this.cachedReply.write("plugins");
++            this.cachedReply.write(this.server.getPlugins());
++            this.cachedReply.write("map");
++            this.cachedReply.write(this.worldName);
++            this.cachedReply.write("numplayers");
++            this.cachedReply.write("" + this.d());
++            this.cachedReply.write("maxplayers");
++            this.cachedReply.write("" + this.maxPlayers);
++            this.cachedReply.write("hostport");
++            this.cachedReply.write("" + this.serverPort);
++            this.cachedReply.write("hostip");
++            this.cachedReply.write(this.hostname);
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write((int) 1);
++            this.cachedReply.write("player_");
++            this.cachedReply.write((int) 0);
++            String[] astring = this.server.getPlayers();
++            byte b0 = (byte) astring.length;
++
++            for (byte b1 = (byte) (b0 - 1); b1 >= 0; --b1) {
++                this.cachedReply.write(astring[b1]);
++            }
++
++            this.cachedReply.write((int) 0);
++            return this.cachedReply.getBytes();
++        }
++    }
++
++    private byte[] getIdentityToken(SocketAddress socketaddress) {
++        return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getIdentityToken();
++    }
++
++    private Boolean hasChallenged(DatagramPacket datagrampacket) {
++        SocketAddress socketaddress = datagrampacket.getSocketAddress();
++
++        if (!this.challenges.containsKey(socketaddress)) {
++            return Boolean.valueOf(false);
++        } else {
++            byte[] abyte = datagrampacket.getData();
++
++            return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getToken() != StatusChallengeUtils.c(abyte, 7, datagrampacket.getLength()) ? Boolean.valueOf(false) : Boolean.valueOf(true);
++        }
++    }
++
++    private void createChallenge(DatagramPacket datagrampacket) {
++        RemoteStatusChallenge remotestatuschallenge = new RemoteStatusChallenge(this, datagrampacket);
++
++        this.challenges.put(datagrampacket.getSocketAddress(), remotestatuschallenge);
++        this.send(remotestatuschallenge.getChallengeResponse(), datagrampacket);
++    }
++
++    private void cleanChallenges() {
++        if (this.running) {
++            long i = System.currentTimeMillis();
++
++            if (i >= this.clearedTime + 30000L) {
++                this.clearedTime = i;
++                Iterator iterator = this.challenges.entrySet().iterator();
++
++                while (iterator.hasNext()) {
++                    Entry entry = (Entry) iterator.next();
++
++                    if (((RemoteStatusChallenge) entry.getValue()).isExpired(i).booleanValue()) {
++                        iterator.remove();
++                    }
++                }
++            }
++        }
++    }
++
++    public void run() {
++        this.info("Query running on " + this.motd + ":" + this.bindPort);
++        this.clearedTime = System.currentTimeMillis();
++        this.o = new DatagramPacket(this.n, this.n.length);
++
++        try {
++            while (this.running) {
++                try {
++                    this.socket.receive(this.o);
++                    this.cleanChallenges();
++                    this.parsePacket(this.o);
++                } catch (SocketTimeoutException sockettimeoutexception) {
++                    this.cleanChallenges();
++                } catch (PortUnreachableException portunreachableexception) {
++                    ;
++                } catch (IOException ioexception) {
++                    this.a(ioexception);
++                }
++            }
++        } finally {
++            this.e();
++        }
++    }
++
++    public void a() {
++        if (!this.running) {
++            if (0 < this.bindPort && '\uffff' >= this.bindPort) {
++                if (this.g()) {
++                    super.a();
++                }
++            } else {
++                this.warning("Invalid query port " + this.bindPort + " found in \'" + this.server.b_() + "\' (queries disabled)");
++            }
++        }
++    }
++
++    private void a(Exception exception) {
++        if (this.running) {
++            this.warning("Unexpected exception, buggy JRE? (" + exception.toString() + ")");
++            if (!this.g()) {
++                this.error("Failed to recover from buggy JRE, shutting down!");
++                this.running = false;
++            }
++        }
++    }
++
++    private boolean g() {
++        try {
++            this.socket = new DatagramSocket(this.bindPort, InetAddress.getByName(this.motd));
++            this.a(this.socket);
++            this.socket.setSoTimeout(500);
++            return true;
++        } catch (SocketException socketexception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Socket): " + socketexception.getMessage());
++        } catch (UnknownHostException unknownhostexception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Unknown Host): " + unknownhostexception.getMessage());
++        } catch (Exception exception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (E): " + exception.getMessage());
++        }
++
++        return false;
++    }
++}
+-- 
+1.7.4.4
+

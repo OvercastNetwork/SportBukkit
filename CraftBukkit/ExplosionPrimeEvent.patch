@@ -37,7 +37,7 @@ index 8b6a290..ca28d2d 100644
 +                entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
 +                world.addEntity(entitytntprimed);
 +            } else {
-+                this.a(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
++                this.b(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
 +            }
 +            // CraftBukkit end
          }
@@ -89,14 +89,14 @@ index 025438e..fcc643b 100644
 +            // CraftBukkit start - fire ExplosionPrimeEvent
 +            float radius = this.isPowered() ? 6.0F : 3.0F;
              if (i > 0 && this.fuseTicks == 0) {
--                this.world.makeSound(this, "random.fuse", 1.0F, 0.5F);
+-                this.makeSound("random.fuse", 1.0F, 0.5F);
 +                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
 +                this.world.getServer().getPluginManager().callEvent(event);
 +
 +                if (event.isCancelled()) {
 +                    i = 0;
 +                } else {
-+                    this.world.makeSound(this, "random.fuse", 1.0F, 0.5F);
++                    this.makeSound("random.fuse", 1.0F, 0.5F);
 +                }
              }
 +            // CraftBukkit end

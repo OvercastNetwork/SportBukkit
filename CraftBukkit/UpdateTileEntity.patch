@@ -139,7 +139,7 @@ index a1e9f85..17da361 100644
 +        this.getHandle().netServerHandler.sendPacket(new Packet53BlockChange(x, y, z, world));
 +        TileEntity tileEntity = world.getTileEntity(x, y, z);
 +        if (tileEntity != null) {
-+            Packet updateTileEntity = tileEntity.l();
++            Packet updateTileEntity = tileEntity.getUpdatePacket();
 +            if (updateTileEntity != null) {
 +                this.getHandle().netServerHandler.sendPacket(updateTileEntity);
 +            }

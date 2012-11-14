@@ -25,8 +25,8 @@ index f46a83a..1eea5f7 100644
 
              if (packet254getinfo.a == 1) {
                  // CraftBukkit start - fix decompile issues, don't create a list from an array
--                Object[] list = new Object[] { 1, 47, this.server.getVersion(), pingEvent.getMotd(), serverconfigurationmanagerabstract.getPlayerCount(), pingEvent.getMaxPlayers() };
-+                Object[] list = new Object[] { 1, 47, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
+-                Object[] list = new Object[] { 1, 49, this.server.getVersion(), pingEvent.getMotd(), serverconfigurationmanagerabstract.getPlayerCount(), pingEvent.getMaxPlayers() };
++                Object[] list = new Object[] { 1, 49, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
 
                  for (Object object : list) {
                      if (s == null) {

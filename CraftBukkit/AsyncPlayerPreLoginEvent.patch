@@ -1,0 +1,106 @@
+From 19b7376d6b4b038a10dd00ac87c16e4f1d85f0b9 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 12:41:06 -0600
+Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
+
+---
+ .../net/minecraft/server/ThreadLoginVerifier.java  |   67 +++++++++-----------
+ 1 files changed, 30 insertions(+), 37 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
+index 8bb1f71..0e27a21 100644
+--- a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
++++ b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
+@@ -27,6 +27,7 @@ class ThreadLoginVerifier extends Thread {
+     }
+ 
+     public void run() {
++        boolean allowed = false; // CraftBukkit
+         try {
+             String s = (new BigInteger(MinecraftEncryption.a(NetLoginHandler.a(this.netLoginHandler), NetLoginHandler.b(this.netLoginHandler).F().getPublic(), NetLoginHandler.c(this.netLoginHandler)))).toString(16);
+             URL url = new URL("http://session.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(NetLoginHandler.d(this.netLoginHandler), "UTF-8") + "&serverId=" + URLEncoder.encode(s, "UTF-8"));
+@@ -34,52 +35,44 @@ class ThreadLoginVerifier extends Thread {
+             String s1 = bufferedreader.readLine();
+ 
+             bufferedreader.close();
+-            if (!"YES".equals(s1)) {
+-                this.netLoginHandler.disconnect("Failed to verify username!");
+-                return;
+-            }
+-
+             // CraftBukkit start
+-            if (this.netLoginHandler.getSocket() == null) {
+-                return;
+-            }
++            allowed = s1.equals("YES");
++        } catch (Exception exception) {}
+ 
+-            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
+-            this.server.getPluginManager().callEvent(asyncEvent);
++        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
++        this.server.getPluginManager().callEvent(asyncEvent);
+ 
+-            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
+-                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
+-                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+-                    event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
+-                }
+-                Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
+-                    @Override
+-                    protected PlayerPreLoginEvent.Result evaluate() {
+-                        ThreadLoginVerifier.this.server.getPluginManager().callEvent(event);
+-                        return event.getResult();
+-                    }};
++        if (this.netLoginHandler.getSocket() == null) {
++            return;
++        }
++
++        if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
++            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
++            if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
++                event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
++            }
++            Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
++                @Override
++                protected PlayerPreLoginEvent.Result evaluate() {
++                    ThreadLoginVerifier.this.server.getPluginManager().callEvent(event);
++                    return event.getResult();
++                }};
+ 
+-                NetLoginHandler.b(this.netLoginHandler).processQueue.add(waitable);
++            NetLoginHandler.b(this.netLoginHandler).processQueue.add(waitable);
++            try {
+                 if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
+                     this.netLoginHandler.disconnect(event.getKickMessage());
+                     return;
+                 }
+-            } else {
+-                if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+-                    this.netLoginHandler.disconnect(asyncEvent.getKickMessage());
+-                    return;
+-                }
++            } catch (Exception e) {}
++        } else {
++            if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
++                this.netLoginHandler.disconnect(asyncEvent.getKickMessage());
++                return;
+             }
+-            // CraftBukkit end
+-
+-            NetLoginHandler.a(this.netLoginHandler, true);
+-            // CraftBukkit start
+-        } catch (java.io.IOException exception) {
+-            this.netLoginHandler.disconnect("Failed to verify username, session authentication server unavailable!");
+-        } catch (Exception exception) {
+-            this.netLoginHandler.disconnect("Failed to verify username!");
+-            server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + NetLoginHandler.d(this.netLoginHandler), exception);
+-            // CraftBukkit end
+         }
++        // CraftBukkit end
++
++        NetLoginHandler.a(this.netLoginHandler, true);
+     }
+ }
+-- 
+1.7.4.4
+

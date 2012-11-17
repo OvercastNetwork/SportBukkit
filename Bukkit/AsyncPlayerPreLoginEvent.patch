@@ -1,0 +1,63 @@
+From b58ce2d3ba61d92cc940b924a7196154410b6a38 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 12:42:05 -0600
+Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
+
+---
+ .../event/player/AsyncPlayerPreLoginEvent.java     |   13 +++++++++++--
+ .../bukkit/event/player/PlayerPreLoginEvent.java   |    4 ++++
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
+index 4e4b3a2..bc4e5b0 100644
+--- a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
++++ b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
+@@ -16,12 +16,17 @@ public class AsyncPlayerPreLoginEvent extends Event {
+     private final String name;
+     private final InetAddress ipAddress;
+ 
+-    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress) {
++    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final boolean allowed) {
+         super(true);
+-        this.result = Result.ALLOWED;
+         this.message = "";
+         this.name = name;
+         this.ipAddress = ipAddress;
++        if(allowed) {
++            this.result = Result.ALLOWED;
++        } else {
++            this.result = Result.KICK_VERIFY;
++            this.message = "Failed to verify username!";
++        }
+     }
+ 
+     /**
+@@ -166,6 +171,10 @@ public class AsyncPlayerPreLoginEvent extends Event {
+          */
+         KICK_WHITELIST,
+         /**
++         * The player's username was not verified with Mojang
++         */
++        KICK_VERIFY,
++        /**
+          * The player is not allowed to log in, for reasons undefined
+          */
+         KICK_OTHER;
+diff --git a/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
+index bc62248..850d8da 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
+@@ -130,6 +130,10 @@ public class PlayerPreLoginEvent extends Event {
+          */
+         KICK_WHITELIST,
+         /**
++         * The player's username was not verified with Mojang
++         */
++        KICK_VERIFY,
++        /**
+          * The player is not allowed to log in, for reasons undefined
+          */
+         KICK_OTHER
+-- 
+1.7.4.4
+

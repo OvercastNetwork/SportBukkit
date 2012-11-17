@@ -1,17 +1,25 @@
-From 19b7376d6b4b038a10dd00ac87c16e4f1d85f0b9 Mon Sep 17 00:00:00 2001
+From 146f5f61c1dc4c6b5b3f3551ebe3a085b386ae47 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 ---
- .../net/minecraft/server/ThreadLoginVerifier.java  |   67 +++++++++-----------
- 1 files changed, 30 insertions(+), 37 deletions(-)
+ .../net/minecraft/server/ThreadLoginVerifier.java  |   73 +++++++++----------
+ 1 files changed, 35 insertions(+), 38 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
-index 8bb1f71..0e27a21 100644
+index 8bb1f71..bd234e6 100644
 --- a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
 +++ b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
-@@ -27,6 +27,7 @@ class ThreadLoginVerifier extends Thread {
+@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
+ import java.math.BigInteger;
+ import java.net.URL;
+ import java.net.URLEncoder;
++import java.net.HttpURLConnection; // CraftBukkit
+ 
+ // CraftBukkit start
+ import org.bukkit.craftbukkit.CraftServer;
+@@ -27,59 +28,55 @@ class ThreadLoginVerifier extends Thread {
      }
  
      public void run() {
@@ -19,7 +27,12 @@ index 8bb1f71..0e27a21 100644
          try {
              String s = (new BigInteger(MinecraftEncryption.a(NetLoginHandler.a(this.netLoginHandler), NetLoginHandler.b(this.netLoginHandler).F().getPublic(), NetLoginHandler.c(this.netLoginHandler)))).toString(16);
              URL url = new URL("http://session.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(NetLoginHandler.d(this.netLoginHandler), "UTF-8") + "&serverId=" + URLEncoder.encode(s, "UTF-8"));
-@@ -34,52 +35,44 @@ class ThreadLoginVerifier extends Thread {
+-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(url.openStream()));
++            // CraftBukkit start
++            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
++            huc.setConnectTimeout(3000); // 3 seconds
++            huc.setReadTimeout(3000); // 3 seconds
++            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(huc.getInputStream()));
              String s1 = bufferedreader.readLine();
  
              bufferedreader.close();
@@ -27,18 +40,21 @@ index 8bb1f71..0e27a21 100644
 -                this.netLoginHandler.disconnect("Failed to verify username!");
 -                return;
 -            }
--
-             // CraftBukkit start
++            allowed = "YES".equals(s1);
++        } catch (Exception exception) {}
+ 
+-            // CraftBukkit start
 -            if (this.netLoginHandler.getSocket() == null) {
 -                return;
 -            }
-+            allowed = s1.equals("YES");
-+        } catch (Exception exception) {}
++        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
++        this.server.getPluginManager().callEvent(asyncEvent);
  
 -            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
 -            this.server.getPluginManager().callEvent(asyncEvent);
-+        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
-+        this.server.getPluginManager().callEvent(asyncEvent);
++        if (this.netLoginHandler.getSocket() == null) {
++            return;
++        }
  
 -            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
 -                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
@@ -51,10 +67,6 @@ index 8bb1f71..0e27a21 100644
 -                        ThreadLoginVerifier.this.server.getPluginManager().callEvent(event);
 -                        return event.getResult();
 -                    }};
-+        if (this.netLoginHandler.getSocket() == null) {
-+            return;
-+        }
-+
 +        if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
 +            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
 +            if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {

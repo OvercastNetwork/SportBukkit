@@ -16,12 +16,12 @@ index 8bb1f71..4a32811 100644
  import java.net.URL;
  import java.net.URLEncoder;
 +import java.net.HttpURLConnection; // CraftBukkit
- 
+
  // CraftBukkit start
  import org.bukkit.craftbukkit.CraftServer;
 @@ -27,59 +28,55 @@ class ThreadLoginVerifier extends Thread {
      }
- 
+
      public void run() {
 +        boolean allowed = false; // CraftBukkit
          try {
@@ -30,11 +30,11 @@ index 8bb1f71..4a32811 100644
 -            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(url.openStream()));
 +            // CraftBukkit start
 +            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
-+            huc.setConnectTimeout(3000); // 3 seconds
-+            huc.setReadTimeout(3000); // 3 seconds
++            huc.setConnectTimeout(1000); // 1 second
++            huc.setReadTimeout(1000); // 1 second
 +            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(huc.getInputStream()));
              String s1 = bufferedreader.readLine();
- 
+
              bufferedreader.close();
 -            if (!"YES".equals(s1)) {
 -                this.netLoginHandler.disconnect("Failed to verify username!");
@@ -42,7 +42,7 @@ index 8bb1f71..4a32811 100644
 -            }
 +            allowed = "YES".equals(s1);
 +        } catch (Exception exception) {}
- 
+
 -            // CraftBukkit start
 -            if (this.netLoginHandler.getSocket() == null) {
 -                return;
@@ -50,12 +50,12 @@ index 8bb1f71..4a32811 100644
 +        if (this.netLoginHandler.getSocket() == null) {
 +            return;
 +        }
- 
+
 -            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
 -            this.server.getPluginManager().callEvent(asyncEvent);
 +        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
 +        this.server.getPluginManager().callEvent(asyncEvent);
- 
+
 -            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
 -                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
 -                if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
@@ -78,7 +78,7 @@ index 8bb1f71..4a32811 100644
 +                    ThreadLoginVerifier.this.server.getPluginManager().callEvent(event);
 +                    return event.getResult();
 +                }};
- 
+
 -                NetLoginHandler.b(this.netLoginHandler).processQueue.add(waitable);
 +            NetLoginHandler.b(this.netLoginHandler).processQueue.add(waitable);
 +            try {
@@ -113,6 +113,6 @@ index 8bb1f71..4a32811 100644
 +        NetLoginHandler.a(this.netLoginHandler, true);
      }
  }
--- 
+--
 1.7.4.4
 

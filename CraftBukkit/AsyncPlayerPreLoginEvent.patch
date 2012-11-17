@@ -1,4 +1,4 @@
-From 146f5f61c1dc4c6b5b3f3551ebe3a085b386ae47 Mon Sep 17 00:00:00 2001
+From e9218a5d04c1d51b8970c15fb35670ab8972b638 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
@@ -8,7 +8,7 @@ Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
  1 files changed, 35 insertions(+), 38 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
-index 8bb1f71..bd234e6 100644
+index 8bb1f71..4a32811 100644
 --- a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
 +++ b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
 @@ -5,6 +5,7 @@ import java.io.InputStreamReader;
@@ -47,14 +47,14 @@ index 8bb1f71..bd234e6 100644
 -            if (this.netLoginHandler.getSocket() == null) {
 -                return;
 -            }
-+        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
-+        this.server.getPluginManager().callEvent(asyncEvent);
- 
--            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
--            this.server.getPluginManager().callEvent(asyncEvent);
 +        if (this.netLoginHandler.getSocket() == null) {
 +            return;
 +        }
+ 
+-            AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());
+-            this.server.getPluginManager().callEvent(asyncEvent);
++        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress(), allowed);
++        this.server.getPluginManager().callEvent(asyncEvent);
  
 -            if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
 -                final PlayerPreLoginEvent event = new PlayerPreLoginEvent(NetLoginHandler.d(this.netLoginHandler), this.netLoginHandler.getSocket().getInetAddress());

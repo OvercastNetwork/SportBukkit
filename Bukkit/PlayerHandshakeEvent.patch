@@ -1,0 +1,70 @@
+From ea85826c7138cfb42c450311adfacb99ea8f8036 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 12:12:21 -0600
+Subject: [PATCH] Add the PlayerHandshakeEvent
+
+---
+ .../bukkit/event/player/PlayerHandshakeEvent.java  |   51 ++++++++++++++++++++
+ 1 files changed, 51 insertions(+), 0 deletions(-)
+ create mode 100644 src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
+
+diff --git a/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java b/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
+new file mode 100644
+index 0000000..eff6415
+--- /dev/null
++++ b/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
+@@ -0,0 +1,51 @@
++package org.bukkit.event.player;
++
++import org.bukkit.event.Event;
++import org.bukkit.event.HandlerList;
++
++import java.security.PublicKey;
++
++public class PlayerHandshakeEvent extends Event {
++    private static final HandlerList handlers = new HandlerList();
++    private final String playerName;
++    private String loginKey;
++    private final PublicKey publicKey;
++    private final byte[] challenge;
++
++    public PlayerHandshakeEvent(final String playerName, final String loginKey, final PublicKey publicKey, final byte[] challenge) {
++        super(false);
++        this.playerName = playerName;
++        this.loginKey = loginKey;
++        this.publicKey = publicKey;
++        this.challenge = challenge;
++    }
++
++    public String getPlayerName() {
++        return this.playerName;
++    }
++
++    public String getLoginKey() {
++        return this.loginKey;
++    }
++
++    public void setLoginKey(final String loginKey) {
++        this.loginKey = loginKey;
++    }
++
++    public PublicKey getPublicKey() {
++        return this.publicKey;
++    }
++
++    public byte[] getChallenge() {
++        return this.challenge;
++    }
++
++    @Override
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++}
+-- 
+1.7.4.4
+

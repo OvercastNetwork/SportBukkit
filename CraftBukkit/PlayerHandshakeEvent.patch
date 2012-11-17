@@ -1,0 +1,39 @@
+From 63545a7cc6c2eb8169c2ffe1febcacdd21860a95 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 12:11:38 -0600
+Subject: [PATCH] Add the PlayerHandshakeEvent
+
+---
+ .../java/net/minecraft/server/NetLoginHandler.java |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/NetLoginHandler.java b/src/main/java/net/minecraft/server/NetLoginHandler.java
+index 977c89c..5172f23 100644
+--- a/src/main/java/net/minecraft/server/NetLoginHandler.java
++++ b/src/main/java/net/minecraft/server/NetLoginHandler.java
+@@ -12,6 +12,8 @@ import java.util.Random;
+ import java.util.logging.Logger;
+ import javax.crypto.SecretKey;
+ 
++import org.bukkit.event.player.PlayerHandshakeEvent; // CraftBukkit
++
+ public class NetLoginHandler extends NetHandler {
+ 
+     private byte[] d;
+@@ -83,6 +85,13 @@ public class NetLoginHandler extends NetHandler {
+                 this.loginKey = this.server.getOnlineMode() ? Long.toString(random.nextLong(), 16) : "-";
+                 this.d = new byte[4];
+                 random.nextBytes(this.d);
++
++                // CraftBukkit start
++                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.h, this.loginKey, publickey, this.d);
++                this.server.server.getPluginManager().callEvent(handshakeEvent);
++                this.loginKey = handshakeEvent.getLoginKey();
++                // CraftBukkit end
++
+                 this.networkManager.queue(new Packet253KeyRequest(this.loginKey, publickey, this.d));
+             }
+         }
+-- 
+1.7.4.4
+

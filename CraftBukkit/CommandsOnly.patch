@@ -1,0 +1,25 @@
+From ce4c6cbb05809dbbc3cbe6c328958340977e9454 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 20 Nov 2012 17:15:22 -0600
+Subject: [PATCH] Fix "Commands Only" chat setting not accepting commands
+
+---
+ .../net/minecraft/server/NetServerHandler.java     |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/NetServerHandler.java b/src/main/java/net/minecraft/server/NetServerHandler.java
+index 004ef08..7b04e4a 100644
+--- a/src/main/java/net/minecraft/server/NetServerHandler.java
++++ b/src/main/java/net/minecraft/server/NetServerHandler.java
+@@ -850,7 +850,7 @@ public class NetServerHandler extends NetHandler {
+                 }
+ 
+                 // CraftBukkit start
+-                if (this.player.getChatFlags() == 1) {
++                if (this.player.getChatFlags() == 1 && !s.startsWith("/")) {
+                     this.sendPacket(new Packet3Chat("Cannot send chat message."));
+                     return;
+                 }
+-- 
+1.7.4.4
+

@@ -1,6 +1,6 @@
-From 8c4fd1f9179b83232f2b6fe5c3941b4736c579ea Mon Sep 17 00:00:00 2001
+From 39e4016f9c341f7ed182daef9ca540d389a23f25 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
-Date: Sun, 18 Nov 2012 18:14:38 -0600
+Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH] Remove the entity destroy queue
  2 files changed, 9 insertions(+), 13 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 06709f9..c6d52c2 100644
+index 85efb80..657aa4a 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -26,7 +26,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -47,7 +47,7 @@ index 06709f9..c6d52c2 100644
  
      protected void a(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index acb3637..51fa2fc 100644
+index acb3637..485ad90 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -266,18 +266,12 @@ public class EntityTrackerEntry {
@@ -67,7 +67,7 @@ index acb3637..51fa2fc 100644
      public void a(EntityPlayer entityplayer) {
          if (this.trackedPlayers.contains(entityplayer)) {
 -            entityplayer.removeQueue.add(Integer.valueOf(this.tracker.id));
-+            this.broadcast(new Packet29DestroyEntity(this.tracker.id)); // CraftBukkit - remove destroy queue
++            entityplayer.netServerHandler.sendPacket(new Packet29DestroyEntity(this.tracker.id)); // CraftBukkit - remove destroy queue
              this.trackedPlayers.remove(entityplayer);
          }
      }

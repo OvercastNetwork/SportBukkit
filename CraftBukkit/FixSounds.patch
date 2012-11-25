@@ -1,0 +1,25 @@
+From 9f67bde24f498f42abe7a66d028dc4ecc9e815ae Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sun, 25 Nov 2012 17:10:34 -0600
+Subject: [PATCH] Fix player sounds
+
+---
+ .../java/net/minecraft/server/EntityHuman.java     |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index 64abd73..261c5b0 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -215,7 +215,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+     }
+ 
+     protected void makeSound(String s, float f, float f1) {
+-        this.world.a(this, s, f, f1);
++        this.world.makeSound(this, s, f, f1); // CraftBukkit - fix sounds
+     }
+ 
+     protected void c(ItemStack itemstack, int i) {
+-- 
+1.7.4.4
+

@@ -1,0 +1,25 @@
+From 7c5a9952b3e4a6c8ce01f32187d5fdfcd5ebe235 Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sun, 25 Nov 2012 18:56:49 -0800
+Subject: [PATCH] Update Guava to v13.0
+
+---
+ pom.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pom.xml b/pom.xml
+index a16705d..5072cd6 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -118,7 +118,7 @@
+         <dependency>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+-            <version>10.0.1</version>
++            <version>13.0</version>
+             <type>jar</type>
+             <scope>compile</scope>
+         </dependency>
+-- 
+1.8.0.msysgit.0
+

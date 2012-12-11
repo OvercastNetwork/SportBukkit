@@ -1,5 +1,5 @@
-PGM-CraftBukkit
-===============
+SportBukkit
+===========
 
 CraftBukkit modifications needed for PGM
 
@@ -9,9 +9,9 @@ Usage:
 ./build.sh
 ```
 
-People Using PGM-CraftBukkit
-============================
-Below is a list of organizations that use PGM-CraftBukkit or a fork of it to run their servers.
+People Using SportBukkit
+========================
+Below is a list of organizations that use SportBukkit or a fork of it to run their servers.
 If you want to be added to this list, please email support@oc.tc
 
 * Project Ares: https://oc.tc

@@ -1,26 +1,28 @@
-From fd032f11220ef3a923a2a53744e89ad9dd06dbb6 Mon Sep 17 00:00:00 2001
+From 832c3317bba503487bf80ecb66c5b550d81290d2 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
-Date: Sat, 11 Aug 2012 12:16:46 -0500
-Subject: [PATCH] Fix TNT phantom blocks
+Date: Sat, 15 Dec 2012 11:18:34 -0600
+Subject: [PATCH] Fix TNT phantom blocks by notifying players of explosions
 
 ---
- .../java/net/minecraft/server/WorldServer.java     |    4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ src/main/java/net/minecraft/server/Explosion.java |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index f9e246c..4e32b84 100644
---- a/src/main/java/net/minecraft/server/WorldServer.java
-+++ b/src/main/java/net/minecraft/server/WorldServer.java
-@@ -779,7 +779,9 @@ public class WorldServer extends World implements org.bukkit.BlockChangeDelegate
-         while (iterator.hasNext()) {
-             EntityHuman entityhuman = (EntityHuman) iterator.next();
+diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
+index fae57de..bfbc53f 100644
+--- a/src/main/java/net/minecraft/server/Explosion.java
++++ b/src/main/java/net/minecraft/server/Explosion.java
+@@ -271,9 +271,8 @@ public class Explosion {
+                         block.dropNaturally(this.world, i, j, k, this.world.getData(i, j, k), event.getYield(), 0);
+                     }
 
--            if (entityhuman.e(d0, d1, d2) < 4096.0D) {
-+            // Craftbukkit - Send packet to everyone in the dimension, not just nearby
-+            //if (entityhuman.e(d0, d1, d2) < 4096.0D) {
-+            if(entityhuman.dimension == this.dimension) {
-                 ((EntityPlayer) entityhuman).netServerHandler.sendPacket(new Packet60Explosion(d0, d1, d2, f, explosion.blocks, (Vec3D) explosion.b().get(entityhuman)));
-             }
-         }
+-                    if (this.world.setRawTypeIdAndData(i, j, k, 0, 0, this.world.isStatic)) {
+-                        this.world.applyPhysics(i, j, k, 0);
+-                    }
++                    // CraftBukkit - notify players of explosions
++                    this.world.setTypeIdAndData(i, j, k, 0, 0);
+
+                     block.wasExploded(this.world, i, j, k);
+                 }
 --
 1.7.4.4
+

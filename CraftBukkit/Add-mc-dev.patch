@@ -1,6 +1,6 @@
-From 1bb371ea8611efaf9bf3fc0203b62c7a0b863f99 Mon Sep 17 00:00:00 2001
+From 2b4c85a843617deef3fad3c9d63d5cc575598f61 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
-Date: Sat, 17 Nov 2012 01:23:30 -0600
+Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
 
 ---
@@ -8,11 +8,13 @@ Subject: [PATCH] Add necessary files from mc-dev
  .../net/minecraft/server/BlockEnderPortal.java     |   56 ++++
  .../java/net/minecraft/server/BlockFluids.java     |  236 ++++++++++++++
  .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++
- 4 files changed, 917 insertions(+), 0 deletions(-)
+ .../minecraft/server/TileEntityRecordPlayer.java   |   25 ++
+ 5 files changed, 942 insertions(+), 0 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/BlockChest.java
  create mode 100644 src/main/java/net/minecraft/server/BlockEnderPortal.java
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
+ create mode 100644 src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
 
 diff --git a/src/main/java/net/minecraft/server/BlockChest.java b/src/main/java/net/minecraft/server/BlockChest.java
 new file mode 100644
@@ -955,6 +957,38 @@ index 0000000..858b584
 +        return false;
 +    }
 +}
---
+diff --git a/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java b/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
+new file mode 100644
+index 0000000..4504ae0
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
+@@ -0,0 +1,25 @@
++package net.minecraft.server;
++
++public class TileEntityRecordPlayer extends TileEntity {
++
++    public ItemStack record;
++
++    public TileEntityRecordPlayer() {}
++
++    public void a(NBTTagCompound nbttagcompound) {
++        super.a(nbttagcompound);
++        if (nbttagcompound.hasKey("RecordItem")) {
++            this.record = ItemStack.a(nbttagcompound.getCompound("RecordItem"));
++        } else {
++            this.record = new ItemStack(nbttagcompound.getInt("Record"), 1, 0);
++        }
++    }
++
++    public void b(NBTTagCompound nbttagcompound) {
++        super.b(nbttagcompound);
++        if (this.record != null) {
++            nbttagcompound.setCompound("RecordItem", this.record.save(new NBTTagCompound()));
++            nbttagcompound.setInt("Record", this.record.id);
++        }
++    }
++}
+\ No newline at end of file
+-- 
 1.7.4.4
 

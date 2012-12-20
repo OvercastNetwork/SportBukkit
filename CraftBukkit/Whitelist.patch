@@ -12,19 +12,19 @@ index 94b2c76..20988eb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1096,6 +1096,18 @@ public final class CraftServer implements Server {
-         server.reloadWhitelist();
+         playerList.reloadWhitelist();
      }
 
 +    public boolean isWhitelisted(OfflinePlayer player) {
-+        return server.getWhitelisted().contains(player.getName().trim().toLowerCase());
++        return playerList.getWhitelisted().contains(player.getName().trim().toLowerCase());
 +    }
 +
 +    public void addWhitelist(OfflinePlayer player) {
-+        server.addWhitelist(player.getName());
++        playerList.addWhitelist(player.getName());
 +    }
 +
 +    public void removeWhitelist(OfflinePlayer player) {
-+        server.removeWhitelist(player.getName());
++        playerList.removeWhitelist(player.getName());
 +    }
 +
      public GameMode getDefaultGameMode() {

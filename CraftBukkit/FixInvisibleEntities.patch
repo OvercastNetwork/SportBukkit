@@ -16,20 +16,20 @@ index acb3637..19260e3 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -315,9 +315,13 @@ public class EntityTrackerEntry {
-                         entityplayer.netServerHandler.sendPacket(new Packet28EntityVelocity(this.tracker.id, this.tracker.motX, this.tracker.motY, this.tracker.motZ));
+                         entityplayer.playerConnection.sendPacket(new Packet28EntityVelocity(this.tracker.id, this.tracker.motX, this.tracker.motY, this.tracker.motZ));
                      }
- 
+
 -                    if (this.tracker.vehicle != null) {
 +                    // CraftBukkit start
 +                    if (this.tracker.vehicle != null && this.tracker.id > this.tracker.vehicle.id) {
-                         entityplayer.netServerHandler.sendPacket(new Packet39AttachEntity(this.tracker, this.tracker.vehicle));
+                         entityplayer.playerConnection.sendPacket(new Packet39AttachEntity(this.tracker, this.tracker.vehicle));
 +                    } else if (this.tracker.passenger != null && this.tracker.id > this.tracker.passenger.id) {
-+                        entityplayer.netServerHandler.sendPacket(new Packet39AttachEntity(this.tracker.passenger, this.tracker));
++                        entityplayer.playerConnection.sendPacket(new Packet39AttachEntity(this.tracker.passenger, this.tracker));
                      }
 +                    // CraftBukkit end
- 
+
                      if (this.tracker instanceof EntityLiving) {
                          for (int i = 0; i < 5; ++i) {
--- 
+--
 1.7.4.4
 

@@ -94,13 +94,13 @@ index a1e9f85..cc8ca85 100644
 +        EntityTracker tracker = ((WorldServer) entity.world).tracker;
 +        EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(getHandle().id);
 +
-+        if (getHandle().netServerHandler == null || entry == null) return;
++        if (getHandle().playerConnection == null || entry == null) return;
 +
 +        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
 +
 +        for (Iterator it = server.getHandle().players.iterator(); it.hasNext(); ) {
 +            EntityPlayer otherplayer = (EntityPlayer) it.next();
-+            if (otherplayer.netServerHandler == null || otherplayer == getHandle()) continue;
++            if (otherplayer.playerConnection == null || otherplayer == getHandle()) continue;
 +
 +            entry.clear(otherplayer);
 +            entry.updatePlayer(otherplayer);

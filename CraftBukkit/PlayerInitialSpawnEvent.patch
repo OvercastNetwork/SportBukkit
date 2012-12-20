@@ -5,14 +5,14 @@ Subject: [PATCH] Support PlayerInitialSpawnEvent for modifying a player's
  spawn when they join the server.
 
 ---
- .../server/ServerConfigurationManagerAbstract.java |   17 +++++++++++++++++
+ .../server/PlayerList.java |   17 +++++++++++++++++
  1 files changed, 17 insertions(+), 0 deletions(-)
 
-diff --git a/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java b/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
 index 7ab5156..e4dfd1d 100644
---- a/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
-+++ b/src/main/java/net/minecraft/server/ServerConfigurationManagerAbstract.java
-@@ -61,6 +61,23 @@ public abstract class ServerConfigurationManagerAbstract {
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -61,6 +61,23 @@ public abstract class PlayerList {
 
      public void a(INetworkManager inetworkmanager, EntityPlayer entityplayer) {
          this.a(entityplayer);

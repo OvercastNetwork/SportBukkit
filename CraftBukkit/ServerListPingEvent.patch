@@ -5,36 +5,36 @@ Subject: [PATCH] Adds ability to set the number of online players sent in
  ServerListPingEvent
 
 ---
- .../java/net/minecraft/server/NetLoginHandler.java |    6 ++++--
+ .../java/net/minecraft/server/PendingConnection.java |    6 ++++--
  1 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/src/main/java/net/minecraft/server/NetLoginHandler.java b/src/main/java/net/minecraft/server/NetLoginHandler.java
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
 index f46a83a..1eea5f7 100644
---- a/src/main/java/net/minecraft/server/NetLoginHandler.java
-+++ b/src/main/java/net/minecraft/server/NetLoginHandler.java
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -12,6 +12,8 @@ import java.util.Random;
  import java.util.logging.Logger;
  import javax.crypto.SecretKey;
 
 +import org.bukkit.ChatColor; // CraftBukkit
 +
- public class NetLoginHandler extends NetHandler {
+ public class PendingConnection extends Connection {
 
      private byte[] d;
-@@ -151,7 +153,7 @@ public class NetLoginHandler extends NetHandler {
+@@ -151,7 +153,7 @@ public class PendingConnection extends Connection {
 
              if (packet254getinfo.a == 1) {
                  // CraftBukkit start - fix decompile issues, don't create a list from an array
--                Object[] list = new Object[] { 1, 49, this.server.getVersion(), pingEvent.getMotd(), serverconfigurationmanagerabstract.getPlayerCount(), pingEvent.getMaxPlayers() };
-+                Object[] list = new Object[] { 1, 49, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
+-                Object[] list = new Object[] { 1, 51, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
++                Object[] list = new Object[] { 1, 51, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
 
                  for (Object object : list) {
                      if (s == null) {
-@@ -165,7 +167,7 @@ public class NetLoginHandler extends NetHandler {
+@@ -165,7 +167,7 @@ public class PendingConnection extends Connection {
                  // CraftBukkit end
              } else {
                  // CraftBukkit
--                s = pingEvent.getMotd() + "\u00A7" + serverconfigurationmanagerabstract.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
+-                s = pingEvent.getMotd() + "\u00A7" + playerlist.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
 +                s = ChatColor.stripColor(pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers());
              }
 

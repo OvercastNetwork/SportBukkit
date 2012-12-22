@@ -1,7 +1,7 @@
 From ace33514b3b181c57f9cae5ebecabe08c4c47d6c Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 16:57:42 -0700
-Subject: [PATCH] Update the POM to distinguish pgm-bukkit from bukkit.
+Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit.
 
 ---
  pom.xml |    6 +++---
@@ -17,10 +17,10 @@ index abfedfd..e808330 100644
 -    <groupId>org.bukkit</groupId>
 -    <artifactId>bukkit</artifactId>
 +    <groupId>tc.oc</groupId>
-+    <artifactId>pgm-bukkit</artifactId>
++    <artifactId>sportbukkit-api</artifactId>
 @@ -6,4 +6,4 @@
 -    <name>Bukkit</name>
-+    <name>PGM-Bukkit</name>
++    <name>SportBukkit API</name>
      <url>http://www.bukkit.org</url>
 
      <properties>

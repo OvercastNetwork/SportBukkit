@@ -1,8 +1,7 @@
 From 4db7db0c89ee4b323e97b34a424824ada3a9da82 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
-Subject: [PATCH] Update the POM to distinguish pgm-craftbukkit from
- craftbukkit.
+Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 ---
  pom.xml |   10 +++++-----
@@ -19,11 +18,11 @@ index e061ce6..03f33a9 100644
 -  <groupId>org.bukkit</groupId>
 -  <artifactId>craftbukkit</artifactId>
 +  <groupId>tc.oc</groupId>
-+  <artifactId>pgm-craftbukkit</artifactId>
++  <artifactId>sportbukkit</artifactId>
    <packaging>jar</packaging>
 @@ -8,4 +8,4 @@
 -  <name>CraftBukkit</name>
-+  <name>PGM-CraftBukkit</name>
++  <name>SportBukkit</name>
    <url>http://www.bukkit.org</url>
 
    <properties>
@@ -34,6 +33,6 @@ index e061ce6..03f33a9 100644
 -      <groupId>org.bukkit</groupId>
 -      <artifactId>bukkit</artifactId>
 +      <groupId>tc.oc</groupId>
-+      <artifactId>pgm-bukkit</artifactId>
++      <artifactId>sportbukkit-api</artifactId>
 --
 1.7.8.msysgit.0

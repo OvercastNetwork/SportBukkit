@@ -11,10 +11,9 @@ diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/o
 index e93453a..68e935c 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -278,4 +278,18 @@ public interface LivingEntity extends Entity {
-      * @return true if there is a line of sight, false if not.
-      */
-     public boolean hasLineOfSight(Entity other);
+@@ -278,2 +278,16 @@ public interface LivingEntity extends Entity {
+    public boolean getCanPickupItems();
+
 +
 +    /**
 +     * Get the number of arrows stuck in this entity

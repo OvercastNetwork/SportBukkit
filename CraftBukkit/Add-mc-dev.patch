@@ -4,78 +4,14 @@ Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
 
 ---
- .../net/minecraft/server/BlockEnderPortal.java     |   56 ++++
  .../java/net/minecraft/server/BlockFluids.java     |  236 ++++++++++++++
  .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++
  .../minecraft/server/TileEntityRecordPlayer.java   |   25 ++
- 4 files changed, 602 insertions(+), 0 deletions(-)
- create mode 100644 src/main/java/net/minecraft/server/BlockEnderPortal.java
+ 3 files changed, 546 insertions(+), 0 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
  create mode 100644 src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
 
-diff --git a/src/main/java/net/minecraft/server/BlockEnderPortal.java b/src/main/java/net/minecraft/server/BlockEnderPortal.java
-new file mode 100644
-index 0000000..d55e41d
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/BlockEnderPortal.java
-@@ -0,0 +1,56 @@
-+package net.minecraft.server;
-+
-+import java.util.List;
-+import java.util.Random;
-+
-+public class BlockEnderPortal extends BlockContainer {
-+
-+    public static boolean a = false;
-+
-+    protected BlockEnderPortal(int i, Material material) {
-+        super(i, 0, material);
-+        this.a(1.0F);
-+    }
-+
-+    public TileEntity a(World world) {
-+        return new TileEntityEnderPortal();
-+    }
-+
-+    public void updateShape(IBlockAccess iblockaccess, int i, int j, int k) {
-+        float f = 0.0625F;
-+
-+        this.a(0.0F, 0.0F, 0.0F, 1.0F, f, 1.0F);
-+    }
-+
-+    public void a(World world, int i, int j, int k, AxisAlignedBB axisalignedbb, List list, Entity entity) {}
-+
-+    public boolean c() {
-+        return false;
-+    }
-+
-+    public boolean b() {
-+        return false;
-+    }
-+
-+    public int a(Random random) {
-+        return 0;
-+    }
-+
-+    public void a(World world, int i, int j, int k, Entity entity) {
-+        if (entity.vehicle == null && entity.passenger == null && !world.isStatic) {
-+            entity.b(1);
-+        }
-+    }
-+
-+    public int d() {
-+        return -1;
-+    }
-+
-+    public void onPlace(World world, int i, int j, int k) {
-+        if (!a) {
-+            if (world.worldProvider.dimension != 0) {
-+                world.setTypeId(i, j, k, 0);
-+            }
-+        }
-+    }
-+}
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
 index 0000000..3471487
@@ -626,7 +562,7 @@ index 0000000..4504ae0
 +    public void a(NBTTagCompound nbttagcompound) {
 +        super.a(nbttagcompound);
 +        if (nbttagcompound.hasKey("RecordItem")) {
-+            this.record = ItemStack.a(nbttagcompound.getCompound("RecordItem"));
++            this.record = ItemStack.createStack(nbttagcompound.getCompound("RecordItem"));
 +        } else {
 +            this.record = new ItemStack(nbttagcompound.getInt("Record"), 1, 0);
 +        }

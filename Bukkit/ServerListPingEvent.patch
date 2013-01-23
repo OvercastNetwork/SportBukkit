@@ -36,8 +36,7 @@ index ddbdaee..142727e 100644
 +    /**
       * Get the maximum number of players sent.
       *
--     * @return the the maximum number of player
-+     * @return the the maximum number of players
+      * @return the maximum number of players
       */
      public int getMaxPlayers() {
          return maxPlayers;

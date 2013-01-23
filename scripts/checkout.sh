@@ -9,7 +9,7 @@
 #       most circumstances.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory script is in
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
 if [ ! -d "$DIR/build" ]; then
     echo "You must run ./update first!"

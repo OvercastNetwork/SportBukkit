@@ -7,7 +7,7 @@
 # specified in the Bukkit/ and CraftBukkit/ directories.
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" # directory script is in
+DIR="$( cd -P "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 
 if [ ! -d "$DIR/build" ]; then
     echo "You must run the ./update script first!"
@@ -18,7 +18,7 @@ function apply_patches {
     project=$1
     project_lower=`echo $project | tr '[A-Z]' '[a-z]'`
 
-    $DIR/checkout.sh $project | tee
+    $DIR/scripts/checkout.sh $project | tee
 
     cd $DIR/build/$project
 

@@ -1,0 +1,70 @@
+From 54c35f5357d7fe1aa30beba8f97afc8789388d92 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 25 Dec 2012 01:50:07 -0500
+Subject: [PATCH] Add onGround API
+
+---
+ src/main/java/org/bukkit/entity/Entity.java        |    7 ++++
+ .../bukkit/event/player/PlayerOnGroundEvent.java   |   32 ++++++++++++++++++++
+ 2 files changed, 39 insertions(+), 0 deletions(-)
+ create mode 100644 src/main/java/org/bukkit/event/player/PlayerOnGroundEvent.java
+
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index a9df5c5..98d3a72 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -47,6 +47,13 @@ public interface Entity extends Metadatable {
+     public Vector getVelocity();
+ 
+     /**
++     * Returns true if this entity is resting on the ground
++     *
++     * @return true if entity is resting on the ground
++     */
++    public boolean isOnGround();
++
++    /**
+      * Gets the current world this entity resides in
+      *
+      * @return World
+diff --git a/src/main/java/org/bukkit/event/player/PlayerOnGroundEvent.java b/src/main/java/org/bukkit/event/player/PlayerOnGroundEvent.java
+new file mode 100644
+index 0000000..4a6c3d4
+--- /dev/null
++++ b/src/main/java/org/bukkit/event/player/PlayerOnGroundEvent.java
+@@ -0,0 +1,32 @@
++package org.bukkit.event.player;
++
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++
++public class PlayerOnGroundEvent extends PlayerEvent {
++    private static final HandlerList handlers = new HandlerList();
++    private boolean onGround;
++
++    public PlayerOnGroundEvent(final Player player, boolean onGround) {
++        super(player);
++        this.onGround = onGround;
++    }
++    /**
++     * Returns true of the player is on the ground after the event
++     *
++     * @return if the player is on the ground
++     */
++    public boolean getOnGround() {
++        return this.onGround;
++    }
++
++    @Override
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++    public static HandlerList getHandlerList() {
++        return handlers;
++    }
++
++}
+-- 
+1.7.3.5
+

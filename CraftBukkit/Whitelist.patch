@@ -16,7 +16,7 @@ index 94b2c76..20988eb 100644
      }
 
 +    public boolean isWhitelisted(OfflinePlayer player) {
-+        return playerList.getWhitelisted().contains(player.getName().trim().toLowerCase());
++        return playerList.getWhitelisted().contains(player.getName().toLowerCase());
 +    }
 +
 +    public void addWhitelist(OfflinePlayer player) {

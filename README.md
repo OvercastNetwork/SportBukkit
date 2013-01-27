@@ -5,9 +5,9 @@ CraftBukkit modifications needed for PGM
 
 ```
 Usage:
-./update.sh
-./build.sh
-./compile.sh
+rake update
+rake build
+rake compile
 ```
 
 SportBukkit binary will be located in build/CraftBukkit/target.

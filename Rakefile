@@ -1,7 +1,8 @@
 task :default => [:update, :build, :compile]
 
-task :update do
-    run("scripts/update.sh")
+task :update, :tag do |t, args|
+    args.with_defaults(:tag => 'HEAD')
+    run("scripts/update.sh #{args.tag}")
 end
 
 task :build do

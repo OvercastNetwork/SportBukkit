@@ -20,12 +20,16 @@ function update {
         cd $DIR/build/$1
 
         $DIR/scripts/checkout.sh $1
-        git pull origin master
+        git pull --tags origin master
     else
         cd $DIR/build
         git clone git://github.com/Bukkit/$1.git
     fi
+
+    if [ ! -z $2 ]; then
+        git reset --hard $2
+    fi
 }
 
-update Bukkit
-update CraftBukkit
+update Bukkit $1
+update CraftBukkit $1

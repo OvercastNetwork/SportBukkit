@@ -1,20 +1,78 @@
+require 'rubygems'
+require 'git'
+require 'maven/ruby/maven'
+
 task :default => [:update, :build, :compile]
 
 task :update, :tag do |t, args|
     args.with_defaults(:tag => 'HEAD')
-    run("scripts/update.sh #{args.tag}")
+
+    Dir.mkdir("build") if !File.directory?("build")
+
+    update("Bukkit", args.tag)
+    update("CraftBukkit", args.tag)
 end
 
 task :build do
-    run("scripts/build.sh")
+    abort("Run update first!") if !File.directory?("build")
+
+    build("Bukkit")
+    build("CraftBukkit")
 end
 
 task :compile do
-    run("scripts/compile.sh")
+    abort("Run update first!") if !File.directory?("build")
+
+    compile("Bukkit")
+    compile("CraftBukkit")
 end
 
+# FIX ME
 def run(cmd)
     IO.popen(cmd) { |io| while (line = io.gets) do puts line end }
 
     fail if $?.exitstatus != 0
+end
+
+def update(project, tag)
+    Dir.chdir("build")
+
+    p "Checking out " + project + " [" + tag + "]"
+    if File.directory?(project)
+        g = Git.open(project)
+        g.pull
+    else
+        Dir.mkdir(project)
+        g = Git.clone("git://github.com/Bukkit/" + project + ".git", project)
+    end
+
+    g.reset_hard(Git::Object::Tag.new(g, tag, tag))
+    run("git clean -fd") # FIX ME
+
+    Dir.chdir("..")
+end
+
+def build(project)
+    Dir.chdir("build/" + project)
+
+    g = Git.open(".")
+    g.reset_hard
+    run("git clean -fqd") # FIX ME
+
+    p "Applying patches for: " + project
+    Dir.glob("../../" + project + "/*.patch") do |patch|
+        p "Applying " + project + "/" + File.basename(patch)
+        run("patch -Np1 --ignore-whitespace -F3 --quiet < " + patch) # FIX ME
+    end
+
+    Dir.chdir("../..")
+end
+
+def compile(project)
+    Dir.chdir("build/" + project)
+
+    mvn = Maven::Ruby::Maven.new
+    fail if mvn.exec("clean install") == false
+
+    Dir.chdir("../..")
 end

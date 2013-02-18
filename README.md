@@ -3,8 +3,18 @@ SportBukkit
 
 CraftBukkit modifications needed for PGM
 
+Setup:
 ```
-Usage:
+gem install bundler
+bundle install
+```
+
+Compile:
+```
+rake default
+```
+OR
+```
 rake update
 rake build
 rake compile

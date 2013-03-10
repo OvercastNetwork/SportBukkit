@@ -40,11 +40,13 @@ def update(project, tag)
     p "Checking out " + project + " [" + tag + "]"
     if File.directory?(project)
         g = Git.open(project)
-        g.pull
     else
-        Dir.mkdir(project)
-        g = Git.clone("git://github.com/Bukkit/" + project + ".git", project)
+        uri = "git://github.com/Bukkit/" + project + ".git"
+        g = Git.clone(uri, project)
     end
+
+    g.pull(g.remotes.first, "master")
+    g.remote("origin").merge
 
     g.reset_hard(Git::Object::Tag.new(g, tag, tag))
     run("git clean -fd") # FIX ME

@@ -62,7 +62,9 @@ def build(project)
     run("git clean -fqd") # FIX ME
 
     p "Applying patches for: " + project
-    Dir.glob("../../" + project + "/*.patch") do |patch|
+
+    patches = Dir.glob("../../" + project + "/*.patch").sort
+    patches.each do |patch|
         p "Applying " + project + "/" + File.basename(patch)
         run("patch -Np1 --ignore-whitespace -F3 --quiet < " + patch) # FIX ME
     end

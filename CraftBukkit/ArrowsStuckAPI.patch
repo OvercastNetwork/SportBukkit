@@ -17,13 +17,13 @@ index 096de37..331d2f8 100644
      }
 +
 +    public int getArrowsStuck() {
-+        return getHandle().bJ();
++        return getHandle().bM();
 +    }
 +
 +    public void setArrowsStuck(int arrows) {
 +        getHandle().r(arrows);
 +    }
  }
--- 
+--
 1.7.4.4
 

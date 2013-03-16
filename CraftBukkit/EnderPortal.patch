@@ -15,11 +15,11 @@ index d55e41d..10436c8 100644
      public void onPlace(World world, int i, int j, int k) {
          if (!a) {
              if (world.worldProvider.dimension != 0) {
--                world.setTypeId(i, j, k, 0);
-+                // world.setTypeId(i, j, k, 0); // CraftBukkit - allow placing of portals in any dimension
+-                world.setAir(i, j, k);
++                // world.setAir(i, j, k); // CraftBukkit - allow placing of portals in any dimension
              }
          }
      }
--- 
+--
 1.7.4.4
 

@@ -19,10 +19,10 @@ index 3471487..3ac9be9 100644
 +                    // CraftBukkit start
 +                    int formedId = -1;
                      if (l == 0) {
--                        world.setTypeId(i, j, k, Block.OBSIDIAN.id);
+-                        world.setTypeIdUpdate(i, j, k, Block.OBSIDIAN.id);
 +                        formedId = Block.OBSIDIAN.id;
                      } else if (l <= 4) {
--                        world.setTypeId(i, j, k, Block.COBBLESTONE.id);
+-                        world.setTypeIdUpdate(i, j, k, Block.COBBLESTONE.id);
 +                        formedId = Block.COBBLESTONE.id;
                      }
 
@@ -35,7 +35,7 @@ index 3471487..3ac9be9 100644
 +                        world.getServer().getPluginManager().callEvent(event);
 +
 +                        if (!event.isCancelled()) {
-+                            world.setTypeId(i, j, k, formedId);
++                            world.setTypeIdUpdate(i, j, k, formedId);
 +                            this.fizz(world, i, j, k);
 +                        }
 +                    }

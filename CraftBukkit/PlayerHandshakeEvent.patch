@@ -26,7 +26,7 @@ index 977c89c..5172f23 100644
                  random.nextBytes(this.d);
 +
 +                // CraftBukkit start
-+                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.h, this.loginKey, publickey, this.d);
++                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d);
 +                this.server.server.getPluginManager().callEvent(handshakeEvent);
 +                this.loginKey = handshakeEvent.getLoginKey();
 +                // CraftBukkit end

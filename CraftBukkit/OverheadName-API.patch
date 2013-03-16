@@ -21,7 +21,7 @@ index 2ceeac0..2ac2923 100644
      public org.bukkit.Location compassTarget;
      public int newExp = 0;
      public int newLevel = 0;
-@@ -74,6 +75,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -80,6 +81,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.height = 0.0F;
          this.displayName = this.name; // CraftBukkit
          this.listName = this.name; // CraftBukkit

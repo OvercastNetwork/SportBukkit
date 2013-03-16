@@ -4,20 +4,20 @@ Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
 
 ---
- .../java/net/minecraft/server/BlockFluids.java     |  236 ++++++++++++++
- .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++
- .../minecraft/server/TileEntityRecordPlayer.java   |   25 ++
- 3 files changed, 546 insertions(+), 0 deletions(-)
+ .../java/net/minecraft/server/BlockFluids.java     |  232 ++++++++++++++++
+ src/main/java/net/minecraft/server/BlockTNT.java   |   79 ++++++
+ .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++++++
+ 3 files changed, 596 insertions(+), 0 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
+ create mode 100644 src/main/java/net/minecraft/server/BlockTNT.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
- create mode 100644 src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
-index 0000000..3471487
+index 0000000..f0c9e11
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
-@@ -0,0 +1,236 @@
+@@ -0,0 +1,232 @@
 +package net.minecraft.server;
 +
 +import java.util.Random;
@@ -25,7 +25,7 @@ index 0000000..3471487
 +public abstract class BlockFluids extends Block {
 +
 +    protected BlockFluids(int i, Material material) {
-+        super(i, (material == Material.LAVA ? 14 : 12) * 16 + 13, material);
++        super(i, material);
 +        float f = 0.0F;
 +        float f1 = 0.0F;
 +
@@ -33,11 +33,11 @@ index 0000000..3471487
 +        this.b(true);
 +    }
 +
-+    public boolean c(IBlockAccess iblockaccess, int i, int j, int k) {
++    public boolean b(IBlockAccess iblockaccess, int i, int j, int k) {
 +        return this.material != Material.LAVA;
 +    }
 +
-+    public static float e(int i) {
++    public static float d(int i) {
 +        if (i >= 8) {
 +            i = 0;
 +        }
@@ -45,11 +45,7 @@ index 0000000..3471487
 +        return (float) (i + 1) / 9.0F;
 +    }
 +
-+    public int a(int i) {
-+        return i != 0 && i != 1 ? this.textureId + 1 : this.textureId;
-+    }
-+
-+    protected int f_(World world, int i, int j, int k) {
++    protected int k_(World world, int i, int j, int k) {
 +        return world.getMaterial(i, j, k) == this.material ? world.getData(i, j, k) : -1;
 +    }
 +
@@ -85,7 +81,7 @@ index 0000000..3471487
 +        return material == this.material ? false : (l == 1 ? true : (material == Material.ICE ? false : super.a_(iblockaccess, i, j, k, l)));
 +    }
 +
-+    public AxisAlignedBB e(World world, int i, int j, int k) {
++    public AxisAlignedBB b(World world, int i, int j, int k) {
 +        return null;
 +    }
 +
@@ -187,26 +183,26 @@ index 0000000..3471487
 +    }
 +
 +    public void a(World world, int i, int j, int k, Entity entity, Vec3D vec3d) {
-+        Vec3D vec3d1 = this.g(world, i, j, k);
++        Vec3D vec3d1 = this.g((IBlockAccess) world, i, j, k);
 +
 +        vec3d.c += vec3d1.c;
 +        vec3d.d += vec3d1.d;
 +        vec3d.e += vec3d1.e;
 +    }
 +
-+    public int r_() {
-+        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? 30 : 0);
++    public int a(World world) {
++        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? (world.worldProvider.f ? 10 : 30) : 0);
 +    }
 +
 +    public void onPlace(World world, int i, int j, int k) {
-+        this.l(world, i, j, k);
++        this.k(world, i, j, k);
 +    }
 +
 +    public void doPhysics(World world, int i, int j, int k, int l) {
-+        this.l(world, i, j, k);
++        this.k(world, i, j, k);
 +    }
 +
-+    private void l(World world, int i, int j, int k) {
++    private void k(World world, int i, int j, int k) {
 +        if (world.getTypeId(i, j, k) == this.id) {
 +            if (this.material == Material.LAVA) {
 +                boolean flag = false;
@@ -235,9 +231,9 @@ index 0000000..3471487
 +                    int l = world.getData(i, j, k);
 +
 +                    if (l == 0) {
-+                        world.setTypeId(i, j, k, Block.OBSIDIAN.id);
++                        world.setTypeIdUpdate(i, j, k, Block.OBSIDIAN.id);
 +                    } else if (l <= 4) {
-+                        world.setTypeId(i, j, k, Block.COBBLESTONE.id);
++                        world.setTypeIdUpdate(i, j, k, Block.COBBLESTONE.id);
 +                    }
 +
 +                    this.fizz(world, i, j, k);
@@ -252,6 +248,91 @@ index 0000000..3471487
 +        for (int l = 0; l < 8; ++l) {
 +            world.addParticle("largesmoke", (double) i + Math.random(), (double) j + 1.2D, (double) k + Math.random(), 0.0D, 0.0D, 0.0D);
 +        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
+new file mode 100644
+index 0000000..9c73f6b
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockTNT.java
+@@ -0,0 +1,79 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public class BlockTNT extends Block {
++
++    public BlockTNT(int i) {
++        super(i, Material.TNT);
++        this.a(CreativeModeTab.d);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        super.onPlace(world, i, j, k);
++        if (world.isBlockIndirectlyPowered(i, j, k)) {
++            this.postBreak(world, i, j, k, 1);
++            world.setAir(i, j, k);
++        }
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        if (world.isBlockIndirectlyPowered(i, j, k)) {
++            this.postBreak(world, i, j, k, 1);
++            world.setAir(i, j, k);
++        }
++    }
++
++    public int a(Random random) {
++        return 1;
++    }
++
++    public void wasExploded(World world, int i, int j, int k, Explosion explosion) {
++        if (!world.isStatic) {
++            EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), explosion.c());
++
++            entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
++            world.addEntity(entitytntprimed);
++        }
++    }
++
++    public void postBreak(World world, int i, int j, int k, int l) {
++        this.a(world, i, j, k, l, (EntityLiving) null);
++    }
++
++    public void a(World world, int i, int j, int k, int l, EntityLiving entityliving) {
++        if (!world.isStatic) {
++            if ((l & 1) == 1) {
++                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), entityliving);
++
++                world.addEntity(entitytntprimed);
++                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++            }
++        }
++    }
++
++    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
++        if (entityhuman.cb() != null && entityhuman.cb().id == Item.FLINT_AND_STEEL.id) {
++            this.a(world, i, j, k, 1, entityhuman);
++            world.setAir(i, j, k);
++            return true;
++        } else {
++            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
++        }
++    }
++
++    public void a(World world, int i, int j, int k, Entity entity) {
++        if (entity instanceof EntityArrow && !world.isStatic) {
++            EntityArrow entityarrow = (EntityArrow) entity;
++
++            if (entityarrow.isBurning()) {
++                this.a(world, i, j, k, 1, entityarrow.shooter instanceof EntityLiving ? (EntityLiving) entityarrow.shooter : null);
++                world.setAir(i, j, k);
++            }
++        }
++    }
++
++    public boolean a(Explosion explosion) {
++        return false;
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java
@@ -545,38 +626,5 @@ index 0000000..858b584
 +        return false;
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java b/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
-new file mode 100644
-index 0000000..4504ae0
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/TileEntityRecordPlayer.java
-@@ -0,0 +1,25 @@
-+package net.minecraft.server;
-+
-+public class TileEntityRecordPlayer extends TileEntity {
-+
-+    public ItemStack record;
-+
-+    public TileEntityRecordPlayer() {}
-+
-+    public void a(NBTTagCompound nbttagcompound) {
-+        super.a(nbttagcompound);
-+        if (nbttagcompound.hasKey("RecordItem")) {
-+            this.record = ItemStack.createStack(nbttagcompound.getCompound("RecordItem"));
-+        } else {
-+            this.record = new ItemStack(nbttagcompound.getInt("Record"), 1, 0);
-+        }
-+    }
-+
-+    public void b(NBTTagCompound nbttagcompound) {
-+        super.b(nbttagcompound);
-+        if (this.record != null) {
-+            nbttagcompound.setCompound("RecordItem", this.record.save(new NBTTagCompound()));
-+            nbttagcompound.setInt("Record", this.record.id);
-+        }
-+    }
-+}
-\ No newline at end of file
 --
 1.7.4.4
-

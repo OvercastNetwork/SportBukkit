@@ -5,107 +5,81 @@ Subject: [PATCH] Fire PlayerInteractEvent when anyone steps on a pressure plate
 
 In order to not spam the PlayerInteractEvent, we need to keep track of wether or not a plugin allows/denys a player.
 
-This does modify PlayerInteractEvent firing, but it shouldn't be 'breaking'.
----
- .../net/minecraft/server/BlockPressurePlate.java   |   60 +++++++++++++-------
- 1 files changed, 40 insertions(+), 20 deletions(-)
+This does modify PlayerInteractEvent firing, but it shouldn't be 'breaking'.---
+ .../minecraft/server/BlockPressurePlateBinary.java |   30 ++++++++++++++++++--
+ 1 files changed, 27 insertions(+), 3 deletions(-)
 
-diff --git a/src/main/java/net/minecraft/server/BlockPressurePlate.java b/src/main/java/net/minecraft/server/BlockPressurePlate.java
-index e4dc875..5f399f9 100644
---- a/src/main/java/net/minecraft/server/BlockPressurePlate.java
-+++ b/src/main/java/net/minecraft/server/BlockPressurePlate.java
-@@ -7,11 +7,14 @@ import java.util.Random;
- // CraftBukkit start
- import org.bukkit.event.block.BlockRedstoneEvent;
- import org.bukkit.event.entity.EntityInteractEvent;
+diff --git a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
+index ba7b660..5052105 100644
+--- a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
++++ b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
+@@ -3,11 +3,17 @@ package net.minecraft.server;
+ import java.util.Iterator;
+ import java.util.List;
+
+-import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
++// CraftBukkit start
++import org.bukkit.event.entity.EntityInteractEvent;
 +import java.util.Map;
 +import java.util.HashMap;
- // CraftBukkit end
- 
- public class BlockPressurePlate extends Block {
- 
++import java.util.Iterator;
++// CraftBukkit end
+
+ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+
      private EnumMobType a;
-+    private Map<Object, Boolean> entities = new HashMap<Object, Boolean>(); // CraftBukkit
- 
-     protected BlockPressurePlate(int i, int j, EnumMobType enummobtype, Material material) {
-         super(i, j, material);
-@@ -100,39 +103,56 @@ public class BlockPressurePlate extends Block {
-             while (iterator.hasNext()) {
-                 Entity entity = (Entity) iterator.next();
- 
--                if (!entity.au()) {
-+                Boolean result = this.entities.get(entity);
-+                if (!entity.au() && (result == null || result == true)) {
-                     flag1 = true;
-                     break;
-                 }
-             }
++    public Map<Object, Boolean> entities = new HashMap<Object, Boolean>(); // CraftBukkit
+
+     protected BlockPressurePlateBinary(int i, String s, Material material, EnumMobType enummobtype) {
+         super(i, s, material);
+@@ -38,15 +44,31 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
          }
--
-         // CraftBukkit start - Interact Pressure Plate
-         org.bukkit.World bworld = world.getWorld();
-         org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
- 
--        if (flag != flag1) {
--            if (flag1) {
--                for (Object object : list) {
--                    if (object != null) {
--                        org.bukkit.event.Cancellable cancellable;
--
--                        if (object instanceof EntityHuman) {
--                            cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) object, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
--                        } else if (object instanceof Entity) {
--                            cancellable = new EntityInteractEvent(((Entity) object).getBukkitEntity(), bworld.getBlockAt(i, j, k));
--                            manager.callEvent((EntityInteractEvent) cancellable);
--                        } else {
--                            continue;
--                        }
--
--                        if (cancellable.isCancelled()) {
--                            return;
--                        }
-+        if(!this.entities.isEmpty()) {
-+            Iterator iterator = this.entities.keySet().iterator();
+
+         if (!list.isEmpty()) {
++            // CraftBukkit start
++            if(!this.entities.isEmpty()) {
++                Iterator iterator = this.entities.keySet().iterator();
 +
-+            while(iterator.hasNext()) {
-+                Entity entity = (Entity) iterator.next();
-+                if(!list.contains(entity)) {
-+                    iterator.remove();
++                while(iterator.hasNext()) {
++                    Entity entity = (Entity) iterator.next();
++                    if(!list.contains(entity)) {
++                        iterator.remove();
++                    }
 +                }
 +            }
-+        }
 +
-+        if (flag1) {
-+            Boolean result;
+             Iterator iterator = list.iterator();
+
+             while (iterator.hasNext()) {
+                 Entity entity = (Entity) iterator.next();
+
+-                // CraftBukkit start
+                 org.bukkit.World bworld = world.getWorld();
+                 org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
+                 org.bukkit.event.Cancellable cancellable;
++                Boolean result = this.entities.get(entity);
 +
-+            for (Object object : list) {
-+                result = this.entities.get(object);
++                if (entity == null || result != null) {
++                    continue;
++                }
+
+                 if (entity instanceof EntityHuman) {
+                     cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
+@@ -55,12 +77,14 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+                     manager.callEvent((EntityInteractEvent) cancellable);
+                 }
+
++                this.entities.put(entity, !cancellable.isCancelled());
 +
-+                if (object != null && result == null) {
-+                    org.bukkit.event.Cancellable cancellable;
-+
-+                    if (object instanceof EntityHuman) {
-+                        cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) object, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
-+                    } else if (object instanceof Entity) {
-+                        cancellable = new EntityInteractEvent(((Entity) object).getBukkitEntity(), bworld.getBlockAt(i, j, k));
-+                        manager.callEvent((EntityInteractEvent) cancellable);
-+                    } else {
-+                        continue;
-+                    }
-+
-+                    this.entities.put(object, !cancellable.isCancelled());
-+                    if(cancellable.isCancelled()) {
-+                        world.a(i, j, k, this.id, this.r_());
-+                        return;
-                     }
+                 if (cancellable.isCancelled()) {
+                     return 0;
+                 }
+                 // CraftBukkit end
+
+-                if (!entity.at()) {
++                if (!entity.at() && (result == null || result == true)) {
+                     return 15;
                  }
              }
-+        }
- 
-+        if (flag != flag1) {
-             BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(bworld.getBlockAt(i, j, k), flag ? 1 : 0, flag1 ? 1 : 0);
-             manager.callEvent(eventRedstone);
- 
--- 
+--
 1.7.4.4
-

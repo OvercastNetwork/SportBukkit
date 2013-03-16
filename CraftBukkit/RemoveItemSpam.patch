@@ -11,15 +11,18 @@ diff --git a/src/main/java/net/minecraft/server/EntityItem.java b/src/main/java/
 index b8b6d52..06e2ea6 100644
 --- a/src/main/java/net/minecraft/server/EntityItem.java
 +++ b/src/main/java/net/minecraft/server/EntityItem.java
-@@ -282,7 +282,7 @@ public class EntityItem extends Entity {
+@@ -282,10 +282,10 @@ public class EntityItem extends Entity {
          ItemStack itemstack = this.getDataWatcher().getItemStack(10);
- 
+
          if (itemstack == null) {
--            System.out.println("Item entity " + this.id + " has no item?!");
-+            // System.out.println("Item entity " + this.id + " has no item?!"); CraftBukkit - remove useless debug message
+             if (this.world != null) {
+-                this.world.getLogger().severe("Item entity " + this.id + " has no item?!");
++               // this.world.getLogger().severe("Item entity " + this.id + " has no item?!"); CraftBukkit - remove useless debug message
+			 }
+
              return new ItemStack(Block.STONE);
          } else {
              return itemstack;
--- 
+--
 1.7.4.4
 

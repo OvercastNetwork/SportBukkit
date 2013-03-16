@@ -1,7 +1,7 @@
 From 5c7b137ae5d91b5ca5fcbd22dfbb53d2e18c0fbc Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Fri, 31 Aug 2012 12:30:14 -0700
-Subject: [PATCH] Allow for more complex logic by using M() method when
+Subject: [PATCH] Allow for more complex logic by using L() method when
  determining whether a player should show up when looking
  for nearby players.
 
@@ -18,7 +18,7 @@ index e902c53..450c23d 100644
              EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
              // CraftBukkit start - fixed an NPE
 -            if (entityhuman1 == null || entityhuman1.dead) {
-+            if (entityhuman1 == null || !entityhuman1.M()) { // CraftBukkit allow for more complex logic by using M()
++            if (entityhuman1 == null || !entityhuman1.L()) { // CraftBukkit allow for more complex logic by using L()
                  continue;
              }
              // CraftBukkit end

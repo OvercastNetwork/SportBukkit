@@ -19,7 +19,7 @@ index 9665716..697d1d5 100644
              List list = this.world.getEntities(this, this.boundingBox.grow(1.0D, 0.0D, 1.0D));
 
 -            if (list != null) {
-+            if (this.M() && list != null) { // CraftBukkit
++            if (this.L() && list != null) { // CraftBukkit
                  Iterator iterator = list.iterator();
 
                  while (iterator.hasNext()) {
@@ -32,7 +32,7 @@ index d6a4c16..447f554 100644
          if (!this.world.isStatic) {
              list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
 -            if (list != null && !list.isEmpty()) {
-+            if (this.M() && list != null && !list.isEmpty()) { // CraftBukkit
++            if (this.L() && list != null && !list.isEmpty()) { // CraftBukkit
                  iterator = list.iterator();
 
                  while (iterator.hasNext()) {
@@ -55,13 +55,13 @@ index 2ceeac0..d4d76be 100644
 
 +    // CraftBukkit start
 +    @Override
-+    public boolean M() {
-+        return this.collidesWithEntities && super.M();
++    public boolean L() {
++        return this.collidesWithEntities && super.L();
 +    }
 +
 +    @Override
-+    public boolean L() {
-+        return this.collidesWithEntities && super.L();
++    public boolean K() {
++        return this.collidesWithEntities && super.K();
 +    }
 +    // CraftBukkit end
 +

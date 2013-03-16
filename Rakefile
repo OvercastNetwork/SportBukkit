@@ -45,11 +45,11 @@ def update(project, tag)
         g = Git.clone(uri, project)
     end
 
-    g.pull(g.remotes.first, "master")
-    g.remote("origin").merge
-
     g.reset_hard(Git::Object::Tag.new(g, tag, tag))
     run("git clean -fd") # FIX ME
+
+    g.pull(g.remotes.first, "master")
+    g.remote("origin").merge
 
     Dir.chdir("..")
 end

@@ -16,7 +16,7 @@ index 3374639..daf29da 100644
                      this.player.playerConnection.sendPacket((Packet) (new Packet103SetSlot(this.player.activeContainer.windowId, 0, itemstack)));
                  // CraftBukkit end
              }
-+            server.getPluginManager().callEvent(new InventoryClickedEvent(inventory, type, packet102windowclick.slot, packet102windowclick.button != 0, packet102windowclick.shift == 1)); // CraftBukkit
++            server.getPluginManager().callEvent(new org.bukkit.event.inventory.InventoryClickedEvent(inventory, type, packet102windowclick.slot, packet102windowclick.button != 0, packet102windowclick.shift == 1)); // CraftBukkit
          }
      }
 

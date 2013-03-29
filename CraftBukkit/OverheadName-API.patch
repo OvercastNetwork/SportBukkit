@@ -99,7 +99,7 @@ index d37d719..c235020 100644
 +
 +        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
 +
-+        for (Iterator it = server.getHandle().players.iterator(); it.hasNext(); ) {
++        for (Iterator it = ((WorldServer) entity.world).players.iterator(); it.hasNext(); ) {
 +            EntityPlayer otherplayer = (EntityPlayer) it.next();
 +            if (otherplayer.playerConnection == null || otherplayer == getHandle()) continue;
 +

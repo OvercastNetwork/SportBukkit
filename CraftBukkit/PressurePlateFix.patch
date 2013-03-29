@@ -53,7 +53,7 @@ index ba7b660..5052105 100644
              while (iterator.hasNext()) {
                  Entity entity = (Entity) iterator.next();
 
--                // CraftBukkit start
+-                // CraftBukkit start - Fire interact event when turning on a pressure plate
                  org.bukkit.World bworld = world.getWorld();
                  org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
                  org.bukkit.event.Cancellable cancellable;
@@ -65,14 +65,15 @@ index ba7b660..5052105 100644
 
                  if (entity instanceof EntityHuman) {
                      cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
-@@ -55,12 +77,14 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+@@ -55,13 +77,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
                      manager.callEvent((EntityInteractEvent) cancellable);
                  }
 
 +                this.entities.put(entity, !cancellable.isCancelled());
 +
+                 // We only want to block turning the plate on if all events are cancelled
                  if (cancellable.isCancelled()) {
-                     return 0;
+                     continue;
                  }
                  // CraftBukkit end
 

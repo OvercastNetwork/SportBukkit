@@ -6,25 +6,25 @@ Subject: [PATCH] Fire ServerCommandEvent for command block cmds. Addresses
 
 ---
  .../net/minecraft/server/TileEntityCommand.java    |    7 ++++++-
- 1 files changed, 6 insertions(+), 1 deletions(-)
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityCommand.java b/src/main/java/net/minecraft/server/TileEntityCommand.java
-index f05573d..3a5ae20 100644
+index 2cce441..f06c5d9 100644
 --- a/src/main/java/net/minecraft/server/TileEntityCommand.java
 +++ b/src/main/java/net/minecraft/server/TileEntityCommand.java
-@@ -3,6 +3,7 @@ package net.minecraft.server;
- // CraftBukkit start
+@@ -4,6 +4,7 @@ package net.minecraft.server;
  import java.util.ArrayList;
- import java.util.Arrays;
-+import org.bukkit.event.server.ServerCommandEvent;
  import com.google.common.base.Joiner;
+ import org.bukkit.event.server.ServerCommandEvent;
++import org.bukkit.event.server.ServerCommandEvent;
  // CraftBukkit end
 
-@@ -79,7 +80,11 @@ public class TileEntityCommand extends TileEntity implements ICommandListener {
-                 // now dispatch all of the commands we ended up with
+ public class TileEntityCommand extends TileEntity implements ICommandListener {
+@@ -99,7 +100,11 @@ public class TileEntityCommand extends TileEntity implements ICommandListener {
+                 // Now dispatch all of the commands we ended up with
                  for (int i = 0; i < commands.size(); i++) {
                      try {
--                        if (commandMap.dispatch(sender, joiner.join(Arrays.asList(commands.get(i))))) {
+-                        if (commandMap.dispatch(sender, joiner.join(java.util.Arrays.asList(commands.get(i))))) {
 +                        String cmd = joiner.join(Arrays.asList(commands.get(i)));
 +                        ServerCommandEvent event = new ServerCommandEvent(sender, cmd);
 +                        world.getServer().getPluginManager().callEvent(event);

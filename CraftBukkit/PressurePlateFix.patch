@@ -5,67 +5,60 @@ Subject: [PATCH] Fire PlayerInteractEvent when anyone steps on a pressure plate
 
 In order to not spam the PlayerInteractEvent, we need to keep track of wether or not a plugin allows/denys a player.
 
-This does modify PlayerInteractEvent firing, but it shouldn't be 'breaking'.---
- .../minecraft/server/BlockPressurePlateBinary.java |   30 ++++++++++++++++++--
- 1 files changed, 27 insertions(+), 3 deletions(-)
+This does modify PlayerInteractEvent firing, but it shouldn't be 'breaking'.
+ ---
+ .../minecraft/server/BlockPressurePlateBinary.java |   29 ++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
-index ba7b660..5052105 100644
+index 3b9de8a..1c49027 100644
 --- a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
 +++ b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
-@@ -3,11 +3,17 @@ package net.minecraft.server;
- import java.util.Iterator;
- import java.util.List;
-
--import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
-+// CraftBukkit start
-+import org.bukkit.event.entity.EntityInteractEvent;
-+import java.util.Map;
-+import java.util.HashMap;
-+import java.util.Iterator;
-+// CraftBukkit end
-
+@@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
  public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
 
      private EnumMobType a;
-+    public Map<Object, Boolean> entities = new HashMap<Object, Boolean>(); // CraftBukkit
++    public java.util.Map<Object, Boolean> entities = new java.util.HashMap<Object, Boolean>(); // CraftBukkit
 
      protected BlockPressurePlateBinary(int i, String s, Material material, EnumMobType enummobtype) {
          super(i, s, material);
-@@ -38,15 +44,31 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+@@ -37,6 +38,19 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+             list = world.a(EntityHuman.class, this.a(i, j, k));
          }
 
-         if (!list.isEmpty()) {
-+            // CraftBukkit start
-+            if(!this.entities.isEmpty()) {
-+                Iterator iterator = this.entities.keySet().iterator();
++        // CraftBukkit start
++        if (!this.entities.isEmpty()) {
++            Iterator iterator = this.entities.keySet().iterator();
 +
-+                while(iterator.hasNext()) {
-+                    Entity entity = (Entity) iterator.next();
-+                    if(!list.contains(entity)) {
-+                        iterator.remove();
-+                    }
++            while (iterator.hasNext()) {
++                Entity entity = (Entity) iterator.next();
++                if (!list.contains(entity)) {
++                    iterator.remove();
 +                }
 +            }
++        }
++        // CraftBukkit end
 +
+         if (!list.isEmpty()) {
              Iterator iterator = list.iterator();
 
-             while (iterator.hasNext()) {
-                 Entity entity = (Entity) iterator.next();
-
--                // CraftBukkit start - Fire interact event when turning on a pressure plate
+@@ -47,6 +61,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
                  org.bukkit.World bworld = world.getWorld();
                  org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
                  org.bukkit.event.Cancellable cancellable;
 +                Boolean result = this.entities.get(entity);
 +
-+                if (entity == null || result != null) {
++                if (entity == null) {
 +                    continue;
++                }
++
++                if (!entity.at() && result != null) {
++                    return result ? 15 : 0;
 +                }
 
                  if (entity instanceof EntityHuman) {
                      cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
-@@ -55,13 +77,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+@@ -55,13 +78,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
                      manager.callEvent((EntityInteractEvent) cancellable);
                  }
 
@@ -75,10 +68,11 @@ index ba7b660..5052105 100644
                  if (cancellable.isCancelled()) {
                      continue;
                  }
-                 // CraftBukkit end
+-                // CraftBukkit end
 
 -                if (!entity.at()) {
 +                if (!entity.at() && (result == null || result == true)) {
++                    // CraftBukkit end
                      return 15;
                  }
              }

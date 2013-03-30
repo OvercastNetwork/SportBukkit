@@ -1,0 +1,343 @@
+From 1ebb340b10c02eedcd5a57482967467ecbdd4d60 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sun, 10 Mar 2013 16:28:53 -0500
+Subject: [PATCH] Add a Scoreboard API, adds BUKKIT-3776
+
+---
+ src/main/java/org/bukkit/Bukkit.java               |    5 ++
+ src/main/java/org/bukkit/Server.java               |    9 ++
+ src/main/java/org/bukkit/scoreboard/Objective.java |   85 +++++++++++++++++++
+ .../java/org/bukkit/scoreboard/Scoreboard.java     |   87 ++++++++++++++++++++
+ src/main/java/org/bukkit/scoreboard/Team.java      |   82 ++++++++++++++++++
+ 5 files changed, 268 insertions(+)
+ create mode 100644 src/main/java/org/bukkit/scoreboard/Objective.java
+ create mode 100644 src/main/java/org/bukkit/scoreboard/Scoreboard.java
+ create mode 100644 src/main/java/org/bukkit/scoreboard/Team.java
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index ba5f6d7..e208b8e 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -24,6 +24,7 @@ import org.bukkit.plugin.PluginManager;
+ import org.bukkit.plugin.ServicesManager;
+ import org.bukkit.plugin.messaging.Messenger;
+ import org.bukkit.scheduler.BukkitScheduler;
++import org.bukkit.scoreboard.Scoreboard;
+ 
+ import com.avaje.ebean.config.ServerConfig;
+ import org.bukkit.inventory.ItemFactory;
+@@ -395,4 +396,8 @@ public final class Bukkit {
+     public static ItemFactory getItemFactory() {
+         return server.getItemFactory();
+     }
++
++    public static Scoreboard getScoreboard() {
++        return server.getScoreboard();
++    }
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 683938a..9dfed58 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -20,12 +20,14 @@ import org.bukkit.inventory.Inventory;
+ import org.bukkit.inventory.InventoryHolder;
+ import org.bukkit.inventory.ItemStack;
+ import org.bukkit.inventory.Recipe;
++import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.map.MapView;
+ import org.bukkit.plugin.PluginManager;
+ import org.bukkit.plugin.ServicesManager;
+ import org.bukkit.plugin.messaging.Messenger;
+ import org.bukkit.plugin.messaging.PluginMessageRecipient;
+ import org.bukkit.scheduler.BukkitScheduler;
++import org.bukkit.scoreboard.Scoreboard;
+ 
+ import com.avaje.ebean.config.ServerConfig;
+ import org.bukkit.inventory.ItemFactory;
+@@ -689,4 +691,11 @@ public interface Server extends PluginMessageRecipient {
+      * @see ItemFactory
+      */
+     ItemFactory getItemFactory();
++
++    /**
++     * Gets the server's scoreboard
++     *
++     * @return scoreboard
++     */
++    public Scoreboard getScoreboard();
+ }
+diff --git a/src/main/java/org/bukkit/scoreboard/Objective.java b/src/main/java/org/bukkit/scoreboard/Objective.java
+new file mode 100644
+index 0000000..62f43f0
+--- /dev/null
++++ b/src/main/java/org/bukkit/scoreboard/Objective.java
+@@ -0,0 +1,85 @@
++package org.bukkit.scoreboard;
++
++import org.bukkit.OfflinePlayer;
++
++public interface Objective {
++    enum Criteria {
++        HEALTH(true),
++        PLAYER_KILL_COUNT(),
++        TOTAL_KILL_COUNT(),
++        DUMMY(),
++        DEATH_COUNT();
++
++        private final boolean readOnly;
++
++        Criteria() {
++            this.readOnly = false;
++        }
++
++        Criteria(boolean readOnly) {
++            this.readOnly = readOnly;
++        }
++
++        public boolean isReadOnly() {
++            return this.readOnly;
++        }
++    }
++
++    enum Display {
++        NONE,
++        LIST,
++        SIDEBAR,
++        BELOW_NAME;
++    }
++
++    /*
++     * Gets the objective's name
++     *
++     * @return The team's name
++     */
++    public String getName();
++
++    /*
++     * Gets the objective's display name
++     *
++     * @return The objective's display name, can be null
++     */
++    public String getDisplayName();
++
++    /*
++     * Sets the objective's display name
++     *
++     * @param displayName New display name, can not be null
++     */
++    public void setDisplayName(String displayName);
++
++    /*
++     * Gets the objective's display slot
++     *
++     * @return Where the objective is displayed
++     */
++    public Display getDisplaySlot();
++
++    /*
++     * Sets the objective's display slot
++     *
++     * @param display New display slot, can not be null
++     */
++    public void setDisplaySlot(Display display);
++
++    /*
++     * Gets the score for a player
++     *
++     * @param player Player to get a score for, can not be null
++     * @return Player's score
++     */
++    public int getScore(OfflinePlayer player);
++
++    /*
++     * Sets the score for a player
++     *
++     * @param player Player to set a score for, can not be null
++     * @param score New score
++     */
++    public void setScore(OfflinePlayer player, int score);
++}
+diff --git a/src/main/java/org/bukkit/scoreboard/Scoreboard.java b/src/main/java/org/bukkit/scoreboard/Scoreboard.java
+new file mode 100644
+index 0000000..f93af27
+--- /dev/null
++++ b/src/main/java/org/bukkit/scoreboard/Scoreboard.java
+@@ -0,0 +1,87 @@
++package org.bukkit.scoreboard;
++
++import java.util.Set;
++
++import org.bukkit.OfflinePlayer;
++
++public interface Scoreboard {
++    /**
++     * Creates a team
++     *
++     * @param name Team's new name, can not be null
++     * @param displayName Team's display name, can be null
++     * @return The newly created team, if successful
++     * @throws IllegalArgumentException if name/display name is too long or the team already exists
++     */
++    public Team createTeam(String name, String displayName);
++
++    /**
++     * Gets a team by name
++     *
++     * @param name Team's name
++     * @return The team that was requested, or null if not found
++     */
++    public Team getTeam(String name);
++
++    /**
++     * Gets all teams
++     *
++     * @return All the teams
++     */
++    public Set<Team> getTeams();
++
++    /**
++     * Puts a player on a team
++     *
++     * @param player Player that's getting a team, can not be null
++     * @param team Player's new team, can be null to remove player from a team
++     */
++    public void setTeam(OfflinePlayer player, Team team);
++
++    /**
++     * Removes a team from the scoreboard
++     *
++     * @param team Team to remove, can not be null
++     */
++    public void removeTeam(Team team);
++
++    /**
++     * Creates an objective
++     *
++     * @param name Name of the objective that will be created, can not be null
++     * @param criteria Criteria of the objective, can not be null
++     * @param displayName Display name of the objective, can be null
++     * @return The new objective that was created
++     * @throws IllegalArgumentException if an objective with this name already exists, the name is too long, or the display name is too long
++     */
++    public Objective createObjective(String name, Objective.Criteria criteria, String displayName);
++
++    /**
++     * Gets an objective by name
++     *
++     * @param name Name of objective
++     * @return The objective, or null if not found
++     */
++    public Objective getObjective(String name);
++
++    /**
++     * Gets all objectives
++     *
++     * @return objectives
++     */
++    public Set<Objective> getObjectives();
++
++    /**
++     * Removes an objective
++     *
++     * @param objective The objective to be removed, can not be null
++     */
++    public void removeObjective(Objective objective);
++
++    /**
++     * Resets a player's scores
++     *
++     * @param player The player whose scores will be reset, can not be null
++     */
++    public void resetScores(OfflinePlayer player);
++}
+diff --git a/src/main/java/org/bukkit/scoreboard/Team.java b/src/main/java/org/bukkit/scoreboard/Team.java
+new file mode 100644
+index 0000000..4eea157
+--- /dev/null
++++ b/src/main/java/org/bukkit/scoreboard/Team.java
+@@ -0,0 +1,82 @@
++package org.bukkit.scoreboard;
++
++
++public interface Team {
++
++    /*
++     * Get the team's name
++     *
++     * @return The team's name
++     */
++    public String getName();
++
++    /*
++     * Get the team's display name
++     *
++     * @return The team's display name
++     */
++    public String getDisplayName();
++
++    /*
++     * Set the team's display name
++     *
++     * @param name New display name, can not be null
++     */
++    public void setDisplayName(String name);
++
++    /*
++     * Get the team's prefix
++     *
++     * @return The team's prefix, can not be null
++     */
++    public String getPrefix();
++
++    /*
++     * Set the team's prefix, can not be null
++     *
++     * @param prefix New prefix, can not be null
++     */
++    public void setPrefix(String prefix);
++
++    /*
++     * Get the team's suffix
++     *
++     * @return The team's suffix, can not be null
++     */
++    public String getSuffix();
++
++    /*
++     * Set the team's suffix
++     *
++     * @param suffix New suffix, can not be null
++     */
++    public void setSuffix(String suffix);
++
++    /*
++     * Gets whether or not the team can hurt members
++     *
++     * @return true if friendly fire is on, false otherwise
++     */
++    public boolean allowFriendlyFire();
++
++    /*
++     * Sets whether or not the team can hurt other members of this team
++     *
++     * @param friendlyFire
++     */
++    public void setAllowFriendlyFire(boolean friendlyFire);
++
++    /*
++     * Gets whether or not members of this team can see other members of this team who are invisible
++     *
++     * @return true if team can see invisible members, false otherwise
++     */
++    public boolean canSeeFriendlyInvisibles();
++
++    /*
++     * Sets whether or not members of this team can see other members of this team who are invisible
++     *
++     * @param seeFriendlyInvisibles
++     */
++    public void setSeeFriendlyInvisibles(boolean seeFriendlyInvisibles);
++}
+-- 
+1.7.9.6 (Apple Git-31.1)
+

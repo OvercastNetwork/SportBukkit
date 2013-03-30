@@ -7,10 +7,14 @@ Subject: [PATCH] Add necessary files from mc-dev
  .../java/net/minecraft/server/BlockFluids.java     |  232 ++++++++++++++++
  src/main/java/net/minecraft/server/BlockTNT.java   |   79 ++++++
  .../net/minecraft/server/RemoteStatusListener.java |  285 ++++++++++++++++++++
- 3 files changed, 596 insertions(+), 0 deletions(-)
+  .../net/minecraft/server/ScoreboardObjective.java  |   33 ++++++
+ .../java/net/minecraft/server/ScoreboardTeam.java  |  107 ++++++++++++++++++++
+5 files changed, 736 insertions(+), 0 deletions(-)
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
  create mode 100644 src/main/java/net/minecraft/server/BlockTNT.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
+ create mode 100644 src/main/java/net/minecraft/server/ScoreboardObjective.java
+ create mode 100644 src/main/java/net/minecraft/server/ScoreboardTeam.java
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
@@ -624,6 +628,158 @@ index 0000000..858b584
 +        }
 +
 +        return false;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/ScoreboardObjective.java b/src/main/java/net/minecraft/server/ScoreboardObjective.java
+new file mode 100644
+index 0000000..1a4dca6
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/ScoreboardObjective.java
+@@ -0,0 +1,33 @@
++package net.minecraft.server;
++
++public class ScoreboardObjective {
++
++    private final Scoreboard a;
++    private final String b;
++    private final IScoreboardCriteria c;
++    private String d;
++
++    public ScoreboardObjective(Scoreboard scoreboard, String s, IScoreboardCriteria iscoreboardcriteria) {
++        this.a = scoreboard;
++        this.b = s;
++        this.c = iscoreboardcriteria;
++        this.d = s;
++    }
++
++    public String getName() {
++        return this.b;
++    }
++
++    public IScoreboardCriteria getCriteria() {
++        return this.c;
++    }
++
++    public String getDisplayName() {
++        return this.d;
++    }
++
++    public void setDisplayName(String s) {
++        this.d = s;
++        this.a.handleObjectiveChanged(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/ScoreboardTeam.java b/src/main/java/net/minecraft/server/ScoreboardTeam.java
+new file mode 100644
+index 0000000..34589a2
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/ScoreboardTeam.java
+@@ -0,0 +1,107 @@
++package net.minecraft.server;
++
++import java.util.Collection;
++import java.util.HashSet;
++import java.util.Set;
++
++public class ScoreboardTeam {
++
++    private final Scoreboard a;
++    private final String b;
++    private final Set c = new HashSet();
++    private String d;
++    private String e = "";
++    private String f = "";
++    private boolean g = true;
++    private boolean h = true;
++
++    public ScoreboardTeam(Scoreboard scoreboard, String s) {
++        this.a = scoreboard;
++        this.b = s;
++        this.d = s;
++    }
++
++    public String getName() {
++        return this.b;
++    }
++
++    public String getDisplayName() {
++        return this.d;
++    }
++
++    public void setDisplayName(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Name cannot be null");
++        } else {
++            this.d = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public Collection getPlayerNameSet() {
++        return this.c;
++    }
++
++    public String getPrefix() {
++        return this.e;
++    }
++
++    public void setPrefix(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Prefix cannot be null");
++        } else {
++            this.e = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public String getSuffix() {
++        return this.f;
++    }
++
++    public void setSuffix(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Suffix cannot be null");
++        } else {
++            this.f = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public static String getPlayerDisplayName(ScoreboardTeam scoreboardteam, String s) {
++        return scoreboardteam == null ? s : scoreboardteam.getPrefix() + s + scoreboardteam.getSuffix();
++    }
++
++    public boolean allowFriendlyFire() {
++        return this.g;
++    }
++
++    public void setAllowFriendlyFire(boolean flag) {
++        this.g = flag;
++        this.a.handleTeamChanged(this);
++    }
++
++    public boolean canSeeFriendlyInvisibles() {
++        return this.h;
++    }
++
++    public void setCanSeeFriendlyInvisibles(boolean flag) {
++        this.h = flag;
++        this.a.handleTeamChanged(this);
++    }
++
++    public int packOptionData() {
++        int i = 0;
++        int j = 0;
++
++        if (this.allowFriendlyFire()) {
++            i |= 1 << j++;
++        }
++
++        if (this.canSeeFriendlyInvisibles()) {
++            i |= 1 << j++;
++        }
++
++        return i;
 +    }
 +}
 --

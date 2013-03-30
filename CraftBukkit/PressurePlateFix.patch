@@ -6,12 +6,12 @@ Subject: [PATCH] Fire PlayerInteractEvent when anyone steps on a pressure plate
 In order to not spam the PlayerInteractEvent, we need to keep track of wether or not a plugin allows/denys a player.
 
 This does modify PlayerInteractEvent firing, but it shouldn't be 'breaking'.
- ---
- .../minecraft/server/BlockPressurePlateBinary.java |   29 ++++++++++++++++++--
- 1 file changed, 27 insertions(+), 2 deletions(-)
+---
+ .../minecraft/server/BlockPressurePlateBinary.java |   30 ++++++++++++++++++--
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
-index 3b9de8a..1c49027 100644
+index 318982c..83444f8 100644
 --- a/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
 +++ b/src/main/java/net/minecraft/server/BlockPressurePlateBinary.java
 @@ -8,6 +8,7 @@ import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
@@ -42,36 +42,37 @@ index 3b9de8a..1c49027 100644
          if (!list.isEmpty()) {
              Iterator iterator = list.iterator();
 
-@@ -47,6 +61,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
-                 org.bukkit.World bworld = world.getWorld();
-                 org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
-                 org.bukkit.event.Cancellable cancellable;
+@@ -44,11 +58,21 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+                 Entity entity = (Entity) iterator.next();
+
+                 // CraftBukkit start - Call interact event when turning on a pressure plate
+-                if (this.c(world.getData(i, j, k)) == 0) {
 +                Boolean result = this.entities.get(entity);
 +
-+                if (entity == null) {
-+                    continue;
-+                }
-+
-+                if (!entity.at() && result != null) {
-+                    return result ? 15 : 0;
-+                }
++                if (true || this.c(world.getData(i, j, k)) == 0) {
+                     org.bukkit.World bworld = world.getWorld();
+                     org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
+                     org.bukkit.event.Cancellable cancellable;
 
-                 if (entity instanceof EntityHuman) {
-                     cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
-@@ -55,13 +78,15 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
-                     manager.callEvent((EntityInteractEvent) cancellable);
-                 }
-
-+                this.entities.put(entity, !cancellable.isCancelled());
++                    if (entity == null) {
++                        continue;
++                    }
 +
-                 // We only want to block turning the plate on if all events are cancelled
-                 if (cancellable.isCancelled()) {
-                     continue;
++                    if (!entity.at() && result != null) {
++                        return result ? 15 : 0;
++                    }
++
+                     if (entity instanceof EntityHuman) {
+                         cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, i, j, k, -1, null);
+                     } else {
+@@ -61,9 +85,9 @@ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+                         continue;
+                     }
                  }
 -                // CraftBukkit end
 
 -                if (!entity.at()) {
-+                if (!entity.at() && (result == null || result == true)) {
++                if (!entity.at() && (result == null || result)) {
 +                    // CraftBukkit end
                      return 15;
                  }

@@ -51,5 +51,8 @@ index e061ce6..03f33a9 100644
 -      <artifactId>bukkit</artifactId>
 +      <groupId>tc.oc</groupId>
 +      <artifactId>sportbukkit-api</artifactId>
+@@ -159 +159 @@
+-          <outputPrefix>git-Bukkit-</outputPrefix>
++          <outputPrefix>git-SportBukkit-</outputPrefix>
 --
 1.7.8.msysgit.0

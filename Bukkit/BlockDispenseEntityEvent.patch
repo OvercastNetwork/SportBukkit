@@ -1,0 +1,47 @@
+From 85c9d2e56fd427e5d6e2018275c5f4ae76eafe02 Mon Sep 17 00:00:00 2001
+From: YukonAppleGeek <yukonvinecki@gmail.com>
+Date: Mon, 8 Apr 2013 20:14:25 -0700
+Subject: [PATCH] Add BlockDispenseEntityEvent
+
+---
+ .../event/block/BlockDispenseEntityEvent.java      |   28 ++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java
+
+diff --git a/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java b/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java
+new file mode 100644
+index 0000000..ca172e0
+--- /dev/null
++++ b/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java
+@@ -0,0 +1,28 @@
++package org.bukkit.event.block;
++
++import org.bukkit.block.Block;
++import org.bukkit.entity.Entity;
++import org.bukkit.event.Cancellable;
++import org.bukkit.inventory.ItemStack;
++import org.bukkit.util.Vector;
++
++/**
++ * Called when an entity is dispensed from a block.
++ */
++public class BlockDispenseEntityEvent extends BlockDispenseEvent implements Cancellable {
++    private final Entity entity;
++
++    public BlockDispenseEntityEvent(final Block block, final ItemStack dispensed, final Vector velocity, final Entity entity) {
++        super(block, dispensed, velocity);
++        this.entity = entity;
++    }
++
++    /**
++     * Gets the entity that is being dispensed.
++     *
++     * @return An Entity for the item being dispensed
++     */
++    public Entity getEntity() {
++        return entity;
++    }
++}
+-- 
+1.7.10.2 (Apple Git-33)
+

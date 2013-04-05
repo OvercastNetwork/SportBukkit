@@ -71,9 +71,10 @@ index 92d9eb8..ced217c 100644
 @@ -55,7 +74,11 @@ public class BlockTNT extends Block {
      public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
          if (entityhuman.cb() != null && entityhuman.cb().id == Item.FLINT_AND_STEEL.id) {
-             this.a(world, i, j, k, 1, entityhuman);
+-            this.a(world, i, j, k, 1, entityhuman);
 -            world.setAir(i, j, k);
 +            // CraftBukkit start - don't remove block if TNT priming is cancelled
++            this.a(world, i, j, k, 1, (EntityLiving) entityhuman);
 +            if (removeBlock) {
 +                world.setAir(i, j, k);
 +            }

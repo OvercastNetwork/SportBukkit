@@ -26,6 +26,23 @@ index e061ce6..03f33a9 100644
    <url>http://www.bukkit.org</url>
 
    <properties>
+@@ -24,12 +24,10 @@
+   <distributionManagement>
+     <repository>
+-      <id>repobo-rel</id>
+-      <name>repo.bukkit.org Releases</name>
+-      <url>http://repo.bukkit.org/content/repositories/releases/</url>
++      <id>repo.oc.tc</id>
++      <url>http://repo.oc.tc/content/repositories/releases/</url>
+     </repository>
+     <snapshotRepository>
+-      <id>repobo-snap</id>
+-      <name>repo.bukkit.org Snapshots</name>
+-      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
++      <id>repo.oc.tc</id>
++      <url>http://repo.oc.tc/content/repositories/snapshots/</url>
+     </snapshotRepository>
+   </distributionManagement>
 @@ -49,5 +49,5 @@
 
    <dependencies>

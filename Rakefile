@@ -27,6 +27,12 @@ task :compile do
     compile("CraftBukkit")
 end
 
+task :deploy do
+    abort("Run update first!") if !File.directory?("build")
+
+    deploy("Bukkit")
+    deploy("CraftBukkit")
+end
 # FIX ME
 def run(cmd)
     IO.popen(cmd) { |io| while (line = io.gets) do puts line end }
@@ -77,6 +83,15 @@ def compile(project)
 
     mvn = Maven::Ruby::Maven.new
     fail if mvn.exec("clean install") == false
+
+    Dir.chdir("../..")
+end
+
+def deploy(project)
+    Dir.chdir("build/" + project)
+
+    mvn = Maven::Ruby::Maven.new
+    fail if mvn.exec("deploy") == false
 
     Dir.chdir("../..")
 end

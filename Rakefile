@@ -14,22 +14,24 @@ task :update, :tag do |t, args|
 end
 
 task :build do
-    abort("Run update first!") if !File.directory?("build")
-
+    check_build
     build("Bukkit")
     build("CraftBukkit")
 end
 
-task :compile do
-    abort("Run update first!") if !File.directory?("build")
+task :build_spigot do
+    check_build
+    build("CraftBukkit", "Spigot")
+end
 
+task :compile do
+    check_build
     compile("Bukkit")
     compile("CraftBukkit")
 end
 
 task :deploy do
-    abort("Run update first!") if !File.directory?("build")
-
+    check_build
     deploy("Bukkit")
     deploy("CraftBukkit")
 end
@@ -38,6 +40,10 @@ def run(cmd)
     IO.popen(cmd) { |io| while (line = io.gets) do puts line end }
 
     fail if $?.exitstatus != 0
+end
+
+def check_build
+    abort("Run update first!") if !File.directory?("build")
 end
 
 def update(project, tag)
@@ -60,18 +66,20 @@ def update(project, tag)
     Dir.chdir("..")
 end
 
-def build(project)
+def build(project, dir=nil)
+    dir = project if dir == nil
+
     Dir.chdir("build/" + project)
 
     g = Git.open(".")
     g.reset_hard
     run("git clean -fqd") # FIX ME
 
-    p "Applying patches for: " + project
+    p "Applying patches for: " + dir
 
-    patches = Dir.glob("../../" + project + "/*.patch").sort
+    patches = Dir.glob("../../" + dir + "/*.patch").sort
     patches.each do |patch|
-        p "Applying " + project + "/" + File.basename(patch)
+        p "Applying " + dir + "/" + File.basename(patch)
         run("patch -Np1 --ignore-whitespace -F3 --quiet < " + patch) # FIX ME
     end
 

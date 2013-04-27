@@ -16,10 +16,10 @@ index 43209df..81f2485 100644
        <groupId>com.google.guava</groupId>
        <artifactId>guava</artifactId>
 -      <version>10.0</version>
-+      <version>13.0</version>
++      <version>14.0.1</version>
        <type>jar</type>
        <scope>provided</scope>
      </dependency>
--- 
+--
 1.8.0.msysgit.0
 

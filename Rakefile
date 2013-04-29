@@ -53,7 +53,7 @@ def update(project, tag)
     if File.directory?(project)
         g = Git.open(project)
     else
-        uri = "git://github.com/Bukkit/" + project + ".git"
+        uri = "https://github.com/Bukkit/" + project + ".git"
         g = Git.clone(uri, project)
     end
 

@@ -1,0 +1,31 @@
+From 9ec675d9e937c1b6abe58d50a2a6bfd4d31e53f1 Mon Sep 17 00:00:00 2001
+From: YukonAppleGeek <yukonvinecki@gmail.com>
+Date: Wed, 15 May 2013 19:04:24 -0700
+Subject: [PATCH] Partial fix for lilly pads not being removed when denied
+ placement
+
+---
+ src/main/java/net/minecraft/server/ItemWaterLily.java |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/ItemWaterLily.java b/src/main/java/net/minecraft/server/ItemWaterLily.java
+index 691ad46..50d237a 100644
+--- a/src/main/java/net/minecraft/server/ItemWaterLily.java
++++ b/src/main/java/net/minecraft/server/ItemWaterLily.java
+@@ -18,9 +18,10 @@ public class ItemWaterLily extends ItemWithAuxData {
+                 int k = movingobjectposition.d;
+                 final int clickedX = i, clickedY = j, clickedZ = k; // CraftBukkit
+ 
+-                if (!world.a(entityhuman, i, j, k)) {
+-                    return itemstack;
+-                }
++                // CraftBukkit - Let processBlockPlace handle place validation
++                // if (!world.a(entityhuman, i, j, k)) {
++                //     return itemstack;
++                // }
+ 
+                 if (!entityhuman.a(i, j, k, movingobjectposition.face, itemstack)) {
+                     return itemstack;
+-- 
+1.7.10.2 (Apple Git-33)
+

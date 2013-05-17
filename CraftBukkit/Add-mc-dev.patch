@@ -8,12 +8,14 @@ Subject: [PATCH] Add necessary files from mc-dev
  src/main/java/net/minecraft/server/BlockTNT.java   |   79 ++++++
  .../java/net/minecraft/server/DataWatcher.java     |  287 ++++++++++++++++++++
  .../minecraft/server/Packet40EntityMetadata.java   |   41 +++
+ .../minecraft/server/Packet63WorldParticles.java   |   51 ++++
  .../net/minecraft/server/RemoteStatusListener.java |  285 +++++++++++++++++++
- 5 files changed, 924 insertions(+)
+ 6 files changed, 975 insertions(+)
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
  create mode 100644 src/main/java/net/minecraft/server/BlockTNT.java
  create mode 100644 src/main/java/net/minecraft/server/DataWatcher.java
  create mode 100644 src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+ create mode 100644 src/main/java/net/minecraft/server/Packet63WorldParticles.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
@@ -634,7 +636,7 @@ index 0000000..803face
 +}
 diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
 new file mode 100644
-index 0000000..0b006b0
+index 0000000..a1647c0
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
 @@ -0,0 +1,41 @@
@@ -677,6 +679,63 @@ index 0000000..0b006b0
 +
 +    public int a() {
 +        return 5;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/Packet63WorldParticles.java b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
+new file mode 100644
+index 0000000..8c86b03
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
+@@ -0,0 +1,51 @@
++package net.minecraft.server;
++
++import java.io.DataInputStream;
++import java.io.DataOutputStream;
++
++public class Packet63WorldParticles extends Packet {
++
++    private String a;
++    private float b;
++    private float c;
++    private float d;
++    private float e;
++    private float f;
++    private float g;
++    private float h;
++    private int i;
++
++    public Packet63WorldParticles() {}
++
++    public void a(DataInputStream datainputstream) {
++        this.a = a(datainputstream, 64);
++        this.b = datainputstream.readFloat();
++        this.c = datainputstream.readFloat();
++        this.d = datainputstream.readFloat();
++        this.e = datainputstream.readFloat();
++        this.f = datainputstream.readFloat();
++        this.g = datainputstream.readFloat();
++        this.h = datainputstream.readFloat();
++        this.i = datainputstream.readInt();
++    }
++
++    public void a(DataOutputStream dataoutputstream) {
++        a(this.a, dataoutputstream);
++        dataoutputstream.writeFloat(this.b);
++        dataoutputstream.writeFloat(this.c);
++        dataoutputstream.writeFloat(this.d);
++        dataoutputstream.writeFloat(this.e);
++        dataoutputstream.writeFloat(this.f);
++        dataoutputstream.writeFloat(this.g);
++        dataoutputstream.writeFloat(this.h);
++        dataoutputstream.writeInt(this.i);
++    }
++
++    public void handle(Connection connection) {
++        connection.a(this);
++    }
++
++    public int a() {
++        return 64;
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java

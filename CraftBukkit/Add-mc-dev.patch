@@ -7,11 +7,13 @@ Subject: [PATCH] Add necessary files from mc-dev
  .../java/net/minecraft/server/BlockFluids.java     |  232 ++++++++++++++++
  src/main/java/net/minecraft/server/BlockTNT.java   |   79 ++++++
  .../java/net/minecraft/server/DataWatcher.java     |  287 ++++++++++++++++++++
+ .../minecraft/server/Packet40EntityMetadata.java   |   41 +++
  .../net/minecraft/server/RemoteStatusListener.java |  285 +++++++++++++++++++
- 4 files changed, 883 insertions(+)
+ 5 files changed, 924 insertions(+)
  create mode 100644 src/main/java/net/minecraft/server/BlockFluids.java
  create mode 100644 src/main/java/net/minecraft/server/BlockTNT.java
  create mode 100644 src/main/java/net/minecraft/server/DataWatcher.java
+ create mode 100644 src/main/java/net/minecraft/server/Packet40EntityMetadata.java
  create mode 100644 src/main/java/net/minecraft/server/RemoteStatusListener.java
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
@@ -339,7 +341,7 @@ index 0000000..048f9bb
 +}
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
 new file mode 100644
-index 0000000..2fba623
+index 0000000..803face
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -0,0 +1,287 @@
@@ -628,6 +630,53 @@ index 0000000..2fba623
 +        b.put(String.class, Integer.valueOf(4));
 +        b.put(ItemStack.class, Integer.valueOf(5));
 +        b.put(ChunkCoordinates.class, Integer.valueOf(6));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+new file mode 100644
+index 0000000..0b006b0
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+@@ -0,0 +1,41 @@
++package net.minecraft.server;
++
++import java.io.DataInputStream;
++import java.io.DataOutputStream;
++import java.io.IOException;
++import java.util.List;
++
++public class Packet40EntityMetadata extends Packet {
++
++    public int a;
++    private List b;
++
++    public Packet40EntityMetadata() {}
++
++    public Packet40EntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
++        this.a = i;
++        if (flag) {
++            this.b = datawatcher.c();
++        } else {
++            this.b = datawatcher.b();
++        }
++    }
++
++    public void a(DataInputStream datainputstream) throws IOException {
++        this.a = datainputstream.readInt();
++        this.b = DataWatcher.a(datainputstream);
++    }
++
++    public void a(DataOutputStream dataoutputstream) throws IOException {
++        dataoutputstream.writeInt(this.a);
++        DataWatcher.a(this.b, dataoutputstream);
++    }
++
++    public void handle(Connection connection) {
++        connection.a(this);
++    }
++
++    public int a() {
++        return 5;
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java

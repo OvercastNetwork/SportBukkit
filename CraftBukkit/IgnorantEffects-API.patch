@@ -116,7 +116,7 @@ index a0748c6..839834b 100644
 +            byte b0 = ((Byte) normal.b()).byteValue();
 +            WatchableObject visible = new WatchableObject(normal.c(), normal.a(), Byte.valueOf((byte) (b0 & ~(1 << 5))));
 +
-+            System.out.println(dataVisible.remove(normal));
++            dataVisible.remove(normal);
 +            dataVisible.add(visible);
 +        }
 +

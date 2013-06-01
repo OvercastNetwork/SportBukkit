@@ -21,7 +21,7 @@ end
 
 task :build_spigot do
     check_build
-    build("CraftBukkit", "Spigot")
+    build("CraftBukkit", "Spigot", false)
 end
 
 task :compile do
@@ -66,14 +66,16 @@ def update(project, tag)
     Dir.chdir("..")
 end
 
-def build(project, dir=nil)
+def build(project, dir=nil, reset=true)
     dir = project if dir == nil
 
     Dir.chdir("build/" + project)
 
-    g = Git.open(".")
-    g.reset_hard
-    run("git clean -fqd") # FIX ME
+    if reset
+        g = Git.open(".")
+        g.reset_hard
+        run("git clean -fqd") # FIX ME
+    end
 
     p "Applying patches for: " + dir
 

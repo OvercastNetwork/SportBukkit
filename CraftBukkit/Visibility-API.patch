@@ -4,12 +4,12 @@ Date: Wed, 29 May 2013 23:59:07 -0500
 Subject: [PATCH] Visibility API
 
 ---
- .../net/minecraft/server/EntityTrackerEntry.java   |  7 +---
+ .../net/minecraft/server/EntityTrackerEntry.java   |  7 +--
  src/main/java/net/minecraft/server/PlayerList.java | 11 ++---
  src/main/java/net/minecraft/server/World.java      |  2 +-
  .../java/net/minecraft/server/WorldManager.java    |  9 +++-
- .../org/bukkit/craftbukkit/entity/CraftPlayer.java | 48 ++++++++++++++--------
- 5 files changed, 47 insertions(+), 30 deletions(-)
+ .../org/bukkit/craftbukkit/entity/CraftPlayer.java | 50 +++++++++++++++-------
+ 5 files changed, 50 insertions(+), 29 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 index be02587..d0f5006 100644
@@ -27,7 +27,7 @@ index be02587..d0f5006 100644
 +                    if (!entityplayer.getBukkitEntity().canSee(this.tracker.getBukkitEntity())) {
 +                        return;
                      }
- 
+
                      // entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.id));
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
 index 40e7dc2..4f37a94 100644
@@ -35,18 +35,18 @@ index 40e7dc2..4f37a94 100644
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -952,19 +952,20 @@ public abstract class PlayerList {
      }
- 
+
      public void sendPacketNearby(double d0, double d1, double d2, double d3, int i, Packet packet) {
 -        this.sendPacketNearby((EntityHuman) null, d0, d1, d2, d3, i, packet);
 +        this.sendPacketNearby((Entity) null, d0, d1, d2, d3, i, packet); // CraftBukkit - EntityHuman -> Entity
      }
- 
+
 -    public void sendPacketNearby(EntityHuman entityhuman, double d0, double d1, double d2, double d3, int i, Packet packet) {
 +    // CraftBukkit - change entityhuman to entity
 +    public void sendPacketNearby(Entity entity, double d0, double d1, double d2, double d3, int i, Packet packet) {
          for (int j = 0; j < this.players.size(); ++j) {
              EntityPlayer entityplayer = (EntityPlayer) this.players.get(j);
- 
+
              // CraftBukkit start - Test if player receiving packet can see the source of the packet
 -            if (entityhuman != null && entityhuman instanceof EntityPlayer && !entityplayer.getBukkitEntity().canSee(((EntityPlayer) entityhuman).getBukkitEntity())) {
 +            if (entity != null && !entityplayer.getBukkitEntity().canSee(entity.getBukkitEntity())) {
@@ -79,7 +79,7 @@ index d1a02e6..081ea3b 100644
 @@ -22,9 +22,14 @@ public class WorldManager implements IWorldAccess {
          this.world.getTracker().untrackEntity(entity);
      }
- 
+
 +    // CraftBukkit start - add source entity
      public void a(String s, double d0, double d1, double d2, float f, float f1) {
 -        // CraftBukkit - this.world.dimension
@@ -91,10 +91,10 @@ index d1a02e6..081ea3b 100644
 +        this.server.getPlayerList().sendPacketNearby(entity, d0, d1, d2, f > 1.0F ? (double) (16.0F * f) : 16.0D, this.world.dimension, new Packet62NamedSoundEffect(s, d0, d1, d2, f, f1));
 +        // CraftBukkit end
      }
- 
+
      public void a(EntityHuman entityhuman, String s, double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index addb6a9..9c70e7d 100644
+index addb6a9..032a73e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
@@ -104,7 +104,7 @@ index addb6a9..9c70e7d 100644
 +import java.util.UUID;
  import java.util.logging.Level;
  import java.util.logging.Logger;
- 
+
 @@ -40,6 +41,7 @@ import org.bukkit.craftbukkit.map.CraftMapView;
  import org.bukkit.craftbukkit.map.RenderData;
  import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;
@@ -121,10 +121,10 @@ index addb6a9..9c70e7d 100644
 +    private final Map<UUID, Entity> hiddenEntities = new MapMaker().softValues().makeMap();
      private final Set<PotionEffectType> ignorantEffects = new HashSet<PotionEffectType>();
      private int hash = 0;
- 
-@@ -687,43 +689,55 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+
+@@ -687,43 +689,59 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
- 
+
      public void hidePlayer(Player player) {
 -        Validate.notNull(player, "hidden player cannot be null");
 +        this.hide(player);
@@ -139,7 +139,7 @@ index addb6a9..9c70e7d 100644
 +        if (equals(entity)) return;
 +        if (!canSee(entity)) return;
 +        hiddenEntities.put(entity.getUniqueId(), entity);
- 
+
          //remove this player from the hidden player's EntityTrackerEntry
 -        EntityTracker tracker = ((WorldServer) entity.world).tracker;
 -        EntityPlayer other = ((CraftPlayer) player).getHandle();
@@ -149,14 +149,14 @@ index addb6a9..9c70e7d 100644
          if (entry != null) {
              entry.clear(getHandle());
          }
- 
+
          //remove the hidden player from this player user list
 -        getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(player.getPlayerListName(), false, 9999));
 +        if(other instanceof EntityPlayer) {
 +            getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(((CraftPlayer) entity).getPlayerListName(), false, 9999));
 +        }
      }
- 
+
      public void showPlayer(Player player) {
 -        Validate.notNull(player, "shown player cannot be null");
 +        this.show(player);
@@ -171,7 +171,7 @@ index addb6a9..9c70e7d 100644
 +        if (equals(entity)) return;
 +        if (canSee(entity)) return;
 +        hiddenEntities.remove(entity.getUniqueId());
- 
+
 -        EntityTracker tracker = ((WorldServer) entity.world).tracker;
 -        EntityPlayer other = ((CraftPlayer) player).getHandle();
 +        EntityTracker tracker = ((WorldServer) this.entity.world).tracker;
@@ -180,20 +180,23 @@ index addb6a9..9c70e7d 100644
          if (entry != null && !entry.trackedPlayers.contains(getHandle())) {
              entry.updatePlayer(getHandle());
          }
- 
+
 -        getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(player.getPlayerListName(), true, getHandle().ping));
 +        if(other instanceof EntityPlayer) {
 +            getHandle().playerConnection.sendPacket(new Packet201PlayerInfo(((CraftPlayer) entity).getPlayerListName(), true, getHandle().ping));
 +        }
-     }
- 
--    public boolean canSee(Player player) {
--        return !hiddenPlayers.containsKey(player.getName());
++    }
++
 +    public boolean canSee(Entity entity) {
 +        return !hiddenEntities.containsKey(entity.getUniqueId());
      }
- 
+
+     public boolean canSee(Player player) {
+-        return !hiddenPlayers.containsKey(player.getName());
++        return canSee((Entity) player);
+     }
+
      public Map<String, Object> serialize() {
--- 
+--
 1.7.12.4 (Apple Git-37)
 

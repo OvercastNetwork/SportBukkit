@@ -1,0 +1,31 @@
+From 62b9d5b5476edb925c66afa6563497670897a73e Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 1 Jun 2013 10:30:34 -0500
+Subject: [PATCH] Disable NaN kick
+
+---
+ src/main/java/net/minecraft/server/PlayerConnection.java | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 4475ef0..1125120 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -241,9 +241,11 @@ public class PlayerConnection extends Connection {
+             }
+ 
+             if (Double.isNaN(packet10flying.x) || Double.isNaN(packet10flying.y) || Double.isNaN(packet10flying.z) || Double.isNaN(packet10flying.stance)) {
+-                player.teleport(player.getWorld().getSpawnLocation(), PlayerTeleportEvent.TeleportCause.UNKNOWN);
+-                System.err.println(player.getName() + " was caught trying to crash the server with an invalid position.");
+-                player.kickPlayer("Nope!");
++                // CraftBukkit start
++                player.teleport(player.getLocation());
++                System.err.println(player.getName() + " sent a NaN position, fixing");
++                // player.kickPlayer("Nope!");
++                // CraftBukkit end
+                 return;
+             }
+ 
+-- 
+1.7.12.4 (Apple Git-37)
+

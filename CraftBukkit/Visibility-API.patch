@@ -73,7 +73,7 @@ index 0f7df57..f74cd7f 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/WorldManager.java b/src/main/java/net/minecraft/server/WorldManager.java
-index d1a02e6..081ea3b 100644
+index d1a02e6..fe85acf 100644
 --- a/src/main/java/net/minecraft/server/WorldManager.java
 +++ b/src/main/java/net/minecraft/server/WorldManager.java
 @@ -22,9 +22,14 @@ public class WorldManager implements IWorldAccess {
@@ -88,7 +88,7 @@ index d1a02e6..081ea3b 100644
 +    }
 +
 +    public void a(String s, double d0, double d1, double d2, float f, float f1, Entity entity) {
-+        this.server.getPlayerList().sendPacketNearby(entity, d0, d1, d2, f > 1.0F ? (double) (16.0F * f) : 16.0D, this.world.dimension, new Packet62NamedSoundEffect(s, d0, d1, d2, f, f1));
++        this.server.getPlayerList().sendPacketNearby((entity instanceof EntityPlayer ? null : entity), d0, d1, d2, f > 1.0F ? (double) (16.0F * f) : 16.0D, this.world.dimension, new Packet62NamedSoundEffect(s, d0, d1, d2, f, f1));
 +        // CraftBukkit end
      }
 
@@ -199,4 +199,3 @@ index addb6a9..032a73e 100644
      public Map<String, Object> serialize() {
 --
 1.7.12.4 (Apple Git-37)
-

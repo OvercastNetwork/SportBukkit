@@ -5,20 +5,23 @@ Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
  every InventoryClickEvent
 
 ---
- src/main/java/net/minecraft/server/PlayerConnection.java | 1 +
- 1 file changed, 1 insertion(+)
+ src/main/java/net/minecraft/server/PlayerConnection.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index d152439..a3c752c 100644
+index f585ed0..38bf709 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1420,6 +1420,7 @@ public class PlayerConnection extends Connection {
+@@ -1420,8 +1420,9 @@ public class PlayerConnection extends Connection {
                              case NOTHING:
                                  break;
                          }
-+                        server.getPluginManager().callEvent(new org.bukkit.event.inventory.InventoryClickedEvent(inventory, type, packet102windowclick.slot, packet102windowclick.button != 0, packet102windowclick.shift == 1));
-                         return;
+-                        return;
                  }
++                server.getPluginManager().callEvent(new org.bukkit.event.inventory.InventoryClickedEvent(inventory, type, packet102windowclick.slot, packet102windowclick.button != 0, packet102windowclick.shift == 1));
++                if(event.getResult() == org.bukkit.event.Event.Result.DENY) return;
              }
+             // CraftBukkit end
+
 --
 1.7.12.4 (Apple Git-37)

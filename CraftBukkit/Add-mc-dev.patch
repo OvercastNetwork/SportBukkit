@@ -53,7 +53,7 @@ index 0000000..f0c9e11
 +        return (float) (i + 1) / 9.0F;
 +    }
 +
-+    protected int k_(World world, int i, int j, int k) {
++    protected int l_(World world, int i, int j, int k) {
 +        return world.getMaterial(i, j, k) == this.material ? world.getData(i, j, k) : -1;
 +    }
 +
@@ -199,7 +199,7 @@ index 0000000..f0c9e11
 +    }
 +
 +    public int a(World world) {
-+        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? (world.worldProvider.f ? 10 : 30) : 0);
++        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? (world.worldProvider.g ? 10 : 30) : 0);
 +    }
 +
 +    public void onPlace(World world, int i, int j, int k) {
@@ -270,7 +270,7 @@ index 0000000..8f459ea
 +
 +public class BlockSand extends Block {
 +
-+    public static boolean instaFall = false;
++    public static boolean instaFall;
 +
 +    public BlockSand(int i) {
 +        super(i, Material.SAND);
@@ -347,7 +347,7 @@ new file mode 100644
 index 0000000..048f9bb
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,80 @@
 +package net.minecraft.server;
 +
 +import java.util.Random;
@@ -403,9 +403,10 @@ index 0000000..048f9bb
 +    }
 +
 +    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-+        if (entityhuman.cd() != null && entityhuman.cd().id == Item.FLINT_AND_STEEL.id) {
++        if (entityhuman.bt() != null && entityhuman.bt().id == Item.FLINT_AND_STEEL.id) {
 +            this.a(world, i, j, k, 1, entityhuman);
 +            world.setAir(i, j, k);
++            entityhuman.bt().damage(1, entityhuman);
 +            return true;
 +        } else {
 +            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
@@ -429,14 +430,14 @@ index 0000000..048f9bb
 +}
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
 new file mode 100644
-index 0000000..803face
+index 0000000..2981a96
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -0,0 +1,287 @@
+@@ -0,0 +1,295 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInputStream;
-+import java.io.DataOutputStream;
++import java.io.DataInput;
++import java.io.DataOutput;
 +import java.io.IOException;
 +import java.util.ArrayList;
 +import java.util.HashMap;
@@ -496,6 +497,10 @@ index 0000000..803face
 +        return ((Integer) this.i(i).b()).intValue();
 +    }
 +
++    public float getFloat(int i) {
++        return ((Float) this.i(i).b()).floatValue();
++    }
++
 +    public String getString(int i) {
 +        return (String) this.i(i).b();
 +    }
@@ -542,18 +547,18 @@ index 0000000..803face
 +        return this.d;
 +    }
 +
-+    public static void a(List list, DataOutputStream dataoutputstream) throws IOException {
++    public static void a(List list, DataOutput dataoutput) throws IOException {
 +        if (list != null) {
 +            Iterator iterator = list.iterator();
 +
 +            while (iterator.hasNext()) {
 +                WatchableObject watchableobject = (WatchableObject) iterator.next();
 +
-+                a(dataoutputstream, watchableobject);
++                a(dataoutput, watchableobject);
 +            }
 +        }
 +
-+        dataoutputstream.writeByte(127);
++        dataoutput.writeByte(127);
 +    }
 +
 +    public List b() {
@@ -583,18 +588,18 @@ index 0000000..803face
 +        return arraylist;
 +    }
 +
-+    public void a(DataOutputStream dataoutputstream) throws IOException {
++    public void a(DataOutput dataoutput) throws IOException {
 +        this.e.readLock().lock();
 +        Iterator iterator = this.c.values().iterator();
 +
 +        while (iterator.hasNext()) {
 +            WatchableObject watchableobject = (WatchableObject) iterator.next();
 +
-+            a(dataoutputstream, watchableobject);
++            a(dataoutput, watchableobject);
 +        }
 +
 +        this.e.readLock().unlock();
-+        dataoutputstream.writeByte(127);
++        dataoutput.writeByte(127);
 +    }
 +
 +    public List c() {
@@ -615,50 +620,50 @@ index 0000000..803face
 +        return arraylist;
 +    }
 +
-+    private static void a(DataOutputStream dataoutputstream, WatchableObject watchableobject) throws IOException {
++    private static void a(DataOutput dataoutput, WatchableObject watchableobject) throws IOException {
 +        int i = (watchableobject.c() << 5 | watchableobject.a() & 31) & 255;
 +
-+        dataoutputstream.writeByte(i);
++        dataoutput.writeByte(i);
 +        switch (watchableobject.c()) {
 +        case 0:
-+            dataoutputstream.writeByte(((Byte) watchableobject.b()).byteValue());
++            dataoutput.writeByte(((Byte) watchableobject.b()).byteValue());
 +            break;
 +
 +        case 1:
-+            dataoutputstream.writeShort(((Short) watchableobject.b()).shortValue());
++            dataoutput.writeShort(((Short) watchableobject.b()).shortValue());
 +            break;
 +
 +        case 2:
-+            dataoutputstream.writeInt(((Integer) watchableobject.b()).intValue());
++            dataoutput.writeInt(((Integer) watchableobject.b()).intValue());
 +            break;
 +
 +        case 3:
-+            dataoutputstream.writeFloat(((Float) watchableobject.b()).floatValue());
++            dataoutput.writeFloat(((Float) watchableobject.b()).floatValue());
 +            break;
 +
 +        case 4:
-+            Packet.a((String) watchableobject.b(), dataoutputstream);
++            Packet.a((String) watchableobject.b(), dataoutput);
 +            break;
 +
 +        case 5:
 +            ItemStack itemstack = (ItemStack) watchableobject.b();
 +
-+            Packet.a(itemstack, dataoutputstream);
++            Packet.a(itemstack, dataoutput);
 +            break;
 +
 +        case 6:
 +            ChunkCoordinates chunkcoordinates = (ChunkCoordinates) watchableobject.b();
 +
-+            dataoutputstream.writeInt(chunkcoordinates.x);
-+            dataoutputstream.writeInt(chunkcoordinates.y);
-+            dataoutputstream.writeInt(chunkcoordinates.z);
++            dataoutput.writeInt(chunkcoordinates.x);
++            dataoutput.writeInt(chunkcoordinates.y);
++            dataoutput.writeInt(chunkcoordinates.z);
 +        }
 +    }
 +
-+    public static List a(DataInputStream datainputstream) throws IOException {
++    public static List a(DataInput datainput) throws IOException {
 +        ArrayList arraylist = null;
 +
-+        for (byte b0 = datainputstream.readByte(); b0 != 127; b0 = datainputstream.readByte()) {
++        for (byte b0 = datainput.readByte(); b0 != 127; b0 = datainput.readByte()) {
 +            if (arraylist == null) {
 +                arraylist = new ArrayList();
 +            }
@@ -669,33 +674,33 @@ index 0000000..803face
 +
 +            switch (i) {
 +            case 0:
-+                watchableobject = new WatchableObject(i, j, Byte.valueOf(datainputstream.readByte()));
++                watchableobject = new WatchableObject(i, j, Byte.valueOf(datainput.readByte()));
 +                break;
 +
 +            case 1:
-+                watchableobject = new WatchableObject(i, j, Short.valueOf(datainputstream.readShort()));
++                watchableobject = new WatchableObject(i, j, Short.valueOf(datainput.readShort()));
 +                break;
 +
 +            case 2:
-+                watchableobject = new WatchableObject(i, j, Integer.valueOf(datainputstream.readInt()));
++                watchableobject = new WatchableObject(i, j, Integer.valueOf(datainput.readInt()));
 +                break;
 +
 +            case 3:
-+                watchableobject = new WatchableObject(i, j, Float.valueOf(datainputstream.readFloat()));
++                watchableobject = new WatchableObject(i, j, Float.valueOf(datainput.readFloat()));
 +                break;
 +
 +            case 4:
-+                watchableobject = new WatchableObject(i, j, Packet.a(datainputstream, 64));
++                watchableobject = new WatchableObject(i, j, Packet.a(datainput, 64));
 +                break;
 +
 +            case 5:
-+                watchableobject = new WatchableObject(i, j, Packet.c(datainputstream));
++                watchableobject = new WatchableObject(i, j, Packet.c(datainput));
 +                break;
 +
 +            case 6:
-+                int k = datainputstream.readInt();
-+                int l = datainputstream.readInt();
-+                int i1 = datainputstream.readInt();
++                int k = datainput.readInt();
++                int l = datainput.readInt();
++                int i1 = datainput.readInt();
 +
 +                watchableobject = new WatchableObject(i, j, new ChunkCoordinates(k, l, i1));
 +            }
@@ -708,6 +713,10 @@ index 0000000..803face
 +
 +    public boolean d() {
 +        return this.a;
++    }
++
++    public void e() {
++        this.d = false;
 +    }
 +
 +    static {
@@ -728,8 +737,8 @@ index 0000000..a1647c0
 @@ -0,0 +1,41 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInputStream;
-+import java.io.DataOutputStream;
++import java.io.DataInput;
++import java.io.DataOutput;
 +import java.io.IOException;
 +import java.util.List;
 +
@@ -749,14 +758,14 @@ index 0000000..a1647c0
 +        }
 +    }
 +
-+    public void a(DataInputStream datainputstream) throws IOException {
-+        this.a = datainputstream.readInt();
-+        this.b = DataWatcher.a(datainputstream);
++    public void a(DataInput datainput) throws IOException {
++        this.a = datainput.readInt();
++        this.b = DataWatcher.a(datainput);
 +    }
 +
-+    public void a(DataOutputStream dataoutputstream) throws IOException {
-+        dataoutputstream.writeInt(this.a);
-+        DataWatcher.a(this.b, dataoutputstream);
++    public void a(DataOutput dataoutput) throws IOException {
++        dataoutput.writeInt(this.a);
++        DataWatcher.a(this.b, dataoutput);
 +    }
 +
 +    public void handle(Connection connection) {
@@ -775,8 +784,8 @@ index 0000000..8c86b03
 @@ -0,0 +1,51 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInputStream;
-+import java.io.DataOutputStream;
++import java.io.DataInput;
++import java.io.DataOutput;
 +
 +public class Packet63WorldParticles extends Packet {
 +
@@ -792,28 +801,28 @@ index 0000000..8c86b03
 +
 +    public Packet63WorldParticles() {}
 +
-+    public void a(DataInputStream datainputstream) {
-+        this.a = a(datainputstream, 64);
-+        this.b = datainputstream.readFloat();
-+        this.c = datainputstream.readFloat();
-+        this.d = datainputstream.readFloat();
-+        this.e = datainputstream.readFloat();
-+        this.f = datainputstream.readFloat();
-+        this.g = datainputstream.readFloat();
-+        this.h = datainputstream.readFloat();
-+        this.i = datainputstream.readInt();
++    public void a(DataInput datainput) {
++        this.a = a(datainput, 64);
++        this.b = datainput.readFloat();
++        this.c = datainput.readFloat();
++        this.d = datainput.readFloat();
++        this.e = datainput.readFloat();
++        this.f = datainput.readFloat();
++        this.g = datainput.readFloat();
++        this.h = datainput.readFloat();
++        this.i = datainput.readInt();
 +    }
 +
-+    public void a(DataOutputStream dataoutputstream) {
-+        a(this.a, dataoutputstream);
-+        dataoutputstream.writeFloat(this.b);
-+        dataoutputstream.writeFloat(this.c);
-+        dataoutputstream.writeFloat(this.d);
-+        dataoutputstream.writeFloat(this.e);
-+        dataoutputstream.writeFloat(this.f);
-+        dataoutputstream.writeFloat(this.g);
-+        dataoutputstream.writeFloat(this.h);
-+        dataoutputstream.writeInt(this.i);
++    public void a(DataOutput dataoutput) {
++        a(this.a, dataoutput);
++        dataoutput.writeFloat(this.b);
++        dataoutput.writeFloat(this.c);
++        dataoutput.writeFloat(this.d);
++        dataoutput.writeFloat(this.e);
++        dataoutput.writeFloat(this.f);
++        dataoutput.writeFloat(this.g);
++        dataoutput.writeFloat(this.h);
++        dataoutput.writeInt(this.i);
 +    }
 +
 +    public void handle(Connection connection) {
@@ -855,9 +864,9 @@ index 0000000..858b584
 +    private int maxPlayers;
 +    private String localAddress;
 +    private String worldName;
-+    private DatagramSocket socket = null;
++    private DatagramSocket socket;
 +    private byte[] n = new byte[1460];
-+    private DatagramPacket o = null;
++    private DatagramPacket o;
 +    private Map p;
 +    private String hostname;
 +    private String motd;
@@ -869,11 +878,11 @@ index 0000000..858b584
 +    public RemoteStatusListener(IMinecraftServer iminecraftserver) {
 +        super(iminecraftserver);
 +        this.bindPort = iminecraftserver.a("query.port", 0);
-+        this.motd = iminecraftserver.u();
-+        this.serverPort = iminecraftserver.v();
-+        this.localAddress = iminecraftserver.w();
-+        this.maxPlayers = iminecraftserver.z();
-+        this.worldName = iminecraftserver.J();
++        this.motd = iminecraftserver.w();
++        this.serverPort = iminecraftserver.x();
++        this.localAddress = iminecraftserver.y();
++        this.maxPlayers = iminecraftserver.B();
++        this.worldName = iminecraftserver.L();
 +        this.cacheTime = 0L;
 +        this.hostname = "0.0.0.0";
 +        if (0 != this.motd.length() && !this.hostname.equals(this.motd)) {
@@ -955,7 +964,7 @@ index 0000000..858b584
 +    }
 +
 +    private byte[] getFullReply(DatagramPacket datagrampacket) {
-+        long i = System.currentTimeMillis();
++        long i = MinecraftServer.aq();
 +
 +        if (i < this.cacheTime + 5000L) {
 +            byte[] abyte = this.cachedReply.getBytes();
@@ -1035,7 +1044,7 @@ index 0000000..858b584
 +
 +    private void cleanChallenges() {
 +        if (this.running) {
-+            long i = System.currentTimeMillis();
++            long i = MinecraftServer.aq();
 +
 +            if (i >= this.clearedTime + 30000L) {
 +                this.clearedTime = i;
@@ -1054,7 +1063,7 @@ index 0000000..858b584
 +
 +    public void run() {
 +        this.info("Query running on " + this.motd + ":" + this.bindPort);
-+        this.clearedTime = System.currentTimeMillis();
++        this.clearedTime = MinecraftServer.aq();
 +        this.o = new DatagramPacket(this.n, this.n.length);
 +
 +        try {

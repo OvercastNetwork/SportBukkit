@@ -5,39 +5,33 @@ Subject: [PATCH] Adds ability to set the number of online players sent in
  ServerListPingEvent
 
 ---
- .../java/net/minecraft/server/PendingConnection.java |    6 ++++--
- 1 files changed, 4 insertions(+), 2 deletions(-)
+ .../net/minecraft/server/PendingConnection.java    |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index f46a83a..1eea5f7 100644
+index 5ff6cdd..677615f 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
-@@ -12,6 +12,8 @@ import java.util.Random;
- import java.util.logging.Logger;
+@@ -12,6 +12,7 @@ import java.util.Random;
  import javax.crypto.SecretKey;
 
+ import org.bukkit.event.player.PlayerHandshakeEvent; // CraftBukkit
 +import org.bukkit.ChatColor; // CraftBukkit
-+
+
  public class PendingConnection extends Connection {
 
-     private byte[] d;
-@@ -151,7 +153,7 @@ public class PendingConnection extends Connection {
-
-             if (packet254getinfo.a == 1) {
-                 // CraftBukkit start - fix decompile issues, don't create a list from an array
--                Object[] list = new Object[] { 1, 61, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
-+                Object[] list = new Object[] { 1, 61, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
-
-                 for (Object object : list) {
-                     if (s == null) {
-@@ -165,7 +167,7 @@ public class PendingConnection extends Connection {
-                 // CraftBukkit end
-             } else {
+@@ -155,9 +156,10 @@ public class PendingConnection extends Connection {
+             org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), playerlist.getPlayerCount(), playerlist.getMaxPlayers());
+             if (packet254getinfo.d()) {
                  // CraftBukkit
 -                s = pingEvent.getMotd() + "\u00A7" + playerlist.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
 +                s = ChatColor.stripColor(pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers());
-             }
+             } else {
+-                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), this.server.getMotd(), Integer.valueOf(playerlist.getPlayerCount()), Integer.valueOf(playerlist.getMaxPlayers())});
++                // CraftBukkit
++                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), this.server.getMotd(), Integer.valueOf(pingEvent.getNumPlayers()), Integer.valueOf(playerlist.getMaxPlayers())});
 
-             InetAddress inetaddress = null;
+                 Object object;
+
 --
-1.7.4.4
+1.7.9.6 (Apple Git-31.1)

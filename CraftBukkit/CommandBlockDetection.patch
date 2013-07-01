@@ -12,15 +12,12 @@ diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/
 index 25adbec..40e7dc2 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -852,6 +852,8 @@ public abstract class PlayerList {
+@@ -860,4 +860,5 @@ public abstract class PlayerList {
+             for (int i2 = 0; i2 < this.players.size(); ++i2) {
                  EntityPlayer entityplayer = (EntityPlayer) this.players.get(i2);
-                 boolean flag1;
- 
 +                if(!entityplayer.getBukkitEntity().getCollidesWithEntities()) continue; // CraftBukkit
-+
-                 if (s != null) {
-                     flag1 = s.startsWith("!");
-                     if (flag1) {
--- 
+
+                 if ((world == null || entityplayer.world == world) && (s == null || flag1 != s.equalsIgnoreCase(entityplayer.getLocalizedName()))) {
+--
 1.7.9.6 (Apple Git-31.1)
 

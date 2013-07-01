@@ -27,15 +27,13 @@ diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/jav
 index d6a4c16..447f554 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1245,7 +1245,7 @@ public abstract class EntityLiving extends Entity {
+@@ -1452,5 +1452,5 @@ public abstract class EntityLiving extends Entity {
+        List list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
 
-         if (!this.world.isStatic) {
-             list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
--            if (list != null && !list.isEmpty()) {
-+            if (this.L() && list != null && !list.isEmpty()) { // CraftBukkit
-                 iterator = list.iterator();
-
-                 while (iterator.hasNext()) {
+-       if (list != null && !list.isEmpty()) {
++       if (this.L() && list != null && !list.isEmpty()) { // CraftBukkit
+            for (int i = 0; i < list.size(); ++i) {
+                Entity entity = (Entity) list.get(i);
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
 index 2ceeac0..d4d76be 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java

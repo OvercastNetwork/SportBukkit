@@ -43,13 +43,13 @@ index a1fe703..a5bc662 100644
 +            entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
 +            if (entity instanceof EntityLiving) {
 +                EntityLiving entityliving = (EntityLiving) entity;
-+                entityliving.aA = entityliving.yaw;
-+                entityliving.ay = entityliving.yaw;
-+                entityliving.bJ();
++                entityliving.aP = entityliving.yaw;
++                entityliving.aN = entityliving.yaw;
++                entityliving.a((EntityInsentient) null);
 +            }
 +            world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
-+            if (entity instanceof EntityLiving) {
-+                ((EntityLiving) entity).aR();
++            if (entity instanceof EntityInsentient) {
++                ((EntityInsentient) entity).p();
 +
 +            }
 +            // CraftBukkit end

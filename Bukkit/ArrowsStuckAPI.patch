@@ -11,8 +11,8 @@ diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/o
 index e93453a..68e935c 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -278,2 +278,16 @@ public interface LivingEntity extends Entity {
-    public boolean getCanPickupItems();
+@@ -276,2 +276,16 @@ public interface LivingEntity extends Entity {
+    public Collection<PotionEffect> getActivePotionEffects();
 
 +
 +    /**

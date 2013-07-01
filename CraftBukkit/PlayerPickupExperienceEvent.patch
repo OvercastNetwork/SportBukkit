@@ -14,8 +14,8 @@ index e76e0f9..26ee8f8 100644
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -152,10 +152,17 @@ public class EntityExperienceOrb extends Entity {
          if (!this.world.isStatic) {
-             if (this.c == 0 && entityhuman.bT == 0) {
-                 entityhuman.bT = 2;
+             if (this.c == 0 && entityhuman.bv == 0) {
+                 entityhuman.bv = 2;
 -                this.makeSound("random.orb", 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
 -                entityhuman.receive(this, 1);
 -                entityhuman.giveExp(CraftEventFactory.callPlayerExpChangeEvent(entityhuman, this.value).getAmount()); // CraftBukkit - this.value to event.getAmount()
@@ -50,6 +50,6 @@ index 56582bc..ffab866 100644
 +        return event;
 +    }
  }
--- 
+--
 1.7.9.6 (Apple Git-31.1)
 

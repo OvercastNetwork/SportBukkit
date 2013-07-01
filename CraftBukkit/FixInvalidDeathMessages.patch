@@ -12,23 +12,26 @@ diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/jav
 index 9a623ca..baf4507 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -294,7 +294,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -290,10 +290,10 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
          }
 
--        org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, this.bt.b());
-+        org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, damagesource == DamageSource.GENERIC ? damagesource.getLocalizedDeathMessage(this) : this.bt.b());
+-        ChatMessage chatmessage = this.aN().b();
++        ChatMessage chatmessage = damagesource == DamageSource.GENERIC ? damagesource.getLocalizedDeathMessage(this) : this.aN().b();
+
+         String deathmessage = chatmessage.toString();
+         org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage);
 
          String deathMessage = event.getDeathMessage();
 
-@@ -328,7 +328,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -323,7 +323,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
 
-         EntityLiving entityliving = this.bN();
+         EntityLiving entityliving = this.aO();
 
 -        if (entityliving != null) {
 +        // CraftBukkit - can't have a combat tracked killer with a generic damage source
 +        if (entityliving != null && damagesource != DamageSource.GENERIC) {
-             entityliving.c(this, this.aM);
+             entityliving.b(this, this.bb);
          }
      }
 --

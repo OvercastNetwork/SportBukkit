@@ -58,7 +58,7 @@ index 318982c..83444f8 100644
 +                        continue;
 +                    }
 +
-+                    if (!entity.at() && result != null) {
++                    if (!entity.as() && result != null) {
 +                        return result ? 15 : 0;
 +                    }
 +
@@ -71,8 +71,8 @@ index 318982c..83444f8 100644
                  }
 -                // CraftBukkit end
 
--                if (!entity.at()) {
-+                if (!entity.at() && (result == null || result)) {
+-                if (!entity.as()) {
++                if (!entity.as() && (result == null || result)) {
 +                    // CraftBukkit end
                      return 15;
                  }

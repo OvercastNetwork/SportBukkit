@@ -15,9 +15,9 @@ index 0f7be97..9ccce59 100644
 @@ -38,7 +38,7 @@ public abstract class Entity {
      }
      // CraftBukkit end
- 
--    private static int entityCount = 0;
-+    public static int entityCount = 0; // CraftBukkit - private -> public
+
+-    private static int entityCount;
++    public static int entityCount; // CraftBukkit - private -> public
      public int id;
      public double l;
      public boolean m;
@@ -38,6 +38,6 @@ index aa4f5c3..6dfb171 100644
 +        net.minecraft.server.Entity.entityCount = count;
 +    }
  }
--- 
+--
 1.7.12.4 (Apple Git-37)
 

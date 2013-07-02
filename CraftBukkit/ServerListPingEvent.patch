@@ -29,7 +29,7 @@ index 5ff6cdd..677615f 100644
              } else {
 -                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), this.server.getMotd(), Integer.valueOf(playerlist.getPlayerCount()), Integer.valueOf(playerlist.getMaxPlayers())});
 +                // CraftBukkit
-+                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), this.server.getMotd(), Integer.valueOf(pingEvent.getNumPlayers()), Integer.valueOf(playerlist.getMaxPlayers())});
++                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), pingEvent.getMotd(), Integer.valueOf(pingEvent.getNumPlayers()), Integer.valueOf(pingEvent.getMaxPlayers())});
 
                  Object object;
 

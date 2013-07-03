@@ -8,7 +8,9 @@ How To
 
 Init a Craftbukkit and Bukkit module : `git submodule update --init`
 
-Apply Patches : `./applyPatches.sh`
+Apply Patches: `./applyPatches.sh`
+
+Compile SportBukkit: `./compile.sh`
 
 SportBukkit binary will be located in build/CraftBukkit/target.
 

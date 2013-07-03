@@ -20,18 +20,18 @@ index 5ff6cdd..677615f 100644
 
  public class PendingConnection extends Connection {
 
-@@ -155,9 +156,10 @@ public class PendingConnection extends Connection {
+@@ -155,10 +156,10 @@ public class PendingConnection extends Connection {
              org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), playerlist.getPlayerCount(), playerlist.getMaxPlayers());
              if (packet254getinfo.d()) {
                  // CraftBukkit
 -                s = pingEvent.getMotd() + "\u00A7" + playerlist.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
 +                s = ChatColor.stripColor(pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers());
              } else {
--                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), this.server.getMotd(), Integer.valueOf(playerlist.getPlayerCount()), Integer.valueOf(playerlist.getMaxPlayers())});
-+                // CraftBukkit
-+                List list = Arrays.asList(new Serializable[] { Integer.valueOf(1), Integer.valueOf(73), this.server.getVersion(), pingEvent.getMotd(), Integer.valueOf(pingEvent.getNumPlayers()), Integer.valueOf(pingEvent.getMaxPlayers())});
+				 // CraftBukkit start - Don't create a list from an array
+-                Object[] list = new Object[] { 1, 73, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
++                Object[] list = new Object[] { 1, 73, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
 
-                 Object object;
-
+                 StringBuilder builder = new StringBuilder();
+                 for (Object object : list) {
 --
 1.7.9.6 (Apple Git-31.1)

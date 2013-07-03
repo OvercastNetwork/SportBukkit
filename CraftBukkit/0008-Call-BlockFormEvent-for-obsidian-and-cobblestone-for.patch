@@ -1,0 +1,45 @@
+From 0aa38e834c2b3a6b3ee4007286fa0fd0d5d784fa Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Fri, 5 Oct 2012 12:00:26 -0700
+Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
+ due to lava / water interacting.
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
+index c2e4a7d..5f0a06a 100644
+--- a/src/main/java/net/minecraft/server/BlockFluids.java
++++ b/src/main/java/net/minecraft/server/BlockFluids.java
+@@ -210,13 +210,27 @@ public abstract class BlockFluids extends Block {
+                 if (flag) {
+                     int l = world.getData(i, j, k);
+ 
++                    // CraftBukkit start
++                    int formedId = -1;
+                     if (l == 0) {
+-                        world.setTypeIdUpdate(i, j, k, Block.OBSIDIAN.id);
++                        formedId = Block.OBSIDIAN.id;
+                     } else if (l <= 4) {
+-                        world.setTypeIdUpdate(i, j, k, Block.COBBLESTONE.id);
++                        formedId = Block.COBBLESTONE.id;
+                     }
+ 
+-                    this.fizz(world, i, j, k);
++                    if (formedId != -1) {
++                        org.bukkit.block.Block block = world.getWorld().getBlockAt(i, j, k);
++                        org.bukkit.block.BlockState newState = block.getState();
++                        newState.setTypeId(formedId);
++                        org.bukkit.event.block.BlockFormEvent event = new org.bukkit.event.block.BlockFormEvent(block, newState);
++                        world.getServer().getPluginManager().callEvent(event);
++
++                        if (!event.isCancelled()) {
++                            world.setTypeIdUpdate(i, j, k, formedId);
++                            this.fizz(world, i, j, k);
++                        }
++                    }
++                    // CraftBukkit end
+                 }
+             }
+         }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

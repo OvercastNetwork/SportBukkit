@@ -1,0 +1,30 @@
+From 7f6e8669fad62d1b5bde1b6f3f493430b90ffcd5 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 30 Mar 2013 19:22:48 -0500
+Subject: [PATCH] Don't filter negative damage values
+
+
+diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
+index f42f162..ef6b489 100644
+--- a/src/main/java/net/minecraft/server/ItemStack.java
++++ b/src/main/java/net/minecraft/server/ItemStack.java
+@@ -166,12 +166,12 @@ public final class ItemStack {
+         if (this.id == Block.WOOL.id) {
+             i = Math.min(15, i);
+         }
+-        // CraftBukkit end
+ 
+         this.damage = i;
+-        if (this.damage < -1) { // CraftBukkit - don't filter -1, we use it
+-            this.damage = 0;
+-        }
++        //if (this.damage < -1) { // CraftBukkit - don't filter negative data values
++        //    this.damage = 0;
++        //}
++        // CraftBukkit end
+     }
+ 
+     public int l() {
+-- 
+1.7.9.6 (Apple Git-31.1)
+

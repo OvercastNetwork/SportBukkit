@@ -1,0 +1,31 @@
+From d7edfc96a91e6d56205dede9ec7cf583f3c0c098 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 2 Aug 2012 17:12:10 -0700
+Subject: [PATCH] Add API to control if a player affects spawning of mobs
+
+
+diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
+index ffb5bce..19ed214 100644
+--- a/src/main/java/org/bukkit/entity/HumanEntity.java
++++ b/src/main/java/org/bukkit/entity/HumanEntity.java
+@@ -160,4 +160,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+      * @return Experience required to level up
+      */
+     public int getExpToLevel();
++
++    /**
++     * Setting this to false prevents players from activating mob spawners and
++     * allows mobs to randomly spawn and despawn near them (which normally can't happen).
++     * @param yes true to prevent this player from affecting mob spawning
++     */
++    public void setAffectsSpawning(boolean yes);
++
++    /**
++     * @return whether this player can activate mob spawners and prevent
++     *         random spawning and despawning near them.
++     */
++    public boolean getAffectsSpawning();
+ }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

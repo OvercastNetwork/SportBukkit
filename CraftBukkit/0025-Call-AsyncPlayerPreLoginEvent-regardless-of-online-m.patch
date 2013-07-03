@@ -1,0 +1,66 @@
+From 717a6057c63395874bc76a59cc82a178b8d183f5 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 23 Apr 2013 19:45:55 -0500
+Subject: [PATCH] Call AsyncPlayerPreLoginEvent regardless of online-mode
+
+
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index b8d234b..7958390 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -106,10 +106,8 @@ public class PendingConnection extends Connection {
+ 
+             this.j = true;
+             if (this.server.getOnlineMode()) {
+-                (new ThreadLoginVerifier(this, server.server)).start(); // CraftBukkit - add CraftServer
+-            } else {
+-                this.h = true;
+             }
++            (new ThreadLoginVerifier(this, server.server)).start(); // CraftBukkit - add CraftServer and move down
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
+index d8d0c52..19609fb 100644
+--- a/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
++++ b/src/main/java/net/minecraft/server/ThreadLoginVerifier.java
+@@ -29,19 +29,24 @@ class ThreadLoginVerifier extends Thread {
+ 
+     public void run() {
+         boolean allowed = false; // CraftBukkit
+-        try {
+-            String s = (new BigInteger(MinecraftEncryption.a(PendingConnection.a(this.pendingConnection), PendingConnection.b(this.pendingConnection).H().getPublic(), PendingConnection.c(this.pendingConnection)))).toString(16);
+-            URL url = new URL("http://session.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(PendingConnection.d(this.pendingConnection), "UTF-8") + "&serverId=" + URLEncoder.encode(s, "UTF-8"));
+-            // CraftBukkit start
+-            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+-            huc.setConnectTimeout(1000); // 1 second
+-            huc.setReadTimeout(1000); // 1 second
+-            BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(huc.getInputStream()));
+-            String s1 = bufferedreader.readLine();
+ 
+-            bufferedreader.close();
+-            allowed = "YES".equals(s1);
+-        } catch (Exception exception) {}
++        if (this.server.getOnlineMode()) { // CraftBukkit
++            try {
++                String s = (new BigInteger(MinecraftEncryption.a(PendingConnection.a(this.pendingConnection), PendingConnection.b(this.pendingConnection).H().getPublic(), PendingConnection.c(this.pendingConnection)))).toString(16);
++                URL url = new URL("http://session.minecraft.net/game/checkserver.jsp?user=" + URLEncoder.encode(PendingConnection.d(this.pendingConnection), "UTF-8") + "&serverId=" + URLEncoder.encode(s, "UTF-8"));
++                // CraftBukkit start
++                HttpURLConnection huc = (HttpURLConnection) url.openConnection();
++                huc.setConnectTimeout(1000); // 1 second
++                huc.setReadTimeout(1000); // 1 second
++                BufferedReader bufferedreader = new BufferedReader(new InputStreamReader(huc.getInputStream()));
++                String s1 = bufferedreader.readLine();
++
++                bufferedreader.close();
++                allowed = "YES".equals(s1);
++            } catch (Exception exception) {}
++        } else {
++            allowed = true;
++        }
+ 
+         if (this.pendingConnection.getSocket() == null) {
+             return;
+-- 
+1.7.9.6 (Apple Git-31.1)
+

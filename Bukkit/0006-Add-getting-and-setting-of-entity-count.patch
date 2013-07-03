@@ -1,0 +1,55 @@
+From 9a6aa964c0e0540fd0fcc3153a9be59bd7fa136f Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sun, 16 Jun 2013 16:57:59 -0500
+Subject: [PATCH] Add getting and setting of entity count
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index f389fc0..6639c98 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -652,4 +652,18 @@ public final class Bukkit {
+     public static ScoreboardManager getScoreboardManager() {
+         return server.getScoreboardManager();
+     }
++
++    /**
++     * @see Server#getEntityCount()
++     */
++    public static int getEntityCount() {
++        return server.getEntityCount();
++    }
++
++    /**
++     * @see Server#setEntityCount()
++     */
++    public static void setEntityCount(int count) {
++        server.setEntityCount(count);
++    }
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index ed02a8a..97b9dfe 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -699,4 +699,18 @@ public interface Server extends PluginMessageRecipient {
+      * @return the scoreboard manager or null if no worlds are loaded.
+      */
+     ScoreboardManager getScoreboardManager();
++
++    /**
++     * Gets the current entity count
++     *
++     * @return current entity count
++     */
++    int getEntityCount();
++
++    /**
++     * Sets the current entity count
++     *
++     * @param count The new entity count
++     */
++    void setEntityCount(int count);
+ }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

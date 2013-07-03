@@ -1,0 +1,69 @@
+From 5e389e89f5bbef80deb7b7ca1f2267b51078102a Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Thu, 2 Aug 2012 17:00:13 -0700
+Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
+
+
+diff --git a/pom.xml b/pom.xml
+index afe9ed8..cd394de 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,12 +1,12 @@
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+-  <groupId>org.bukkit</groupId>
+-  <artifactId>craftbukkit</artifactId>
++  <groupId>tc.oc</groupId>
++  <artifactId>sportbukkit</artifactId>
+   <packaging>jar</packaging>
+   <version>1.6.1-R0.1-SNAPSHOT</version>
+-  <name>CraftBukkit</name>
+-  <url>http://www.bukkit.org</url>
++  <name>SportBukkit</name>
++  <url>https://oc.tc</url>
+ 
+   <properties>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+@@ -24,14 +24,12 @@
+ 
+   <distributionManagement>
+     <repository>
+-      <id>repobo-rel</id>
+-      <name>repo.bukkit.org Releases</name>
+-      <url>http://repo.bukkit.org/content/repositories/releases/</url>
++      <id>repo.oc.tc</id>
++      <url>http://repo.oc.tc/content/repositories/releases/</url>
+     </repository>
+     <snapshotRepository>
+-      <id>repobo-snap</id>
+-      <name>repo.bukkit.org Snapshots</name>
+-      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
++      <id>repo.oc.tc</id>
++      <url>http://repo.oc.tc/content/repositories/snapshots/</url>
+     </snapshotRepository>
+   </distributionManagement>
+ 
+@@ -51,8 +49,8 @@
+ 
+   <dependencies>
+     <dependency>
+-      <groupId>org.bukkit</groupId>
+-      <artifactId>bukkit</artifactId>
++      <groupId>tc.oc</groupId>
++      <artifactId>sportbukkit-api</artifactId>
+       <version>${project.version}</version>
+       <type>jar</type>
+       <scope>compile</scope>
+@@ -156,7 +154,7 @@
+         <artifactId>gitdescribe-maven-plugin</artifactId>
+         <version>1.3</version>
+         <configuration>
+-          <outputPrefix>git-Bukkit-</outputPrefix>
++          <outputPrefix>git-SportBukkit-</outputPrefix>
+           <outputPostfix></outputPostfix>
+         </configuration>
+         <executions>
+-- 
+1.7.9.6 (Apple Git-31.1)
+

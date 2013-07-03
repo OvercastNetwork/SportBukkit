@@ -1,0 +1,41 @@
+From 936c1678b38a9575882fc7241f9b8e44697d7063 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 29 May 2013 23:52:37 -0500
+Subject: [PATCH] Visibility API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 8aabb43..bb8408d 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -565,6 +565,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      */
+     public void hidePlayer(Player player);
+ 
++    public void hide(Entity entity);
++
+     /**
+      * Allows this player to see a player that was previously hidden
+      *
+@@ -572,12 +574,16 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      */
+     public void showPlayer(Player player);
+ 
++    public void show(Entity entity);
++
+     /**
+-     * Checks to see if a player has been hidden from this player
++     * Checks to see if an entity has been hidden from this player
+      *
+      * @param player Player to check
+-     * @return True if the provided player is not being hidden from this player
++     * @return True if the provided entity is not being hidden from this player
+      */
++    public boolean canSee(Entity entity);
++
+     public boolean canSee(Player player);
+ 
+     /**
+-- 
+1.7.9.6 (Apple Git-31.1)
+

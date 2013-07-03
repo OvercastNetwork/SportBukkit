@@ -1,0 +1,73 @@
+From 229b1d0a176b24b66ffaeb55c6f8357abf0f0f87 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 15 May 2013 20:09:16 -0500
+Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
+ cancelling interact events working with fire
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
+index d77a4cc..dcdf9d2 100644
+--- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
++++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
+@@ -111,6 +111,13 @@ public class PlayerInteractManager {
+             // CraftBukkit start
+             if (event.isCancelled()) {
+                 // Let the client know the block still exists
++                // Check to see if fire was doused, if so, update the fire instead of the block the fire is on
++                org.bukkit.block.Block block = this.world.getWorld().getBlockAt(i, j, k).getRelative(org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(l));
++                if (block.getTypeId() == Block.FIRE.id) {
++                    i = block.getX();
++                    j = block.getY();
++                    k = block.getZ();
++                }
+                 ((EntityPlayer) this.player).playerConnection.sendPacket(new Packet53BlockChange(i, j, k, this.world));
+                 // Update any tile entity data for this block
+                 TileEntity tileentity = this.world.getTileEntity(i, j, k);
+@@ -121,11 +128,11 @@ public class PlayerInteractManager {
+             }
+             // CraftBukkit end
+             if (this.isCreative()) {
+-                if (!this.world.douseFire((EntityHuman) null, i, j, k, l)) {
++                if (!this.world.douseFire(this.player, i, j, k, l)) { // CraftBukkit - add this.player
+                     this.breakBlock(i, j, k);
+                 }
+             } else {
+-                this.world.douseFire((EntityHuman) null, i, j, k, l);
++                this.world.douseFire(this.player, i, j, k, l); // CraftBukkit - add this.player
+                 this.lastDigTick = this.currentTick;
+                 float f = 1.0F;
+                 int i1 = this.world.getTypeId(i, j, k);
+@@ -142,8 +149,8 @@ public class PlayerInteractManager {
+                     }
+                 } else if (i1 > 0) {
+                     Block.byId[i1].attack(this.world, i, j, k, this.player);
+-                    // Allow fire punching to be blocked
+-                    this.world.douseFire((EntityHuman) null, i, j, k, l);
++                    // Allow fire punching to be blocked, add this.player
++                    this.world.douseFire(this.player, i, j, k, l);
+                 }
+ 
+                 // Handle hitting a block
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index 14e108f..e2035d0 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -1686,8 +1686,13 @@ public abstract class World implements IBlockAccess {
+         }
+ 
+         if (this.getTypeId(i, j, k) == Block.FIRE.id) {
+-            this.a(entityhuman, 1004, i, j, k, 0);
+-            this.setAir(i, j, k);
++            // CraftBukkit start
++            if (entityhuman instanceof EntityPlayer) {
++                if (((EntityPlayer) entityhuman).playerInteractManager.breakBlock(i, j, k)) {
++                    this.triggerEffect(1004, i, j, k, 0);
++                }
++            }
++            // CraftBukkit end
+             return true;
+         } else {
+             return false;
+-- 
+1.7.9.6 (Apple Git-31.1)
+

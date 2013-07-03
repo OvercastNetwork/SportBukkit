@@ -1,0 +1,291 @@
+From aa4a5579dca379c93a627aa81abc48b488766aae Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 16 May 2013 20:20:34 -0500
+Subject: [PATCH] Add Ignorant Effects API
+
+
+diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
+index f5935f7..9d726b9 100644
+--- a/src/main/java/net/minecraft/server/DataWatcher.java
++++ b/src/main/java/net/minecraft/server/DataWatcher.java
+@@ -16,7 +16,7 @@ public class DataWatcher {
+     private boolean a = true;
+     private static final HashMap b = new HashMap();
+     private final Map c = new HashMap();
+-    private boolean d;
++    public boolean d; // CraftBukkit - private -> public
+     private ReadWriteLock e = new ReentrantReadWriteLock();
+ 
+     public DataWatcher() {}
+@@ -73,7 +73,8 @@ public class DataWatcher {
+         return (ItemStack) this.i(i).b();
+     }
+ 
+-    private WatchableObject i(int i) {
++    // CraftBukkit - private -> public
++    public WatchableObject i(int i) {
+         this.e.readLock().lock();
+ 
+         WatchableObject watchableobject;
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index c34f10c..d79d11b 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -768,12 +768,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+     protected void a(MobEffect mobeffect) {
+         super.a(mobeffect);
+-        this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++        // CraftBukkit - account for ignorant effects
++        if (!this.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
++            this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++        }
+     }
+ 
+     protected void b(MobEffect mobeffect) {
+         super.b(mobeffect);
+-        this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++        // CraftBukkit - account for ignorant effects
++        if (!this.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
++            this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++        }
+     }
+ 
+     protected void c(MobEffect mobeffect) {
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index e58af63..712895e 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -1,5 +1,6 @@
+ package net.minecraft.server;
+ 
++import java.util.ArrayList; // CraftBukkit
+ import java.util.Collection;
+ import java.util.HashSet;
+ import java.util.Iterator;
+@@ -97,7 +98,7 @@ public class EntityTrackerEntry {
+                 }
+             }
+ 
+-            this.b();
++            this.sendMetadata(this.tracker.getDataWatcher(), false); // CraftBukkit - custom metadata sender
+         } else if (this.m % this.c == 0 || this.tracker.an || this.tracker.getDataWatcher().a()) {
+             int i;
+             int j;
+@@ -168,7 +169,7 @@ public class EntityTrackerEntry {
+                     this.broadcast((Packet) object);
+                 }
+ 
+-                this.b();
++                this.sendMetadata(this.tracker.getDataWatcher(), false); // CraftBukkit - custom metadata sender
+                 /* CraftBukkit start - Code moved up
+                 if (flag) {
+                     this.xLoc = i;
+@@ -197,7 +198,7 @@ public class EntityTrackerEntry {
+                 this.xLoc = this.tracker.at.a(this.tracker.locX);
+                 this.yLoc = MathHelper.floor(this.tracker.locY * 32.0D);
+                 this.zLoc = this.tracker.at.a(this.tracker.locZ);
+-                this.b();
++                this.sendMetadata(this.tracker.getDataWatcher(), false); // CraftBukkit - custom metadata sender
+                 this.w = true;
+             }
+ 
+@@ -274,6 +275,64 @@ public class EntityTrackerEntry {
+         }
+     }
+ 
++    // CraftBukkit start - custom metadata sender
++    public void sendMetadata(DataWatcher datawatcher, boolean flag) {
++        if (datawatcher.a()) {
++            this.sendMetadata(datawatcher, flag, null);
++        }
++
++        if (!flag && this.tracker instanceof EntityLiving) {
++            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aT();
++            Set set = attributemapserver.b();
++
++            if (!set.isEmpty()) {
++                this.broadcastIncludingSelf(new Packet44UpdateAttributes(this.tracker.id, set));
++            }
++
++            set.clear();
++        }
++    }
++
++    public void sendMetadata(DataWatcher datawatcher, boolean flag, EntityPlayer entityplayer) {
++        List dataNormal = flag ? datawatcher.c() : datawatcher.b();
++        List dataVisible = new ArrayList(dataNormal);
++
++        if(this.tracker.isInvisible()) {
++            WatchableObject normal = datawatcher.i(0);
++            byte b0 = ((Byte) normal.b()).byteValue();
++            WatchableObject visible = new WatchableObject(normal.c(), normal.a(), Byte.valueOf((byte) (b0 & ~(1 << 5))));
++
++            dataVisible.remove(normal);
++            dataVisible.add(visible);
++        }
++
++        Packet40EntityMetadata normal = new Packet40EntityMetadata(this.tracker.id, dataNormal);
++        Packet40EntityMetadata visible = new Packet40EntityMetadata(this.tracker.id, dataVisible);
++        Iterator iterator = this.trackedPlayers.iterator();
++
++        if(entityplayer == null) {
++            while (iterator.hasNext()) {
++                EntityPlayer entityplayer2 = (EntityPlayer) iterator.next();
++                this.sendMetadata(entityplayer2, normal, visible);
++            }
++        }
++
++        if (entityplayer == null && this.tracker instanceof EntityPlayer) {
++            this.sendMetadata((EntityPlayer) this.tracker, normal, visible);
++        } else if (entityplayer != null) {
++            this.sendMetadata(entityplayer, normal, visible);
++        }
++    }
++
++    private void sendMetadata(EntityPlayer entityplayer, Packet40EntityMetadata normal, Packet40EntityMetadata visible) {
++        if (entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(MobEffectList.INVISIBILITY.getId()))) {
++            entityplayer.playerConnection.sendPacket(visible);
++        } else {
++            entityplayer.playerConnection.sendPacket(normal);
++        }
++    }
++    // CraftBukkit end
++
+     public void a() {
+         Iterator iterator = this.trackedPlayers.iterator();
+ 
+@@ -314,7 +373,7 @@ public class EntityTrackerEntry {
+ 
+                     entityplayer.playerConnection.sendPacket(packet);
+                     if (!this.tracker.getDataWatcher().d()) {
+-                        entityplayer.playerConnection.sendPacket(new Packet40EntityMetadata(this.tracker.id, this.tracker.getDataWatcher(), true));
++                        this.sendMetadata(this.tracker.getDataWatcher(), true, entityplayer); // CraftBukkit - custom metadata sender
+                     }
+ 
+                     if (this.tracker instanceof EntityLiving) {
+@@ -375,7 +434,10 @@ public class EntityTrackerEntry {
+                         while (iterator.hasNext()) {
+                             MobEffect mobeffect = (MobEffect) iterator.next();
+ 
+-                            entityplayer.playerConnection.sendPacket(new Packet41MobEffect(this.tracker.id, mobeffect));
++                            // CraftBukkit - account for ignorant effects
++                            if (!entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
++                                entityplayer.playerConnection.sendPacket(new Packet41MobEffect(this.tracker.id, mobeffect));
++                            }
+                         }
+                     }
+                 }
+diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+index 54299a7..a94eb75 100644
+--- a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
++++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+@@ -12,6 +12,13 @@ public class Packet40EntityMetadata extends Packet {
+ 
+     public Packet40EntityMetadata() {}
+ 
++    // CraftBukkit start - add constructor
++    public Packet40EntityMetadata(int i, List list) {
++        this.a = i;
++        this.b = list;
++    }
++    // CraftBukkit end
++
+     public Packet40EntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
+         this.a = i;
+         if (flag) {
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index 91140c6..8e7cb87 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -110,7 +110,10 @@ public abstract class PlayerList {
+         while (iterator.hasNext()) {
+             MobEffect mobeffect = (MobEffect) iterator.next();
+ 
+-            playerconnection.sendPacket(new Packet41MobEffect(entityplayer.id, mobeffect));
++            // CraftBukkit - account for ignorant effects
++            if (!entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
++                playerconnection.sendPacket(new Packet41MobEffect(entityplayer.id, mobeffect));
++            }
+         }
+ 
+         entityplayer.syncInventory();
+@@ -461,7 +464,10 @@ public abstract class PlayerList {
+         while (iterator.hasNext()) {
+             MobEffect mobeffect = (MobEffect) iterator.next();
+ 
+-            entityplayer1.playerConnection.sendPacket(new Packet41MobEffect(entityplayer1.id, mobeffect));
++            // CraftBukkit - account for ignorant effects
++            if (!entityplayer1.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
++                entityplayer1.playerConnection.sendPacket(new Packet41MobEffect(entityplayer1.id, mobeffect));
++            }
+         }
+         // entityplayer1.syncInventory();
+         // CraftBukkit end
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 977adff..1e5a83f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -50,6 +50,7 @@ import org.bukkit.metadata.MetadataValue;
+ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.Messenger;
+ import org.bukkit.plugin.messaging.StandardMessenger;
++import org.bukkit.potion.PotionEffectType;
+ import org.bukkit.scoreboard.Scoreboard;
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+@@ -60,6 +61,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private final ConversationTracker conversationTracker = new ConversationTracker();
+     private final Set<String> channels = new HashSet<String>();
+     private final Map<String, Player> hiddenPlayers = new MapMaker().softValues().makeMap();
++    private final Set<PotionEffectType> ignorantEffects = new HashSet<PotionEffectType>();
+     private int hash = 0;
+     private boolean scaledHealth;
+ 
+@@ -1010,4 +1012,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public boolean isScaledHealth() {
+         return this.scaledHealth;
+     }
++
++    public Set<PotionEffectType> getIgnorantEffects() {
++        return ImmutableSet.copyOf(this.ignorantEffects);
++    }
++
++    public void clearIgnorantEffects() {
++        this.ignorantEffects.clear();
++
++        refreshTrackedMetadata();
++    }
++
++    public void addIgnorantEffect(PotionEffectType effect) {
++        Validate.notNull(effect, "Effect cannot be null");
++
++        this.ignorantEffects.add(effect);
++
++        refreshTrackedMetadata();
++    }
++
++    public void removeIgnorantEffect(PotionEffectType effect) {
++        Validate.notNull(effect, "Effect cannot be null");
++
++        this.ignorantEffects.remove(effect);
++
++        refreshTrackedMetadata();
++    }
++
++    public boolean hasIgnorantEffect(PotionEffectType effect) {
++        Validate.notNull(effect, "Effect cannot be null");
++
++        return this.ignorantEffects.contains(effect);
++    }
++
++    private void refreshTrackedMetadata() {
++        for(Object obj : this.getHandle().world.players) {
++            EntityPlayer player = (EntityPlayer) obj;
++            player.setInvisible(player.isInvisible());
++        }
++    }
+ }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

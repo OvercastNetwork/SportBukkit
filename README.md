@@ -1,29 +1,19 @@
-SportBukkit [![Build Status](https://travis-ci.org/ProjectAres/SportBukkit.png?branch=master)](https://travis-ci.org/ProjectAres/SportBukkit)
+SportBukkit [![Build Status](https://travis-ci.org/OvercastNetwork/SportBukkit.png?branch=master)](https://travis-ci.org/OvercastNetwork/SportBukkit)
 ===========
 
-CraftBukkit modifications needed for PGM
+CraftBukkit modifications and Bukkit API additions that fix bugs, add new features, and improve the quality of life
 
-Setup:
-```
-gem install bundler
-bundle install
-```
+How To
+------
 
-Compile:
-```
-rake default
-```
-OR
-```
-rake update
-rake build
-rake compile
-```
+Init a Craftbukkit and Bukkit module : `git submodule update --init`
+
+Apply Patches : `./applyPatches.sh`
 
 SportBukkit binary will be located in build/CraftBukkit/target.
 
 People Using SportBukkit
-========================
+------------------------
 Below is a list of organizations that use SportBukkit or a fork of it to run their servers.
 If you want to be added to this list, please email support@oc.tc
 

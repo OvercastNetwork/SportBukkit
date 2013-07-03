@@ -1,0 +1,92 @@
+From 39a13570e268745312e7b465f541694867c72f8c Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sat, 13 Apr 2013 10:50:21 -0700
+Subject: [PATCH] BungeeCord Support
+
+- Allows BungeeCord to set the players real IP address very early in the login process, so that the BungeeCord proxy IP is never even seen by a plugin.
+- Ported from Spigot
+
+diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
+index c60abf1..ae7f0be 100644
+--- a/src/main/java/net/minecraft/server/NetworkManager.java
++++ b/src/main/java/net/minecraft/server/NetworkManager.java
+@@ -25,7 +25,7 @@ public class NetworkManager implements INetworkManager {
+     private final Object h = new Object();
+     private final IConsoleLogManager i;
+     public Socket socket; // CraftBukkit - private -> public
+-    private final SocketAddress k;
++    private SocketAddress k; // Spigot - remove final
+     private volatile DataInputStream input;
+     private volatile DataOutputStream output;
+     private volatile boolean n = true;
+@@ -302,6 +302,12 @@ public class NetworkManager implements INetworkManager {
+     public SocketAddress getSocketAddress() {
+         return this.k;
+     }
++    
++    // Spigot start
++    public void setSocketAddress(SocketAddress newAddress) {
++        this.k = newAddress;
++    }
++    // Spigot end
+ 
+     public void d() {
+         if (!this.t) {
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index 043321d..b8d234b 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -216,4 +216,17 @@ public class PendingConnection extends Connection {
+     static boolean a(PendingConnection pendingconnection, boolean flag) {
+         return pendingconnection.h = flag;
+     }
++
++    // Spigot start
++    @Override
++    public void a(Packet250CustomPayload pcp) {
++        if (pcp.tag.equals("BungeeCord") && server.server.bungeeIPs.contains(getSocket().getInetAddress().getHostAddress())) {
++            com.google.common.io.ByteArrayDataInput in = com.google.common.io.ByteStreams.newDataInput(pcp.data);
++            String subTag = in.readUTF();
++            if (subTag.equals("Login")) {
++                networkManager.setSocketAddress(new java.net.InetSocketAddress(in.readUTF(), in.readInt()));
++            }
++        }
++    }
++    // Spigot end
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 6cb50b7..c715dfc 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -158,6 +158,7 @@ public final class CraftServer implements Server {
+     private int ambientSpawn = -1;
+     public int chunkGCPeriod = -1;
+     public int chunkGCLoadThresh = 0;
++    public List<String> bungeeIPs = new ArrayList<String>(); // Spigot
+     private File container;
+     private WarningState warningState = WarningState.DEFAULT;
+     private final BooleanWrapper online = new BooleanWrapper();
+@@ -206,6 +207,7 @@ public final class CraftServer implements Server {
+         warningState = WarningState.value(configuration.getString("settings.deprecated-verbose"));
+         chunkGCPeriod = configuration.getInt("chunk-gc.period-in-ticks");
+         chunkGCLoadThresh = configuration.getInt("chunk-gc.load-threshold");
++        bungeeIPs = configuration.getStringList("settings.bungee-proxies"); // Spigot
+ 
+         updater = new AutoUpdater(new BukkitDLUpdaterService(configuration.getString("auto-updater.host")), getLogger(), configuration.getString("auto-updater.preferred-channel"));
+         updater.setEnabled(configuration.getBoolean("auto-updater.enabled"));
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index 61a95e3..0fc12a1 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -25,6 +25,8 @@ settings:
+     query-plugins: true
+     deprecated-verbose: default
+     shutdown-message: Server closed
++    bungee-proxies:
++        - 127.0.0.1
+ spawn-limits:
+     monsters: 70
+     animals: 15
+-- 
+1.7.9.6 (Apple Git-31.1)
+

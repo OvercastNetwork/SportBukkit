@@ -1,0 +1,22 @@
+From ea4e614f6666926b522ddca139b818cd5550ea0e Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 01:24:18 -0600
+Subject: [PATCH] Allow placing of ender portals in any dimension
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockEnderPortal.java b/src/main/java/net/minecraft/server/BlockEnderPortal.java
+index b0d2d1e..50f790f 100644
+--- a/src/main/java/net/minecraft/server/BlockEnderPortal.java
++++ b/src/main/java/net/minecraft/server/BlockEnderPortal.java
+@@ -55,7 +55,7 @@ public class BlockEnderPortal extends BlockContainer {
+     public void onPlace(World world, int i, int j, int k) {
+         if (!a) {
+             if (world.worldProvider.dimension != 0) {
+-                world.setAir(i, j, k);
++                // world.setAir(i, j, k); // CraftBukkit - allow placing of portals in any dimension
+             }
+         }
+     }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

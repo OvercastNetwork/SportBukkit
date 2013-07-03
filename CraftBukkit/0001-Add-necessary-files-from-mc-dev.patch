@@ -1,0 +1,1113 @@
+From a23b5c3771755f74d9232885d6df4529082e00ac Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 18 Dec 2012 22:12:16 -0600
+Subject: [PATCH] Add necessary files from mc-dev
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
+new file mode 100644
+index 0000000..c2e4a7d
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockFluids.java
+@@ -0,0 +1,232 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public abstract class BlockFluids extends Block {
++
++    protected BlockFluids(int i, Material material) {
++        super(i, material);
++        float f = 0.0F;
++        float f1 = 0.0F;
++
++        this.a(0.0F + f1, 0.0F + f, 0.0F + f1, 1.0F + f1, 1.0F + f, 1.0F + f1);
++        this.b(true);
++    }
++
++    public boolean b(IBlockAccess iblockaccess, int i, int j, int k) {
++        return this.material != Material.LAVA;
++    }
++
++    public static float d(int i) {
++        if (i >= 8) {
++            i = 0;
++        }
++
++        return (float) (i + 1) / 9.0F;
++    }
++
++    protected int l_(World world, int i, int j, int k) {
++        return world.getMaterial(i, j, k) == this.material ? world.getData(i, j, k) : -1;
++    }
++
++    protected int d(IBlockAccess iblockaccess, int i, int j, int k) {
++        if (iblockaccess.getMaterial(i, j, k) != this.material) {
++            return -1;
++        } else {
++            int l = iblockaccess.getData(i, j, k);
++
++            if (l >= 8) {
++                l = 0;
++            }
++
++            return l;
++        }
++    }
++
++    public boolean b() {
++        return false;
++    }
++
++    public boolean c() {
++        return false;
++    }
++
++    public boolean a(int i, boolean flag) {
++        return flag && i == 0;
++    }
++
++    public boolean a_(IBlockAccess iblockaccess, int i, int j, int k, int l) {
++        Material material = iblockaccess.getMaterial(i, j, k);
++
++        return material == this.material ? false : (l == 1 ? true : (material == Material.ICE ? false : super.a_(iblockaccess, i, j, k, l)));
++    }
++
++    public AxisAlignedBB b(World world, int i, int j, int k) {
++        return null;
++    }
++
++    public int d() {
++        return 4;
++    }
++
++    public int getDropType(int i, Random random, int j) {
++        return 0;
++    }
++
++    public int a(Random random) {
++        return 0;
++    }
++
++    private Vec3D g(IBlockAccess iblockaccess, int i, int j, int k) {
++        Vec3D vec3d = iblockaccess.getVec3DPool().create(0.0D, 0.0D, 0.0D);
++        int l = this.d(iblockaccess, i, j, k);
++
++        for (int i1 = 0; i1 < 4; ++i1) {
++            int j1 = i;
++            int k1 = k;
++
++            if (i1 == 0) {
++                j1 = i - 1;
++            }
++
++            if (i1 == 1) {
++                k1 = k - 1;
++            }
++
++            if (i1 == 2) {
++                ++j1;
++            }
++
++            if (i1 == 3) {
++                ++k1;
++            }
++
++            int l1 = this.d(iblockaccess, j1, j, k1);
++            int i2;
++
++            if (l1 < 0) {
++                if (!iblockaccess.getMaterial(j1, j, k1).isSolid()) {
++                    l1 = this.d(iblockaccess, j1, j - 1, k1);
++                    if (l1 >= 0) {
++                        i2 = l1 - (l - 8);
++                        vec3d = vec3d.add((double) ((j1 - i) * i2), (double) ((j - j) * i2), (double) ((k1 - k) * i2));
++                    }
++                }
++            } else if (l1 >= 0) {
++                i2 = l1 - l;
++                vec3d = vec3d.add((double) ((j1 - i) * i2), (double) ((j - j) * i2), (double) ((k1 - k) * i2));
++            }
++        }
++
++        if (iblockaccess.getData(i, j, k) >= 8) {
++            boolean flag = false;
++
++            if (flag || this.a_(iblockaccess, i, j, k - 1, 2)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j, k + 1, 3)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i - 1, j, k, 4)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i + 1, j, k, 5)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j + 1, k - 1, 2)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i, j + 1, k + 1, 3)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i - 1, j + 1, k, 4)) {
++                flag = true;
++            }
++
++            if (flag || this.a_(iblockaccess, i + 1, j + 1, k, 5)) {
++                flag = true;
++            }
++
++            if (flag) {
++                vec3d = vec3d.a().add(0.0D, -6.0D, 0.0D);
++            }
++        }
++
++        vec3d = vec3d.a();
++        return vec3d;
++    }
++
++    public void a(World world, int i, int j, int k, Entity entity, Vec3D vec3d) {
++        Vec3D vec3d1 = this.g((IBlockAccess) world, i, j, k);
++
++        vec3d.c += vec3d1.c;
++        vec3d.d += vec3d1.d;
++        vec3d.e += vec3d1.e;
++    }
++
++    public int a(World world) {
++        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? (world.worldProvider.g ? 10 : 30) : 0);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        this.k(world, i, j, k);
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        this.k(world, i, j, k);
++    }
++
++    private void k(World world, int i, int j, int k) {
++        if (world.getTypeId(i, j, k) == this.id) {
++            if (this.material == Material.LAVA) {
++                boolean flag = false;
++
++                if (flag || world.getMaterial(i, j, k - 1) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i, j, k + 1) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i - 1, j, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i + 1, j, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag || world.getMaterial(i, j + 1, k) == Material.WATER) {
++                    flag = true;
++                }
++
++                if (flag) {
++                    int l = world.getData(i, j, k);
++
++                    if (l == 0) {
++                        world.setTypeIdUpdate(i, j, k, Block.OBSIDIAN.id);
++                    } else if (l <= 4) {
++                        world.setTypeIdUpdate(i, j, k, Block.COBBLESTONE.id);
++                    }
++
++                    this.fizz(world, i, j, k);
++                }
++            }
++        }
++    }
++
++    protected void fizz(World world, int i, int j, int k) {
++        world.makeSound((double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), "random.fizz", 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
++
++        for (int l = 0; l < 8; ++l) {
++            world.addParticle("largesmoke", (double) i + Math.random(), (double) j + 1.2D, (double) k + Math.random(), 0.0D, 0.0D, 0.0D);
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/BlockSand.java b/src/main/java/net/minecraft/server/BlockSand.java
+new file mode 100644
+index 0000000..3ca6e41
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockSand.java
+@@ -0,0 +1,78 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public class BlockSand extends Block {
++
++    public static boolean instaFall;
++
++    public BlockSand(int i) {
++        super(i, Material.SAND);
++        this.a(CreativeModeTab.b);
++    }
++
++    public BlockSand(int i, Material material) {
++        super(i, material);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        world.a(i, j, k, this.id, this.a(world));
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        world.a(i, j, k, this.id, this.a(world));
++    }
++
++    public void a(World world, int i, int j, int k, Random random) {
++        if (!world.isStatic) {
++            this.k(world, i, j, k);
++        }
++    }
++
++    private void k(World world, int i, int j, int k) {
++        if (canFall(world, i, j - 1, k) && j >= 0) {
++            byte b0 = 32;
++
++            if (!instaFall && world.e(i - b0, j - b0, k - b0, i + b0, j + b0, k + b0)) {
++                if (!world.isStatic) {
++                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), this.id, world.getData(i, j, k));
++
++                    this.a(entityfallingblock);
++                    world.addEntity(entityfallingblock);
++                }
++            } else {
++                world.setAir(i, j, k);
++
++                while (canFall(world, i, j - 1, k) && j > 0) {
++                    --j;
++                }
++
++                if (j > 0) {
++                    world.setTypeIdUpdate(i, j, k, this.id);
++                }
++            }
++        }
++    }
++
++    protected void a(EntityFallingBlock entityfallingblock) {}
++
++    public int a(World world) {
++        return 2;
++    }
++
++    public static boolean canFall(World world, int i, int j, int k) {
++        int l = world.getTypeId(i, j, k);
++
++        if (l == 0) {
++            return true;
++        } else if (l == Block.FIRE.id) {
++            return true;
++        } else {
++            Material material = Block.byId[l].material;
++
++            return material == Material.WATER ? true : material == Material.LAVA;
++        }
++    }
++
++    public void a_(World world, int i, int j, int k, int l) {}
++}
+diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
+new file mode 100644
+index 0000000..6cb6089
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockTNT.java
+@@ -0,0 +1,80 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public class BlockTNT extends Block {
++
++    public BlockTNT(int i) {
++        super(i, Material.TNT);
++        this.a(CreativeModeTab.d);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        super.onPlace(world, i, j, k);
++        if (world.isBlockIndirectlyPowered(i, j, k)) {
++            this.postBreak(world, i, j, k, 1);
++            world.setAir(i, j, k);
++        }
++    }
++
++    public void doPhysics(World world, int i, int j, int k, int l) {
++        if (world.isBlockIndirectlyPowered(i, j, k)) {
++            this.postBreak(world, i, j, k, 1);
++            world.setAir(i, j, k);
++        }
++    }
++
++    public int a(Random random) {
++        return 1;
++    }
++
++    public void wasExploded(World world, int i, int j, int k, Explosion explosion) {
++        if (!world.isStatic) {
++            EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), explosion.c());
++
++            entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
++            world.addEntity(entitytntprimed);
++        }
++    }
++
++    public void postBreak(World world, int i, int j, int k, int l) {
++        this.a(world, i, j, k, l, (EntityLiving) null);
++    }
++
++    public void a(World world, int i, int j, int k, int l, EntityLiving entityliving) {
++        if (!world.isStatic) {
++            if ((l & 1) == 1) {
++                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), entityliving);
++
++                world.addEntity(entitytntprimed);
++                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++            }
++        }
++    }
++
++    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
++        if (entityhuman.bt() != null && entityhuman.bt().id == Item.FLINT_AND_STEEL.id) {
++            this.a(world, i, j, k, 1, entityhuman);
++            world.setAir(i, j, k);
++            entityhuman.bt().damage(1, entityhuman);
++            return true;
++        } else {
++            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
++        }
++    }
++
++    public void a(World world, int i, int j, int k, Entity entity) {
++        if (entity instanceof EntityArrow && !world.isStatic) {
++            EntityArrow entityarrow = (EntityArrow) entity;
++
++            if (entityarrow.isBurning()) {
++                this.a(world, i, j, k, 1, entityarrow.shooter instanceof EntityLiving ? (EntityLiving) entityarrow.shooter : null);
++                world.setAir(i, j, k);
++            }
++        }
++    }
++
++    public boolean a(Explosion explosion) {
++        return false;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
+new file mode 100644
+index 0000000..f5935f7
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/DataWatcher.java
+@@ -0,0 +1,295 @@
++package net.minecraft.server;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Map;
++import java.util.concurrent.locks.ReadWriteLock;
++import java.util.concurrent.locks.ReentrantReadWriteLock;
++
++public class DataWatcher {
++
++    private boolean a = true;
++    private static final HashMap b = new HashMap();
++    private final Map c = new HashMap();
++    private boolean d;
++    private ReadWriteLock e = new ReentrantReadWriteLock();
++
++    public DataWatcher() {}
++
++    public void a(int i, Object object) {
++        Integer integer = (Integer) b.get(object.getClass());
++
++        if (integer == null) {
++            throw new IllegalArgumentException("Unknown data type: " + object.getClass());
++        } else if (i > 31) {
++            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 31 + ")");
++        } else if (this.c.containsKey(Integer.valueOf(i))) {
++            throw new IllegalArgumentException("Duplicate id value for " + i + "!");
++        } else {
++            WatchableObject watchableobject = new WatchableObject(integer.intValue(), i, object);
++
++            this.e.writeLock().lock();
++            this.c.put(Integer.valueOf(i), watchableobject);
++            this.e.writeLock().unlock();
++            this.a = false;
++        }
++    }
++
++    public void a(int i, int j) {
++        WatchableObject watchableobject = new WatchableObject(j, i, null);
++
++        this.e.writeLock().lock();
++        this.c.put(Integer.valueOf(i), watchableobject);
++        this.e.writeLock().unlock();
++        this.a = false;
++    }
++
++    public byte getByte(int i) {
++        return ((Byte) this.i(i).b()).byteValue();
++    }
++
++    public short getShort(int i) {
++        return ((Short) this.i(i).b()).shortValue();
++    }
++
++    public int getInt(int i) {
++        return ((Integer) this.i(i).b()).intValue();
++    }
++
++    public float getFloat(int i) {
++        return ((Float) this.i(i).b()).floatValue();
++    }
++
++    public String getString(int i) {
++        return (String) this.i(i).b();
++    }
++
++    public ItemStack getItemStack(int i) {
++        return (ItemStack) this.i(i).b();
++    }
++
++    private WatchableObject i(int i) {
++        this.e.readLock().lock();
++
++        WatchableObject watchableobject;
++
++        try {
++            watchableobject = (WatchableObject) this.c.get(Integer.valueOf(i));
++        } catch (Throwable throwable) {
++            CrashReport crashreport = CrashReport.a(throwable, "Getting synched entity data");
++            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Synched entity data");
++
++            crashreportsystemdetails.a("Data ID", Integer.valueOf(i));
++            throw new ReportedException(crashreport);
++        }
++
++        this.e.readLock().unlock();
++        return watchableobject;
++    }
++
++    public void watch(int i, Object object) {
++        WatchableObject watchableobject = this.i(i);
++
++        if (!object.equals(watchableobject.b())) {
++            watchableobject.a(object);
++            watchableobject.a(true);
++            this.d = true;
++        }
++    }
++
++    public void h(int i) {
++        this.i(i).a(true); // CraftBukkit - visibility decompile fix
++        this.d = true;
++    }
++
++    public boolean a() {
++        return this.d;
++    }
++
++    public static void a(List list, DataOutput dataoutput) throws IOException {
++        if (list != null) {
++            Iterator iterator = list.iterator();
++
++            while (iterator.hasNext()) {
++                WatchableObject watchableobject = (WatchableObject) iterator.next();
++
++                a(dataoutput, watchableobject);
++            }
++        }
++
++        dataoutput.writeByte(127);
++    }
++
++    public List b() {
++        ArrayList arraylist = null;
++
++        if (this.d) {
++            this.e.readLock().lock();
++            Iterator iterator = this.c.values().iterator();
++
++            while (iterator.hasNext()) {
++                WatchableObject watchableobject = (WatchableObject) iterator.next();
++
++                if (watchableobject.d()) {
++                    watchableobject.a(false);
++                    if (arraylist == null) {
++                        arraylist = new ArrayList();
++                    }
++
++                    arraylist.add(watchableobject);
++                }
++            }
++
++            this.e.readLock().unlock();
++        }
++
++        this.d = false;
++        return arraylist;
++    }
++
++    public void a(DataOutput dataoutput) throws IOException {
++        this.e.readLock().lock();
++        Iterator iterator = this.c.values().iterator();
++
++        while (iterator.hasNext()) {
++            WatchableObject watchableobject = (WatchableObject) iterator.next();
++
++            a(dataoutput, watchableobject);
++        }
++
++        this.e.readLock().unlock();
++        dataoutput.writeByte(127);
++    }
++
++    public List c() {
++        ArrayList arraylist = null;
++
++        this.e.readLock().lock();
++
++        WatchableObject watchableobject;
++
++        for (Iterator iterator = this.c.values().iterator(); iterator.hasNext(); arraylist.add(watchableobject)) {
++            watchableobject = (WatchableObject) iterator.next();
++            if (arraylist == null) {
++                arraylist = new ArrayList();
++            }
++        }
++
++        this.e.readLock().unlock();
++        return arraylist;
++    }
++
++    private static void a(DataOutput dataoutput, WatchableObject watchableobject) throws IOException {
++        int i = (watchableobject.c() << 5 | watchableobject.a() & 31) & 255;
++
++        dataoutput.writeByte(i);
++        switch (watchableobject.c()) {
++        case 0:
++            dataoutput.writeByte(((Byte) watchableobject.b()).byteValue());
++            break;
++
++        case 1:
++            dataoutput.writeShort(((Short) watchableobject.b()).shortValue());
++            break;
++
++        case 2:
++            dataoutput.writeInt(((Integer) watchableobject.b()).intValue());
++            break;
++
++        case 3:
++            dataoutput.writeFloat(((Float) watchableobject.b()).floatValue());
++            break;
++
++        case 4:
++            Packet.a((String) watchableobject.b(), dataoutput);
++            break;
++
++        case 5:
++            ItemStack itemstack = (ItemStack) watchableobject.b();
++
++            Packet.a(itemstack, dataoutput);
++            break;
++
++        case 6:
++            ChunkCoordinates chunkcoordinates = (ChunkCoordinates) watchableobject.b();
++
++            dataoutput.writeInt(chunkcoordinates.x);
++            dataoutput.writeInt(chunkcoordinates.y);
++            dataoutput.writeInt(chunkcoordinates.z);
++        }
++    }
++
++    public static List a(DataInput datainput) throws IOException {
++        ArrayList arraylist = null;
++
++        for (byte b0 = datainput.readByte(); b0 != 127; b0 = datainput.readByte()) {
++            if (arraylist == null) {
++                arraylist = new ArrayList();
++            }
++
++            int i = (b0 & 224) >> 5;
++            int j = b0 & 31;
++            WatchableObject watchableobject = null;
++
++            switch (i) {
++            case 0:
++                watchableobject = new WatchableObject(i, j, Byte.valueOf(datainput.readByte()));
++                break;
++
++            case 1:
++                watchableobject = new WatchableObject(i, j, Short.valueOf(datainput.readShort()));
++                break;
++
++            case 2:
++                watchableobject = new WatchableObject(i, j, Integer.valueOf(datainput.readInt()));
++                break;
++
++            case 3:
++                watchableobject = new WatchableObject(i, j, Float.valueOf(datainput.readFloat()));
++                break;
++
++            case 4:
++                watchableobject = new WatchableObject(i, j, Packet.a(datainput, 64));
++                break;
++
++            case 5:
++                watchableobject = new WatchableObject(i, j, Packet.c(datainput));
++                break;
++
++            case 6:
++                int k = datainput.readInt();
++                int l = datainput.readInt();
++                int i1 = datainput.readInt();
++
++                watchableobject = new WatchableObject(i, j, new ChunkCoordinates(k, l, i1));
++            }
++
++            arraylist.add(watchableobject);
++        }
++
++        return arraylist;
++    }
++
++    public boolean d() {
++        return this.a;
++    }
++
++    public void e() {
++        this.d = false;
++    }
++
++    static {
++        b.put(Byte.class, Integer.valueOf(0));
++        b.put(Short.class, Integer.valueOf(1));
++        b.put(Integer.class, Integer.valueOf(2));
++        b.put(Float.class, Integer.valueOf(3));
++        b.put(String.class, Integer.valueOf(4));
++        b.put(ItemStack.class, Integer.valueOf(5));
++        b.put(ChunkCoordinates.class, Integer.valueOf(6));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+new file mode 100644
+index 0000000..54299a7
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+@@ -0,0 +1,41 @@
++package net.minecraft.server;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++import java.io.IOException;
++import java.util.List;
++
++public class Packet40EntityMetadata extends Packet {
++
++    public int a;
++    private List b;
++
++    public Packet40EntityMetadata() {}
++
++    public Packet40EntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
++        this.a = i;
++        if (flag) {
++            this.b = datawatcher.c();
++        } else {
++            this.b = datawatcher.b();
++        }
++    }
++
++    public void a(DataInput datainput) throws IOException {
++        this.a = datainput.readInt();
++        this.b = DataWatcher.a(datainput);
++    }
++
++    public void a(DataOutput dataoutput) throws IOException {
++        dataoutput.writeInt(this.a);
++        DataWatcher.a(this.b, dataoutput);
++    }
++
++    public void handle(Connection connection) {
++        connection.a(this);
++    }
++
++    public int a() {
++        return 5;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/Packet63WorldParticles.java b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
+new file mode 100644
+index 0000000..d7f4d2a
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
+@@ -0,0 +1,51 @@
++package net.minecraft.server;
++
++import java.io.DataInput;
++import java.io.DataOutput;
++
++public class Packet63WorldParticles extends Packet {
++
++    private String a;
++    private float b;
++    private float c;
++    private float d;
++    private float e;
++    private float f;
++    private float g;
++    private float h;
++    private int i;
++
++    public Packet63WorldParticles() {}
++
++    public void a(DataInput datainput) {
++        this.a = a(datainput, 64);
++        this.b = datainput.readFloat();
++        this.c = datainput.readFloat();
++        this.d = datainput.readFloat();
++        this.e = datainput.readFloat();
++        this.f = datainput.readFloat();
++        this.g = datainput.readFloat();
++        this.h = datainput.readFloat();
++        this.i = datainput.readInt();
++    }
++
++    public void a(DataOutput dataoutput) {
++        a(this.a, dataoutput);
++        dataoutput.writeFloat(this.b);
++        dataoutput.writeFloat(this.c);
++        dataoutput.writeFloat(this.d);
++        dataoutput.writeFloat(this.e);
++        dataoutput.writeFloat(this.f);
++        dataoutput.writeFloat(this.g);
++        dataoutput.writeFloat(this.h);
++        dataoutput.writeInt(this.i);
++    }
++
++    public void handle(Connection connection) {
++        connection.a(this);
++    }
++
++    public int a() {
++        return 64;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java
+new file mode 100644
+index 0000000..12815ee
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/RemoteStatusListener.java
+@@ -0,0 +1,285 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import java.net.DatagramPacket;
++import java.net.DatagramSocket;
++import java.net.InetAddress;
++import java.net.PortUnreachableException;
++import java.net.SocketAddress;
++import java.net.SocketException;
++import java.net.SocketTimeoutException;
++import java.net.UnknownHostException;
++import java.util.Date;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.Map;
++import java.util.Map.Entry;
++
++public class RemoteStatusListener extends RemoteConnectionThread {
++
++    private long clearedTime;
++    private int bindPort;
++    private int serverPort;
++    private int maxPlayers;
++    private String localAddress;
++    private String worldName;
++    private DatagramSocket socket;
++    private byte[] n = new byte[1460];
++    private DatagramPacket o;
++    private Map p;
++    private String hostname;
++    private String motd;
++    private Map challenges;
++    private long t;
++    private RemoteStatusReply cachedReply;
++    private long cacheTime;
++
++    public RemoteStatusListener(IMinecraftServer iminecraftserver) {
++        super(iminecraftserver);
++        this.bindPort = iminecraftserver.a("query.port", 0);
++        this.motd = iminecraftserver.w();
++        this.serverPort = iminecraftserver.x();
++        this.localAddress = iminecraftserver.y();
++        this.maxPlayers = iminecraftserver.B();
++        this.worldName = iminecraftserver.L();
++        this.cacheTime = 0L;
++        this.hostname = "0.0.0.0";
++        if (0 != this.motd.length() && !this.hostname.equals(this.motd)) {
++            this.hostname = this.motd;
++        } else {
++            this.motd = "0.0.0.0";
++
++            try {
++                InetAddress inetaddress = InetAddress.getLocalHost();
++
++                this.hostname = inetaddress.getHostAddress();
++            } catch (UnknownHostException unknownhostexception) {
++                this.warning("Unable to determine local host IP, please set server-ip in \'" + iminecraftserver.b_() + "\' : " + unknownhostexception.getMessage());
++            }
++        }
++
++        if (0 == this.bindPort) {
++            this.bindPort = this.serverPort;
++            this.info("Setting default query port to " + this.bindPort);
++            iminecraftserver.a("query.port", Integer.valueOf(this.bindPort));
++            iminecraftserver.a("debug", Boolean.valueOf(false));
++            iminecraftserver.a();
++        }
++
++        this.p = new HashMap();
++        this.cachedReply = new RemoteStatusReply(1460);
++        this.challenges = new HashMap();
++        this.t = (new Date()).getTime();
++    }
++
++    private void send(byte[] abyte, DatagramPacket datagrampacket) {
++        this.socket.send(new DatagramPacket(abyte, abyte.length, datagrampacket.getSocketAddress()));
++    }
++
++    private boolean parsePacket(DatagramPacket datagrampacket) {
++        byte[] abyte = datagrampacket.getData();
++        int i = datagrampacket.getLength();
++        SocketAddress socketaddress = datagrampacket.getSocketAddress();
++
++        this.debug("Packet len " + i + " [" + socketaddress + "]");
++        if (3 <= i && -2 == abyte[0] && -3 == abyte[1]) {
++            this.debug("Packet \'" + StatusChallengeUtils.a(abyte[2]) + "\' [" + socketaddress + "]");
++            switch (abyte[2]) {
++            case 0:
++                if (!this.hasChallenged(datagrampacket).booleanValue()) {
++                    this.debug("Invalid challenge [" + socketaddress + "]");
++                    return false;
++                } else if (15 == i) {
++                    this.send(this.getFullReply(datagrampacket), datagrampacket);
++                    this.debug("Rules [" + socketaddress + "]");
++                } else {
++                    RemoteStatusReply remotestatusreply = new RemoteStatusReply(1460);
++
++                    remotestatusreply.write((int) 0);
++                    remotestatusreply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
++                    remotestatusreply.write(this.localAddress);
++                    remotestatusreply.write("SMP");
++                    remotestatusreply.write(this.worldName);
++                    remotestatusreply.write(Integer.toString(this.d()));
++                    remotestatusreply.write(Integer.toString(this.maxPlayers));
++                    remotestatusreply.write((short) this.serverPort);
++                    remotestatusreply.write(this.hostname);
++                    this.send(remotestatusreply.getBytes(), datagrampacket);
++                    this.debug("Status [" + socketaddress + "]");
++                }
++
++            case 9:
++                this.createChallenge(datagrampacket);
++                this.debug("Challenge [" + socketaddress + "]");
++                return true;
++
++            default:
++                return true;
++            }
++        } else {
++            this.debug("Invalid packet [" + socketaddress + "]");
++            return false;
++        }
++    }
++
++    private byte[] getFullReply(DatagramPacket datagrampacket) {
++        long i = MinecraftServer.aq();
++
++        if (i < this.cacheTime + 5000L) {
++            byte[] abyte = this.cachedReply.getBytes();
++            byte[] abyte1 = this.getIdentityToken(datagrampacket.getSocketAddress());
++
++            abyte[1] = abyte1[0];
++            abyte[2] = abyte1[1];
++            abyte[3] = abyte1[2];
++            abyte[4] = abyte1[3];
++            return abyte;
++        } else {
++            this.cacheTime = i;
++            this.cachedReply.reset();
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
++            this.cachedReply.write("splitnum");
++            this.cachedReply.write((int) 128);
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write("hostname");
++            this.cachedReply.write(this.localAddress);
++            this.cachedReply.write("gametype");
++            this.cachedReply.write("SMP");
++            this.cachedReply.write("game_id");
++            this.cachedReply.write("MINECRAFT");
++            this.cachedReply.write("version");
++            this.cachedReply.write(this.server.getVersion());
++            this.cachedReply.write("plugins");
++            this.cachedReply.write(this.server.getPlugins());
++            this.cachedReply.write("map");
++            this.cachedReply.write(this.worldName);
++            this.cachedReply.write("numplayers");
++            this.cachedReply.write("" + this.d());
++            this.cachedReply.write("maxplayers");
++            this.cachedReply.write("" + this.maxPlayers);
++            this.cachedReply.write("hostport");
++            this.cachedReply.write("" + this.serverPort);
++            this.cachedReply.write("hostip");
++            this.cachedReply.write(this.hostname);
++            this.cachedReply.write((int) 0);
++            this.cachedReply.write((int) 1);
++            this.cachedReply.write("player_");
++            this.cachedReply.write((int) 0);
++            String[] astring = this.server.getPlayers();
++            byte b0 = (byte) astring.length;
++
++            for (byte b1 = (byte) (b0 - 1); b1 >= 0; --b1) {
++                this.cachedReply.write(astring[b1]);
++            }
++
++            this.cachedReply.write((int) 0);
++            return this.cachedReply.getBytes();
++        }
++    }
++
++    private byte[] getIdentityToken(SocketAddress socketaddress) {
++        return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getIdentityToken();
++    }
++
++    private Boolean hasChallenged(DatagramPacket datagrampacket) {
++        SocketAddress socketaddress = datagrampacket.getSocketAddress();
++
++        if (!this.challenges.containsKey(socketaddress)) {
++            return Boolean.valueOf(false);
++        } else {
++            byte[] abyte = datagrampacket.getData();
++
++            return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getToken() != StatusChallengeUtils.c(abyte, 7, datagrampacket.getLength()) ? Boolean.valueOf(false) : Boolean.valueOf(true);
++        }
++    }
++
++    private void createChallenge(DatagramPacket datagrampacket) {
++        RemoteStatusChallenge remotestatuschallenge = new RemoteStatusChallenge(this, datagrampacket);
++
++        this.challenges.put(datagrampacket.getSocketAddress(), remotestatuschallenge);
++        this.send(remotestatuschallenge.getChallengeResponse(), datagrampacket);
++    }
++
++    private void cleanChallenges() {
++        if (this.running) {
++            long i = MinecraftServer.aq();
++
++            if (i >= this.clearedTime + 30000L) {
++                this.clearedTime = i;
++                Iterator iterator = this.challenges.entrySet().iterator();
++
++                while (iterator.hasNext()) {
++                    Entry entry = (Entry) iterator.next();
++
++                    if (((RemoteStatusChallenge) entry.getValue()).isExpired(i).booleanValue()) {
++                        iterator.remove();
++                    }
++                }
++            }
++        }
++    }
++
++    public void run() {
++        this.info("Query running on " + this.motd + ":" + this.bindPort);
++        this.clearedTime = MinecraftServer.aq();
++        this.o = new DatagramPacket(this.n, this.n.length);
++
++        try {
++            while (this.running) {
++                try {
++                    this.socket.receive(this.o);
++                    this.cleanChallenges();
++                    this.parsePacket(this.o);
++                } catch (SocketTimeoutException sockettimeoutexception) {
++                    this.cleanChallenges();
++                } catch (PortUnreachableException portunreachableexception) {
++                    ;
++                } catch (IOException ioexception) {
++                    this.a(ioexception);
++                }
++            }
++        } finally {
++            this.e();
++        }
++    }
++
++    public void a() {
++        if (!this.running) {
++            if (0 < this.bindPort && '\uffff' >= this.bindPort) {
++                if (this.g()) {
++                    super.a();
++                }
++            } else {
++                this.warning("Invalid query port " + this.bindPort + " found in \'" + this.server.b_() + "\' (queries disabled)");
++            }
++        }
++    }
++
++    private void a(Exception exception) {
++        if (this.running) {
++            this.warning("Unexpected exception, buggy JRE? (" + exception.toString() + ")");
++            if (!this.g()) {
++                this.error("Failed to recover from buggy JRE, shutting down!");
++                this.running = false;
++            }
++        }
++    }
++
++    private boolean g() {
++        try {
++            this.socket = new DatagramSocket(this.bindPort, InetAddress.getByName(this.motd));
++            this.a(this.socket);
++            this.socket.setSoTimeout(500);
++            return true;
++        } catch (SocketException socketexception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Socket): " + socketexception.getMessage());
++        } catch (UnknownHostException unknownhostexception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Unknown Host): " + unknownhostexception.getMessage());
++        } catch (Exception exception) {
++            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (E): " + exception.getMessage());
++        }
++
++        return false;
++    }
++}
+-- 
+1.7.9.6 (Apple Git-31.1)
+

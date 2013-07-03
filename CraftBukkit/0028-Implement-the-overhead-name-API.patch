@@ -1,0 +1,111 @@
+From 38e20327f97f4c54f55b2fb06d3bfc63f96cc0f3 Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sat, 4 Aug 2012 10:55:59 -0700
+Subject: [PATCH] Implement the overhead name API.
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index d79d11b..d264d88 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -46,6 +46,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     // CraftBukkit start
+     public String displayName;
+     public String listName;
++    public String overheadName;
+     public org.bukkit.Location compassTarget;
+     public int newExp = 0;
+     public int newLevel = 0;
+@@ -83,6 +84,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         // CraftBukkit start
+         this.displayName = this.name;
+         this.listName = this.name;
++        this.overheadName = this.name;
+         // this.canPickUpLoot = true; TODO
+         // CraftBukkit end
+     }
+diff --git a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
+index 1843d9c..09fc84f 100644
+--- a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
++++ b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
+@@ -24,11 +24,16 @@ public class Packet20NamedEntitySpawn extends Packet {
+     public Packet20NamedEntitySpawn(EntityHuman entityhuman) {
+         this.a = entityhuman.id;
+ 
+-        // CraftBukkit start - Limit name length to 16 characters
+-        if (entityhuman.name.length() > 16) {
+-            this.b = entityhuman.name.substring(0, 16);
++        // CraftBukkit start - limit name length to 16 characters and support overhead names for players
++        String name = entityhuman.name;
++        if (entityhuman instanceof EntityPlayer) {
++            name = ((EntityPlayer) entityhuman).overheadName;
++        }
++
++        if (name.length() > 16) {
++            this.b = name.substring(0, 16);
+         } else {
+-            this.b = entityhuman.name;
++            this.b = name;
+         }
+         // CraftBukkit end
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 1e5a83f..2cc5d80 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -8,6 +8,7 @@ import java.io.IOException;
+ import java.net.InetSocketAddress;
+ import java.net.SocketAddress;
+ import java.util.HashSet;
++import java.util.Iterator;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -972,6 +973,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         }
+     }
+ 
++    public String getOverheadName() {
++        return getHandle().overheadName;
++    }
++
++    public void setOverheadName(String name) {
++        String oldName = getHandle().overheadName;
++
++        if (name == null) {
++            name = getName();
++        }
++
++        if (oldName.equals(name)) {
++            return;
++        }
++
++        if (name.length() > 16) {
++            throw new IllegalArgumentException("Overhead names can only be a maximum of 16 characters long");
++        }
++
++        getHandle().overheadName = name;
++
++        // try to update the other players of this change
++        EntityTracker tracker = ((WorldServer) entity.world).tracker;
++        EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(getHandle().id);
++
++        if (getHandle().playerConnection == null || entry == null) return;
++
++        Packet29DestroyEntity destroypacket = new Packet29DestroyEntity(new int[]{getHandle().id});
++
++        for (Iterator it = ((WorldServer) entity.world).players.iterator(); it.hasNext(); ) {
++            EntityPlayer otherplayer = (EntityPlayer) it.next();
++            if (otherplayer.playerConnection == null || otherplayer == getHandle()) continue;
++
++            entry.clear(otherplayer);
++            entry.updatePlayer(otherplayer);
++        }
++    }
++
+     @Override
+     public void setMaxHealth(double amount) {
+         super.setMaxHealth(amount);
+-- 
+1.7.9.6 (Apple Git-31.1)
+

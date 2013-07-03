@@ -1,0 +1,32 @@
+From efc7965321b303d73ca0eaf4cfaea089a09b3a69 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Apr 2012 01:39:04 -0400
+Subject: [PATCH] Add API to control if a player can push other entities
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index b7cf010..8aabb43 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -605,6 +605,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public void setFlying(boolean value);
+ 
+     /**
++     * Change whether this player can push other entities
++     * @param yes true to push other entities, which is the default
++     */
++    public void setCollidesWithEntities(boolean yes);
++
++    /**
++     * Whether this player can push other entities
++     * @return true if the player can push other entities
++     */
++    public boolean getCollidesWithEntities();
++
++    /**
+      * Sets the speed at which a client will fly. Negative values indicate reverse directions.
+      * @param value The new speed, from -1 to 1.
+      * @throws IllegalArgumentException If new speed is less than -1 or greater than 1
+-- 
+1.7.9.6 (Apple Git-31.1)
+

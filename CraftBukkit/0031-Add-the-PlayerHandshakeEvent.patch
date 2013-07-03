@@ -1,0 +1,36 @@
+From 2e98cc2d0ab33eab50cf9979fc3625d39d4f5cc6 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sat, 17 Nov 2012 12:11:38 -0600
+Subject: [PATCH] Add the PlayerHandshakeEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index 7958390..6f5f779 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -11,6 +11,8 @@ import java.util.List;
+ import java.util.Random;
+ import javax.crypto.SecretKey;
+ 
++import org.bukkit.event.player.PlayerHandshakeEvent; // CraftBukkit
++
+ public class PendingConnection extends Connection {
+ 
+     private static Random random = new Random();
+@@ -81,6 +83,13 @@ public class PendingConnection extends Connection {
+                 this.loginKey = this.server.getOnlineMode() ? Long.toString(random.nextLong(), 16) : "-";
+                 this.d = new byte[4];
+                 random.nextBytes(this.d);
++
++                // CraftBukkit start
++                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d);
++                this.server.server.getPluginManager().callEvent(handshakeEvent);
++                this.loginKey = handshakeEvent.getLoginKey();
++                // CraftBukkit end
++
+                 this.networkManager.queue(new Packet253KeyRequest(this.loginKey, publickey, this.d));
+             }
+         }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

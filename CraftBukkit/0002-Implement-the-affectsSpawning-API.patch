@@ -1,0 +1,4133 @@
+From 06d96075127bf59a6c1ff9bc0a6adff2f0e7727d Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 2 Aug 2012 17:27:40 -0700
+Subject: [PATCH] Implement the affectsSpawning API
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index 794ed47..4a78c7a 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -38,6 +38,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+     public boolean sleeping; // protected -> public
+     public boolean fauxSleeping;
+     public String spawnWorld = "";
++    public boolean affectsSpawning = true; // CraftBukkit
+ 
+     @Override
+     public CraftHumanEntity getBukkitEntity() {
+diff --git a/src/main/java/net/minecraft/server/EntityInsentient.java b/src/main/java/net/minecraft/server/EntityInsentient.java
+index f913a40..a3a2e8b 100644
+--- a/src/main/java/net/minecraft/server/EntityInsentient.java
++++ b/src/main/java/net/minecraft/server/EntityInsentient.java
+@@ -382,7 +382,7 @@ public abstract class EntityInsentient extends EntityLiving {
+         if (this.persistent) {
+             this.aV = 0;
+         } else {
+-            EntityHuman entityhuman = this.world.findNearbyPlayer(this, -1.0D);
++            EntityHuman entityhuman = this.world.findNearbyPlayerWhoAffectsSpawning(this, -1.0D); // CraftBukkit
+ 
+             if (entityhuman != null) {
+                 double d0 = entityhuman.locX - this.locX;
+diff --git a/src/main/java/net/minecraft/server/EntityInsentient.java.orig b/src/main/java/net/minecraft/server/EntityInsentient.java.orig
+new file mode 100644
+index 0000000..f913a40
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/EntityInsentient.java.orig
+@@ -0,0 +1,880 @@
++package net.minecraft.server;
++
++import java.util.Iterator;
++import java.util.List;
++import java.util.UUID;
++
++//CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++
++public abstract class EntityInsentient extends EntityLiving {
++
++    public int a_;
++    protected int b;
++    private ControllerLook h;
++    private ControllerMove moveController;
++    private ControllerJump lookController;
++    private EntityAIBodyControl bn;
++    private Navigation navigation;
++    protected final PathfinderGoalSelector goalSelector;
++    protected final PathfinderGoalSelector targetSelector;
++    private EntityLiving goalTarget;
++    private EntitySenses bq;
++    private ItemStack[] equipment = new ItemStack[5];
++    public float[] dropChances = new float[5]; // CraftBukkit - protected -> public
++    public boolean canPickUpLoot; // CraftBukkit - private -> public
++    public boolean persistent = !isTypeNotPersistent(); // CraftBukkit - private -> public
++    protected float f;
++    private Entity bu;
++    protected int g;
++    private boolean bv;
++    private Entity bw;
++    private NBTTagCompound bx;
++
++    public EntityInsentient(World world) {
++        super(world);
++        this.goalSelector = new PathfinderGoalSelector(world != null && world.methodProfiler != null ? world.methodProfiler : null);
++        this.targetSelector = new PathfinderGoalSelector(world != null && world.methodProfiler != null ? world.methodProfiler : null);
++        this.h = new ControllerLook(this);
++        this.moveController = new ControllerMove(this);
++        this.lookController = new ControllerJump(this);
++        this.bn = new EntityAIBodyControl(this);
++        this.navigation = new Navigation(this, world);
++        this.bq = new EntitySenses(this);
++
++        for (int i = 0; i < this.dropChances.length; ++i) {
++            this.dropChances[i] = 0.085F;
++        }
++    }
++
++    protected void ax() {
++        super.ax();
++        this.aT().b(GenericAttributes.b).a(16.0D);
++    }
++
++    public ControllerLook getControllerLook() {
++        return this.h;
++    }
++
++    public ControllerMove getControllerMove() {
++        return this.moveController;
++    }
++
++    public ControllerJump getControllerJump() {
++        return this.lookController;
++    }
++
++    public Navigation getNavigation() {
++        return this.navigation;
++    }
++
++    public EntitySenses getEntitySenses() {
++        return this.bq;
++    }
++
++    public EntityLiving getGoalTarget() {
++        return this.goalTarget;
++    }
++
++    public void setGoalTarget(EntityLiving entityliving) {
++        this.goalTarget = entityliving;
++    }
++
++    public boolean a(Class oclass) {
++        return EntityCreeper.class != oclass && EntityGhast.class != oclass;
++    }
++
++    public void n() {}
++
++    protected void a() {
++        super.a();
++        this.datawatcher.a(11, Byte.valueOf((byte) 0));
++        this.datawatcher.a(10, "");
++    }
++
++    public int o() {
++        return 80;
++    }
++
++    public void p() {
++        String s = this.r();
++
++        if (s != null) {
++            this.makeSound(s, this.aW(), this.aX());
++        }
++    }
++
++    public void x() {
++        super.x();
++        this.world.methodProfiler.a("mobBaseTick");
++        if (this.isAlive() && this.random.nextInt(1000) < this.a_++) {
++            this.a_ = -this.o();
++            this.p();
++        }
++
++        this.world.methodProfiler.b();
++    }
++
++    protected int getExpValue(EntityHuman entityhuman) {
++        if (this.b > 0) {
++            int i = this.b;
++            ItemStack[] aitemstack = this.getEquipment();
++
++            for (int j = 0; j < aitemstack.length; ++j) {
++                if (aitemstack[j] != null && this.dropChances[j] <= 1.0F) {
++                    i += 1 + this.random.nextInt(3);
++                }
++            }
++
++            return i;
++        } else {
++            return this.b;
++        }
++    }
++
++    public void q() {
++        for (int i = 0; i < 20; ++i) {
++            double d0 = this.random.nextGaussian() * 0.02D;
++            double d1 = this.random.nextGaussian() * 0.02D;
++            double d2 = this.random.nextGaussian() * 0.02D;
++            double d3 = 10.0D;
++
++            this.world.addParticle("explode", this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d0 * d3, this.locY + (double) (this.random.nextFloat() * this.length) - d1 * d3, this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width - d2 * d3, d0, d1, d2);
++        }
++    }
++
++    public void l_() {
++        super.l_();
++        if (!this.world.isStatic) {
++            this.bB();
++        }
++    }
++
++    protected float f(float f, float f1) {
++        if (this.bb()) {
++            this.bn.a();
++            return f1;
++        } else {
++            return super.f(f, f1);
++        }
++    }
++
++    protected String r() {
++        return null;
++    }
++
++    protected int getLootId() {
++        return 0;
++    }
++
++    protected void dropDeathLoot(boolean flag, int i) {
++        // CraftBukkit start - Whole method
++        List<org.bukkit.inventory.ItemStack> loot = new java.util.ArrayList<org.bukkit.inventory.ItemStack>();
++        int j = this.getLootId();
++
++        if (j > 0) {
++            int k = this.random.nextInt(3);
++
++            if (i > 0) {
++                k += this.random.nextInt(i + 1);
++            }
++
++            if (k > 0) {
++                loot.add(new org.bukkit.inventory.ItemStack(j, k));
++            }
++        }
++
++        // Determine rare item drops and add them to the loot
++        if (this.lastDamageByPlayerTime > 0) {
++            int k = this.random.nextInt(200) - i;
++
++            if (k < 5) {
++                ItemStack itemstack = this.l(k <= 0 ? 1 : 0);
++                if (itemstack != null) {
++                    loot.add(org.bukkit.craftbukkit.inventory.CraftItemStack.asCraftMirror(itemstack));
++                }
++            }
++        }
++
++        CraftEventFactory.callEntityDeathEvent(this, loot); // raise event even for those times when the entity does not drop loot
++        // CraftBukkit end
++    }
++
++    public void b(NBTTagCompound nbttagcompound) {
++        super.b(nbttagcompound);
++        nbttagcompound.setBoolean("CanPickUpLoot", this.bz());
++        nbttagcompound.setBoolean("PersistenceRequired", this.persistent);
++        NBTTagList nbttaglist = new NBTTagList();
++
++        NBTTagCompound nbttagcompound1;
++
++        for (int i = 0; i < this.equipment.length; ++i) {
++            nbttagcompound1 = new NBTTagCompound();
++            if (this.equipment[i] != null) {
++                this.equipment[i].save(nbttagcompound1);
++            }
++
++            nbttaglist.add(nbttagcompound1);
++        }
++
++        nbttagcompound.set("Equipment", nbttaglist);
++        NBTTagList nbttaglist1 = new NBTTagList();
++
++        for (int j = 0; j < this.dropChances.length; ++j) {
++            nbttaglist1.add(new NBTTagFloat(j + "", this.dropChances[j]));
++        }
++
++        nbttagcompound.set("DropChances", nbttaglist1);
++        nbttagcompound.setString("CustomName", this.getCustomName());
++        nbttagcompound.setBoolean("CustomNameVisible", this.getCustomNameVisible());
++        nbttagcompound.setBoolean("Leashed", this.bv);
++        if (this.bw != null) {
++            nbttagcompound1 = new NBTTagCompound("Leash");
++            if (this.bw instanceof EntityLiving) {
++                nbttagcompound1.setLong("UUIDMost", this.bw.getUniqueID().getMostSignificantBits());
++                nbttagcompound1.setLong("UUIDLeast", this.bw.getUniqueID().getLeastSignificantBits());
++            } else if (this.bw instanceof EntityHanging) {
++                EntityHanging entityhanging = (EntityHanging) this.bw;
++
++                nbttagcompound1.setInt("X", entityhanging.x);
++                nbttagcompound1.setInt("Y", entityhanging.y);
++                nbttagcompound1.setInt("Z", entityhanging.z);
++            }
++
++            nbttagcompound.set("Leash", nbttagcompound1);
++        }
++    }
++
++    public void a(NBTTagCompound nbttagcompound) {
++        super.a(nbttagcompound);
++        this.h(nbttagcompound.getBoolean("CanPickUpLoot"));
++        this.persistent = nbttagcompound.getBoolean("PersistenceRequired");
++
++        // CraftBukkit start - If looting or persistence is false only use it if it was set after we started using it
++        boolean data = nbttagcompound.getBoolean("CanPickUpLoot");
++        if (isLevelAtLeast(nbttagcompound, 1) || data) {
++            this.canPickUpLoot = data;
++        }
++
++        data = nbttagcompound.getBoolean("PersistenceRequired");
++        if (isLevelAtLeast(nbttagcompound, 1) || data) {
++            this.persistent = data;
++        }
++        // CraftBukkit end
++
++        if (nbttagcompound.hasKey("CustomName") && nbttagcompound.getString("CustomName").length() > 0) {
++            this.setCustomName(nbttagcompound.getString("CustomName"));
++        }
++
++        this.setCustomNameVisible(nbttagcompound.getBoolean("CustomNameVisible"));
++        NBTTagList nbttaglist;
++        int i;
++
++        if (nbttagcompound.hasKey("Equipment")) {
++            nbttaglist = nbttagcompound.getList("Equipment");
++
++            for (i = 0; i < this.equipment.length; ++i) {
++                this.equipment[i] = ItemStack.createStack((NBTTagCompound) nbttaglist.get(i));
++            }
++        }
++
++        if (nbttagcompound.hasKey("DropChances")) {
++            nbttaglist = nbttagcompound.getList("DropChances");
++
++            for (i = 0; i < nbttaglist.size(); ++i) {
++                this.dropChances[i] = ((NBTTagFloat) nbttaglist.get(i)).data;
++            }
++        }
++
++        this.bv = nbttagcompound.getBoolean("Leashed");
++        if (this.bv && nbttagcompound.hasKey("Leash")) {
++            this.bx = nbttagcompound.getCompound("Leash");
++        }
++    }
++
++    public void n(float f) {
++        this.bf = f;
++    }
++
++    public void i(float f) {
++        super.i(f);
++        this.n(f);
++    }
++
++    public void c() {
++        super.c();
++        this.world.methodProfiler.a("looting");
++        if (!this.world.isStatic && this.bz() && !this.aU && this.world.getGameRules().getBoolean("mobGriefing")) {
++            List list = this.world.a(EntityItem.class, this.boundingBox.grow(1.0D, 0.0D, 1.0D));
++            Iterator iterator = list.iterator();
++
++            while (iterator.hasNext()) {
++                EntityItem entityitem = (EntityItem) iterator.next();
++
++                if (!entityitem.dead && entityitem.getItemStack() != null) {
++                    ItemStack itemstack = entityitem.getItemStack();
++                    int i = b(itemstack);
++
++                    if (i > -1) {
++                        boolean flag = true;
++                        ItemStack itemstack1 = this.getEquipment(i);
++
++                        if (itemstack1 != null) {
++                            if (i == 0) {
++                                if (itemstack.getItem() instanceof ItemSword && !(itemstack1.getItem() instanceof ItemSword)) {
++                                    flag = true;
++                                } else if (itemstack.getItem() instanceof ItemSword && itemstack1.getItem() instanceof ItemSword) {
++                                    ItemSword itemsword = (ItemSword) itemstack.getItem();
++                                    ItemSword itemsword1 = (ItemSword) itemstack1.getItem();
++
++                                    if (itemsword.g() == itemsword1.g()) {
++                                        flag = itemstack.getData() > itemstack1.getData() || itemstack.hasTag() && !itemstack1.hasTag();
++                                    } else {
++                                        flag = itemsword.g() > itemsword1.g();
++                                    }
++                                } else {
++                                    flag = false;
++                                }
++                            } else if (itemstack.getItem() instanceof ItemArmor && !(itemstack1.getItem() instanceof ItemArmor)) {
++                                flag = true;
++                            } else if (itemstack.getItem() instanceof ItemArmor && itemstack1.getItem() instanceof ItemArmor) {
++                                ItemArmor itemarmor = (ItemArmor) itemstack.getItem();
++                                ItemArmor itemarmor1 = (ItemArmor) itemstack1.getItem();
++
++                                if (itemarmor.c == itemarmor1.c) {
++                                    flag = itemstack.getData() > itemstack1.getData() || itemstack.hasTag() && !itemstack1.hasTag();
++                                } else {
++                                    flag = itemarmor.c > itemarmor1.c;
++                                }
++                            } else {
++                                flag = false;
++                            }
++                        }
++
++                        if (flag) {
++                            if (itemstack1 != null && this.random.nextFloat() - 0.1F < this.dropChances[i]) {
++                                this.a(itemstack1, 0.0F);
++                            }
++
++                            this.setEquipment(i, itemstack);
++                            this.dropChances[i] = 2.0F;
++                            this.persistent = true;
++                            this.receive(entityitem, 1);
++                            entityitem.die();
++                        }
++                    }
++                }
++            }
++        }
++
++        this.world.methodProfiler.b();
++    }
++
++    protected boolean bb() {
++        return false;
++    }
++
++    protected boolean isTypeNotPersistent() {
++        return true;
++    }
++
++    protected void bk() {
++        if (this.persistent) {
++            this.aV = 0;
++        } else {
++            EntityHuman entityhuman = this.world.findNearbyPlayer(this, -1.0D);
++
++            if (entityhuman != null) {
++                double d0 = entityhuman.locX - this.locX;
++                double d1 = entityhuman.locY - this.locY;
++                double d2 = entityhuman.locZ - this.locZ;
++                double d3 = d0 * d0 + d1 * d1 + d2 * d2;
++
++                if (d3 > 16384.0D) { // CraftBukkit - remove isTypeNotPersistent() check
++                    this.die();
++                }
++
++                if (this.aV > 600 && this.random.nextInt(800) == 0 && d3 > 1024.0D) { // CraftBukkit - remove isTypeNotPersistent() check
++                    this.die();
++                } else if (d3 < 1024.0D) {
++                    this.aV = 0;
++                }
++            }
++        }
++    }
++
++    protected void be() {
++        ++this.aV;
++        this.world.methodProfiler.a("checkDespawn");
++        this.bk();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("sensing");
++        this.bq.a();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("targetSelector");
++        this.targetSelector.a();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("goalSelector");
++        this.goalSelector.a();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("navigation");
++        this.navigation.f();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("mob tick");
++        this.bg();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.a("controls");
++        this.world.methodProfiler.a("move");
++        this.moveController.c();
++        this.world.methodProfiler.c("look");
++        this.h.a();
++        this.world.methodProfiler.c("jump");
++        this.lookController.b();
++        this.world.methodProfiler.b();
++        this.world.methodProfiler.b();
++    }
++
++    protected void bh() {
++        super.bh();
++        this.be = 0.0F;
++        this.bf = 0.0F;
++        this.bk();
++        float f = 8.0F;
++
++        if (this.random.nextFloat() < 0.02F) {
++            EntityHuman entityhuman = this.world.findNearbyPlayer(this, (double) f);
++
++            if (entityhuman != null) {
++                this.bu = entityhuman;
++                this.g = 10 + this.random.nextInt(20);
++            } else {
++                this.bg = (this.random.nextFloat() - 0.5F) * 20.0F;
++            }
++        }
++
++        if (this.bu != null) {
++            this.a(this.bu, 10.0F, (float) this.bl());
++            if (this.g-- <= 0 || this.bu.dead || this.bu.e((Entity) this) > (double) (f * f)) {
++                this.bu = null;
++            }
++        } else {
++            if (this.random.nextFloat() < 0.05F) {
++                this.bg = (this.random.nextFloat() - 0.5F) * 20.0F;
++            }
++
++            this.yaw += this.bg;
++            this.pitch = this.f;
++        }
++
++        boolean flag = this.G();
++        boolean flag1 = this.I();
++
++        if (flag || flag1) {
++            this.bd = this.random.nextFloat() < 0.8F;
++        }
++    }
++
++    public int bl() {
++        return 40;
++    }
++
++    public void a(Entity entity, float f, float f1) {
++        double d0 = entity.locX - this.locX;
++        double d1 = entity.locZ - this.locZ;
++        double d2;
++
++        if (entity instanceof EntityLiving) {
++            EntityLiving entityliving = (EntityLiving) entity;
++
++            d2 = entityliving.locY + (double) entityliving.getHeadHeight() - (this.locY + (double) this.getHeadHeight());
++        } else {
++            d2 = (entity.boundingBox.b + entity.boundingBox.e) / 2.0D - (this.locY + (double) this.getHeadHeight());
++        }
++
++        double d3 = (double) MathHelper.sqrt(d0 * d0 + d1 * d1);
++        float f2 = (float) (Math.atan2(d1, d0) * 180.0D / 3.1415927410125732D) - 90.0F;
++        float f3 = (float) (-(Math.atan2(d2, d3) * 180.0D / 3.1415927410125732D));
++
++        this.pitch = this.b(this.pitch, f3, f1);
++        this.yaw = this.b(this.yaw, f2, f);
++    }
++
++    private float b(float f, float f1, float f2) {
++        float f3 = MathHelper.g(f1 - f);
++
++        if (f3 > f2) {
++            f3 = f2;
++        }
++
++        if (f3 < -f2) {
++            f3 = -f2;
++        }
++
++        return f + f3;
++    }
++
++    public boolean canSpawn() {
++        return this.world.b(this.boundingBox) && this.world.getCubes(this, this.boundingBox).isEmpty() && !this.world.containsLiquid(this.boundingBox);
++    }
++
++    public int br() {
++        return 4;
++    }
++
++    public int aq() {
++        if (this.getGoalTarget() == null) {
++            return 3;
++        } else {
++            int i = (int) (this.getHealth() - this.getMaxHealth() * 0.33F);
++
++            i -= (3 - this.world.difficulty) * 4;
++            if (i < 0) {
++                i = 0;
++            }
++
++            return i + 3;
++        }
++    }
++
++    public ItemStack aV() {
++        return this.equipment[0];
++    }
++
++    public ItemStack getEquipment(int i) {
++        return this.equipment[i];
++    }
++
++    public ItemStack o(int i) {
++        return this.equipment[i + 1];
++    }
++
++    public void setEquipment(int i, ItemStack itemstack) {
++        this.equipment[i] = itemstack;
++    }
++
++    public ItemStack[] getEquipment() {
++        return this.equipment;
++    }
++
++    protected void dropEquipment(boolean flag, int i) {
++        for (int j = 0; j < this.getEquipment().length; ++j) {
++            ItemStack itemstack = this.getEquipment(j);
++            boolean flag1 = this.dropChances[j] > 1.0F;
++
++            if (itemstack != null && (flag || flag1) && this.random.nextFloat() - (float) i * 0.01F < this.dropChances[j]) {
++                if (!flag1 && itemstack.g()) {
++                    int k = Math.max(itemstack.l() - 25, 1);
++                    int l = itemstack.l() - this.random.nextInt(this.random.nextInt(k) + 1);
++
++                    if (l > k) {
++                        l = k;
++                    }
++
++                    if (l < 1) {
++                        l = 1;
++                    }
++
++                    itemstack.setData(l);
++                }
++
++                this.a(itemstack, 0.0F);
++            }
++        }
++    }
++
++    protected void bs() {
++        if (this.random.nextFloat() < 0.15F * this.world.b(this.locX, this.locY, this.locZ)) {
++            int i = this.random.nextInt(2);
++            float f = this.world.difficulty == 3 ? 0.1F : 0.25F;
++
++            if (this.random.nextFloat() < 0.095F) {
++                ++i;
++            }
++
++            if (this.random.nextFloat() < 0.095F) {
++                ++i;
++            }
++
++            if (this.random.nextFloat() < 0.095F) {
++                ++i;
++            }
++
++            for (int j = 3; j >= 0; --j) {
++                ItemStack itemstack = this.o(j);
++
++                if (j < 3 && this.random.nextFloat() < f) {
++                    break;
++                }
++
++                if (itemstack == null) {
++                    Item item = a(j + 1, i);
++
++                    if (item != null) {
++                        this.setEquipment(j + 1, new ItemStack(item));
++                    }
++                }
++            }
++        }
++    }
++
++    public static int b(ItemStack itemstack) {
++        if (itemstack.id != Block.PUMPKIN.id && itemstack.id != Item.SKULL.id) {
++            if (itemstack.getItem() instanceof ItemArmor) {
++                switch (((ItemArmor) itemstack.getItem()).b) {
++                case 0:
++                    return 4;
++
++                case 1:
++                    return 3;
++
++                case 2:
++                    return 2;
++
++                case 3:
++                    return 1;
++                }
++            }
++
++            return 0;
++        } else {
++            return 4;
++        }
++    }
++
++    public static Item a(int i, int j) {
++        switch (i) {
++        case 4:
++            if (j == 0) {
++                return Item.LEATHER_HELMET;
++            } else if (j == 1) {
++                return Item.GOLD_HELMET;
++            } else if (j == 2) {
++                return Item.CHAINMAIL_HELMET;
++            } else if (j == 3) {
++                return Item.IRON_HELMET;
++            } else if (j == 4) {
++                return Item.DIAMOND_HELMET;
++            }
++
++        case 3:
++            if (j == 0) {
++                return Item.LEATHER_CHESTPLATE;
++            } else if (j == 1) {
++                return Item.GOLD_CHESTPLATE;
++            } else if (j == 2) {
++                return Item.CHAINMAIL_CHESTPLATE;
++            } else if (j == 3) {
++                return Item.IRON_CHESTPLATE;
++            } else if (j == 4) {
++                return Item.DIAMOND_CHESTPLATE;
++            }
++
++        case 2:
++            if (j == 0) {
++                return Item.LEATHER_LEGGINGS;
++            } else if (j == 1) {
++                return Item.GOLD_LEGGINGS;
++            } else if (j == 2) {
++                return Item.CHAINMAIL_LEGGINGS;
++            } else if (j == 3) {
++                return Item.IRON_LEGGINGS;
++            } else if (j == 4) {
++                return Item.DIAMOND_LEGGINGS;
++            }
++
++        case 1:
++            if (j == 0) {
++                return Item.LEATHER_BOOTS;
++            } else if (j == 1) {
++                return Item.GOLD_BOOTS;
++            } else if (j == 2) {
++                return Item.CHAINMAIL_BOOTS;
++            } else if (j == 3) {
++                return Item.IRON_BOOTS;
++            } else if (j == 4) {
++                return Item.DIAMOND_BOOTS;
++            }
++
++        default:
++            return null;
++        }
++    }
++
++    protected void bt() {
++        float f = this.world.b(this.locX, this.locY, this.locZ);
++
++        if (this.aV() != null && this.random.nextFloat() < 0.25F * f) {
++            EnchantmentManager.a(this.random, this.aV(), (int) (5.0F + f * (float) this.random.nextInt(18)));
++        }
++
++        for (int i = 0; i < 4; ++i) {
++            ItemStack itemstack = this.o(i);
++
++            if (itemstack != null && this.random.nextFloat() < 0.5F * f) {
++                EnchantmentManager.a(this.random, itemstack, (int) (5.0F + f * (float) this.random.nextInt(18)));
++            }
++        }
++    }
++
++    public GroupDataEntity a(GroupDataEntity groupdataentity) {
++        this.a(GenericAttributes.b).a(new AttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05D, 1));
++        return groupdataentity;
++    }
++
++    public boolean bu() {
++        return false;
++    }
++
++    public String getLocalizedName() {
++        return this.hasCustomName() ? this.getCustomName() : super.getLocalizedName();
++    }
++
++    public void bv() {
++        this.persistent = true;
++    }
++
++    public void setCustomName(String s) {
++        this.datawatcher.watch(10, s);
++    }
++
++    public String getCustomName() {
++        return this.datawatcher.getString(10);
++    }
++
++    public boolean hasCustomName() {
++        return this.datawatcher.getString(10).length() > 0;
++    }
++
++    public void setCustomNameVisible(boolean flag) {
++        this.datawatcher.watch(11, Byte.valueOf((byte) (flag ? 1 : 0)));
++    }
++
++    public boolean getCustomNameVisible() {
++        return this.datawatcher.getByte(11) == 1;
++    }
++
++    public void a(int i, float f) {
++        this.dropChances[i] = f;
++    }
++
++    public boolean bz() {
++        return this.canPickUpLoot;
++    }
++
++    public void h(boolean flag) {
++        this.canPickUpLoot = flag;
++    }
++
++    public boolean bA() {
++        return this.persistent;
++    }
++
++    public final boolean c(EntityHuman entityhuman) {
++        if (this.bD() && this.bE() == entityhuman) {
++            this.i(true);
++            return true;
++        } else {
++            ItemStack itemstack = entityhuman.inventory.getItemInHand();
++
++            if (itemstack != null && itemstack.id == Item.LEASH.id && this.bC()) {
++                if (!(this instanceof EntityTameableAnimal) || !((EntityTameableAnimal) this).isTamed()) {
++                    this.b(entityhuman, true);
++                    --itemstack.count;
++                    return true;
++                }
++
++                if (entityhuman.getName().equalsIgnoreCase(((EntityTameableAnimal) this).getOwnerName())) {
++                    this.b(entityhuman, true);
++                    --itemstack.count;
++                    return true;
++                }
++            }
++
++            return this.a(entityhuman) ? true : super.c(entityhuman);
++        }
++    }
++
++    protected boolean a(EntityHuman entityhuman) {
++        return false;
++    }
++
++    protected void bB() {
++        if (this.bx != null) {
++            this.bF();
++        }
++
++        if (this.bv) {
++            if (this.bw == null || this.bw.dead) {
++                this.i(true);
++            }
++        }
++    }
++
++    public void i(boolean flag) {
++        if (this.bv) {
++            this.bv = false;
++            this.bw = null;
++            if (!this.world.isStatic) {
++                this.b(Item.LEASH.id, 1);
++            }
++
++            if (!this.world.isStatic && flag && this.world instanceof WorldServer) {
++                ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new Packet39AttachEntity(1, this, (Entity) null)));
++            }
++        }
++    }
++
++    public boolean bC() {
++        return !this.bD() && !(this instanceof IMonster);
++    }
++
++    public boolean bD() {
++        return this.bv;
++    }
++
++    public Entity bE() {
++        return this.bw;
++    }
++
++    public void b(Entity entity, boolean flag) {
++        this.bv = true;
++        this.bw = entity;
++        if (!this.world.isStatic && flag && this.world instanceof WorldServer) {
++            ((WorldServer) this.world).getTracker().a((Entity) this, (Packet) (new Packet39AttachEntity(1, this, this.bw)));
++        }
++    }
++
++    private void bF() {
++        if (this.bv && this.bx != null) {
++            if (this.bx.hasKey("UUIDMost") && this.bx.hasKey("UUIDLeast")) {
++                UUID uuid = new UUID(this.bx.getLong("UUIDMost"), this.bx.getLong("UUIDLeast"));
++                List list = this.world.a(EntityLiving.class, this.boundingBox.grow(10.0D, 10.0D, 10.0D));
++                Iterator iterator = list.iterator();
++
++                while (iterator.hasNext()) {
++                    EntityLiving entityliving = (EntityLiving) iterator.next();
++
++                    if (entityliving.getUniqueID().equals(uuid)) {
++                        this.bw = entityliving;
++                        break;
++                    }
++                }
++            } else if (this.bx.hasKey("X") && this.bx.hasKey("Y") && this.bx.hasKey("Z")) {
++                int i = this.bx.getInt("X");
++                int j = this.bx.getInt("Y");
++                int k = this.bx.getInt("Z");
++                EntityLeash entityleash = EntityLeash.b(this.world, i, j, k);
++
++                if (entityleash == null) {
++                    entityleash = EntityLeash.a(this.world, i, j, k);
++                }
++
++                this.bw = entityleash;
++            } else {
++                this.i(false);
++            }
++        }
++
++        this.bx = null;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/MobSpawnerAbstract.java b/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
+index 108b375..a9164b9 100644
+--- a/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
++++ b/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
+@@ -42,7 +42,7 @@ public abstract class MobSpawnerAbstract {
+     }
+ 
+     public boolean f() {
+-        return this.a().findNearbyPlayer((double) this.b() + 0.5D, (double) this.c() + 0.5D, (double) this.d() + 0.5D, (double) this.requiredPlayerRange) != null;
++        return this.a().findNearbyPlayerWhoAffectsSpawning((double) this.b() + 0.5D, (double) this.c() + 0.5D, (double) this.d() + 0.5D, (double) this.requiredPlayerRange) != null;
+     }
+ 
+     public void g() {
+diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java b/src/main/java/net/minecraft/server/SpawnerCreature.java
+index aa7698b..e9672f4 100644
+--- a/src/main/java/net/minecraft/server/SpawnerCreature.java
++++ b/src/main/java/net/minecraft/server/SpawnerCreature.java
+@@ -38,6 +38,12 @@ public final class SpawnerCreature {
+ 
+             for (i = 0; i < worldserver.players.size(); ++i) {
+                 EntityHuman entityhuman = (EntityHuman) worldserver.players.get(i);
++
++                // CraftBukkit start
++                if (!entityhuman.affectsSpawning)
++                    continue;
++                // CraftBukkit end
++
+                 int k = MathHelper.floor(entityhuman.locX / 16.0D);
+ 
+                 j = MathHelper.floor(entityhuman.locZ / 16.0D);
+@@ -130,7 +136,7 @@ public final class SpawnerCreature {
+                                                     float f1 = (float) i3;
+                                                     float f2 = (float) j3 + 0.5F;
+ 
+-                                                    if (worldserver.findNearbyPlayer((double) f, (double) f1, (double) f2, 24.0D) == null) {
++                                                    if (worldserver.findNearbyPlayerWhoAffectsSpawning((double) f, (double) f1, (double) f2, 24.0D) == null) {
+                                                         float f3 = f - (float) chunkcoordinates.x;
+                                                         float f4 = f1 - (float) chunkcoordinates.y;
+                                                         float f5 = f2 - (float) chunkcoordinates.z;
+diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java.orig b/src/main/java/net/minecraft/server/SpawnerCreature.java.orig
+new file mode 100644
+index 0000000..aa7698b
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/SpawnerCreature.java.orig
+@@ -0,0 +1,255 @@
++package net.minecraft.server;
++
++import java.util.Collection;
++import java.util.HashMap;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Random;
++
++// CraftBukkit start
++import org.bukkit.craftbukkit.util.LongHash;
++import org.bukkit.craftbukkit.util.LongObjectHashMap;
++import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
++// CraftBukkit end
++
++public final class SpawnerCreature {
++
++    private LongObjectHashMap<Boolean> a = new LongObjectHashMap<Boolean>(); // CraftBukkit - HashMap -> LongObjectHashMap
++
++    public SpawnerCreature() {}
++
++    protected static ChunkPosition getRandomPosition(World world, int i, int j) {
++        Chunk chunk = world.getChunkAt(i, j);
++        int k = i * 16 + world.random.nextInt(16);
++        int l = j * 16 + world.random.nextInt(16);
++        int i1 = world.random.nextInt(chunk == null ? world.S() : chunk.h() + 16 - 1);
++
++        return new ChunkPosition(k, i1, l);
++    }
++
++    public int spawnEntities(WorldServer worldserver, boolean flag, boolean flag1, boolean flag2) {
++        if (!flag && !flag1) {
++            return 0;
++        } else {
++            this.a.clear();
++
++            int i;
++            int j;
++
++            for (i = 0; i < worldserver.players.size(); ++i) {
++                EntityHuman entityhuman = (EntityHuman) worldserver.players.get(i);
++                int k = MathHelper.floor(entityhuman.locX / 16.0D);
++
++                j = MathHelper.floor(entityhuman.locZ / 16.0D);
++                byte b0 = 8;
++
++                for (int l = -b0; l <= b0; ++l) {
++                    for (int i1 = -b0; i1 <= b0; ++i1) {
++                        boolean flag3 = l == -b0 || l == b0 || i1 == -b0 || i1 == b0;
++
++                        // CraftBukkit start
++                        long chunkCoords = LongHash.toLong(l + k, i1 + j);
++
++                        if (!flag3) {
++                            this.a.put(chunkCoords, false);
++                        } else if (!this.a.containsKey(chunkCoords)) {
++                            this.a.put(chunkCoords, true);
++                        }
++                        // CraftBukkit end
++                    }
++                }
++            }
++
++            i = 0;
++            ChunkCoordinates chunkcoordinates = worldserver.getSpawn();
++            EnumCreatureType[] aenumcreaturetype = EnumCreatureType.values();
++
++            j = aenumcreaturetype.length;
++
++            for (int j1 = 0; j1 < j; ++j1) {
++                EnumCreatureType enumcreaturetype = aenumcreaturetype[j1];
++
++                // CraftBukkit start - Use per-world spawn limits
++                int limit = enumcreaturetype.b();
++                switch (enumcreaturetype) {
++                    case MONSTER:
++                        limit = worldserver.getWorld().getMonsterSpawnLimit();
++                        break;
++                    case CREATURE:
++                        limit = worldserver.getWorld().getAnimalSpawnLimit();
++                        break;
++                    case WATER_CREATURE:
++                        limit = worldserver.getWorld().getWaterAnimalSpawnLimit();
++                        break;
++                    case AMBIENT:
++                        limit = worldserver.getWorld().getAmbientSpawnLimit();
++                        break;
++                }
++
++                if (limit == 0) {
++                    continue;
++                }
++                // CraftBukkit end
++
++                if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && (!enumcreaturetype.e() || flag2) && worldserver.a(enumcreaturetype.a()) <= limit * this.a.size() / 256) { // CraftBukkit - use per-world limits
++                    Iterator iterator = this.a.keySet().iterator();
++
++                    label110:
++                    while (iterator.hasNext()) {
++                        // CraftBukkit start
++                        long key = ((Long) iterator.next()).longValue();
++
++                        if (!this.a.get(key)) {
++                            ChunkPosition chunkposition = getRandomPosition(worldserver, LongHash.msw(key), LongHash.lsw(key));
++                            // CraftBukkit end
++                            int k1 = chunkposition.x;
++                            int l1 = chunkposition.y;
++                            int i2 = chunkposition.z;
++
++                            if (!worldserver.u(k1, l1, i2) && worldserver.getMaterial(k1, l1, i2) == enumcreaturetype.c()) {
++                                int j2 = 0;
++                                int k2 = 0;
++
++                                while (k2 < 3) {
++                                    int l2 = k1;
++                                    int i3 = l1;
++                                    int j3 = i2;
++                                    byte b1 = 6;
++                                    BiomeMeta biomemeta = null;
++                                    GroupDataEntity groupdataentity = null;
++                                    int k3 = 0;
++
++                                    while (true) {
++                                        if (k3 < 4) {
++                                            label103: {
++                                                l2 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                                                i3 += worldserver.random.nextInt(1) - worldserver.random.nextInt(1);
++                                                j3 += worldserver.random.nextInt(b1) - worldserver.random.nextInt(b1);
++                                                if (a(enumcreaturetype, worldserver, l2, i3, j3)) {
++                                                    float f = (float) l2 + 0.5F;
++                                                    float f1 = (float) i3;
++                                                    float f2 = (float) j3 + 0.5F;
++
++                                                    if (worldserver.findNearbyPlayer((double) f, (double) f1, (double) f2, 24.0D) == null) {
++                                                        float f3 = f - (float) chunkcoordinates.x;
++                                                        float f4 = f1 - (float) chunkcoordinates.y;
++                                                        float f5 = f2 - (float) chunkcoordinates.z;
++                                                        float f6 = f3 * f3 + f4 * f4 + f5 * f5;
++
++                                                        if (f6 >= 576.0F) {
++                                                            if (biomemeta == null) {
++                                                                biomemeta = worldserver.a(enumcreaturetype, l2, i3, j3);
++                                                                if (biomemeta == null) {
++                                                                    break label103;
++                                                                }
++                                                            }
++
++                                                            EntityInsentient entityinsentient;
++
++                                                            try {
++                                                                entityinsentient = (EntityInsentient) biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { worldserver});
++                                                            } catch (Exception exception) {
++                                                                exception.printStackTrace();
++                                                                return i;
++                                                            }
++
++                                                            entityinsentient.setPositionRotation((double) f, (double) f1, (double) f2, worldserver.random.nextFloat() * 360.0F, 0.0F);
++                                                            if (entityinsentient.canSpawn()) {
++                                                                ++j2;
++                                                                // CraftBukkit start - Added a reason for spawning this creature, moved entityinsentient.a(groupdataentity) up
++                                                                groupdataentity = entityinsentient.a(groupdataentity);
++                                                                worldserver.addEntity(entityinsentient, SpawnReason.NATURAL);
++                                                                // CraftBukkit end
++                                                                if (j2 >= entityinsentient.br()) {
++                                                                    continue label110;
++                                                                }
++                                                            }
++
++                                                            i += j2;
++                                                        }
++                                                    }
++                                                }
++
++                                                ++k3;
++                                                continue;
++                                            }
++                                        }
++
++                                        ++k2;
++                                        break;
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++
++            return i;
++        }
++    }
++
++    public static boolean a(EnumCreatureType enumcreaturetype, World world, int i, int j, int k) {
++        if (enumcreaturetype.c() == Material.WATER) {
++            return world.getMaterial(i, j, k).isLiquid() && world.getMaterial(i, j - 1, k).isLiquid() && !world.u(i, j + 1, k);
++        } else if (!world.w(i, j - 1, k)) {
++            return false;
++        } else {
++            int l = world.getTypeId(i, j - 1, k);
++
++            return l != Block.BEDROCK.id && !world.u(i, j, k) && !world.getMaterial(i, j, k).isLiquid() && !world.u(i, j + 1, k);
++        }
++    }
++
++    public static void a(World world, BiomeBase biomebase, int i, int j, int k, int l, Random random) {
++        List list = biomebase.getMobs(EnumCreatureType.CREATURE);
++
++        if (!list.isEmpty()) {
++            while (random.nextFloat() < biomebase.f()) {
++                BiomeMeta biomemeta = (BiomeMeta) WeightedRandom.a(world.random, (Collection) list);
++                GroupDataEntity groupdataentity = null;
++                int i1 = biomemeta.c + random.nextInt(1 + biomemeta.d - biomemeta.c);
++                int j1 = i + random.nextInt(k);
++                int k1 = j + random.nextInt(l);
++                int l1 = j1;
++                int i2 = k1;
++
++                for (int j2 = 0; j2 < i1; ++j2) {
++                    boolean flag = false;
++
++                    for (int k2 = 0; !flag && k2 < 4; ++k2) {
++                        int l2 = world.i(j1, k1);
++
++                        if (a(EnumCreatureType.CREATURE, world, j1, l2, k1)) {
++                            float f = (float) j1 + 0.5F;
++                            float f1 = (float) l2;
++                            float f2 = (float) k1 + 0.5F;
++
++                            EntityInsentient entityinsentient;
++
++                            try {
++                                entityinsentient = (EntityInsentient) biomemeta.b.getConstructor(new Class[] { World.class}).newInstance(new Object[] { world});
++                            } catch (Exception exception) {
++                                exception.printStackTrace();
++                                continue;
++                            }
++
++                            entityinsentient.setPositionRotation((double) f, (double) f1, (double) f2, random.nextFloat() * 360.0F, 0.0F);
++                            // CraftBukkit start - Added a reason for spawning this creature, moved entityinsentient.a(groupdataentity) up
++                            groupdataentity = entityinsentient.a(groupdataentity);
++                            world.addEntity(entityinsentient, SpawnReason.CHUNK_GEN);
++                            // CraftBukkit end
++                            flag = true;
++                        }
++
++                        j1 += random.nextInt(5) - random.nextInt(5);
++
++                        for (k1 += random.nextInt(5) - random.nextInt(5); j1 < i || j1 >= i + k || k1 < j || k1 >= j + k; k1 = i2 + random.nextInt(5) - random.nextInt(5)) {
++                            j1 = l1 + random.nextInt(5) - random.nextInt(5);
++                        }
++                    }
++                }
++            }
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index f134856..14e108f 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -2584,6 +2584,35 @@ public abstract class World implements IBlockAccess {
+         return entityhuman;
+     }
+ 
++    // CraftBukkit start - find players with their spawning flag set
++
++    public EntityHuman findNearbyPlayerWhoAffectsSpawning(Entity entity, double radius) {
++        return this.findNearbyPlayerWhoAffectsSpawning(entity.locX, entity.locY, entity.locZ, radius);
++    }
++
++    public EntityHuman findNearbyPlayerWhoAffectsSpawning(double x, double y, double z, double radius) {
++        double nearestRadius = -1.0D;
++        EntityHuman entityhuman = null;
++
++        for (int i = 0; i < this.players.size(); ++i) {
++            EntityHuman nearestPlayer = (EntityHuman) this.players.get(i);
++
++            if (nearestPlayer == null || nearestPlayer.dead || !nearestPlayer.affectsSpawning) {
++                continue;
++            }
++
++            double distance = nearestPlayer.e(x, y, z);
++
++            if ((radius < 0.0D || distance < radius * radius) && (nearestRadius == -1.0D || distance < nearestRadius)) {
++                nearestRadius = distance;
++                entityhuman = nearestPlayer;
++            }
++        }
++
++        return entityhuman;
++    }
++    // CraftBukkit end
++
+     public EntityHuman a(String s) {
+         for (int i = 0; i < this.players.size(); ++i) {
+             if (s.equals(((EntityHuman) this.players.get(i)).getName())) {
+diff --git a/src/main/java/net/minecraft/server/World.java.orig b/src/main/java/net/minecraft/server/World.java.orig
+new file mode 100644
+index 0000000..f134856
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/World.java.orig
+@@ -0,0 +1,2848 @@
++package net.minecraft.server;
++
++import java.util.ArrayList;
++import java.util.Calendar;
++import java.util.Collection;
++import java.util.HashSet;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Random;
++import java.util.Set;
++import java.util.concurrent.Callable;
++
++// CraftBukkit start
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.util.LongHashSet;
++import org.bukkit.craftbukkit.util.UnsafeList;
++import org.bukkit.generator.ChunkGenerator;
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.CraftWorld;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.block.BlockCanBuildEvent;
++import org.bukkit.event.block.BlockPhysicsEvent;
++import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
++import org.bukkit.event.weather.WeatherChangeEvent;
++import org.bukkit.event.weather.ThunderChangeEvent;
++// CraftBukkit end
++
++public abstract class World implements IBlockAccess {
++
++    public boolean d;
++    public List entityList = new ArrayList();
++    protected List f = new ArrayList();
++    public Set tileEntityList = new HashSet(); // CraftBukkit - ArrayList -> HashSet
++    private List a = new ArrayList();
++    private List b = new ArrayList();
++    public List players = new ArrayList();
++    public List i = new ArrayList();
++    private long c = 16777215L;
++    public int j;
++    protected int k = (new Random()).nextInt();
++    protected final int l = 1013904223;
++    protected float m;
++    protected float n;
++    protected float o;
++    protected float p;
++    public int q;
++    public boolean callingPlaceEvent = false; // CraftBukkit
++    public int difficulty;
++    public Random random = new Random();
++    public WorldProvider worldProvider; // CraftBukkit - remove final
++    protected List u = new ArrayList();
++    public IChunkProvider chunkProvider; // CraftBukkit - protected -> public
++    protected final IDataManager dataManager;
++    public WorldData worldData; // CraftBukkit - protected -> public
++    public boolean isLoading;
++    public WorldMapCollection worldMaps;
++    public final VillageCollection villages;
++    protected final VillageSiege siegeManager = new VillageSiege(this);
++    public final MethodProfiler methodProfiler;
++    private final Vec3DPool J = new Vec3DPool(300, 2000);
++    private final Calendar K = Calendar.getInstance();
++    public Scoreboard scoreboard = new Scoreboard(); // CraftBukkit - protected -> public
++    private final IConsoleLogManager logAgent;
++    private UnsafeList M = new UnsafeList(); // CraftBukkit - ArrayList -> UnsafeList
++    private boolean N;
++    // CraftBukkit start - public, longhashset
++    public boolean allowMonsters = true;
++    public boolean allowAnimals = true;
++    protected LongHashSet chunkTickList = new LongHashSet();
++    public long ticksPerAnimalSpawns;
++    public long ticksPerMonsterSpawns;
++    // CraftBukkit end
++    private int O;
++    int[] H;
++    public boolean isStatic;
++
++    public BiomeBase getBiome(int i, int j) {
++        if (this.isLoaded(i, 0, j)) {
++            Chunk chunk = this.getChunkAtWorldCoords(i, j);
++
++            if (chunk != null) {
++                return chunk.a(i & 15, j & 15, this.worldProvider.e);
++            }
++        }
++
++        return this.worldProvider.e.getBiome(i, j);
++    }
++
++    public WorldChunkManager getWorldChunkManager() {
++        return this.worldProvider.e;
++    }
++
++    // CraftBukkit start
++    private final CraftWorld world;
++    public boolean pvpMode;
++    public boolean keepSpawnInMemory = true;
++    public ChunkGenerator generator;
++    Chunk lastChunkAccessed;
++    int lastXAccessed = Integer.MIN_VALUE;
++    int lastZAccessed = Integer.MIN_VALUE;
++    final Object chunkLock = new Object();
++
++    public CraftWorld getWorld() {
++        return this.world;
++    }
++
++    public CraftServer getServer() {
++        return (CraftServer) Bukkit.getServer();
++    }
++
++    // Changed signature
++    public World(IDataManager idatamanager, String s, WorldSettings worldsettings, WorldProvider worldprovider, MethodProfiler methodprofiler, IConsoleLogManager iconsolelogmanager, ChunkGenerator gen, org.bukkit.World.Environment env) {
++        this.generator = gen;
++        this.world = new CraftWorld((WorldServer) this, gen, env);
++        this.ticksPerAnimalSpawns = this.getServer().getTicksPerAnimalSpawns(); // CraftBukkit
++        this.ticksPerMonsterSpawns = this.getServer().getTicksPerMonsterSpawns(); // CraftBukkit
++        // CraftBukkit end
++
++        this.O = this.random.nextInt(12000);
++        this.H = new int['\u8000'];
++        this.dataManager = idatamanager;
++        this.methodProfiler = methodprofiler;
++        this.worldMaps = new WorldMapCollection(idatamanager);
++        this.logAgent = iconsolelogmanager;
++        this.worldData = idatamanager.getWorldData();
++        if (worldprovider != null) {
++            this.worldProvider = worldprovider;
++        } else if (this.worldData != null && this.worldData.j() != 0) {
++            this.worldProvider = WorldProvider.byDimension(this.worldData.j());
++        } else {
++            this.worldProvider = WorldProvider.byDimension(0);
++        }
++
++        if (this.worldData == null) {
++            this.worldData = new WorldData(worldsettings, s);
++        } else {
++            this.worldData.setName(s);
++        }
++
++        this.worldProvider.a(this);
++        this.chunkProvider = this.j();
++        if (!this.worldData.isInitialized()) {
++            try {
++                this.a(worldsettings);
++            } catch (Throwable throwable) {
++                CrashReport crashreport = CrashReport.a(throwable, "Exception initializing level");
++
++                try {
++                    this.a(crashreport);
++                } catch (Throwable throwable1) {
++                    ;
++                }
++
++                throw new ReportedException(crashreport);
++            }
++
++            this.worldData.d(true);
++        }
++
++        VillageCollection villagecollection = (VillageCollection) this.worldMaps.get(VillageCollection.class, "villages");
++
++        if (villagecollection == null) {
++            this.villages = new VillageCollection(this);
++            this.worldMaps.a("villages", this.villages);
++        } else {
++            this.villages = villagecollection;
++            this.villages.a(this);
++        }
++
++        this.A();
++        this.a();
++
++        this.getServer().addWorld(this.world); // CraftBukkit
++    }
++
++    protected abstract IChunkProvider j();
++
++    protected void a(WorldSettings worldsettings) {
++        this.worldData.d(true);
++    }
++
++    public int b(int i, int j) {
++        int k;
++
++        for (k = 63; !this.isEmpty(i, k + 1, j); ++k) {
++            ;
++        }
++
++        return this.getTypeId(i, k, j);
++    }
++
++    public int getTypeId(int i, int j, int k) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (j < 0) {
++                return 0;
++            } else if (j >= 256) {
++                return 0;
++            } else {
++                Chunk chunk = null;
++
++                try {
++                    chunk = this.getChunkAt(i >> 4, k >> 4);
++                    return chunk.getTypeId(i & 15, j, k & 15);
++                } catch (Throwable throwable) {
++                    CrashReport crashreport = CrashReport.a(throwable, "Exception getting block type in world");
++                    CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Requested block coordinates");
++
++                    crashreportsystemdetails.a("Found chunk", Boolean.valueOf(chunk == null));
++                    crashreportsystemdetails.a("Location", CrashReportSystemDetails.a(i, j, k));
++                    throw new ReportedException(crashreport);
++                }
++            }
++        } else {
++            return 0;
++        }
++    }
++
++    public boolean isEmpty(int i, int j, int k) {
++        return this.getTypeId(i, j, k) == 0;
++    }
++
++    public boolean isTileEntity(int i, int j, int k) {
++        int l = this.getTypeId(i, j, k);
++
++        return Block.byId[l] != null && Block.byId[l].t();
++    }
++
++    public int e(int i, int j, int k) {
++        int l = this.getTypeId(i, j, k);
++
++        return Block.byId[l] != null ? Block.byId[l].d() : -1;
++    }
++
++    public boolean isLoaded(int i, int j, int k) {
++        return j >= 0 && j < 256 ? this.isChunkLoaded(i >> 4, k >> 4) : false;
++    }
++
++    public boolean areChunksLoaded(int i, int j, int k, int l) {
++        return this.e(i - l, j - l, k - l, i + l, j + l, k + l);
++    }
++
++    public boolean e(int i, int j, int k, int l, int i1, int j1) {
++        if (i1 >= 0 && j < 256) {
++            i >>= 4;
++            k >>= 4;
++            l >>= 4;
++            j1 >>= 4;
++
++            for (int k1 = i; k1 <= l; ++k1) {
++                for (int l1 = k; l1 <= j1; ++l1) {
++                    // CraftBukkit - check unload queue too so we don't leak a chunk
++                    if (!this.isChunkLoaded(k1, l1) || ((WorldServer) this).chunkProviderServer.unloadQueue.contains(k1, l1)) {
++                        return false;
++                    }
++                }
++            }
++
++            return true;
++        } else {
++            return false;
++        }
++    }
++
++    protected boolean isChunkLoaded(int i, int j) {
++        return this.chunkProvider.isChunkLoaded(i, j);
++    }
++
++    public Chunk getChunkAtWorldCoords(int i, int j) {
++        return this.getChunkAt(i >> 4, j >> 4);
++    }
++
++    // CraftBukkit start
++    public Chunk getChunkAt(int i, int j) {
++        Chunk result = null;
++        synchronized (this.chunkLock) {
++            if (this.lastChunkAccessed == null || this.lastXAccessed != i || this.lastZAccessed != j) {
++                this.lastChunkAccessed = this.chunkProvider.getOrCreateChunk(i, j);
++                this.lastXAccessed = i;
++                this.lastZAccessed = j;
++            }
++            result = this.lastChunkAccessed;
++        }
++        return result;
++    }
++    // CraftBukkit end
++
++    public boolean setTypeIdAndData(int i, int j, int k, int l, int i1, int j1) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (j < 0) {
++                return false;
++            } else if (j >= 256) {
++                return false;
++            } else {
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++                int k1 = 0;
++
++                if ((j1 & 1) != 0) {
++                    k1 = chunk.getTypeId(i & 15, j, k & 15);
++                }
++
++                boolean flag = chunk.a(i & 15, j, k & 15, l, i1);
++
++                this.methodProfiler.a("checkLight");
++                this.A(i, j, k);
++                this.methodProfiler.b();
++                if (flag) {
++                    if ((j1 & 2) != 0 && (!this.isStatic || (j1 & 4) == 0)) {
++                        this.notify(i, j, k);
++                    }
++
++                    if (!this.isStatic && (j1 & 1) != 0) {
++                        this.update(i, j, k, k1);
++                        Block block = Block.byId[l];
++
++                        if (block != null && block.q_()) {
++                            this.m(i, j, k, l);
++                        }
++                    }
++                }
++
++                return flag;
++            }
++        } else {
++            return false;
++        }
++    }
++
++    public Material getMaterial(int i, int j, int k) {
++        int l = this.getTypeId(i, j, k);
++
++        return l == 0 ? Material.AIR : Block.byId[l].material;
++    }
++
++    public int getData(int i, int j, int k) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (j < 0) {
++                return 0;
++            } else if (j >= 256) {
++                return 0;
++            } else {
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++                i &= 15;
++                k &= 15;
++                return chunk.getData(i, j, k);
++            }
++        } else {
++            return 0;
++        }
++    }
++
++    public boolean setData(int i, int j, int k, int l, int i1) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (j < 0) {
++                return false;
++            } else if (j >= 256) {
++                return false;
++            } else {
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++                int j1 = i & 15;
++                int k1 = k & 15;
++                boolean flag = chunk.b(j1, j, k1, l);
++
++                if (flag) {
++                    int l1 = chunk.getTypeId(j1, j, k1);
++
++                    if ((i1 & 2) != 0 && (!this.isStatic || (i1 & 4) == 0)) {
++                        this.notify(i, j, k);
++                    }
++
++                    if (!this.isStatic && (i1 & 1) != 0) {
++                        this.update(i, j, k, l1);
++                        Block block = Block.byId[l1];
++
++                        if (block != null && block.q_()) {
++                            this.m(i, j, k, l1);
++                        }
++                    }
++                }
++
++                return flag;
++            }
++        } else {
++            return false;
++        }
++    }
++
++    public boolean setAir(int i, int j, int k) {
++        return this.setTypeIdAndData(i, j, k, 0, 0, 3);
++    }
++
++    public boolean setAir(int i, int j, int k, boolean flag) {
++        int l = this.getTypeId(i, j, k);
++
++        if (l > 0) {
++            int i1 = this.getData(i, j, k);
++
++            this.triggerEffect(2001, i, j, k, l + (i1 << 12));
++            if (flag) {
++                Block.byId[l].c(this, i, j, k, i1, 0);
++            }
++
++            return this.setTypeIdAndData(i, j, k, 0, 0, 3);
++        } else {
++            return false;
++        }
++    }
++
++    public boolean setTypeIdUpdate(int i, int j, int k, int l) {
++        return this.setTypeIdAndData(i, j, k, l, 0, 3);
++    }
++
++    public void notify(int i, int j, int k) {
++        for (int l = 0; l < this.u.size(); ++l) {
++            ((IWorldAccess) this.u.get(l)).a(i, j, k);
++        }
++    }
++
++    public void update(int i, int j, int k, int l) {
++        this.applyPhysics(i, j, k, l);
++    }
++
++    public void e(int i, int j, int k, int l) {
++        int i1;
++
++        if (k > l) {
++            i1 = l;
++            l = k;
++            k = i1;
++        }
++
++        if (!this.worldProvider.g) {
++            for (i1 = k; i1 <= l; ++i1) {
++                this.c(EnumSkyBlock.SKY, i, i1, j);
++            }
++        }
++
++        this.g(i, k, j, i, l, j);
++    }
++
++    public void g(int i, int j, int k, int l, int i1, int j1) {
++        for (int k1 = 0; k1 < this.u.size(); ++k1) {
++            ((IWorldAccess) this.u.get(k1)).a(i, j, k, l, i1, j1);
++        }
++    }
++
++    public void applyPhysics(int i, int j, int k, int l) {
++        this.g(i - 1, j, k, l);
++        this.g(i + 1, j, k, l);
++        this.g(i, j - 1, k, l);
++        this.g(i, j + 1, k, l);
++        this.g(i, j, k - 1, l);
++        this.g(i, j, k + 1, l);
++    }
++
++    public void c(int i, int j, int k, int l, int i1) {
++        if (i1 != 4) {
++            this.g(i - 1, j, k, l);
++        }
++
++        if (i1 != 5) {
++            this.g(i + 1, j, k, l);
++        }
++
++        if (i1 != 0) {
++            this.g(i, j - 1, k, l);
++        }
++
++        if (i1 != 1) {
++            this.g(i, j + 1, k, l);
++        }
++
++        if (i1 != 2) {
++            this.g(i, j, k - 1, l);
++        }
++
++        if (i1 != 3) {
++            this.g(i, j, k + 1, l);
++        }
++    }
++
++    public void g(int i, int j, int k, int l) {
++        if (!this.isStatic) {
++            int i1 = this.getTypeId(i, j, k);
++            Block block = Block.byId[i1];
++
++            if (block != null) {
++                try {
++                    // CraftBukkit start
++                    CraftWorld world = ((WorldServer) this).getWorld();
++                    if (world != null) {
++                        BlockPhysicsEvent event = new BlockPhysicsEvent(world.getBlockAt(i, j, k), l);
++                        this.getServer().getPluginManager().callEvent(event);
++
++                        if (event.isCancelled()) {
++                            return;
++                        }
++                    }
++                    // CraftBukkit end
++
++                    block.doPhysics(this, i, j, k, l);
++                } catch (Throwable throwable) {
++                    CrashReport crashreport = CrashReport.a(throwable, "Exception while updating neighbours");
++                    CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Block being updated");
++
++                    int j1;
++
++                    try {
++                        j1 = this.getData(i, j, k);
++                    } catch (Throwable throwable1) {
++                        j1 = -1;
++                    }
++
++                    crashreportsystemdetails.a("Source block type", (Callable) (new CrashReportSourceBlockType(this, l)));
++                    CrashReportSystemDetails.a(crashreportsystemdetails, i, j, k, i1, j1);
++                    throw new ReportedException(crashreport);
++                }
++            }
++        }
++    }
++
++    public boolean a(int i, int j, int k, int l) {
++        return false;
++    }
++
++    public boolean l(int i, int j, int k) {
++        return this.getChunkAt(i >> 4, k >> 4).d(i & 15, j, k & 15);
++    }
++
++    public int m(int i, int j, int k) {
++        if (j < 0) {
++            return 0;
++        } else {
++            if (j >= 256) {
++                j = 255;
++            }
++
++            return this.getChunkAt(i >> 4, k >> 4).c(i & 15, j, k & 15, 0);
++        }
++    }
++
++    public int getLightLevel(int i, int j, int k) {
++        return this.b(i, j, k, true);
++    }
++
++    public int b(int i, int j, int k, boolean flag) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (flag) {
++                int l = this.getTypeId(i, j, k);
++
++                if (Block.x[l]) {
++                    int i1 = this.b(i, j + 1, k, false);
++                    int j1 = this.b(i + 1, j, k, false);
++                    int k1 = this.b(i - 1, j, k, false);
++                    int l1 = this.b(i, j, k + 1, false);
++                    int i2 = this.b(i, j, k - 1, false);
++
++                    if (j1 > i1) {
++                        i1 = j1;
++                    }
++
++                    if (k1 > i1) {
++                        i1 = k1;
++                    }
++
++                    if (l1 > i1) {
++                        i1 = l1;
++                    }
++
++                    if (i2 > i1) {
++                        i1 = i2;
++                    }
++
++                    return i1;
++                }
++            }
++
++            if (j < 0) {
++                return 0;
++            } else {
++                if (j >= 256) {
++                    j = 255;
++                }
++
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++                i &= 15;
++                k &= 15;
++                return chunk.c(i, j, k, this.j);
++            }
++        } else {
++            return 15;
++        }
++    }
++
++    public int getHighestBlockYAt(int i, int j) {
++        if (i >= -30000000 && j >= -30000000 && i < 30000000 && j < 30000000) {
++            if (!this.isChunkLoaded(i >> 4, j >> 4)) {
++                return 0;
++            } else {
++                Chunk chunk = this.getChunkAt(i >> 4, j >> 4);
++
++                return chunk.b(i & 15, j & 15);
++            }
++        } else {
++            return 0;
++        }
++    }
++
++    public int g(int i, int j) {
++        if (i >= -30000000 && j >= -30000000 && i < 30000000 && j < 30000000) {
++            if (!this.isChunkLoaded(i >> 4, j >> 4)) {
++                return 0;
++            } else {
++                Chunk chunk = this.getChunkAt(i >> 4, j >> 4);
++
++                return chunk.p;
++            }
++        } else {
++            return 0;
++        }
++    }
++
++    public int b(EnumSkyBlock enumskyblock, int i, int j, int k) {
++        if (j < 0) {
++            j = 0;
++        }
++
++        if (j >= 256) {
++            j = 255;
++        }
++
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            int l = i >> 4;
++            int i1 = k >> 4;
++
++            if (!this.isChunkLoaded(l, i1)) {
++                return enumskyblock.c;
++            } else {
++                Chunk chunk = this.getChunkAt(l, i1);
++
++                return chunk.getBrightness(enumskyblock, i & 15, j, k & 15);
++            }
++        } else {
++            return enumskyblock.c;
++        }
++    }
++
++    public void b(EnumSkyBlock enumskyblock, int i, int j, int k, int l) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            if (j >= 0) {
++                if (j < 256) {
++                    if (this.isChunkLoaded(i >> 4, k >> 4)) {
++                        Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++                        chunk.a(enumskyblock, i & 15, j, k & 15, l);
++
++                        for (int i1 = 0; i1 < this.u.size(); ++i1) {
++                            ((IWorldAccess) this.u.get(i1)).b(i, j, k);
++                        }
++                    }
++                }
++            }
++        }
++    }
++
++    public void p(int i, int j, int k) {
++        for (int l = 0; l < this.u.size(); ++l) {
++            ((IWorldAccess) this.u.get(l)).b(i, j, k);
++        }
++    }
++
++    public float q(int i, int j, int k) {
++        return this.worldProvider.h[this.getLightLevel(i, j, k)];
++    }
++
++    public boolean v() {
++        return this.j < 4;
++    }
++
++    public MovingObjectPosition a(Vec3D vec3d, Vec3D vec3d1) {
++        return this.rayTrace(vec3d, vec3d1, false, false);
++    }
++
++    public MovingObjectPosition rayTrace(Vec3D vec3d, Vec3D vec3d1, boolean flag) {
++        return this.rayTrace(vec3d, vec3d1, flag, false);
++    }
++
++    public MovingObjectPosition rayTrace(Vec3D vec3d, Vec3D vec3d1, boolean flag, boolean flag1) {
++        if (!Double.isNaN(vec3d.c) && !Double.isNaN(vec3d.d) && !Double.isNaN(vec3d.e)) {
++            if (!Double.isNaN(vec3d1.c) && !Double.isNaN(vec3d1.d) && !Double.isNaN(vec3d1.e)) {
++                int i = MathHelper.floor(vec3d1.c);
++                int j = MathHelper.floor(vec3d1.d);
++                int k = MathHelper.floor(vec3d1.e);
++                int l = MathHelper.floor(vec3d.c);
++                int i1 = MathHelper.floor(vec3d.d);
++                int j1 = MathHelper.floor(vec3d.e);
++                int k1 = this.getTypeId(l, i1, j1);
++                int l1 = this.getData(l, i1, j1);
++                Block block = Block.byId[k1];
++
++                if ((!flag1 || block == null || block.b(this, l, i1, j1) != null) && k1 > 0 && block.a(l1, flag)) {
++                    MovingObjectPosition movingobjectposition = block.a(this, l, i1, j1, vec3d, vec3d1);
++
++                    if (movingobjectposition != null) {
++                        return movingobjectposition;
++                    }
++                }
++
++                k1 = 200;
++
++                while (k1-- >= 0) {
++                    if (Double.isNaN(vec3d.c) || Double.isNaN(vec3d.d) || Double.isNaN(vec3d.e)) {
++                        return null;
++                    }
++
++                    if (l == i && i1 == j && j1 == k) {
++                        return null;
++                    }
++
++                    boolean flag2 = true;
++                    boolean flag3 = true;
++                    boolean flag4 = true;
++                    double d0 = 999.0D;
++                    double d1 = 999.0D;
++                    double d2 = 999.0D;
++
++                    if (i > l) {
++                        d0 = (double) l + 1.0D;
++                    } else if (i < l) {
++                        d0 = (double) l + 0.0D;
++                    } else {
++                        flag2 = false;
++                    }
++
++                    if (j > i1) {
++                        d1 = (double) i1 + 1.0D;
++                    } else if (j < i1) {
++                        d1 = (double) i1 + 0.0D;
++                    } else {
++                        flag3 = false;
++                    }
++
++                    if (k > j1) {
++                        d2 = (double) j1 + 1.0D;
++                    } else if (k < j1) {
++                        d2 = (double) j1 + 0.0D;
++                    } else {
++                        flag4 = false;
++                    }
++
++                    double d3 = 999.0D;
++                    double d4 = 999.0D;
++                    double d5 = 999.0D;
++                    double d6 = vec3d1.c - vec3d.c;
++                    double d7 = vec3d1.d - vec3d.d;
++                    double d8 = vec3d1.e - vec3d.e;
++
++                    if (flag2) {
++                        d3 = (d0 - vec3d.c) / d6;
++                    }
++
++                    if (flag3) {
++                        d4 = (d1 - vec3d.d) / d7;
++                    }
++
++                    if (flag4) {
++                        d5 = (d2 - vec3d.e) / d8;
++                    }
++
++                    boolean flag5 = false;
++                    byte b0;
++
++                    if (d3 < d4 && d3 < d5) {
++                        if (i > l) {
++                            b0 = 4;
++                        } else {
++                            b0 = 5;
++                        }
++
++                        vec3d.c = d0;
++                        vec3d.d += d7 * d3;
++                        vec3d.e += d8 * d3;
++                    } else if (d4 < d5) {
++                        if (j > i1) {
++                            b0 = 0;
++                        } else {
++                            b0 = 1;
++                        }
++
++                        vec3d.c += d6 * d4;
++                        vec3d.d = d1;
++                        vec3d.e += d8 * d4;
++                    } else {
++                        if (k > j1) {
++                            b0 = 2;
++                        } else {
++                            b0 = 3;
++                        }
++
++                        vec3d.c += d6 * d5;
++                        vec3d.d += d7 * d5;
++                        vec3d.e = d2;
++                    }
++
++                    Vec3D vec3d2 = this.getVec3DPool().create(vec3d.c, vec3d.d, vec3d.e);
++
++                    l = (int) (vec3d2.c = (double) MathHelper.floor(vec3d.c));
++                    if (b0 == 5) {
++                        --l;
++                        ++vec3d2.c;
++                    }
++
++                    i1 = (int) (vec3d2.d = (double) MathHelper.floor(vec3d.d));
++                    if (b0 == 1) {
++                        --i1;
++                        ++vec3d2.d;
++                    }
++
++                    j1 = (int) (vec3d2.e = (double) MathHelper.floor(vec3d.e));
++                    if (b0 == 3) {
++                        --j1;
++                        ++vec3d2.e;
++                    }
++
++                    int i2 = this.getTypeId(l, i1, j1);
++                    int j2 = this.getData(l, i1, j1);
++                    Block block1 = Block.byId[i2];
++
++                    if ((!flag1 || block1 == null || block1.b(this, l, i1, j1) != null) && i2 > 0 && block1.a(j2, flag)) {
++                        MovingObjectPosition movingobjectposition1 = block1.a(this, l, i1, j1, vec3d, vec3d1);
++
++                        if (movingobjectposition1 != null) {
++                            vec3d2.b.release(vec3d2); // CraftBukkit
++                            return movingobjectposition1;
++                        }
++                    }
++                    vec3d2.b.release(vec3d2); // CraftBukkit
++                }
++
++                return null;
++            } else {
++                return null;
++            }
++        } else {
++            return null;
++        }
++    }
++
++    public void makeSound(Entity entity, String s, float f, float f1) {
++        if (entity != null && s != null) {
++            for (int i = 0; i < this.u.size(); ++i) {
++                ((IWorldAccess) this.u.get(i)).a(s, entity.locX, entity.locY - (double) entity.height, entity.locZ, f, f1);
++            }
++        }
++    }
++
++    public void a(EntityHuman entityhuman, String s, float f, float f1) {
++        if (entityhuman != null && s != null) {
++            for (int i = 0; i < this.u.size(); ++i) {
++                ((IWorldAccess) this.u.get(i)).a(entityhuman, s, entityhuman.locX, entityhuman.locY - (double) entityhuman.height, entityhuman.locZ, f, f1);
++            }
++        }
++    }
++
++    public void makeSound(double d0, double d1, double d2, String s, float f, float f1) {
++        if (s != null) {
++            for (int i = 0; i < this.u.size(); ++i) {
++                ((IWorldAccess) this.u.get(i)).a(s, d0, d1, d2, f, f1);
++            }
++        }
++    }
++
++    public void a(double d0, double d1, double d2, String s, float f, float f1, boolean flag) {}
++
++    public void a(String s, int i, int j, int k) {
++        for (int l = 0; l < this.u.size(); ++l) {
++            ((IWorldAccess) this.u.get(l)).a(s, i, j, k);
++        }
++    }
++
++    public void addParticle(String s, double d0, double d1, double d2, double d3, double d4, double d5) {
++        for (int i = 0; i < this.u.size(); ++i) {
++            ((IWorldAccess) this.u.get(i)).a(s, d0, d1, d2, d3, d4, d5);
++        }
++    }
++
++    public boolean strikeLightning(Entity entity) {
++        this.i.add(entity);
++        return true;
++    }
++
++    // CraftBukkit start - Used for entities other than creatures
++    public boolean addEntity(Entity entity) {
++        return this.addEntity(entity, SpawnReason.DEFAULT); // Set reason as DEFAULT
++    }
++
++    public boolean addEntity(Entity entity, SpawnReason spawnReason) { // Changed signature, added SpawnReason
++        if (entity == null) return false;
++        // CraftBukkit end
++
++        int i = MathHelper.floor(entity.locX / 16.0D);
++        int j = MathHelper.floor(entity.locZ / 16.0D);
++        boolean flag = entity.p;
++
++        if (entity instanceof EntityHuman) {
++            flag = true;
++        }
++
++        // CraftBukkit start
++        org.bukkit.event.Cancellable event = null;
++        if (entity instanceof EntityLiving && !(entity instanceof EntityPlayer)) {
++            boolean isAnimal = entity instanceof EntityAnimal || entity instanceof EntityWaterAnimal || entity instanceof EntityGolem;
++            boolean isMonster = entity instanceof EntityMonster || entity instanceof EntityGhast || entity instanceof EntitySlime;
++
++            if (spawnReason != SpawnReason.CUSTOM) {
++                if (isAnimal && !allowAnimals || isMonster && !allowMonsters)  {
++                    entity.dead = true;
++                    return false;
++                }
++            }
++
++            event = CraftEventFactory.callCreatureSpawnEvent((EntityLiving) entity, spawnReason);
++        } else if (entity instanceof EntityItem) {
++            event = CraftEventFactory.callItemSpawnEvent((EntityItem) entity);
++        } else if (entity.getBukkitEntity() instanceof org.bukkit.entity.Projectile) {
++            // Not all projectiles extend EntityProjectile, so check for Bukkit interface instead
++            event = CraftEventFactory.callProjectileLaunchEvent(entity);
++        }
++
++        if (event != null && (event.isCancelled() || entity.dead)) {
++            entity.dead = true;
++            return false;
++        }
++        // CraftBukkit end
++
++        if (!flag && !this.isChunkLoaded(i, j)) {
++            entity.dead = true; // CraftBukkit
++            return false;
++        } else {
++            if (entity instanceof EntityHuman) {
++                EntityHuman entityhuman = (EntityHuman) entity;
++
++                this.players.add(entityhuman);
++                this.everyoneSleeping();
++            }
++
++            this.getChunkAt(i, j).a(entity);
++            this.entityList.add(entity);
++            this.a(entity);
++            return true;
++        }
++    }
++
++    protected void a(Entity entity) {
++        for (int i = 0; i < this.u.size(); ++i) {
++            ((IWorldAccess) this.u.get(i)).a(entity);
++        }
++
++        entity.valid = true; // CraftBukkit
++    }
++
++    protected void b(Entity entity) {
++        for (int i = 0; i < this.u.size(); ++i) {
++            ((IWorldAccess) this.u.get(i)).b(entity);
++        }
++
++        entity.valid = false; // CraftBukkit
++    }
++
++    public void kill(Entity entity) {
++        if (entity.passenger != null) {
++            entity.passenger.mount((Entity) null);
++        }
++
++        if (entity.vehicle != null) {
++            entity.mount((Entity) null);
++        }
++
++        entity.die();
++        if (entity instanceof EntityHuman) {
++            this.players.remove(entity);
++            this.everyoneSleeping();
++        }
++    }
++
++    public void removeEntity(Entity entity) {
++        entity.die();
++        if (entity instanceof EntityHuman) {
++            this.players.remove(entity);
++            this.everyoneSleeping();
++        }
++
++        int i = entity.aj;
++        int j = entity.al;
++
++        if (entity.ai && this.isChunkLoaded(i, j)) {
++            this.getChunkAt(i, j).b(entity);
++        }
++
++        this.entityList.remove(entity);
++        this.b(entity);
++    }
++
++    public void addIWorldAccess(IWorldAccess iworldaccess) {
++        this.u.add(iworldaccess);
++    }
++
++    public List getCubes(Entity entity, AxisAlignedBB axisalignedbb) {
++        this.M.clear();
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = i1; l1 < j1; ++l1) {
++                if (this.isLoaded(k1, 64, l1)) {
++                    for (int i2 = k - 1; i2 < l; ++i2) {
++                        Block block = Block.byId[this.getTypeId(k1, i2, l1)];
++
++                        if (block != null) {
++                            block.a(this, k1, i2, l1, axisalignedbb, this.M, entity);
++                        }
++                    }
++                }
++            }
++        }
++
++        double d0 = 0.25D;
++        List list = this.getEntities(entity, axisalignedbb.grow(d0, d0, d0));
++
++        for (int j2 = 0; j2 < list.size(); ++j2) {
++            AxisAlignedBB axisalignedbb1 = ((Entity) list.get(j2)).D();
++
++            if (axisalignedbb1 != null && axisalignedbb1.b(axisalignedbb)) {
++                this.M.add(axisalignedbb1);
++            }
++
++            axisalignedbb1 = entity.g((Entity) list.get(j2));
++            if (axisalignedbb1 != null && axisalignedbb1.b(axisalignedbb)) {
++                this.M.add(axisalignedbb1);
++            }
++        }
++
++        return this.M;
++    }
++
++    public List a(AxisAlignedBB axisalignedbb) {
++        this.M.clear();
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = i1; l1 < j1; ++l1) {
++                if (this.isLoaded(k1, 64, l1)) {
++                    for (int i2 = k - 1; i2 < l; ++i2) {
++                        Block block = Block.byId[this.getTypeId(k1, i2, l1)];
++
++                        if (block != null) {
++                            block.a(this, k1, i2, l1, axisalignedbb, this.M, (Entity) null);
++                        }
++                    }
++                }
++            }
++        }
++
++        return this.M;
++    }
++
++    public int a(float f) {
++        float f1 = this.c(f);
++        float f2 = 1.0F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.5F);
++
++        if (f2 < 0.0F) {
++            f2 = 0.0F;
++        }
++
++        if (f2 > 1.0F) {
++            f2 = 1.0F;
++        }
++
++        f2 = 1.0F - f2;
++        f2 = (float) ((double) f2 * (1.0D - (double) (this.i(f) * 5.0F) / 16.0D));
++        f2 = (float) ((double) f2 * (1.0D - (double) (this.h(f) * 5.0F) / 16.0D));
++        f2 = 1.0F - f2;
++        return (int) (f2 * 11.0F);
++    }
++
++    public float c(float f) {
++        return this.worldProvider.a(this.worldData.getDayTime(), f);
++    }
++
++    public float x() {
++        return WorldProvider.a[this.worldProvider.a(this.worldData.getDayTime())];
++    }
++
++    public float d(float f) {
++        float f1 = this.c(f);
++
++        return f1 * 3.1415927F * 2.0F;
++    }
++
++    public int h(int i, int j) {
++        return this.getChunkAtWorldCoords(i, j).d(i & 15, j & 15);
++    }
++
++    public int i(int i, int j) {
++        Chunk chunk = this.getChunkAtWorldCoords(i, j);
++        int k = chunk.h() + 15;
++
++        i &= 15;
++
++        for (j &= 15; k > 0; --k) {
++            int l = chunk.getTypeId(i, k, j);
++
++            if (l != 0 && Block.byId[l].material.isSolid() && Block.byId[l].material != Material.LEAVES) {
++                return k + 1;
++            }
++        }
++
++        return -1;
++    }
++
++    public void a(int i, int j, int k, int l, int i1) {}
++
++    public void a(int i, int j, int k, int l, int i1, int j1) {}
++
++    public void b(int i, int j, int k, int l, int i1, int j1) {}
++
++    public void tickEntities() {
++        this.methodProfiler.a("entities");
++        this.methodProfiler.a("global");
++
++        int i;
++        Entity entity;
++        CrashReport crashreport;
++        CrashReportSystemDetails crashreportsystemdetails;
++
++        for (i = 0; i < this.i.size(); ++i) {
++            entity = (Entity) this.i.get(i);
++            // CraftBukkit start - Fixed an NPE, don't process entities in chunks queued for unload
++            if (entity == null) {
++                continue;
++            }
++
++            ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
++            if (chunkProviderServer.unloadQueue.contains(MathHelper.floor(entity.locX) >> 4, MathHelper.floor(entity.locZ) >> 4)) {
++                continue;
++            }
++            // CraftBukkit end
++
++            try {
++                ++entity.ticksLived;
++                entity.l_();
++            } catch (Throwable throwable) {
++                crashreport = CrashReport.a(throwable, "Ticking entity");
++                crashreportsystemdetails = crashreport.a("Entity being ticked");
++                if (entity == null) {
++                    crashreportsystemdetails.a("Entity", "~~NULL~~");
++                } else {
++                    entity.a(crashreportsystemdetails);
++                }
++
++                throw new ReportedException(crashreport);
++            }
++
++            if (entity.dead) {
++                this.i.remove(i--);
++            }
++        }
++
++        this.methodProfiler.c("remove");
++        this.entityList.removeAll(this.f);
++
++        int j;
++        int k;
++
++        for (i = 0; i < this.f.size(); ++i) {
++            entity = (Entity) this.f.get(i);
++            j = entity.aj;
++            k = entity.al;
++            if (entity.ai && this.isChunkLoaded(j, k)) {
++                this.getChunkAt(j, k).b(entity);
++            }
++        }
++
++        for (i = 0; i < this.f.size(); ++i) {
++            this.b((Entity) this.f.get(i));
++        }
++
++        this.f.clear();
++        this.methodProfiler.c("regular");
++
++        for (i = 0; i < this.entityList.size(); ++i) {
++            entity = (Entity) this.entityList.get(i);
++
++            // CraftBukkit start - Don't tick entities in chunks queued for unload
++            ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
++            if (chunkProviderServer.unloadQueue.contains(MathHelper.floor(entity.locX) >> 4, MathHelper.floor(entity.locZ) >> 4)) {
++                continue;
++            }
++            // CraftBukkit end
++
++            if (entity.vehicle != null) {
++                if (!entity.vehicle.dead && entity.vehicle.passenger == entity) {
++                    continue;
++                }
++
++                entity.vehicle.passenger = null;
++                entity.vehicle = null;
++            }
++
++            this.methodProfiler.a("tick");
++            if (!entity.dead) {
++                try {
++                    this.playerJoinedWorld(entity);
++                } catch (Throwable throwable1) {
++                    crashreport = CrashReport.a(throwable1, "Ticking entity");
++                    crashreportsystemdetails = crashreport.a("Entity being ticked");
++                    entity.a(crashreportsystemdetails);
++                    throw new ReportedException(crashreport);
++                }
++            }
++
++            this.methodProfiler.b();
++            this.methodProfiler.a("remove");
++            if (entity.dead) {
++                j = entity.aj;
++                k = entity.al;
++                if (entity.ai && this.isChunkLoaded(j, k)) {
++                    this.getChunkAt(j, k).b(entity);
++                }
++
++                this.entityList.remove(i--);
++                this.b(entity);
++            }
++
++            this.methodProfiler.b();
++        }
++
++        this.methodProfiler.c("tileEntities");
++        this.N = true;
++        Iterator iterator = this.tileEntityList.iterator();
++
++        while (iterator.hasNext()) {
++            TileEntity tileentity = (TileEntity) iterator.next();
++            // CraftBukkit start - Don't tick entities in chunks queued for unload
++            ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
++            if (chunkProviderServer.unloadQueue.contains(tileentity.x >> 4, tileentity.z >> 4)) {
++                continue;
++            }
++            // CraftBukkit end
++
++            if (!tileentity.r() && tileentity.o() && this.isLoaded(tileentity.x, tileentity.y, tileentity.z)) {
++                try {
++                    tileentity.h();
++                } catch (Throwable throwable2) {
++                    crashreport = CrashReport.a(throwable2, "Ticking tile entity");
++                    crashreportsystemdetails = crashreport.a("Tile entity being ticked");
++                    tileentity.a(crashreportsystemdetails);
++                    throw new ReportedException(crashreport);
++                }
++            }
++
++            if (tileentity.r()) {
++                iterator.remove();
++                if (this.isChunkLoaded(tileentity.x >> 4, tileentity.z >> 4)) {
++                    Chunk chunk = this.getChunkAt(tileentity.x >> 4, tileentity.z >> 4);
++
++                    if (chunk != null) {
++                        chunk.f(tileentity.x & 15, tileentity.y, tileentity.z & 15);
++                    }
++                }
++            }
++        }
++
++        this.N = false;
++        if (!this.b.isEmpty()) {
++            this.tileEntityList.removeAll(this.b);
++            this.b.clear();
++        }
++
++        this.methodProfiler.c("pendingTileEntities");
++        if (!this.a.isEmpty()) {
++            for (int l = 0; l < this.a.size(); ++l) {
++                TileEntity tileentity1 = (TileEntity) this.a.get(l);
++
++                if (!tileentity1.r()) {
++                    /* CraftBukkit start - Order matters, moved down
++                    if (!this.tileEntityList.contains(tileentity1)) {
++                        this.tileEntityList.add(tileentity1);
++                    }
++                    // CraftBukkit end */
++
++                    if (this.isChunkLoaded(tileentity1.x >> 4, tileentity1.z >> 4)) {
++                        Chunk chunk1 = this.getChunkAt(tileentity1.x >> 4, tileentity1.z >> 4);
++
++                        if (chunk1 != null) {
++                            chunk1.a(tileentity1.x & 15, tileentity1.y, tileentity1.z & 15, tileentity1);
++                            // CraftBukkit start - Moved down from above
++                            if (!this.tileEntityList.contains(tileentity1)) {
++                                this.tileEntityList.add(tileentity1);
++                            }
++                            // CraftBukkit end
++                        }
++                    }
++
++                    this.notify(tileentity1.x, tileentity1.y, tileentity1.z);
++                }
++            }
++
++            this.a.clear();
++        }
++
++        this.methodProfiler.b();
++        this.methodProfiler.b();
++    }
++
++    public void a(Collection collection) {
++        if (this.N) {
++            this.a.addAll(collection);
++        } else {
++            this.tileEntityList.addAll(collection);
++        }
++    }
++
++    public void playerJoinedWorld(Entity entity) {
++        this.entityJoinedWorld(entity, true);
++    }
++
++    public void entityJoinedWorld(Entity entity, boolean flag) {
++        int i = MathHelper.floor(entity.locX);
++        int j = MathHelper.floor(entity.locZ);
++        byte b0 = 32;
++
++        if (!flag || this.e(i - b0, 0, j - b0, i + b0, 0, j + b0)) {
++            entity.U = entity.locX;
++            entity.V = entity.locY;
++            entity.W = entity.locZ;
++            entity.lastYaw = entity.yaw;
++            entity.lastPitch = entity.pitch;
++            if (flag && entity.ai) {
++                if (entity.vehicle != null) {
++                    entity.T();
++                } else {
++                    ++entity.ticksLived;
++                    entity.l_();
++                }
++            }
++
++            this.methodProfiler.a("chunkCheck");
++            if (Double.isNaN(entity.locX) || Double.isInfinite(entity.locX)) {
++                entity.locX = entity.U;
++            }
++
++            if (Double.isNaN(entity.locY) || Double.isInfinite(entity.locY)) {
++                entity.locY = entity.V;
++            }
++
++            if (Double.isNaN(entity.locZ) || Double.isInfinite(entity.locZ)) {
++                entity.locZ = entity.W;
++            }
++
++            if (Double.isNaN((double) entity.pitch) || Double.isInfinite((double) entity.pitch)) {
++                entity.pitch = entity.lastPitch;
++            }
++
++            if (Double.isNaN((double) entity.yaw) || Double.isInfinite((double) entity.yaw)) {
++                entity.yaw = entity.lastYaw;
++            }
++
++            int k = MathHelper.floor(entity.locX / 16.0D);
++            int l = MathHelper.floor(entity.locY / 16.0D);
++            int i1 = MathHelper.floor(entity.locZ / 16.0D);
++
++            if (!entity.ai || entity.aj != k || entity.ak != l || entity.al != i1) {
++                if (entity.ai && this.isChunkLoaded(entity.aj, entity.al)) {
++                    this.getChunkAt(entity.aj, entity.al).a(entity, entity.ak);
++                }
++
++                if (this.isChunkLoaded(k, i1)) {
++                    entity.ai = true;
++                    this.getChunkAt(k, i1).a(entity);
++                } else {
++                    entity.ai = false;
++                }
++            }
++
++            this.methodProfiler.b();
++            if (flag && entity.ai && entity.passenger != null) {
++                if (!entity.passenger.dead && entity.passenger.vehicle == entity) {
++                    this.playerJoinedWorld(entity.passenger);
++                } else {
++                    entity.passenger.vehicle = null;
++                    entity.passenger = null;
++                }
++            }
++        }
++    }
++
++    public boolean b(AxisAlignedBB axisalignedbb) {
++        return this.a(axisalignedbb, (Entity) null);
++    }
++
++    public boolean a(AxisAlignedBB axisalignedbb, Entity entity) {
++        List list = this.getEntities((Entity) null, axisalignedbb);
++
++        for (int i = 0; i < list.size(); ++i) {
++            Entity entity1 = (Entity) list.get(i);
++
++            if (!entity1.dead && entity1.m && entity1 != entity) {
++                return false;
++            }
++        }
++
++        return true;
++    }
++
++    public boolean c(AxisAlignedBB axisalignedbb) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        if (axisalignedbb.a < 0.0D) {
++            --i;
++        }
++
++        if (axisalignedbb.b < 0.0D) {
++            --k;
++        }
++
++        if (axisalignedbb.c < 0.0D) {
++            --i1;
++        }
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = k; l1 < l; ++l1) {
++                for (int i2 = i1; i2 < j1; ++i2) {
++                    Block block = Block.byId[this.getTypeId(k1, l1, i2)];
++
++                    if (block != null) {
++                        return true;
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public boolean containsLiquid(AxisAlignedBB axisalignedbb) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        if (axisalignedbb.a < 0.0D) {
++            --i;
++        }
++
++        if (axisalignedbb.b < 0.0D) {
++            --k;
++        }
++
++        if (axisalignedbb.c < 0.0D) {
++            --i1;
++        }
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = k; l1 < l; ++l1) {
++                for (int i2 = i1; i2 < j1; ++i2) {
++                    Block block = Block.byId[this.getTypeId(k1, l1, i2)];
++
++                    if (block != null && block.material.isLiquid()) {
++                        return true;
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public boolean e(AxisAlignedBB axisalignedbb) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        if (this.e(i, k, i1, j, l, j1)) {
++            for (int k1 = i; k1 < j; ++k1) {
++                for (int l1 = k; l1 < l; ++l1) {
++                    for (int i2 = i1; i2 < j1; ++i2) {
++                        int j2 = this.getTypeId(k1, l1, i2);
++
++                        if (j2 == Block.FIRE.id || j2 == Block.LAVA.id || j2 == Block.STATIONARY_LAVA.id) {
++                            return true;
++                        }
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public boolean a(AxisAlignedBB axisalignedbb, Material material, Entity entity) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        if (!this.e(i, k, i1, j, l, j1)) {
++            return false;
++        } else {
++            boolean flag = false;
++            Vec3D vec3d = this.getVec3DPool().create(0.0D, 0.0D, 0.0D);
++
++            for (int k1 = i; k1 < j; ++k1) {
++                for (int l1 = k; l1 < l; ++l1) {
++                    for (int i2 = i1; i2 < j1; ++i2) {
++                        Block block = Block.byId[this.getTypeId(k1, l1, i2)];
++
++                        if (block != null && block.material == material) {
++                            double d0 = (double) ((float) (l1 + 1) - BlockFluids.d(this.getData(k1, l1, i2)));
++
++                            if ((double) l >= d0) {
++                                flag = true;
++                                block.a(this, k1, l1, i2, entity, vec3d);
++                            }
++                        }
++                    }
++                }
++            }
++
++            if (vec3d.b() > 0.0D && entity.av()) {
++                vec3d = vec3d.a();
++                double d1 = 0.014D;
++
++                entity.motX += vec3d.c * d1;
++                entity.motY += vec3d.d * d1;
++                entity.motZ += vec3d.e * d1;
++            }
++            vec3d.b.release(vec3d); // CraftBukkit - pop it - we're done
++
++            return flag;
++        }
++    }
++
++    public boolean a(AxisAlignedBB axisalignedbb, Material material) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = k; l1 < l; ++l1) {
++                for (int i2 = i1; i2 < j1; ++i2) {
++                    Block block = Block.byId[this.getTypeId(k1, l1, i2)];
++
++                    if (block != null && block.material == material) {
++                        return true;
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public boolean b(AxisAlignedBB axisalignedbb, Material material) {
++        int i = MathHelper.floor(axisalignedbb.a);
++        int j = MathHelper.floor(axisalignedbb.d + 1.0D);
++        int k = MathHelper.floor(axisalignedbb.b);
++        int l = MathHelper.floor(axisalignedbb.e + 1.0D);
++        int i1 = MathHelper.floor(axisalignedbb.c);
++        int j1 = MathHelper.floor(axisalignedbb.f + 1.0D);
++
++        for (int k1 = i; k1 < j; ++k1) {
++            for (int l1 = k; l1 < l; ++l1) {
++                for (int i2 = i1; i2 < j1; ++i2) {
++                    Block block = Block.byId[this.getTypeId(k1, l1, i2)];
++
++                    if (block != null && block.material == material) {
++                        int j2 = this.getData(k1, l1, i2);
++                        double d0 = (double) (l1 + 1);
++
++                        if (j2 < 8) {
++                            d0 = (double) (l1 + 1) - (double) j2 / 8.0D;
++                        }
++
++                        if (d0 >= axisalignedbb.b) {
++                            return true;
++                        }
++                    }
++                }
++            }
++        }
++
++        return false;
++    }
++
++    public Explosion explode(Entity entity, double d0, double d1, double d2, float f, boolean flag) {
++        return this.createExplosion(entity, d0, d1, d2, f, false, flag);
++    }
++
++    public Explosion createExplosion(Entity entity, double d0, double d1, double d2, float f, boolean flag, boolean flag1) {
++        Explosion explosion = new Explosion(this, entity, d0, d1, d2, f);
++
++        explosion.a = flag;
++        explosion.b = flag1;
++        explosion.a();
++        explosion.a(true);
++        return explosion;
++    }
++
++    public float a(Vec3D vec3d, AxisAlignedBB axisalignedbb) {
++        double d0 = 1.0D / ((axisalignedbb.d - axisalignedbb.a) * 2.0D + 1.0D);
++        double d1 = 1.0D / ((axisalignedbb.e - axisalignedbb.b) * 2.0D + 1.0D);
++        double d2 = 1.0D / ((axisalignedbb.f - axisalignedbb.c) * 2.0D + 1.0D);
++        int i = 0;
++        int j = 0;
++
++        Vec3D vec3d2 = vec3d.b.create(0, 0, 0); // CraftBukkit
++        for (float f = 0.0F; f <= 1.0F; f = (float) ((double) f + d0)) {
++            for (float f1 = 0.0F; f1 <= 1.0F; f1 = (float) ((double) f1 + d1)) {
++                for (float f2 = 0.0F; f2 <= 1.0F; f2 = (float) ((double) f2 + d2)) {
++                    double d3 = axisalignedbb.a + (axisalignedbb.d - axisalignedbb.a) * (double) f;
++                    double d4 = axisalignedbb.b + (axisalignedbb.e - axisalignedbb.b) * (double) f1;
++                    double d5 = axisalignedbb.c + (axisalignedbb.f - axisalignedbb.c) * (double) f2;
++
++                    if (this.a(vec3d2.b(d3, d4, d5), vec3d) == null) { // CraftBukkit
++                        ++i;
++                    }
++
++                    ++j;
++                }
++            }
++        }
++        vec3d2.b.release(vec3d2); // CraftBukkit
++
++        return (float) i / (float) j;
++    }
++
++    public boolean douseFire(EntityHuman entityhuman, int i, int j, int k, int l) {
++        if (l == 0) {
++            --j;
++        }
++
++        if (l == 1) {
++            ++j;
++        }
++
++        if (l == 2) {
++            --k;
++        }
++
++        if (l == 3) {
++            ++k;
++        }
++
++        if (l == 4) {
++            --i;
++        }
++
++        if (l == 5) {
++            ++i;
++        }
++
++        if (this.getTypeId(i, j, k) == Block.FIRE.id) {
++            this.a(entityhuman, 1004, i, j, k, 0);
++            this.setAir(i, j, k);
++            return true;
++        } else {
++            return false;
++        }
++    }
++
++    public TileEntity getTileEntity(int i, int j, int k) {
++        if (j >= 0 && j < 256) {
++            TileEntity tileentity = null;
++            int l;
++            TileEntity tileentity1;
++
++            if (this.N) {
++                for (l = 0; l < this.a.size(); ++l) {
++                    tileentity1 = (TileEntity) this.a.get(l);
++                    if (!tileentity1.r() && tileentity1.x == i && tileentity1.y == j && tileentity1.z == k) {
++                        tileentity = tileentity1;
++                        break;
++                    }
++                }
++            }
++
++            if (tileentity == null) {
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++                if (chunk != null) {
++                    tileentity = chunk.e(i & 15, j, k & 15);
++                }
++            }
++
++            if (tileentity == null) {
++                for (l = 0; l < this.a.size(); ++l) {
++                    tileentity1 = (TileEntity) this.a.get(l);
++                    if (!tileentity1.r() && tileentity1.x == i && tileentity1.y == j && tileentity1.z == k) {
++                        tileentity = tileentity1;
++                        break;
++                    }
++                }
++            }
++
++            return tileentity;
++        } else {
++            return null;
++        }
++    }
++
++    public void setTileEntity(int i, int j, int k, TileEntity tileentity) {
++        if (tileentity != null && !tileentity.r()) {
++            if (this.N) {
++                tileentity.x = i;
++                tileentity.y = j;
++                tileentity.z = k;
++                Iterator iterator = this.a.iterator();
++
++                while (iterator.hasNext()) {
++                    TileEntity tileentity1 = (TileEntity) iterator.next();
++
++                    if (tileentity1.x == i && tileentity1.y == j && tileentity1.z == k) {
++                        tileentity1.w_();
++                        iterator.remove();
++                    }
++                }
++
++                this.a.add(tileentity);
++            } else {
++                this.tileEntityList.add(tileentity);
++                Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++                if (chunk != null) {
++                    chunk.a(i & 15, j, k & 15, tileentity);
++                }
++            }
++        }
++    }
++
++    public void s(int i, int j, int k) {
++        TileEntity tileentity = this.getTileEntity(i, j, k);
++
++        if (tileentity != null && this.N) {
++            tileentity.w_();
++            this.a.remove(tileentity);
++        } else {
++            if (tileentity != null) {
++                this.a.remove(tileentity);
++                this.tileEntityList.remove(tileentity);
++            }
++
++            Chunk chunk = this.getChunkAt(i >> 4, k >> 4);
++
++            if (chunk != null) {
++                chunk.f(i & 15, j, k & 15);
++            }
++        }
++    }
++
++    public void a(TileEntity tileentity) {
++        this.b.add(tileentity);
++    }
++
++    public boolean t(int i, int j, int k) {
++        Block block = Block.byId[this.getTypeId(i, j, k)];
++
++        return block == null ? false : block.c();
++    }
++
++    public boolean u(int i, int j, int k) {
++        return Block.l(this.getTypeId(i, j, k));
++    }
++
++    public boolean v(int i, int j, int k) {
++        int l = this.getTypeId(i, j, k);
++
++        if (l != 0 && Block.byId[l] != null) {
++            AxisAlignedBB axisalignedbb = Block.byId[l].b(this, i, j, k);
++
++            return axisalignedbb != null && axisalignedbb.b() >= 1.0D;
++        } else {
++            return false;
++        }
++    }
++
++    public boolean w(int i, int j, int k) {
++        Block block = Block.byId[this.getTypeId(i, j, k)];
++
++        return this.a(block, this.getData(i, j, k));
++    }
++
++    public boolean a(Block block, int i) {
++        return block == null ? false : (block.material.k() && block.b() ? true : (block instanceof BlockStairs ? (i & 4) == 4 : (block instanceof BlockStepAbstract ? (i & 8) == 8 : (block instanceof BlockHopper ? true : (block instanceof BlockSnow ? (i & 7) == 7 : false)))));
++    }
++
++    public boolean c(int i, int j, int k, boolean flag) {
++        if (i >= -30000000 && k >= -30000000 && i < 30000000 && k < 30000000) {
++            Chunk chunk = this.chunkProvider.getOrCreateChunk(i >> 4, k >> 4);
++
++            if (chunk != null && !chunk.isEmpty()) {
++                Block block = Block.byId[this.getTypeId(i, j, k)];
++
++                return block == null ? false : block.material.k() && block.b();
++            } else {
++                return flag;
++            }
++        } else {
++            return flag;
++        }
++    }
++
++    public void A() {
++        int i = this.a(1.0F);
++
++        if (i != this.j) {
++            this.j = i;
++        }
++    }
++
++    public void setSpawnFlags(boolean flag, boolean flag1) {
++        this.allowMonsters = flag;
++        this.allowAnimals = flag1;
++    }
++
++    public void doTick() {
++        this.o();
++    }
++
++    private void a() {
++        if (this.worldData.hasStorm()) {
++            this.n = 1.0F;
++            if (this.worldData.isThundering()) {
++                this.p = 1.0F;
++            }
++        }
++    }
++
++    protected void o() {
++        if (!this.worldProvider.g) {
++            int i = this.worldData.getThunderDuration();
++
++            if (i <= 0) {
++                if (this.worldData.isThundering()) {
++                    this.worldData.setThunderDuration(this.random.nextInt(12000) + 3600);
++                } else {
++                    this.worldData.setThunderDuration(this.random.nextInt(168000) + 12000);
++                }
++            } else {
++                --i;
++                this.worldData.setThunderDuration(i);
++                if (i <= 0) {
++                    // CraftBukkit start
++                    ThunderChangeEvent thunder = new ThunderChangeEvent(this.getWorld(), !this.worldData.isThundering());
++                    this.getServer().getPluginManager().callEvent(thunder);
++                    if (!thunder.isCancelled()) {
++                        this.worldData.setThundering(!this.worldData.isThundering());
++                    }
++                    // CraftBukkit end
++                }
++            }
++
++            int j = this.worldData.getWeatherDuration();
++
++            if (j <= 0) {
++                if (this.worldData.hasStorm()) {
++                    this.worldData.setWeatherDuration(this.random.nextInt(12000) + 12000);
++                } else {
++                    this.worldData.setWeatherDuration(this.random.nextInt(168000) + 12000);
++                }
++            } else {
++                --j;
++                this.worldData.setWeatherDuration(j);
++                if (j <= 0) {
++                    // CraftBukkit start
++                    WeatherChangeEvent weather = new WeatherChangeEvent(this.getWorld(), !this.worldData.hasStorm());
++                    this.getServer().getPluginManager().callEvent(weather);
++
++                    if (!weather.isCancelled()) {
++                        this.worldData.setStorm(!this.worldData.hasStorm());
++                    }
++                    // CraftBukkit end
++                }
++            }
++
++            this.m = this.n;
++            if (this.worldData.hasStorm()) {
++                this.n = (float) ((double) this.n + 0.01D);
++            } else {
++                this.n = (float) ((double) this.n - 0.01D);
++            }
++
++            if (this.n < 0.0F) {
++                this.n = 0.0F;
++            }
++
++            if (this.n > 1.0F) {
++                this.n = 1.0F;
++            }
++
++            this.o = this.p;
++            if (this.worldData.isThundering()) {
++                this.p = (float) ((double) this.p + 0.01D);
++            } else {
++                this.p = (float) ((double) this.p - 0.01D);
++            }
++
++            if (this.p < 0.0F) {
++                this.p = 0.0F;
++            }
++
++            if (this.p > 1.0F) {
++                this.p = 1.0F;
++            }
++        }
++    }
++
++    public void B() {
++        this.worldData.setWeatherDuration(1);
++    }
++
++    protected void C() {
++        // this.chunkTickList.clear(); // CraftBukkit - removed
++        this.methodProfiler.a("buildList");
++
++        int i;
++        EntityHuman entityhuman;
++        int j;
++        int k;
++
++        for (i = 0; i < this.players.size(); ++i) {
++            entityhuman = (EntityHuman) this.players.get(i);
++            j = MathHelper.floor(entityhuman.locX / 16.0D);
++            k = MathHelper.floor(entityhuman.locZ / 16.0D);
++            byte b0 = 7;
++
++            for (int l = -b0; l <= b0; ++l) {
++                for (int i1 = -b0; i1 <= b0; ++i1) {
++                    // CraftBukkit start - Don't tick chunks queued for unload
++                    ChunkProviderServer chunkProviderServer = ((WorldServer) entityhuman.world).chunkProviderServer;
++                    if (chunkProviderServer.unloadQueue.contains(l + j, i1 + k)) {
++                        continue;
++                    }
++                    // CraftBukkit end
++
++                    this.chunkTickList.add(org.bukkit.craftbukkit.util.LongHash.toLong(l + j, i1 + k)); // CraftBukkit
++                }
++            }
++        }
++
++        this.methodProfiler.b();
++        if (this.O > 0) {
++            --this.O;
++        }
++
++        this.methodProfiler.a("playerCheckLight");
++        if (!this.players.isEmpty()) {
++            i = this.random.nextInt(this.players.size());
++            entityhuman = (EntityHuman) this.players.get(i);
++            j = MathHelper.floor(entityhuman.locX) + this.random.nextInt(11) - 5;
++            k = MathHelper.floor(entityhuman.locY) + this.random.nextInt(11) - 5;
++            int j1 = MathHelper.floor(entityhuman.locZ) + this.random.nextInt(11) - 5;
++
++            this.A(j, k, j1);
++        }
++
++        this.methodProfiler.b();
++    }
++
++    protected void a(int i, int j, Chunk chunk) {
++        this.methodProfiler.c("moodSound");
++        if (this.O == 0 && !this.isStatic) {
++            this.k = this.k * 3 + 1013904223;
++            int k = this.k >> 2;
++            int l = k & 15;
++            int i1 = k >> 8 & 15;
++            int j1 = k >> 16 & 255; // CraftBukkit - 127 -> 255
++            int k1 = chunk.getTypeId(l, j1, i1);
++
++            l += i;
++            i1 += j;
++            if (k1 == 0 && this.m(l, j1, i1) <= this.random.nextInt(8) && this.b(EnumSkyBlock.SKY, l, j1, i1) <= 0) {
++                EntityHuman entityhuman = this.findNearbyPlayer((double) l + 0.5D, (double) j1 + 0.5D, (double) i1 + 0.5D, 8.0D);
++
++                if (entityhuman != null && entityhuman.e((double) l + 0.5D, (double) j1 + 0.5D, (double) i1 + 0.5D) > 4.0D) {
++                    this.makeSound((double) l + 0.5D, (double) j1 + 0.5D, (double) i1 + 0.5D, "ambient.cave.cave", 0.7F, 0.8F + this.random.nextFloat() * 0.2F);
++                    this.O = this.random.nextInt(12000) + 6000;
++                }
++            }
++        }
++
++        this.methodProfiler.c("checkLight");
++        chunk.o();
++    }
++
++    protected void g() {
++        this.C();
++    }
++
++    public boolean x(int i, int j, int k) {
++        return this.d(i, j, k, false);
++    }
++
++    public boolean y(int i, int j, int k) {
++        return this.d(i, j, k, true);
++    }
++
++    public boolean d(int i, int j, int k, boolean flag) {
++        BiomeBase biomebase = this.getBiome(i, k);
++        float f = biomebase.j();
++
++        if (f > 0.15F) {
++            return false;
++        } else {
++            if (j >= 0 && j < 256 && this.b(EnumSkyBlock.BLOCK, i, j, k) < 10) {
++                int l = this.getTypeId(i, j, k);
++
++                if ((l == Block.STATIONARY_WATER.id || l == Block.WATER.id) && this.getData(i, j, k) == 0) {
++                    if (!flag) {
++                        return true;
++                    }
++
++                    boolean flag1 = true;
++
++                    if (flag1 && this.getMaterial(i - 1, j, k) != Material.WATER) {
++                        flag1 = false;
++                    }
++
++                    if (flag1 && this.getMaterial(i + 1, j, k) != Material.WATER) {
++                        flag1 = false;
++                    }
++
++                    if (flag1 && this.getMaterial(i, j, k - 1) != Material.WATER) {
++                        flag1 = false;
++                    }
++
++                    if (flag1 && this.getMaterial(i, j, k + 1) != Material.WATER) {
++                        flag1 = false;
++                    }
++
++                    if (!flag1) {
++                        return true;
++                    }
++                }
++            }
++
++            return false;
++        }
++    }
++
++    public boolean z(int i, int j, int k) {
++        BiomeBase biomebase = this.getBiome(i, k);
++        float f = biomebase.j();
++
++        if (f > 0.15F) {
++            return false;
++        } else {
++            if (j >= 0 && j < 256 && this.b(EnumSkyBlock.BLOCK, i, j, k) < 10) {
++                int l = this.getTypeId(i, j - 1, k);
++                int i1 = this.getTypeId(i, j, k);
++
++                if (i1 == 0 && Block.SNOW.canPlace(this, i, j, k) && l != 0 && l != Block.ICE.id && Block.byId[l].material.isSolid()) {
++                    return true;
++                }
++            }
++
++            return false;
++        }
++    }
++
++    public void A(int i, int j, int k) {
++        if (!this.worldProvider.g) {
++            this.c(EnumSkyBlock.SKY, i, j, k);
++        }
++
++        this.c(EnumSkyBlock.BLOCK, i, j, k);
++    }
++
++    private int a(int i, int j, int k, EnumSkyBlock enumskyblock) {
++        if (enumskyblock == EnumSkyBlock.SKY && this.l(i, j, k)) {
++            return 15;
++        } else {
++            int l = this.getTypeId(i, j, k);
++            int i1 = enumskyblock == EnumSkyBlock.SKY ? 0 : Block.lightEmission[l];
++            int j1 = Block.lightBlock[l];
++
++            if (j1 >= 15 && Block.lightEmission[l] > 0) {
++                j1 = 1;
++            }
++
++            if (j1 < 1) {
++                j1 = 1;
++            }
++
++            if (j1 >= 15) {
++                return 0;
++            } else if (i1 >= 14) {
++                return i1;
++            } else {
++                for (int k1 = 0; k1 < 6; ++k1) {
++                    int l1 = i + Facing.b[k1];
++                    int i2 = j + Facing.c[k1];
++                    int j2 = k + Facing.d[k1];
++                    int k2 = this.b(enumskyblock, l1, i2, j2) - j1;
++
++                    if (k2 > i1) {
++                        i1 = k2;
++                    }
++
++                    if (i1 >= 14) {
++                        return i1;
++                    }
++                }
++
++                return i1;
++            }
++        }
++    }
++
++    public void c(EnumSkyBlock enumskyblock, int i, int j, int k) {
++        if (this.areChunksLoaded(i, j, k, 17)) {
++            int l = 0;
++            int i1 = 0;
++
++            this.methodProfiler.a("getBrightness");
++            int j1 = this.b(enumskyblock, i, j, k);
++            int k1 = this.a(i, j, k, enumskyblock);
++            int l1;
++            int i2;
++            int j2;
++            int k2;
++            int l2;
++            int i3;
++            int j3;
++            int k3;
++            int l3;
++
++            if (k1 > j1) {
++                this.H[i1++] = 133152;
++            } else if (k1 < j1) {
++                this.H[i1++] = 133152 | j1 << 18;
++
++                while (l < i1) {
++                    l1 = this.H[l++];
++                    i2 = (l1 & 63) - 32 + i;
++                    j2 = (l1 >> 6 & 63) - 32 + j;
++                    k2 = (l1 >> 12 & 63) - 32 + k;
++                    l2 = l1 >> 18 & 15;
++                    i3 = this.b(enumskyblock, i2, j2, k2);
++                    if (i3 == l2) {
++                        this.b(enumskyblock, i2, j2, k2, 0);
++                        if (l2 > 0) {
++                            j3 = MathHelper.a(i2 - i);
++                            l3 = MathHelper.a(j2 - j);
++                            k3 = MathHelper.a(k2 - k);
++                            if (j3 + l3 + k3 < 17) {
++                                for (int i4 = 0; i4 < 6; ++i4) {
++                                    int j4 = i2 + Facing.b[i4];
++                                    int k4 = j2 + Facing.c[i4];
++                                    int l4 = k2 + Facing.d[i4];
++                                    int i5 = Math.max(1, Block.lightBlock[this.getTypeId(j4, k4, l4)]);
++
++                                    i3 = this.b(enumskyblock, j4, k4, l4);
++                                    if (i3 == l2 - i5 && i1 < this.H.length) {
++                                        this.H[i1++] = j4 - i + 32 | k4 - j + 32 << 6 | l4 - k + 32 << 12 | l2 - i5 << 18;
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++
++                l = 0;
++            }
++
++            this.methodProfiler.b();
++            this.methodProfiler.a("checkedPosition < toCheckCount");
++
++            while (l < i1) {
++                l1 = this.H[l++];
++                i2 = (l1 & 63) - 32 + i;
++                j2 = (l1 >> 6 & 63) - 32 + j;
++                k2 = (l1 >> 12 & 63) - 32 + k;
++                l2 = this.b(enumskyblock, i2, j2, k2);
++                i3 = this.a(i2, j2, k2, enumskyblock);
++                if (i3 != l2) {
++                    this.b(enumskyblock, i2, j2, k2, i3);
++                    if (i3 > l2) {
++                        j3 = Math.abs(i2 - i);
++                        l3 = Math.abs(j2 - j);
++                        k3 = Math.abs(k2 - k);
++                        boolean flag = i1 < this.H.length - 6;
++
++                        if (j3 + l3 + k3 < 17 && flag) {
++                            if (this.b(enumskyblock, i2 - 1, j2, k2) < i3) {
++                                this.H[i1++] = i2 - 1 - i + 32 + (j2 - j + 32 << 6) + (k2 - k + 32 << 12);
++                            }
++
++                            if (this.b(enumskyblock, i2 + 1, j2, k2) < i3) {
++                                this.H[i1++] = i2 + 1 - i + 32 + (j2 - j + 32 << 6) + (k2 - k + 32 << 12);
++                            }
++
++                            if (this.b(enumskyblock, i2, j2 - 1, k2) < i3) {
++                                this.H[i1++] = i2 - i + 32 + (j2 - 1 - j + 32 << 6) + (k2 - k + 32 << 12);
++                            }
++
++                            if (this.b(enumskyblock, i2, j2 + 1, k2) < i3) {
++                                this.H[i1++] = i2 - i + 32 + (j2 + 1 - j + 32 << 6) + (k2 - k + 32 << 12);
++                            }
++
++                            if (this.b(enumskyblock, i2, j2, k2 - 1) < i3) {
++                                this.H[i1++] = i2 - i + 32 + (j2 - j + 32 << 6) + (k2 - 1 - k + 32 << 12);
++                            }
++
++                            if (this.b(enumskyblock, i2, j2, k2 + 1) < i3) {
++                                this.H[i1++] = i2 - i + 32 + (j2 - j + 32 << 6) + (k2 + 1 - k + 32 << 12);
++                            }
++                        }
++                    }
++                }
++            }
++
++            this.methodProfiler.b();
++        }
++    }
++
++    public boolean a(boolean flag) {
++        return false;
++    }
++
++    public List a(Chunk chunk, boolean flag) {
++        return null;
++    }
++
++    public List getEntities(Entity entity, AxisAlignedBB axisalignedbb) {
++        return this.getEntities(entity, axisalignedbb, (IEntitySelector) null);
++    }
++
++    public List getEntities(Entity entity, AxisAlignedBB axisalignedbb, IEntitySelector ientityselector) {
++        ArrayList arraylist = new ArrayList();
++        int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
++        int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
++        int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
++        int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
++
++        for (int i1 = i; i1 <= j; ++i1) {
++            for (int j1 = k; j1 <= l; ++j1) {
++                if (this.isChunkLoaded(i1, j1)) {
++                    this.getChunkAt(i1, j1).a(entity, axisalignedbb, arraylist, ientityselector);
++                }
++            }
++        }
++
++        return arraylist;
++    }
++
++    public List a(Class oclass, AxisAlignedBB axisalignedbb) {
++        return this.a(oclass, axisalignedbb, (IEntitySelector) null);
++    }
++
++    public List a(Class oclass, AxisAlignedBB axisalignedbb, IEntitySelector ientityselector) {
++        int i = MathHelper.floor((axisalignedbb.a - 2.0D) / 16.0D);
++        int j = MathHelper.floor((axisalignedbb.d + 2.0D) / 16.0D);
++        int k = MathHelper.floor((axisalignedbb.c - 2.0D) / 16.0D);
++        int l = MathHelper.floor((axisalignedbb.f + 2.0D) / 16.0D);
++        ArrayList arraylist = new ArrayList();
++
++        for (int i1 = i; i1 <= j; ++i1) {
++            for (int j1 = k; j1 <= l; ++j1) {
++                if (this.isChunkLoaded(i1, j1)) {
++                    this.getChunkAt(i1, j1).a(oclass, axisalignedbb, arraylist, ientityselector);
++                }
++            }
++        }
++
++        return arraylist;
++    }
++
++    public Entity a(Class oclass, AxisAlignedBB axisalignedbb, Entity entity) {
++        List list = this.a(oclass, axisalignedbb);
++        Entity entity1 = null;
++        double d0 = Double.MAX_VALUE;
++
++        for (int i = 0; i < list.size(); ++i) {
++            Entity entity2 = (Entity) list.get(i);
++
++            if (entity2 != entity) {
++                double d1 = entity.e(entity2);
++
++                if (d1 <= d0) {
++                    entity1 = entity2;
++                    d0 = d1;
++                }
++            }
++        }
++
++        return entity1;
++    }
++
++    public abstract Entity getEntity(int i);
++
++    public void b(int i, int j, int k, TileEntity tileentity) {
++        if (this.isLoaded(i, j, k)) {
++            this.getChunkAtWorldCoords(i, k).e();
++        }
++    }
++
++    public int a(Class oclass) {
++        int i = 0;
++
++        for (int j = 0; j < this.entityList.size(); ++j) {
++            Entity entity = (Entity) this.entityList.get(j);
++
++            // CraftBukkit start - Split out persistent check, don't apply it to special persistent mobs
++            if (entity instanceof EntityInsentient) {
++                EntityInsentient entityinsentient = (EntityInsentient) entity;
++                if (entityinsentient.isTypeNotPersistent() && entityinsentient.bA()) { // Should be isPersistent
++                    continue;
++                }
++            }
++
++            if (oclass.isAssignableFrom(entity.getClass())) {
++                ++i;
++            }
++            // CraftBukkit end
++        }
++
++        return i;
++    }
++
++    public void a(List list) {
++        // CraftBukkit start
++        Entity entity = null;
++        for (int i = 0; i < list.size(); ++i) {
++            entity = (Entity) list.get(i);
++            if (entity == null) {
++                continue;
++            }
++            this.entityList.add(entity);
++            // CraftBukkit end
++            this.a((Entity) list.get(i));
++        }
++    }
++
++    public void b(List list) {
++        this.f.addAll(list);
++    }
++
++    public boolean mayPlace(int i, int j, int k, int l, boolean flag, int i1, Entity entity, ItemStack itemstack) {
++        int j1 = this.getTypeId(j, k, l);
++        Block block = Block.byId[j1];
++        Block block1 = Block.byId[i];
++        AxisAlignedBB axisalignedbb = block1.b(this, j, k, l);
++
++        if (flag) {
++            axisalignedbb = null;
++        }
++
++        boolean defaultReturn; // CraftBukkit - store the default action
++
++        if (axisalignedbb != null && !this.a(axisalignedbb, entity)) {
++            defaultReturn = false; // CraftBukkit
++        } else {
++            if (block != null && (block == Block.WATER || block == Block.STATIONARY_WATER || block == Block.LAVA || block == Block.STATIONARY_LAVA || block == Block.FIRE || block.material.isReplaceable())) {
++                block = null;
++            }
++
++            // CraftBukkit
++            defaultReturn = block != null && block.material == Material.ORIENTABLE && block1 == Block.ANVIL ? true : i > 0 && block == null && block1.canPlace(this, j, k, l, i1, itemstack);
++        }
++
++        // CraftBukkit start
++        BlockCanBuildEvent event = new BlockCanBuildEvent(this.getWorld().getBlockAt(j, k, l), i, defaultReturn);
++        this.getServer().getPluginManager().callEvent(event);
++
++        return event.isBuildable();
++        // CraftBukkit end
++    }
++
++    public PathEntity findPath(Entity entity, Entity entity1, float f, boolean flag, boolean flag1, boolean flag2, boolean flag3) {
++        this.methodProfiler.a("pathfind");
++        int i = MathHelper.floor(entity.locX);
++        int j = MathHelper.floor(entity.locY + 1.0D);
++        int k = MathHelper.floor(entity.locZ);
++        int l = (int) (f + 16.0F);
++        int i1 = i - l;
++        int j1 = j - l;
++        int k1 = k - l;
++        int l1 = i + l;
++        int i2 = j + l;
++        int j2 = k + l;
++        ChunkCache chunkcache = new ChunkCache(this, i1, j1, k1, l1, i2, j2, 0);
++        PathEntity pathentity = (new Pathfinder(chunkcache, flag, flag1, flag2, flag3)).a(entity, entity1, f);
++
++        this.methodProfiler.b();
++        return pathentity;
++    }
++
++    public PathEntity a(Entity entity, int i, int j, int k, float f, boolean flag, boolean flag1, boolean flag2, boolean flag3) {
++        this.methodProfiler.a("pathfind");
++        int l = MathHelper.floor(entity.locX);
++        int i1 = MathHelper.floor(entity.locY);
++        int j1 = MathHelper.floor(entity.locZ);
++        int k1 = (int) (f + 8.0F);
++        int l1 = l - k1;
++        int i2 = i1 - k1;
++        int j2 = j1 - k1;
++        int k2 = l + k1;
++        int l2 = i1 + k1;
++        int i3 = j1 + k1;
++        ChunkCache chunkcache = new ChunkCache(this, l1, i2, j2, k2, l2, i3, 0);
++        PathEntity pathentity = (new Pathfinder(chunkcache, flag, flag1, flag2, flag3)).a(entity, i, j, k, f);
++
++        this.methodProfiler.b();
++        return pathentity;
++    }
++
++    public int getBlockPower(int i, int j, int k, int l) {
++        int i1 = this.getTypeId(i, j, k);
++
++        return i1 == 0 ? 0 : Block.byId[i1].c(this, i, j, k, l);
++    }
++
++    public int getBlockPower(int i, int j, int k) {
++        byte b0 = 0;
++        int l = Math.max(b0, this.getBlockPower(i, j - 1, k, 0));
++
++        if (l >= 15) {
++            return l;
++        } else {
++            l = Math.max(l, this.getBlockPower(i, j + 1, k, 1));
++            if (l >= 15) {
++                return l;
++            } else {
++                l = Math.max(l, this.getBlockPower(i, j, k - 1, 2));
++                if (l >= 15) {
++                    return l;
++                } else {
++                    l = Math.max(l, this.getBlockPower(i, j, k + 1, 3));
++                    if (l >= 15) {
++                        return l;
++                    } else {
++                        l = Math.max(l, this.getBlockPower(i - 1, j, k, 4));
++                        if (l >= 15) {
++                            return l;
++                        } else {
++                            l = Math.max(l, this.getBlockPower(i + 1, j, k, 5));
++                            return l >= 15 ? l : l;
++                        }
++                    }
++                }
++            }
++        }
++    }
++
++    public boolean isBlockFacePowered(int i, int j, int k, int l) {
++        return this.getBlockFacePower(i, j, k, l) > 0;
++    }
++
++    public int getBlockFacePower(int i, int j, int k, int l) {
++        if (this.u(i, j, k)) {
++            return this.getBlockPower(i, j, k);
++        } else {
++            int i1 = this.getTypeId(i, j, k);
++
++            return i1 == 0 ? 0 : Block.byId[i1].b(this, i, j, k, l);
++        }
++    }
++
++    public boolean isBlockIndirectlyPowered(int i, int j, int k) {
++        return this.getBlockFacePower(i, j - 1, k, 0) > 0 ? true : (this.getBlockFacePower(i, j + 1, k, 1) > 0 ? true : (this.getBlockFacePower(i, j, k - 1, 2) > 0 ? true : (this.getBlockFacePower(i, j, k + 1, 3) > 0 ? true : (this.getBlockFacePower(i - 1, j, k, 4) > 0 ? true : this.getBlockFacePower(i + 1, j, k, 5) > 0))));
++    }
++
++    public int getHighestNeighborSignal(int i, int j, int k) {
++        int l = 0;
++
++        for (int i1 = 0; i1 < 6; ++i1) {
++            int j1 = this.getBlockFacePower(i + Facing.b[i1], j + Facing.c[i1], k + Facing.d[i1], i1);
++
++            if (j1 >= 15) {
++                return 15;
++            }
++
++            if (j1 > l) {
++                l = j1;
++            }
++        }
++
++        return l;
++    }
++
++    public EntityHuman findNearbyPlayer(Entity entity, double d0) {
++        return this.findNearbyPlayer(entity.locX, entity.locY, entity.locZ, d0);
++    }
++
++    public EntityHuman findNearbyPlayer(double d0, double d1, double d2, double d3) {
++        double d4 = -1.0D;
++        EntityHuman entityhuman = null;
++
++        for (int i = 0; i < this.players.size(); ++i) {
++            EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
++            // CraftBukkit start - Fixed an NPE
++            if (entityhuman1 == null || entityhuman1.dead) {
++                continue;
++            }
++            // CraftBukkit end
++            double d5 = entityhuman1.e(d0, d1, d2);
++
++            if ((d3 < 0.0D || d5 < d3 * d3) && (d4 == -1.0D || d5 < d4)) {
++                d4 = d5;
++                entityhuman = entityhuman1;
++            }
++        }
++
++        return entityhuman;
++    }
++
++    public EntityHuman findNearbyVulnerablePlayer(Entity entity, double d0) {
++        return this.findNearbyVulnerablePlayer(entity.locX, entity.locY, entity.locZ, d0);
++    }
++
++    public EntityHuman findNearbyVulnerablePlayer(double d0, double d1, double d2, double d3) {
++        double d4 = -1.0D;
++        EntityHuman entityhuman = null;
++
++        for (int i = 0; i < this.players.size(); ++i) {
++            EntityHuman entityhuman1 = (EntityHuman) this.players.get(i);
++            // CraftBukkit start - Fixed an NPE
++            if (entityhuman1 == null || entityhuman1.dead) {
++                continue;
++            }
++            // CraftBukkit end
++
++            if (!entityhuman1.abilities.isInvulnerable && entityhuman1.isAlive()) {
++                double d5 = entityhuman1.e(d0, d1, d2);
++                double d6 = d3;
++
++                if (entityhuman1.isSneaking()) {
++                    d6 = d3 * 0.800000011920929D;
++                }
++
++                if (entityhuman1.isInvisible()) {
++                    float f = entityhuman1.bs();
++
++                    if (f < 0.1F) {
++                        f = 0.1F;
++                    }
++
++                    d6 *= (double) (0.7F * f);
++                }
++
++                if ((d3 < 0.0D || d5 < d6 * d6) && (d4 == -1.0D || d5 < d4)) {
++                    d4 = d5;
++                    entityhuman = entityhuman1;
++                }
++            }
++        }
++
++        return entityhuman;
++    }
++
++    public EntityHuman a(String s) {
++        for (int i = 0; i < this.players.size(); ++i) {
++            if (s.equals(((EntityHuman) this.players.get(i)).getName())) {
++                return (EntityHuman) this.players.get(i);
++            }
++        }
++
++        return null;
++    }
++
++    public void G() throws ExceptionWorldConflict { // CraftBukkit - added throws
++        this.dataManager.checkSession();
++    }
++
++    public long getSeed() {
++        return this.worldData.getSeed();
++    }
++
++    public long getTime() {
++        return this.worldData.getTime();
++    }
++
++    public long getDayTime() {
++        return this.worldData.getDayTime();
++    }
++
++    public void setDayTime(long i) {
++        this.worldData.setDayTime(i);
++    }
++
++    public ChunkCoordinates getSpawn() {
++        return new ChunkCoordinates(this.worldData.c(), this.worldData.d(), this.worldData.e());
++    }
++
++    public boolean a(EntityHuman entityhuman, int i, int j, int k) {
++        return true;
++    }
++
++    public void broadcastEntityEffect(Entity entity, byte b0) {}
++
++    public IChunkProvider L() {
++        return this.chunkProvider;
++    }
++
++    public void playNote(int i, int j, int k, int l, int i1, int j1) {
++        if (l > 0) {
++            Block.byId[l].b(this, i, j, k, i1, j1);
++        }
++    }
++
++    public IDataManager getDataManager() {
++        return this.dataManager;
++    }
++
++    public WorldData getWorldData() {
++        return this.worldData;
++    }
++
++    public GameRules getGameRules() {
++        return this.worldData.getGameRules();
++    }
++
++    public void everyoneSleeping() {}
++
++    // CraftBukkit start
++    // Calls the method that checks to see if players are sleeping
++    // Called by CraftPlayer.setPermanentSleeping()
++    public void checkSleepStatus() {
++        if (!this.isStatic) {
++            this.everyoneSleeping();
++        }
++    }
++    // CraftBukkit end
++
++    public float h(float f) {
++        return (this.o + (this.p - this.o) * f) * this.i(f);
++    }
++
++    public float i(float f) {
++        return this.m + (this.n - this.m) * f;
++    }
++
++    public boolean P() {
++        return (double) this.h(1.0F) > 0.9D;
++    }
++
++    public boolean Q() {
++        return (double) this.i(1.0F) > 0.2D;
++    }
++
++    public boolean F(int i, int j, int k) {
++        if (!this.Q()) {
++            return false;
++        } else if (!this.l(i, j, k)) {
++            return false;
++        } else if (this.h(i, k) > j) {
++            return false;
++        } else {
++            BiomeBase biomebase = this.getBiome(i, k);
++
++            return biomebase.c() ? false : biomebase.d();
++        }
++    }
++
++    public boolean G(int i, int j, int k) {
++        BiomeBase biomebase = this.getBiome(i, k);
++
++        return biomebase.e();
++    }
++
++    public void a(String s, WorldMapBase worldmapbase) {
++        this.worldMaps.a(s, worldmapbase);
++    }
++
++    public WorldMapBase a(Class oclass, String s) {
++        return this.worldMaps.get(oclass, s);
++    }
++
++    public int b(String s) {
++        return this.worldMaps.a(s);
++    }
++
++    public void d(int i, int j, int k, int l, int i1) {
++        for (int j1 = 0; j1 < this.u.size(); ++j1) {
++            ((IWorldAccess) this.u.get(j1)).a(i, j, k, l, i1);
++        }
++    }
++
++    public void triggerEffect(int i, int j, int k, int l, int i1) {
++        this.a((EntityHuman) null, i, j, k, l, i1);
++    }
++
++    public void a(EntityHuman entityhuman, int i, int j, int k, int l, int i1) {
++        try {
++            for (int j1 = 0; j1 < this.u.size(); ++j1) {
++                ((IWorldAccess) this.u.get(j1)).a(entityhuman, i, j, k, l, i1);
++            }
++        } catch (Throwable throwable) {
++            CrashReport crashreport = CrashReport.a(throwable, "Playing level event");
++            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Level event being played");
++
++            crashreportsystemdetails.a("Block coordinates", CrashReportSystemDetails.a(j, k, l));
++            crashreportsystemdetails.a("Event source", entityhuman);
++            crashreportsystemdetails.a("Event type", Integer.valueOf(i));
++            crashreportsystemdetails.a("Event data", Integer.valueOf(i1));
++            throw new ReportedException(crashreport);
++        }
++    }
++
++    public int getHeight() {
++        return 256;
++    }
++
++    public int S() {
++        return this.worldProvider.g ? 128 : 256;
++    }
++
++    public IUpdatePlayerListBox a(EntityMinecartAbstract entityminecartabstract) {
++        return null;
++    }
++
++    public Random H(int i, int j, int k) {
++        long l = (long) i * 341873128712L + (long) j * 132897987541L + this.getWorldData().getSeed() + (long) k;
++
++        this.random.setSeed(l);
++        return this.random;
++    }
++
++    public ChunkPosition b(String s, int i, int j, int k) {
++        return this.L().findNearestMapFeature(this, s, i, j, k);
++    }
++
++    public CrashReportSystemDetails a(CrashReport crashreport) {
++        CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Affected level", 1);
++
++        crashreportsystemdetails.a("Level name", (this.worldData == null ? "????" : this.worldData.getName()));
++        crashreportsystemdetails.a("All players", (Callable) (new CrashReportPlayers(this)));
++        crashreportsystemdetails.a("Chunk stats", (Callable) (new CrashReportChunkStats(this)));
++
++        try {
++            this.worldData.a(crashreportsystemdetails);
++        } catch (Throwable throwable) {
++            crashreportsystemdetails.a("Level Data Unobtainable", throwable);
++        }
++
++        return crashreportsystemdetails;
++    }
++
++    public void f(int i, int j, int k, int l, int i1) {
++        for (int j1 = 0; j1 < this.u.size(); ++j1) {
++            IWorldAccess iworldaccess = (IWorldAccess) this.u.get(j1);
++
++            iworldaccess.b(i, j, k, l, i1);
++        }
++    }
++
++    public Vec3DPool getVec3DPool() {
++        return this.J;
++    }
++
++    public Calendar W() {
++        if (this.getTime() % 600L == 0L) {
++            this.K.setTimeInMillis(MinecraftServer.aq());
++        }
++
++        return this.K;
++    }
++
++    public Scoreboard getScoreboard() {
++        return this.scoreboard;
++    }
++
++    public void m(int i, int j, int k, int l) {
++        for (int i1 = 0; i1 < 4; ++i1) {
++            int j1 = i + Direction.a[i1];
++            int k1 = k + Direction.b[i1];
++            int l1 = this.getTypeId(j1, j, k1);
++
++            if (l1 != 0) {
++                Block block = Block.byId[l1];
++
++                if (Block.REDSTONE_COMPARATOR_OFF.g(l1)) {
++                    block.doPhysics(this, j1, j, k1, l);
++                } else if (Block.l(l1)) {
++                    j1 += Direction.a[i1];
++                    k1 += Direction.b[i1];
++                    l1 = this.getTypeId(j1, j, k1);
++                    block = Block.byId[l1];
++                    if (Block.REDSTONE_COMPARATOR_OFF.g(l1)) {
++                        block.doPhysics(this, j1, j, k1, l);
++                    }
++                }
++            }
++        }
++    }
++
++    public IConsoleLogManager getLogger() {
++        return this.logAgent;
++    }
++
++    public float b(double d0, double d1, double d2) {
++        return this.I(MathHelper.floor(d0), MathHelper.floor(d1), MathHelper.floor(d2));
++    }
++
++    public float I(int i, int j, int k) {
++        float f = 0.0F;
++        boolean flag = this.difficulty == 3;
++
++        if (this.isLoaded(i, j, k)) {
++            float f1 = this.x();
++
++            f += MathHelper.a((float) this.getChunkAtWorldCoords(i, k).q / 3600000.0F, 0.0F, 1.0F) * (flag ? 1.0F : 0.75F);
++            f += f1 * 0.25F;
++        }
++
++        if (this.difficulty < 2) {
++            f *= (float) this.difficulty / 2.0F;
++        }
++
++        return MathHelper.a(f, 0.0F, flag ? 1.5F : 1.0F);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 2b1040b..bb77db3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -325,6 +325,14 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+         return getHandle().isBlocking();
+     }
+ 
++    public void setAffectsSpawning(boolean yes) {
++        getHandle().affectsSpawning = yes;
++    }
++
++    public boolean getAffectsSpawning() {
++        return getHandle().affectsSpawning;
++    }
++
+     public boolean setWindowProperty(InventoryView.Property prop, int value) {
+         return false;
+     }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

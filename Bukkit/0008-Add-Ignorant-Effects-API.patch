@@ -1,0 +1,44 @@
+From 39528f528180bb0687d47ff2fd013748bb88d756 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 16 May 2013 17:37:16 -0500
+Subject: [PATCH] Add Ignorant Effects API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index de42f2e..2716738 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1,6 +1,7 @@
+ package org.bukkit.entity;
+ 
+ import java.net.InetSocketAddress;
++import java.util.Set;
+ 
+ import org.bukkit.Achievement;
+ import org.bukkit.ChatColor;
+@@ -17,6 +18,7 @@ import org.bukkit.command.CommandSender;
+ import org.bukkit.conversations.Conversable;
+ import org.bukkit.map.MapView;
+ import org.bukkit.plugin.messaging.PluginMessageRecipient;
++import org.bukkit.potion.PotionEffectType;
+ import org.bukkit.scoreboard.Scoreboard;
+ 
+ /**
+@@ -646,4 +648,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      *     yet or has logged out
+      */
+     public void setScoreboard(Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException;
++
++    public Set<PotionEffectType> getIgnorantEffects();
++
++    public void clearIgnorantEffects();
++
++    public void addIgnorantEffect(PotionEffectType effect);
++
++    public void removeIgnorantEffect(PotionEffectType effect);
++
++    public boolean hasIgnorantEffect(PotionEffectType effect);
+ }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

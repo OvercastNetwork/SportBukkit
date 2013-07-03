@@ -1,0 +1,35 @@
+From 28d156e748a9d20ba9e8a1170b19814846204901 Mon Sep 17 00:00:00 2001
+From: Chad Waters <authorblues@gmail.com>
+Date: Sun, 20 Jan 2013 22:04:58 -0500
+Subject: [PATCH] Fire ServerCommandEvent for command block cmds. Addresses
+ BUKKIT-3165
+
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityCommand.java b/src/main/java/net/minecraft/server/TileEntityCommand.java
+index e98c080..f396f0e 100644
+--- a/src/main/java/net/minecraft/server/TileEntityCommand.java
++++ b/src/main/java/net/minecraft/server/TileEntityCommand.java
+@@ -4,6 +4,7 @@ package net.minecraft.server;
+ import java.util.ArrayList;
+ import com.google.common.base.Joiner;
+ // CraftBukkit end
++import org.bukkit.event.server.ServerCommandEvent;
+ 
+ public class TileEntityCommand extends TileEntity implements ICommandListener {
+ 
+@@ -98,7 +99,11 @@ public class TileEntityCommand extends TileEntity implements ICommandListener {
+                 // Now dispatch all of the commands we ended up with
+                 for (int i = 0; i < commands.size(); i++) {
+                     try {
+-                        if (commandMap.dispatch(sender, joiner.join(java.util.Arrays.asList(commands.get(i))))) {
++                        String cmd = joiner.join(java.util.Arrays.asList(commands.get(i)));
++                        ServerCommandEvent event = new ServerCommandEvent(sender, cmd);
++                        world.getServer().getPluginManager().callEvent(event);
++
++                        if (commandMap.dispatch(sender, event.getCommand())) {
+                             completed++;
+                         }
+                     } catch (Throwable exception) {
+-- 
+1.7.9.6 (Apple Git-31.1)
+

@@ -1,0 +1,37 @@
+From e9cc3cf9e0f4731cb06e6dca41b56c7a1fe376fe Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 21 Aug 2012 19:51:54 -0500
+Subject: [PATCH] Allow spawning of ender pearls
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityEnderPearl.java b/src/main/java/net/minecraft/server/EntityEnderPearl.java
+index 585154e..efa092b 100644
+--- a/src/main/java/net/minecraft/server/EntityEnderPearl.java
++++ b/src/main/java/net/minecraft/server/EntityEnderPearl.java
+@@ -16,6 +16,10 @@ public class EntityEnderPearl extends EntityProjectile {
+         super(world, entityliving);
+     }
+ 
++    public EntityEnderPearl(World world, double d0, double d1, double d2) {
++        super(world, d0, d1, d2);
++    }
++
+     protected void a(MovingObjectPosition movingobjectposition) {
+         if (movingobjectposition.entity != null) {
+             movingobjectposition.entity.damageEntity(DamageSource.projectile(this, this.getShooter()), 0);
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index e06e23b..cfc159b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -842,6 +842,8 @@ public class CraftWorld implements World {
+                 entity = new EntitySnowball(world, x, y, z);
+             } else if (Egg.class.isAssignableFrom(clazz)) {
+                 entity = new EntityEgg(world, x, y, z);
++            } else if (EnderPearl.class.isAssignableFrom(clazz)) {
++                entity = new EntityEnderPearl(world, x, y, z);
+             } else if (Arrow.class.isAssignableFrom(clazz)) {
+                 entity = new EntityArrow(world);
+                 entity.setPositionRotation(x, y, z, 0, 0);
+-- 
+1.7.9.6 (Apple Git-31.1)
+

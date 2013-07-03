@@ -1,0 +1,35 @@
+From 86904a5a6fd9d7f943bd68a2425eacd54b2d73ef Mon Sep 17 00:00:00 2001
+From: Daniel <ZetaetaDaniel@gmail.com>
+Date: Sat, 12 May 2012 16:07:34 +0100
+Subject: [PATCH] Adds ability to set the number of online players sent in
+ ServerListPingEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index 6f5f779..e478054 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -12,6 +12,7 @@ import java.util.Random;
+ import javax.crypto.SecretKey;
+ 
+ import org.bukkit.event.player.PlayerHandshakeEvent; // CraftBukkit
++import org.bukkit.ChatColor; // CraftBukkit
+ 
+ public class PendingConnection extends Connection {
+ 
+@@ -155,10 +156,10 @@ public class PendingConnection extends Connection {
+             org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), playerlist.getPlayerCount(), playerlist.getMaxPlayers());
+             if (packet254getinfo.d()) {
+                 // CraftBukkit
+-                s = pingEvent.getMotd() + "\u00A7" + playerlist.getPlayerCount() + "\u00A7" + pingEvent.getMaxPlayers();
++                s = ChatColor.stripColor(pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers());
+             } else {
+                 // CraftBukkit start - Don't create a list from an array
+-                Object[] list = new Object[] { 1, 73, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
++                Object[] list = new Object[] { 1, 73, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
+ 
+                 StringBuilder builder = new StringBuilder();
+                 for (Object object : list) {
+-- 
+1.7.9.6 (Apple Git-31.1)
+

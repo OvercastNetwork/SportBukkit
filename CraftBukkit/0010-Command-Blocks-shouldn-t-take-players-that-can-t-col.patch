@@ -1,0 +1,22 @@
+From adf8caafc3ab68fff0d695fc33bc97f1024efd8f Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 22 May 2013 23:14:40 -0500
+Subject: [PATCH] Command Blocks shouldn't take players that can't collide
+ with entites into account when doing calculations
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index b98a078..91140c6 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -837,6 +837,7 @@ public abstract class PlayerList {
+ 
+             for (int i2 = 0; i2 < this.players.size(); ++i2) {
+                 EntityPlayer entityplayer = (EntityPlayer) this.players.get(i2);
++                if(!entityplayer.getBukkitEntity().getCollidesWithEntities()) continue; // CraftBukkit
+ 
+                 if ((world == null || entityplayer.world == world) && (s == null || flag1 != s.equalsIgnoreCase(entityplayer.getLocalizedName()))) {
+                     if (s1 != null) {
+-- 
+1.7.9.6 (Apple Git-31.1)
+

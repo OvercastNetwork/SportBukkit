@@ -1,0 +1,21 @@
+From 78966c6aa93ce12d776636f3448ae8c9c076fc04 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 13 Nov 2012 19:38:11 -0600
+Subject: [PATCH] Enable multiworld maps
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 03b4435..bee223a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -724,6 +724,7 @@ public final class CraftServer implements Server {
+ 
+         internal.worldMaps = console.worlds.get(0).worldMaps;
+         internal.scoreboard = getScoreboardManager().getMainScoreboard().getHandle();
++        // internal.worldMaps = console.worlds.get(0).worldMaps; // CraftBukkit - enable multiworld maps
+ 
+         internal.tracker = new EntityTracker(internal);
+         internal.addIWorldAccess(new WorldManager(console, internal));
+-- 
+1.7.9.6 (Apple Git-31.1)
+

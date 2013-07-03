@@ -1,0 +1,5 @@
+language: java
+notifications:
+  email: false
+before_install:
+  - ./applyPatches.sh

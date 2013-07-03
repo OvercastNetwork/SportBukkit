@@ -2,4 +2,6 @@ language: java
 notifications:
   email: false
 before_install:
+  - git config --global user.email "support@oc.tc"
+  - git config --global user.name "Overcast Network"
   - ./applyPatches.sh

@@ -25,13 +25,12 @@ function applyPatches {
 
     echo "  Applying patches to $target..."
     git am --abort
-    git am --3way $basedir/$patches/*.patch
 
-    if [ "$?" != "0" ]; then
+    if !(git am --3way $basedir/$patches/*.patch); then
         echo "  Something did not apply cleanly to $target."
         echo "  Please review above details and finish the apply then"
         echo "  save the changes with rebuildPatches.sh"
-        exit 1
+        exit $?
     else
         echo "  Patches applied cleanly to $target"
     fi

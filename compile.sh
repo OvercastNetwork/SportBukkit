@@ -7,16 +7,16 @@ function compile {
 
     echo "  $1 compiling..."
     cd $target
-    mvn clean install
-    cd $basedir
 
-    if [ "$?" != "0" ]; then
+    if !(mvn clean install); then
         echo "  $1 failed to compile"
-        exit 1
+        cd $basedir
+        exit $?
     else
         echo "  $1 compiled"
         echo "  JAR location: $target/target/"
     fi
+    cd $basedir
 }
 
 compile Bukkit

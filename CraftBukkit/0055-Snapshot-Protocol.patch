@@ -1,4 +1,4 @@
-From ab63c8d8bfc71c3fdd9bc0e5c7444238458a8525 Mon Sep 17 00:00:00 2001
+From 3e214d4a54321f0a1a5460a6dddcdc9488ffa639 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Mon, 8 Jul 2013 21:27:40 +1000
 Subject: [PATCH] Snapshot Protocol
@@ -139,10 +139,10 @@ index 0000000..c83800f
 +}
 diff --git a/src/main/java/net/minecraft/server/Packet44UpdateAttributes.java b/src/main/java/net/minecraft/server/Packet44UpdateAttributes.java
 new file mode 100644
-index 0000000..9c1e592
+index 0000000..c627f41
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/Packet44UpdateAttributes.java
-@@ -0,0 +1,59 @@
+@@ -0,0 +1,75 @@
 +package net.minecraft.server;
 +
 +import java.io.DataInput;
@@ -155,8 +155,21 @@ index 0000000..9c1e592
 +
 +public class Packet44UpdateAttributes extends Packet {
 +
++    private class AttributeSnapshot {
++
++        private final String a;
++        private final double b;
++        private final Collection c;
++
++        public AttributeSnapshot(String a, double b, Collection c) {
++            this.a = a;
++            this.b = b;
++            this.c = c;
++        }
++    }
++
 +    private int a;
-+    private final java.util.List<AttributeModifiable> b = new java.util.ArrayList<AttributeModifiable>();
++    private final java.util.List<AttributeSnapshot> b = new java.util.ArrayList<AttributeSnapshot>();
 +
 +    public Packet44UpdateAttributes() {}
 +
@@ -165,9 +178,9 @@ index 0000000..9c1e592
 +        Iterator iterator = collection.iterator();
 +
 +        while (iterator.hasNext()) {
-+            AttributeModifiable attributeinstance = (AttributeModifiable) iterator.next();
++            AttributeInstance attributeinstance = (AttributeInstance) iterator.next();
 +
-+            this.b.add(attributeinstance);
++            this.b.add(new AttributeSnapshot(attributeinstance.a().a(), attributeinstance.b(), attributeinstance.c()));
 +        }
 +    }
 +
@@ -179,13 +192,16 @@ index 0000000..9c1e592
 +        dataoutput.writeInt(this.a);
 +        dataoutput.writeInt(this.b.size());
 +
-+        for (AttributeModifiable attribute : this.b) {
-+            a(attribute.a().a(), dataoutput);
-+            dataoutput.writeDouble(attribute.b());
-+            dataoutput.writeShort(attribute.c().size());
++        Iterator<AttributeSnapshot> iter = this.b.iterator();
++        while(iter.hasNext()) {
++            AttributeSnapshot attribute = iter.next();
++            a(attribute.a, dataoutput);
++            dataoutput.writeDouble(attribute.b);
++            dataoutput.writeShort(attribute.c.size());
 +
-+            for (Object o : attribute.c()) {
-+                AttributeModifier modifier = (AttributeModifier) o;
++            Iterator<AttributeModifier> inner = attribute.c.iterator();
++            while(inner.hasNext()) {
++                AttributeModifier modifier = (AttributeModifier) inner.next();
 +                dataoutput.writeLong(modifier.a().getMostSignificantBits());
 +                dataoutput.writeLong(modifier.a().getLeastSignificantBits());
 +                dataoutput.writeDouble(modifier.d());

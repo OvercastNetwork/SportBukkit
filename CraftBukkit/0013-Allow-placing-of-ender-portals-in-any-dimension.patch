@@ -1,4 +1,4 @@
-From ea4e614f6666926b522ddca139b818cd5550ea0e Mon Sep 17 00:00:00 2001
+From a4997e69205da09337aaab7a2658bc40997ea9e1 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 01:24:18 -0600
 Subject: [PATCH] Allow placing of ender portals in any dimension
@@ -18,5 +18,5 @@ index b0d2d1e..50f790f 100644
          }
      }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

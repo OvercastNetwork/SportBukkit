@@ -1,4 +1,4 @@
-From 18c31fd8654ef136fe96e28bc5d8b7cb8eb12351 Mon Sep 17 00:00:00 2001
+From b9ed1b475646758376ab06159b94805284e76aca Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 12 Nov 2012 20:31:30 -0600
 Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
@@ -122,5 +122,5 @@ index 0000000..7d27a6e
 +    }
 +}
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

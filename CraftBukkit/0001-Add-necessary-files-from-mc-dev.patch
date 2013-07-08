@@ -1,4 +1,4 @@
-From a23b5c3771755f74d9232885d6df4529082e00ac Mon Sep 17 00:00:00 2001
+From fb47974ba738d728e17bd4b8ee46b888703c045c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -1109,5 +1109,5 @@ index 0000000..12815ee
 +    }
 +}
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

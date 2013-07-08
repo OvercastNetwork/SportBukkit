@@ -1,4 +1,4 @@
-From 7eae721dea4740504904ea7a22d8fbc7f5e7785c Mon Sep 17 00:00:00 2001
+From 631158f8391c203e79c5a52e1bd25147d066157d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 12 Nov 2012 20:53:11 -0600
 Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
@@ -21,5 +21,5 @@ index e1c91dd..e6d6c4e 100644
              // CraftBukkit end
  
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

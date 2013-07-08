@@ -1,4 +1,4 @@
-From c52fcdf1166cfa05bf1b3f3bb63670f96eeb8c34 Mon Sep 17 00:00:00 2001
+From a124039dd971238230edbfa7564ffe6768126efd Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:47:27 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
@@ -28,5 +28,5 @@ index 287e30d..ea96b9b 100644
 +    public void setArrowsStuck(int arrows);
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

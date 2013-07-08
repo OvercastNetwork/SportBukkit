@@ -1,4 +1,4 @@
-From 03c5d51b9730f97a75ba7e58230967b18bda9823 Mon Sep 17 00:00:00 2001
+From 347b70c224e8a60bb359e1c11e67b3bcb4f60922 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Wed, 6 Feb 2013 14:42:01 -0500
 Subject: [PATCH] Add safe methods from @md-5's offlineUtil
@@ -36,5 +36,5 @@ index 013dc0a..d344184 100644
 +    public Location getLocation();
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

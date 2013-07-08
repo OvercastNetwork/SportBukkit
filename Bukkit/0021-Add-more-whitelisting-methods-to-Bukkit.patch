@@ -1,4 +1,4 @@
-From 1d434bd8f0ae478e5f2266be9935e1e67d14a639 Mon Sep 17 00:00:00 2001
+From c3ee4253cadbc7bfa78183224a0e10d40eb2140e Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 10 Nov 2012 12:24:48 -0600
 Subject: [PATCH] Add more whitelisting methods to Bukkit
@@ -70,5 +70,5 @@ index 97b9dfe..0b52067 100644
       * <p>
       * This is the same as calling {@link #broadcast(java.lang.String, java.lang.String)} to {@link #BROADCAST_CHANNEL_USERS}
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

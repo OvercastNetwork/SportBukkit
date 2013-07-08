@@ -1,4 +1,4 @@
-From a7892d4459169f7ad7257a4f23b17d141fe9d16d Mon Sep 17 00:00:00 2001
+From 607f3fc220e81e7d751c3429c381d695f8a9ea76 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allowed playEffect to spawn particles
@@ -223,5 +223,5 @@ index 2cc5d80..2ac5dd1 100644
  
      public void sendBlockChange(Location loc, Material material, byte data) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From 71c81f5773b399026f75885108a634c0e1d66ab4 Mon Sep 17 00:00:00 2001
+From 52aeb110c7033c97a68d950521c332d13ce19f14 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 21 Feb 2013 19:21:29 -0600
 Subject: [PATCH] Be less strict with illegal stances, fixes BUKKIT-2578
@@ -18,5 +18,5 @@ index 217c521..e1c91dd 100644
                          this.minecraftServer.getLogger().warning(this.player.getName() + " had an illegal stance: " + d4);
                          return;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

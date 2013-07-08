@@ -1,4 +1,4 @@
-From d45aa12f102a790d6b7619db84728d8704decf8d Mon Sep 17 00:00:00 2001
+From 399ef559e38464287a33d1631518d814ee439b4e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Jan 2013 14:12:03 -0500
 Subject: [PATCH] Add onGround API
@@ -40,5 +40,5 @@ index e6d6c4e..2617b6e 100644
                  this.player.b(this.player.locY - d0, packet10flying.g);
              } else if (this.e % 20 == 0) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

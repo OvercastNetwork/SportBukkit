@@ -1,4 +1,4 @@
-From 1f9ea0e905ef928fa4d9d29c2146a2e1de04092c Mon Sep 17 00:00:00 2001
+From 3a6269ab2bb9502ac020169345b2fa5b99b28cb6 Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:48 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in
@@ -44,5 +44,5 @@ index d8369bc..d93cb47 100644
      public void setMaxPlayers(int maxPlayers) {
          this.maxPlayers = maxPlayers;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

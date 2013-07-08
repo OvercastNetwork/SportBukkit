@@ -1,11 +1,8 @@
-From a1b34e2e0e6d2065341e51cb0fa91aaeba1a751b Mon Sep 17 00:00:00 2001
+From b138873b967dc42ca7f374686e2c0a3dc6cbfd59 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Wed, 3 Jul 2013 13:27:38 -0500
 Subject: [PATCH] Fix API version detection
 
----
- src/main/java/org/bukkit/craftbukkit/util/Versioning.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 index f905d17..3949c0a 100644
@@ -21,5 +18,5 @@ index f905d17..3949c0a 100644
  
          if (stream != null) {
 -- 
-1.7.11.1
+1.7.12.4 (Apple Git-37)
 

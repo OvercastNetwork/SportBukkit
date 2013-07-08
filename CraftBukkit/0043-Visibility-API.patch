@@ -1,4 +1,4 @@
-From 9d175eed02c589b9984a6f671d8621e864201a1b Mon Sep 17 00:00:00 2001
+From da8cdfedea7d1ef72a5404b534031ad45a226afe Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 29 May 2013 23:59:07 -0500
 Subject: [PATCH] Visibility API
@@ -191,5 +191,5 @@ index d359d9f..541896a 100644
  
      public Map<String, Object> serialize() {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

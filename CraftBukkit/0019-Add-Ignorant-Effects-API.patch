@@ -1,4 +1,4 @@
-From aa4a5579dca379c93a627aa81abc48b488766aae Mon Sep 17 00:00:00 2001
+From 3b9a89379b1b3dd5cac3c70189d2a69dae71a257 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -287,5 +287,5 @@ index 977adff..1e5a83f 100644
 +    }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

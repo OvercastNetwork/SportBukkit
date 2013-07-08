@@ -1,4 +1,4 @@
-From 5e389e89f5bbef80deb7b7ca1f2267b51078102a Mon Sep 17 00:00:00 2001
+From 860b8d06b4cf701473462d4fe7afbd877541ca0d Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
@@ -65,5 +65,5 @@ index afe9ed8..cd394de 100644
          </configuration>
          <executions>
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

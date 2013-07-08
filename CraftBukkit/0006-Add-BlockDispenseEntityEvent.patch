@@ -1,4 +1,4 @@
-From f4649560ef2b104882d61b76a46a8c9200a02470 Mon Sep 17 00:00:00 2001
+From 1f37c2625901fb4f72acac0d8f9da96023526d89 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Fri, 12 Apr 2013 21:34:01 -0700
 Subject: [PATCH] Add BlockDispenseEntityEvent
@@ -251,5 +251,5 @@ index affe3ec..f63dd5c 100644
  
          world.addEntity(entitytntprimed);
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

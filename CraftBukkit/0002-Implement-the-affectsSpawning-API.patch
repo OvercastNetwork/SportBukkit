@@ -1,4 +1,4 @@
-From 06d96075127bf59a6c1ff9bc0a6adff2f0e7727d Mon Sep 17 00:00:00 2001
+From c4d417c1e8da59aea462fa9f64ba1628fbb808f4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] Implement the affectsSpawning API
@@ -4129,5 +4129,5 @@ index 2b1040b..bb77db3 100644
          return false;
      }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

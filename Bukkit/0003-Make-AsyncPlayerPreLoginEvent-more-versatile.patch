@@ -1,4 +1,4 @@
-From 108215a6e13dc892481feedfb22cb0f843fd3e90 Mon Sep 17 00:00:00 2001
+From 1c251eb68823f4092b6911663b25387248d5e4d5 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:42:05 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
@@ -55,5 +55,5 @@ index bc62248..850d8da 100644
           */
          KICK_OTHER
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

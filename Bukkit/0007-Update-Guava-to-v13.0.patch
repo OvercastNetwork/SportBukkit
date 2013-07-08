@@ -1,4 +1,4 @@
-From b87e2dbc005eca8ecfcc8b12aa1009c4ed01661a Mon Sep 17 00:00:00 2001
+From d7c23581e322895d7d7cb57d327bf8b98e273e04 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sun, 25 Nov 2012 18:56:49 -0800
 Subject: [PATCH] Update Guava to v13.0
@@ -18,5 +18,5 @@ index 1794291..084342c 100644
              <scope>compile</scope>
          </dependency>
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

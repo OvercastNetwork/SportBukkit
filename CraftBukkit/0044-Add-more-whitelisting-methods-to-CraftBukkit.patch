@@ -1,4 +1,4 @@
-From f5fc75d764e9b41892f5ed419bc81c0f4b2320bf Mon Sep 17 00:00:00 2001
+From 18b639d7f552f36dda316b0510fe2c8f62a0b023 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 10 Nov 2012 12:12:54 -0600
 Subject: [PATCH] Add more whitelisting methods to CraftBukkit
@@ -28,5 +28,5 @@ index 6824027..b7d7289 100644
          return GameMode.getByValue(console.worlds.get(0).getWorldData().getGameType().a());
      }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

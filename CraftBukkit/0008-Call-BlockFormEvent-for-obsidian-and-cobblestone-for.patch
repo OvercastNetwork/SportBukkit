@@ -1,4 +1,4 @@
-From 0aa38e834c2b3a6b3ee4007286fa0fd0d5d784fa Mon Sep 17 00:00:00 2001
+From 66f74efe5c719bf23f3ae5c0e53527ab03dc7405 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Fri, 5 Oct 2012 12:00:26 -0700
 Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
@@ -41,5 +41,5 @@ index c2e4a7d..5f0a06a 100644
              }
          }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

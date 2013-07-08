@@ -1,4 +1,4 @@
-From a764a54efdab83f961a176dc79ee0e9067a6bc83 Mon Sep 17 00:00:00 2001
+From 0583506dc1fb4528c1d69658f045585feeb44f53 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
@@ -83,5 +83,5 @@ index 2ac5dd1..366ad01 100644
          return getHandle().abilities.canFly;
      }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

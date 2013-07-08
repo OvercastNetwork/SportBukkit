@@ -1,4 +1,4 @@
-From 9f9440fe3040cfc07d9d0344436a09c5bb7b9030 Mon Sep 17 00:00:00 2001
+From 29d52b9f0cbab69e333d3974ca92e979451b00f1 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 17:03:07 -0500
 Subject: [PATCH] Add getting and setting of entity count
@@ -35,5 +35,5 @@ index c715dfc..03b4435 100644
 +    }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

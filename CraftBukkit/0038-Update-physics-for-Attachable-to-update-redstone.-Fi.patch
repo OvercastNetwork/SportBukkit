@@ -1,4 +1,4 @@
-From cd338bf687bd25020c84b38a62b71843b139665f Mon Sep 17 00:00:00 2001
+From ca9744db2291c21f71fc35bf8ff912627273c0c5 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Tue, 26 Mar 2013 07:47:43 -0400
 Subject: [PATCH] Update physics for Attachable to update redstone. Fixes
@@ -29,5 +29,5 @@ index 2072db2..65cb405 100644
  
          return true;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

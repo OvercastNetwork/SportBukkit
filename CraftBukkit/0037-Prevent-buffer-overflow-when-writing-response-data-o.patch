@@ -1,4 +1,4 @@
-From f94816463b483ed41e12f53b024713b666349137 Mon Sep 17 00:00:00 2001
+From 53fbbe89de1c867df98b81c50c95b550d33486b7 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 2 Sep 2012 12:28:34 -0500
 Subject: [PATCH] Prevent buffer overflow when writing response data on RCON
@@ -39,5 +39,5 @@ index 12815ee..451f1e2 100644
  
              this.cachedReply.write((int) 0);
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

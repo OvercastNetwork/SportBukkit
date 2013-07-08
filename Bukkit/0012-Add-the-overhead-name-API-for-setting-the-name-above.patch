@@ -1,4 +1,4 @@
-From 17cdf28c83d39bd74bd764875e70bc9aac9247bc Mon Sep 17 00:00:00 2001
+From bb23cc0af3c5bb0a0e5f10fbcd8bf990ff749173 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:33:42 -0700
 Subject: [PATCH] Add the overhead name API for setting the name above a
@@ -6,10 +6,10 @@ Subject: [PATCH] Add the overhead name API for setting the name above a
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 2716738..4f9cb1e 100644
+index 7a36dbb..f9d9c01 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -74,6 +74,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -75,6 +75,27 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void setPlayerListName(String name);
  
      /**
@@ -38,5 +38,5 @@ index 2716738..4f9cb1e 100644
       *
       * @param loc Location to point to
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

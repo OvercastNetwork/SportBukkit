@@ -1,4 +1,4 @@
-From 64d44f5ab4beb5c63d46233f6764e7edd1eed6f8 Mon Sep 17 00:00:00 2001
+From 8724f6434306bdd9c0a795c11d205146912ddaea Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 26 May 2013 18:43:56 -0700
 Subject: [PATCH] Add PlayerSpawnEntityEvent
@@ -54,5 +54,5 @@ index 06967d8..2b2ff26 100644
              if (entity != null) {
                  if (entity instanceof EntityLiving && itemstack.hasName()) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From b1725837add4fae13396eca7484437f54eb097ef Mon Sep 17 00:00:00 2001
+From eb743bf35d7c6b7959cd3dcaa329454bd3a89ecb Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Wed, 15 May 2013 19:04:24 -0700
 Subject: [PATCH] Partial fix for lilly pads not being removed when denied
@@ -24,5 +24,5 @@ index 691ad46..50d237a 100644
                  if (!entityhuman.a(i, j, k, movingobjectposition.face, itemstack)) {
                      return itemstack;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From 0326f164a08c7233d858910fe9feae727a772572 Mon Sep 17 00:00:00 2001
+From ec2f75e468bdde5eb7fd8b0c137f5af4be518c84 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
@@ -168,5 +168,5 @@ index 99e7ac2..c99817e 100644
  
      protected void b(NBTTagCompound nbttagcompound) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

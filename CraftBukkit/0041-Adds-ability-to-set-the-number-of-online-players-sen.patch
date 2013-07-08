@@ -1,4 +1,4 @@
-From 86904a5a6fd9d7f943bd68a2425eacd54b2d73ef Mon Sep 17 00:00:00 2001
+From e0240a7b25dd16377e0b8369b468af4634490a3a Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:34 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in
@@ -31,5 +31,5 @@ index 6f5f779..e478054 100644
                  StringBuilder builder = new StringBuilder();
                  for (Object object : list) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

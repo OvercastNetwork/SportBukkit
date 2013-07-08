@@ -1,4 +1,4 @@
-From 229b1d0a176b24b66ffaeb55c6f8357abf0f0f87 Mon Sep 17 00:00:00 2001
+From ae9cb8706d4ceec24c4d1758e4c6be0d0cb67b32 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -69,5 +69,5 @@ index 14e108f..e2035d0 100644
          } else {
              return false;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

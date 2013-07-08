@@ -1,4 +1,4 @@
-From 39a13570e268745312e7b465f541694867c72f8c Mon Sep 17 00:00:00 2001
+From 0c46c79f9a352f35dc6f065b8fe5238d63cdc67e Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -88,5 +88,5 @@ index 61a95e3..0fc12a1 100644
      monsters: 70
      animals: 15
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

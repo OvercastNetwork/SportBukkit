@@ -1,4 +1,4 @@
-From a568a26b48eb1cf63384518bf5f6e53da4dcdbd0 Mon Sep 17 00:00:00 2001
+From 5b46f77d4c1c947667d0a2d32208f8cf2f5a2c89 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 21 Jan 2013 12:47:55 -0600
 Subject: [PATCH] This is SportBukkit!
@@ -18,5 +18,5 @@ index bee223a..6824027 100644
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final ServicesManager servicesManager = new SimpleServicesManager();
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

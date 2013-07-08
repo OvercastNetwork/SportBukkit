@@ -1,4 +1,4 @@
-From 58b415042f3c72cf09f0233432747d00c3aecefd Mon Sep 17 00:00:00 2001
+From 0f190136efc851c6f270ffb95191039607e17fc0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 25 Dec 2012 01:50:07 -0500
 Subject: [PATCH] Add onGround API
@@ -43,5 +43,5 @@ index 0000000..4a6c3d4
 +
 +}
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

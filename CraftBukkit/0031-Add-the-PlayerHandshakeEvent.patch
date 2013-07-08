@@ -1,4 +1,4 @@
-From 2e98cc2d0ab33eab50cf9979fc3625d39d4f5cc6 Mon Sep 17 00:00:00 2001
+From 2ba0111e3758e31735556c200956899f7d7ae673 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:11:38 -0600
 Subject: [PATCH] Add the PlayerHandshakeEvent
@@ -32,5 +32,5 @@ index 7958390..6f5f779 100644
              }
          }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

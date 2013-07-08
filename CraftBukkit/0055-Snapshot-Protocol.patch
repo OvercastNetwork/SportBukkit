@@ -1,11 +1,11 @@
-From e6e7f60ed758d2c60943b2244e6ea602f87a4c4f Mon Sep 17 00:00:00 2001
+From ab63c8d8bfc71c3fdd9bc0e5c7444238458a8525 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Mon, 8 Jul 2013 21:27:40 +1000
 Subject: [PATCH] Snapshot Protocol
 
 
 diff --git a/pom.xml b/pom.xml
-index cd394de..74d816a 100644
+index 4d2e1a5..7b1105c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -4,7 +4,7 @@
@@ -16,6 +16,30 @@ index cd394de..74d816a 100644
 +  <version>1.6.2-R0.1-SNAPSHOT</version>
    <name>SportBukkit</name>
    <url>https://oc.tc</url>
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index 2287030..c4dff50 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -998,13 +998,13 @@ public abstract class EntityLiving extends Entity {
+ 
+     public void setSprinting(boolean flag) {
+         super.setSprinting(flag);
+-        if (!this.world.isStatic) {
+-            AttributeInstance attributeinstance = this.a(GenericAttributes.d);
+-
++        AttributeInstance attributeinstance = this.a(GenericAttributes.d);
++        if (attributeinstance.a(b) != null) {
+             attributeinstance.b(c);
+-            if (flag) {
+-                attributeinstance.a(c);
+-            }
++        }
++
++        if (flag) {
++            attributeinstance.a(c);
+         }
+     }
  
 diff --git a/src/main/java/net/minecraft/server/ItemBlock.java b/src/main/java/net/minecraft/server/ItemBlock.java
 index b2c3ed8..57040ce 100644

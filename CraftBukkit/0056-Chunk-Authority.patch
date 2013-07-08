@@ -10,7 +10,7 @@ index 3e55dc0..023ad94 100644
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1294,6 +1294,8 @@ public abstract class Entity {
      }
-
+ 
      public void T() {
 +        // CraftBukkit start
 +        if(!this.world.getWorld().getChunkAuthority().hasAuthority((int) this.locX >> 4, (int) this.locZ >> 4)) return; // CraftBukkit
@@ -36,7 +36,7 @@ index d33ce53..78ab4a9 100644
 @@ -1201,6 +1201,9 @@ public abstract class World implements IBlockAccess {
          for (i = 0; i < this.entityList.size(); ++i) {
              entity = (Entity) this.entityList.get(i);
-
+ 
 +            // CraftBukkit
 +            if(!this.getWorld().getChunkAuthority().hasAuthority((int) entity.locX >> 4, (int) entity.locZ >> 4)) continue;
 +
@@ -44,7 +44,7 @@ index d33ce53..78ab4a9 100644
              ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
              if (chunkProviderServer.unloadQueue.contains(MathHelper.floor(entity.locX) >> 4, MathHelper.floor(entity.locZ) >> 4)) {
 @@ -1251,6 +1254,9 @@ public abstract class World implements IBlockAccess {
-
+ 
          while (iterator.hasNext()) {
              TileEntity tileentity = (TileEntity) iterator.next();
 +            // CraftBukkit
@@ -56,7 +56,7 @@ index d33ce53..78ab4a9 100644
 @@ -1292,6 +1298,9 @@ public abstract class World implements IBlockAccess {
              for (int l = 0; l < this.a.size(); ++l) {
                  TileEntity tileentity1 = (TileEntity) this.a.get(l);
-
+ 
 +                // CraftBukkit
 +                if(!this.getWorld().getChunkAuthority().hasAuthority((int) tileentity1.x >> 4, (int) tileentity1.z >> 4)) continue;
 +
@@ -103,7 +103,7 @@ index 09192fc..c6c1c59 100644
 @@ -1275,6 +1277,14 @@ public class CraftWorld implements World {
          return getHandle().getGameRules().e(rule);
      }
-
+ 
 +    public ChunkAuthority getChunkAuthority() {
 +        return this.chunkAuthority;
 +    }
@@ -114,7 +114,7 @@ index 09192fc..c6c1c59 100644
 +
      public void processChunkGC() {
          chunkGCTickCount++;
-
---
+ 
+-- 
 1.7.12.4 (Apple Git-37)
 

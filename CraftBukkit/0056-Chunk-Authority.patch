@@ -1,62 +1,68 @@
-From 55107aea8447c2d191d8df101ee8cc74cd31943c Mon Sep 17 00:00:00 2001
+From 8a9df7b111157af5f67d79c535eed91c7e01d2de Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Jun 2013 22:10:02 -0500
 Subject: [PATCH] Chunk Authority
 
 
-diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index b73f69c..e2dd267 100644
---- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
-+++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-@@ -85,6 +85,8 @@ public class ChunkProviderServer implements IChunkProvider {
-     }
- 
-     public Chunk getChunkAt(int i, int j, Runnable runnable) {
-+        if(!this.world.getWorld().getChunkAuthority().hasAuthority(i, j)) return null;
-+
-         this.unloadQueue.remove(i, j);
-         Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
-         boolean newChunk = false;
-@@ -153,6 +155,8 @@ public class ChunkProviderServer implements IChunkProvider {
- 
-     public Chunk getOrCreateChunk(int i, int j) {
-         // CraftBukkit start
-+        if(!this.world.getWorld().getChunkAuthority().hasAuthority(i, j)) return null;
-+
-         Chunk chunk = (Chunk) this.chunks.get(LongHash.toLong(i, j));
- 
-         chunk = chunk == null ? (!this.world.isLoading && !this.forceChunkLoad ? this.emptyChunk : this.getChunkAt(i, j)) : chunk;
-@@ -169,6 +173,8 @@ public class ChunkProviderServer implements IChunkProvider {
-     }
- 
-     public Chunk loadChunk(int i, int j) { // CraftBukkit - private -> public
-+        if(!this.world.getWorld().getChunkAuthority().hasAuthority(i, j)) return null; // CraftBukkit
-+
-         if (this.e == null) {
-             return null;
-         } else {
-@@ -217,6 +223,8 @@ public class ChunkProviderServer implements IChunkProvider {
-     }
- 
-     public void getChunkAt(IChunkProvider ichunkprovider, int i, int j) {
-+        if(!this.world.getWorld().getChunkAuthority().hasAuthority(i, j)) return; // CraftBukkit
-+
-         Chunk chunk = this.getOrCreateChunk(i, j);
- 
-         if (!chunk.done) {
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
 index 3e55dc0..023ad94 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1294,6 +1294,8 @@ public abstract class Entity {
      }
- 
+
      public void T() {
 +        // CraftBukkit start
 +        if(!this.world.getWorld().getChunkAuthority().hasAuthority((int) this.locX >> 4, (int) this.locZ >> 4)) return; // CraftBukkit
          if (this.vehicle.dead) {
              this.vehicle = null;
          } else {
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index e7aaac0..e1fc9b7 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -532,6 +532,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+         if (this.ticks % 20 == 0) {
+             for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
+                 EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(i);
++                if(!entityplayer.world.getWorld().getChunkAuthority().hasAuthority((int) entityplayer.locX >> 4, (int) entityplayer.locZ >> 4)) continue; // CraftBukkit
+                 entityplayer.playerConnection.sendPacket(new Packet4UpdateTime(entityplayer.world.getTime(), entityplayer.getPlayerTime(), entityplayer.world.getGameRules().getBoolean("doDaylightCycle"))); // Add support for per player time
+             }
+         }
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index d33ce53..78ab4a9 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -1201,6 +1201,9 @@ public abstract class World implements IBlockAccess {
+         for (i = 0; i < this.entityList.size(); ++i) {
+             entity = (Entity) this.entityList.get(i);
+
++            // CraftBukkit
++            if(!this.getWorld().getChunkAuthority().hasAuthority((int) entity.locX >> 4, (int) entity.locZ >> 4)) continue;
++
+             // CraftBukkit start - Don't tick entities in chunks queued for unload
+             ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
+             if (chunkProviderServer.unloadQueue.contains(MathHelper.floor(entity.locX) >> 4, MathHelper.floor(entity.locZ) >> 4)) {
+@@ -1251,6 +1254,9 @@ public abstract class World implements IBlockAccess {
+
+         while (iterator.hasNext()) {
+             TileEntity tileentity = (TileEntity) iterator.next();
++            // CraftBukkit
++            if(!this.getWorld().getChunkAuthority().hasAuthority((int) tileentity.x >> 4, (int) tileentity.z >> 4)) continue;
++
+             // CraftBukkit start - Don't tick entities in chunks queued for unload
+             ChunkProviderServer chunkProviderServer = ((WorldServer) this).chunkProviderServer;
+             if (chunkProviderServer.unloadQueue.contains(tileentity.x >> 4, tileentity.z >> 4)) {
+@@ -1292,6 +1298,9 @@ public abstract class World implements IBlockAccess {
+             for (int l = 0; l < this.a.size(); ++l) {
+                 TileEntity tileentity1 = (TileEntity) this.a.get(l);
+
++                // CraftBukkit
++                if(!this.getWorld().getChunkAuthority().hasAuthority((int) tileentity1.x >> 4, (int) tileentity1.z >> 4)) continue;
++
+                 if (!tileentity1.r()) {
+                     /* CraftBukkit start - Order matters, moved down
+                     if (!this.tileEntityList.contains(tileentity1)) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunkAuthority.java b/src/main/java/org/bukkit/craftbukkit/CraftChunkAuthority.java
 new file mode 100644
 index 0000000..4465c75
@@ -97,7 +103,7 @@ index 09192fc..c6c1c59 100644
 @@ -1275,6 +1277,14 @@ public class CraftWorld implements World {
          return getHandle().getGameRules().e(rule);
      }
- 
+
 +    public ChunkAuthority getChunkAuthority() {
 +        return this.chunkAuthority;
 +    }
@@ -108,7 +114,7 @@ index 09192fc..c6c1c59 100644
 +
      public void processChunkGC() {
          chunkGCTickCount++;
- 
--- 
+
+--
 1.7.12.4 (Apple Git-37)
 

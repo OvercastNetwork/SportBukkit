@@ -1,0 +1,22 @@
+From bb5bb2d2cc5f8d7ad1ecb3e46ac75621e8aecad8 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 9 Jul 2013 09:43:41 -0500
+Subject: [PATCH] Fix effects/attributes not being reset on death
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index d63bbe0..7a6de42 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -946,7 +946,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.expTotal = this.newTotalExp;
+         this.exp = 0;
+         this.deathTicks = 0;
+-        this.aG(); // Should be removeAllEffects.
++        this.aJ(); // Should be removeAllEffects.
+         this.updateEffects = true;
+         this.activeContainer = this.defaultContainer;
+         this.killer = null;
+-- 
+1.7.9.6 (Apple Git-31.1)
+

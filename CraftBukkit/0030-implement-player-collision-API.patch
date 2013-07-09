@@ -1,11 +1,11 @@
-From 0583506dc1fb4528c1d69658f045585feeb44f53 Mon Sep 17 00:00:00 2001
+From c40f31b2b25f65b10d3be03c3075cb1677a8cd0f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 4a78c7a..2f15cb5 100644
+index adc1c52..cb8c6f3 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -401,7 +401,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
@@ -18,11 +18,11 @@ index 4a78c7a..2f15cb5 100644
                      Entity entity = (Entity) list.get(i);
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 0adbfcd..2287030 100644
+index 45b1410..5e18ba0 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1432,7 +1432,7 @@ public abstract class EntityLiving extends Entity {
-     protected void bf() {
+@@ -1433,7 +1433,7 @@ public abstract class EntityLiving extends Entity {
+     protected void bi() {
          List list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
  
 -        if (list != null && !list.isEmpty()) {
@@ -31,7 +31,7 @@ index 0adbfcd..2287030 100644
                  Entity entity = (Entity) list.get(i);
  
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index d264d88..fab36ca 100644
+index da7c7b6..c1ea7c8 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -49,6 +49,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -83,5 +83,5 @@ index 2ac5dd1..366ad01 100644
          return getHandle().abilities.canFly;
      }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

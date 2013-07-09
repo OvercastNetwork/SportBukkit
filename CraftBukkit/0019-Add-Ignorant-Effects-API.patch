@@ -1,4 +1,4 @@
-From 3b9a89379b1b3dd5cac3c70189d2a69dae71a257 Mon Sep 17 00:00:00 2001
+From 1ad0f9316935821c119296a74f4e076540634366 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -28,10 +28,10 @@ index f5935f7..9d726b9 100644
  
          WatchableObject watchableobject;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index c34f10c..d79d11b 100644
+index 68ce1ef..c9c3b0b 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -768,12 +768,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -775,12 +775,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
@@ -42,8 +42,8 @@ index c34f10c..d79d11b 100644
 +        }
      }
  
-     protected void b(MobEffect mobeffect) {
-         super.b(mobeffect);
+     protected void a(MobEffect mobeffect, boolean flag) {
+         super.a(mobeffect, flag);
 -        this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
 +        // CraftBukkit - account for ignorant effects
 +        if (!this.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
@@ -51,9 +51,9 @@ index c34f10c..d79d11b 100644
 +        }
      }
  
-     protected void c(MobEffect mobeffect) {
+     protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index e58af63..712895e 100644
+index 673c204..85fb23b 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -101,7 +101,7 @@ index e58af63..712895e 100644
 +        }
 +
 +        if (!flag && this.tracker instanceof EntityLiving) {
-+            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aT();
++            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aW();
 +            Set set = attributemapserver.b();
 +
 +            if (!set.isEmpty()) {
@@ -195,10 +195,10 @@ index 54299a7..a94eb75 100644
          this.a = i;
          if (flag) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 91140c6..8e7cb87 100644
+index a9b1168..5def4f0 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -110,7 +110,10 @@ public abstract class PlayerList {
+@@ -112,7 +112,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -210,7 +210,7 @@ index 91140c6..8e7cb87 100644
          }
  
          entityplayer.syncInventory();
-@@ -461,7 +464,10 @@ public abstract class PlayerList {
+@@ -463,7 +466,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -287,5 +287,5 @@ index 977adff..1e5a83f 100644
 +    }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

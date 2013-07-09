@@ -1,4 +1,4 @@
-From 0c46c79f9a352f35dc6f065b8fe5238d63cdc67e Mon Sep 17 00:00:00 2001
+From 9052bcc67127d36fda4fe5d76ceb521fe92e401d Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,10 +7,10 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index c60abf1..ae7f0be 100644
+index a2bdfa3..21d5ad4 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -25,7 +25,7 @@ public class NetworkManager implements INetworkManager {
+@@ -27,7 +27,7 @@ public class NetworkManager implements INetworkManager {
      private final Object h = new Object();
      private final IConsoleLogManager i;
      public Socket socket; // CraftBukkit - private -> public
@@ -19,7 +19,7 @@ index c60abf1..ae7f0be 100644
      private volatile DataInputStream input;
      private volatile DataOutputStream output;
      private volatile boolean n = true;
-@@ -302,6 +302,12 @@ public class NetworkManager implements INetworkManager {
+@@ -306,6 +306,12 @@ public class NetworkManager implements INetworkManager {
      public SocketAddress getSocketAddress() {
          return this.k;
      }
@@ -33,10 +33,10 @@ index c60abf1..ae7f0be 100644
      public void d() {
          if (!this.t) {
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 043321d..b8d234b 100644
+index c9e187e..29bfa05 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
-@@ -216,4 +216,17 @@ public class PendingConnection extends Connection {
+@@ -220,4 +220,17 @@ public class PendingConnection extends Connection {
      static boolean a(PendingConnection pendingconnection, boolean flag) {
          return pendingconnection.h = flag;
      }
@@ -88,5 +88,5 @@ index 61a95e3..0fc12a1 100644
      monsters: 70
      animals: 15
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

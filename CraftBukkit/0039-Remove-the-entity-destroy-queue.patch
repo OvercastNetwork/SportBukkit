@@ -1,11 +1,11 @@
-From 9ccdd52529a6bc76e80f6f78135125f8c5f696d4 Mon Sep 17 00:00:00 2001
+From e4aa5d6078e66da0e6d73a6282839ff548e2ebb9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index fab36ca..653cd61 100644
+index c1ea7c8..d63bbe0 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -29,7 +29,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -33,7 +33,7 @@ index fab36ca..653cd61 100644
  
          if (!this.chunkCoordIntPairQueue.isEmpty()) {
              ArrayList arraylist = new ArrayList();
-@@ -779,7 +781,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -786,7 +788,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.lastSentExp = -1;
          this.bP = -1.0F;
          this.bQ = -1;
@@ -43,7 +43,7 @@ index fab36ca..653cd61 100644
  
      protected void a(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 712895e..9879831 100644
+index 85fb23b..1c2a0da 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -334,18 +334,12 @@ public class EntityTrackerEntry {
@@ -95,5 +95,5 @@ index 712895e..9879831 100644
      }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

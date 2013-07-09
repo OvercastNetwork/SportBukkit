@@ -1,4 +1,4 @@
-From 631158f8391c203e79c5a52e1bd25147d066157d Mon Sep 17 00:00:00 2001
+From d8dded1cbe95462136edaab781f5890b667c73bd Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 12 Nov 2012 20:53:11 -0600
 Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
@@ -6,10 +6,10 @@ Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index e1c91dd..e6d6c4e 100644
+index 31caa62..339926a 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1437,8 +1437,9 @@ public class PlayerConnection extends Connection {
+@@ -1418,8 +1418,9 @@ public class PlayerConnection extends Connection {
                              case NOTHING:
                                  break;
                          }
@@ -21,5 +21,5 @@ index e1c91dd..e6d6c4e 100644
              // CraftBukkit end
  
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

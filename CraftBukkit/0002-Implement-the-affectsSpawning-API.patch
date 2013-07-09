@@ -1,11 +1,11 @@
-From c4d417c1e8da59aea462fa9f64ba1628fbb808f4 Mon Sep 17 00:00:00 2001
+From b419fad3ea43d56ff69934e4531fcb0b87a9120d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] Implement the affectsSpawning API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 794ed47..4a78c7a 100644
+index 963bc55..adc1c52 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -38,6 +38,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
@@ -17,10 +17,10 @@ index 794ed47..4a78c7a 100644
      @Override
      public CraftHumanEntity getBukkitEntity() {
 diff --git a/src/main/java/net/minecraft/server/EntityInsentient.java b/src/main/java/net/minecraft/server/EntityInsentient.java
-index f913a40..a3a2e8b 100644
+index 34eb872..8d8cc41 100644
 --- a/src/main/java/net/minecraft/server/EntityInsentient.java
 +++ b/src/main/java/net/minecraft/server/EntityInsentient.java
-@@ -382,7 +382,7 @@ public abstract class EntityInsentient extends EntityLiving {
+@@ -380,7 +380,7 @@ public abstract class EntityInsentient extends EntityLiving {
          if (this.persistent) {
              this.aV = 0;
          } else {
@@ -929,7 +929,7 @@ index 108b375..a9164b9 100644
  
      public void g() {
 diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java b/src/main/java/net/minecraft/server/SpawnerCreature.java
-index aa7698b..e9672f4 100644
+index 9812538..cd7e1f7 100644
 --- a/src/main/java/net/minecraft/server/SpawnerCreature.java
 +++ b/src/main/java/net/minecraft/server/SpawnerCreature.java
 @@ -38,6 +38,12 @@ public final class SpawnerCreature {
@@ -1216,7 +1216,7 @@ index 0000000..aa7698b
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index f134856..14e108f 100644
+index 0435ca7..ac294bd 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -2584,6 +2584,35 @@ public abstract class World implements IBlockAccess {
@@ -4129,5 +4129,5 @@ index 2b1040b..bb77db3 100644
          return false;
      }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

@@ -1,4 +1,4 @@
-From bb5bb2d2cc5f8d7ad1ecb3e46ac75621e8aecad8 Mon Sep 17 00:00:00 2001
+From af5da9c887be3d72839299b6df443e6a6e1ccd63 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 9 Jul 2013 09:43:41 -0500
 Subject: [PATCH] Fix effects/attributes not being reset on death

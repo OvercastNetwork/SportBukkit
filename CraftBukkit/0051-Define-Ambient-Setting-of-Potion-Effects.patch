@@ -1,4 +1,4 @@
-From be5c0a82c70023d9f44129791a69f65d015853ee Mon Sep 17 00:00:00 2001
+From f7c15f86d8875f42f0b866eeac03b0a1a0c7badb Mon Sep 17 00:00:00 2001
 From: Jim Bilbrey <jb_aero@verizon.net>
 Date: Wed, 19 Jun 2013 05:38:05 -0400
 Subject: [PATCH] Define Ambient Setting of Potion Effects
@@ -13,7 +13,7 @@ This also changes livingEntity.getActivePotionEffects() to construct the
 PotionEffects using the ambient setting supplied by the MobEffects.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index a073f6e..54dabaf 100644
+index b059565..e2f8534 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -258,7 +258,7 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -35,5 +35,5 @@ index a073f6e..54dabaf 100644
          return effects;
      }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

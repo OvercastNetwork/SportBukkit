@@ -1,4 +1,4 @@
-From 9257e7500b9589b0934c9e81c48e5dda0c6c1ae2 Mon Sep 17 00:00:00 2001
+From 632af79424936958673bd852a066f4a846681921 Mon Sep 17 00:00:00 2001
 From: Alex Ciuba <alexciuba@gmail.com>
 Date: Mon, 10 Jun 2013 16:04:38 -0400
 Subject: [PATCH] Properly Consume Bonemeal in Dispensers
@@ -43,5 +43,5 @@ index 1a58814..b83a803 100644
                      world.triggerEffect(2005, i, j, k, 0);
                  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

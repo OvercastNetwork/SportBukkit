@@ -1,11 +1,11 @@
-From ebdb062bb9ca4bbe71c7dcbaa7db2edba665b730 Mon Sep 17 00:00:00 2001
+From a2b6d56e5dce524264aa2fdc65a2b40b5a752cf7 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
-index 9a1152d..18bbafc 100644
+index 5247d5a..066e682 100644
 --- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -152,10 +152,17 @@ public class EntityExperienceOrb extends Entity {
@@ -31,10 +31,10 @@ index 9a1152d..18bbafc 100644
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 9986b7a..7c27502 100644
+index 6db7b9b..e4df717 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -699,4 +699,11 @@ public class CraftEventFactory {
+@@ -706,4 +706,11 @@ public class CraftEventFactory {
              player.playerConnection.sendPacket(new Packet103SetSlot(player.activeContainer.windowId, slot.g, itemInHand));
          }
      }
@@ -47,5 +47,5 @@ index 9986b7a..7c27502 100644
 +    }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

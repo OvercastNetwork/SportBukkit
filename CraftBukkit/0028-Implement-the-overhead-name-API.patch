@@ -1,11 +1,11 @@
-From 820968a17f224d9c99a86ccd0d5a36c429c61573 Mon Sep 17 00:00:00 2001
+From 91e1630b05a352b49fcdeb157fa862d4ae6e307c Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index d79d11b..d264d88 100644
+index d798835..8f3d89e 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -46,6 +46,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -25,10 +25,10 @@ index d79d11b..d264d88 100644
          // CraftBukkit end
      }
 diff --git a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
-index 1843d9c..09fc84f 100644
+index 1843d9c..543d44e 100644
 --- a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
 +++ b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
-@@ -24,11 +24,16 @@ public class Packet20NamedEntitySpawn extends Packet {
+@@ -24,15 +24,19 @@ public class Packet20NamedEntitySpawn extends Packet {
      public Packet20NamedEntitySpawn(EntityHuman entityhuman) {
          this.a = entityhuman.id;
  
@@ -49,6 +49,10 @@ index 1843d9c..09fc84f 100644
          }
          // CraftBukkit end
  
+-        this.b = entityhuman.getName();
+         this.c = MathHelper.floor(entityhuman.locX * 32.0D);
+         this.d = MathHelper.floor(entityhuman.locY * 32.0D);
+         this.e = MathHelper.floor(entityhuman.locZ * 32.0D);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index 1e5a83f..2cc5d80 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
@@ -107,5 +111,5 @@ index 1e5a83f..2cc5d80 100644
      public void setMaxHealth(double amount) {
          super.setMaxHealth(amount);
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

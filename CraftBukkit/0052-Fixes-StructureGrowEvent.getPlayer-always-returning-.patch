@@ -1,4 +1,4 @@
-From 0ba34cb896c72c363229c4755f6c3ccc0c23f475 Mon Sep 17 00:00:00 2001
+From 345cb12b8b62202b8c2425ded1ba435290c5a195 Mon Sep 17 00:00:00 2001
 From: ItsHarry <info@itsjerryandharry.com>
 Date: Wed, 10 Jul 2013 13:45:08 +0200
 Subject: [PATCH] Fixes StructureGrowEvent.getPlayer(); always returning null

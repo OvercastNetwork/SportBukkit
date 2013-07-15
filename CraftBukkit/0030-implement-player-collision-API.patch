@@ -1,14 +1,14 @@
-From c40f31b2b25f65b10d3be03c3075cb1677a8cd0f Mon Sep 17 00:00:00 2001
+From 3ca42f44a729bf4cf428d85468bb87d63055aae0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index adc1c52..cb8c6f3 100644
+index 881f52f..476003b 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -401,7 +401,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+@@ -411,7 +411,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
  
              List list = this.world.getEntities(this, axisalignedbb);
  
@@ -31,7 +31,7 @@ index 45b1410..5e18ba0 100644
                  Entity entity = (Entity) list.get(i);
  
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index da7c7b6..c1ea7c8 100644
+index 8f3d89e..6121793 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -49,6 +49,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {

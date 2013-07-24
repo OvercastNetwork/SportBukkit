@@ -1,14 +1,14 @@
-From 28134baaf0745557ae20fcd3e1d1a0824ec52629 Mon Sep 17 00:00:00 2001
+From dc5c35a09f15ae2e74cd32db91c96a16e16015c3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Jan 2013 14:12:03 -0500
 Subject: [PATCH] Add onGround API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 339926a..1854f2b 100644
+index bc246b9..acb2336 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -45,6 +45,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
+@@ -43,6 +43,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
  import org.bukkit.event.player.PlayerItemHeldEvent;
  import org.bukkit.event.player.PlayerKickEvent;
  import org.bukkit.event.player.PlayerMoveEvent;
@@ -16,7 +16,7 @@ index 339926a..1854f2b 100644
  import org.bukkit.event.player.PlayerTeleportEvent;
  import org.bukkit.event.player.PlayerToggleFlightEvent;
  import org.bukkit.event.player.PlayerToggleSneakEvent;
-@@ -198,6 +199,7 @@ public class PlayerConnection extends Connection {
+@@ -196,6 +197,7 @@ public class PlayerConnection extends Connection {
              Player player = this.getPlayer();
              Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
              Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
@@ -24,7 +24,7 @@ index 339926a..1854f2b 100644
  
              // If the packet contains movement information then we update the To location with the correct XYZ.
              if (packet10flying.hasPos && !(packet10flying.hasPos && packet10flying.y == -999.0D && packet10flying.stance == -999.0D)) {
-@@ -417,6 +419,14 @@ public class PlayerConnection extends Connection {
+@@ -415,6 +417,14 @@ public class PlayerConnection extends Connection {
  
                  this.player.onGround = packet10flying.g;
                  this.minecraftServer.getPlayerList().d(this.player);
@@ -40,5 +40,5 @@ index 339926a..1854f2b 100644
                  this.player.b(this.player.locY - d0, packet10flying.g);
              } else if (this.e % 20 == 0) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

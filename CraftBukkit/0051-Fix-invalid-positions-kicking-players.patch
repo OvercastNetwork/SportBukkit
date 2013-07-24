@@ -1,14 +1,14 @@
-From a4ae8bf3c9c8ec88011a7160875c776ef7375d32 Mon Sep 17 00:00:00 2001
+From 0997129ee73bf647cd4f669338a8e5c3928af284 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 9 Jul 2013 17:06:59 -0500
 Subject: [PATCH] Fix invalid positions kicking players
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 1854f2b..8637ef9 100644
+index acb2336..4d853ec 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -218,6 +218,13 @@ public class PlayerConnection extends Connection {
+@@ -216,6 +216,13 @@ public class PlayerConnection extends Connection {
              double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);
              float deltaAngle = Math.abs(this.lastYaw - to.getYaw()) + Math.abs(this.lastPitch - to.getPitch());
  
@@ -22,7 +22,7 @@ index 1854f2b..8637ef9 100644
              if ((delta > 1f / 256 || deltaAngle > 10f) && (this.checkMovement && !this.player.dead)) {
                  this.lastPosX = to.getX();
                  this.lastPosY = to.getY();
-@@ -253,13 +260,6 @@ public class PlayerConnection extends Connection {
+@@ -251,13 +258,6 @@ public class PlayerConnection extends Connection {
                  }
              }
  
@@ -36,7 +36,7 @@ index 1854f2b..8637ef9 100644
              if (this.checkMovement && !this.player.dead) {
                  // CraftBukkit end
                  double d1;
-@@ -468,6 +468,18 @@ public class PlayerConnection extends Connection {
+@@ -466,6 +466,18 @@ public class PlayerConnection extends Connection {
              f1 = 0;
          }
  
@@ -56,5 +56,5 @@ index 1854f2b..8637ef9 100644
          this.lastPosY = d1;
          this.lastPosZ = d2;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From d384475228a8297a0bfe780307dae354d244d682 Mon Sep 17 00:00:00 2001
+From 6fd96d640f106ea321612bb14c01317d89f233ee Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -28,10 +28,10 @@ index f5935f7..9d726b9 100644
  
          WatchableObject watchableobject;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 23fd4b2..d798835 100644
+index 9e8bbaa..894a232 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -779,12 +779,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -787,12 +787,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
@@ -53,7 +53,7 @@ index 23fd4b2..d798835 100644
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 673c204..85fb23b 100644
+index e05296c..053cf98 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -90,7 +90,7 @@ index 673c204..85fb23b 100644
                  this.w = true;
              }
  
-@@ -274,6 +275,64 @@ public class EntityTrackerEntry {
+@@ -279,6 +280,64 @@ public class EntityTrackerEntry {
          }
      }
  
@@ -155,7 +155,7 @@ index 673c204..85fb23b 100644
      public void a() {
          Iterator iterator = this.trackedPlayers.iterator();
  
-@@ -314,7 +373,7 @@ public class EntityTrackerEntry {
+@@ -319,7 +378,7 @@ public class EntityTrackerEntry {
  
                      entityplayer.playerConnection.sendPacket(packet);
                      if (!this.tracker.getDataWatcher().d()) {
@@ -164,7 +164,7 @@ index 673c204..85fb23b 100644
                      }
  
                      if (this.tracker instanceof EntityLiving) {
-@@ -375,7 +434,10 @@ public class EntityTrackerEntry {
+@@ -385,7 +444,10 @@ public class EntityTrackerEntry {
                          while (iterator.hasNext()) {
                              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -195,7 +195,7 @@ index 54299a7..a94eb75 100644
          this.a = i;
          if (flag) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index a9b1168..5def4f0 100644
+index 1390008..1810ce2 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -112,7 +112,10 @@ public abstract class PlayerList {
@@ -223,10 +223,10 @@ index a9b1168..5def4f0 100644
          // entityplayer1.syncInventory();
          // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 977adff..1e5a83f 100644
+index fd73856..0ca0d83 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -50,6 +50,7 @@ import org.bukkit.metadata.MetadataValue;
+@@ -51,6 +51,7 @@ import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.Messenger;
  import org.bukkit.plugin.messaging.StandardMessenger;
@@ -234,17 +234,17 @@ index 977adff..1e5a83f 100644
  import org.bukkit.scoreboard.Scoreboard;
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
-@@ -60,6 +61,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -61,6 +62,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      private final ConversationTracker conversationTracker = new ConversationTracker();
      private final Set<String> channels = new HashSet<String>();
      private final Map<String, Player> hiddenPlayers = new MapMaker().softValues().makeMap();
 +    private final Set<PotionEffectType> ignorantEffects = new HashSet<PotionEffectType>();
      private int hash = 0;
-     private boolean scaledHealth;
- 
-@@ -1010,4 +1012,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
-     public boolean isScaledHealth() {
-         return this.scaledHealth;
+     private double health = 20;
+     private boolean scaledHealth = false;
+@@ -1065,4 +1067,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         }
+         collection.add(new AttributeModifiable(getHandle().aW(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
      }
 +
 +    public Set<PotionEffectType> getIgnorantEffects() {
@@ -287,5 +287,5 @@ index 977adff..1e5a83f 100644
 +    }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,14 +1,14 @@
-From 6f8cdd0245498c8a64b1dc7c49730695b3423f6c Mon Sep 17 00:00:00 2001
+From 53541634a1fdbe166943a1721cb1d80f0b199f1f Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Wed, 10 Jul 2013 23:46:09 +1000
 Subject: [PATCH] Client Crash Cannot Send Message
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 8637ef9..bd149a5 100644
+index 4d853ec..76a9b48 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -854,7 +854,7 @@ public class PlayerConnection extends Connection {
+@@ -852,7 +852,7 @@ public class PlayerConnection extends Connection {
  
                  // CraftBukkit start
                  if (this.player.getChatFlags() == 1 && !s.startsWith("/")) {
@@ -18,5 +18,5 @@ index 8637ef9..bd149a5 100644
                  }
  
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

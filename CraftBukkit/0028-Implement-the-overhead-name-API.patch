@@ -1,11 +1,11 @@
-From 91e1630b05a352b49fcdeb157fa862d4ae6e307c Mon Sep 17 00:00:00 2001
+From 0cf9662de75b06b0a7ea9ddd94308b8c2c5fa80b Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index d798835..8f3d89e 100644
+index 894a232..e794a6c 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -46,6 +46,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -16,14 +16,14 @@ index d798835..8f3d89e 100644
      public org.bukkit.Location compassTarget;
      public int newExp = 0;
      public int newLevel = 0;
-@@ -83,6 +84,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -84,6 +85,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          // CraftBukkit start
          this.displayName = this.name;
          this.listName = this.name;
 +        this.overheadName = this.name;
          // this.canPickUpLoot = true; TODO
+         this.maxHealthCache = this.getMaxHealth();
          // CraftBukkit end
-     }
 diff --git a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java b/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
 index 1843d9c..543d44e 100644
 --- a/src/main/java/net/minecraft/server/Packet20NamedEntitySpawn.java
@@ -54,18 +54,18 @@ index 1843d9c..543d44e 100644
          this.d = MathHelper.floor(entityhuman.locY * 32.0D);
          this.e = MathHelper.floor(entityhuman.locZ * 32.0D);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 1e5a83f..2cc5d80 100644
+index 0ca0d83..68c78ac 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -8,6 +8,7 @@ import java.io.IOException;
- import java.net.InetSocketAddress;
+@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
  import java.net.SocketAddress;
+ import java.util.Collection;
  import java.util.HashSet;
 +import java.util.Iterator;
  import java.util.LinkedHashMap;
  import java.util.List;
  import java.util.Map;
-@@ -972,6 +973,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -975,6 +976,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  
@@ -111,5 +111,5 @@ index 1e5a83f..2cc5d80 100644
      public void setMaxHealth(double amount) {
          super.setMaxHealth(amount);
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

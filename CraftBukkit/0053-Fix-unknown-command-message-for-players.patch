@@ -1,0 +1,22 @@
+From aa468584a59d36350edfdd6fd7a1329b88c3aa84 Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sat, 27 Jul 2013 14:54:16 -0500
+Subject: [PATCH] Fix unknown command message for players
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 6dfb171..289562d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -526,7 +526,7 @@ public final class CraftServer implements Server {
+             return true;
+         }
+ 
+-        sender.sendMessage("Unknown command. Type \"help\" for help.");
++        sender.sendMessage("Unknown command. Type " + ((sender instanceof ConsoleCommandSender) ? "\"help\"" : "\"/help\"") + " for help.");
+ 
+         return false;
+     }
+-- 
+1.7.9.6 (Apple Git-31.1)
+

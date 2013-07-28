@@ -1,4 +1,4 @@
-From 7da74ec3c52003a3d8186a2ce127aec43f06eb46 Mon Sep 17 00:00:00 2001
+From 68500448459455c0c6db41757f49ca583045d615 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 22 May 2013 23:14:40 -0500
 Subject: [PATCH] Command Blocks shouldn't take players that can't collide
@@ -6,7 +6,7 @@ Subject: [PATCH] Command Blocks shouldn't take players that can't collide
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index f24ba95..a9b1168 100644
+index 0f17c90..1390008 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -839,6 +839,7 @@ public abstract class PlayerList {

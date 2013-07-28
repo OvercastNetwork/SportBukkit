@@ -1,0 +1,28 @@
+From 32132c697111fc7d2ceaa2a1acbae2c3643eaa4a Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 21:56:56 +0200
+Subject: [PATCH] Add getHostname to Player
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index c630e11..babb22b 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -744,4 +744,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public void removeIgnorantEffect(PotionEffectType effect);
+ 
+     public boolean hasIgnorantEffect(PotionEffectType effect);
++
++    /**
++     * Gets the hostname (an IP or a DNS domain) and port the client has used
++     * to connect to this server. This is generated client-side, and it may
++     * return a blank string if the client didn't send it, or an invalid
++     * hostname, as the server doesn't check it.
++     *
++     * @return The hostname and port
++     */
++    public String getHostname();
+  }
+-- 
+1.8.3.msysgit.0
+

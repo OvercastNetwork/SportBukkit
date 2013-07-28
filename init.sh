@@ -8,8 +8,8 @@ if !([ -d base ]); then
 fi
 
 if [ -d build ]; then
-    rm build/* &> /dev/null
-    if !(rmdir build); then
+    rm -rf build
+    if [ -d build ]; then
         echo "Unable to remove build directory"
         cd "$ORIG_PWD"
         exit $?

@@ -1,0 +1,45 @@
+From c7dab850c960e440e14436568021a35a6966f96f Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 22:10:26 +0200
+Subject: [PATCH] Add hostname to PlayerHandshakeEvent
+
+
+diff --git a/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java b/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
+index eff6415..05ae766 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerHandshakeEvent.java
+@@ -11,13 +11,19 @@ public class PlayerHandshakeEvent extends Event {
+     private String loginKey;
+     private final PublicKey publicKey;
+     private final byte[] challenge;
++    private String hostname;
+ 
+-    public PlayerHandshakeEvent(final String playerName, final String loginKey, final PublicKey publicKey, final byte[] challenge) {
++    public PlayerHandshakeEvent(final String playerName, final String loginKey, final PublicKey publicKey, final byte[] challenge, final String hostname) {
+         super(false);
+         this.playerName = playerName;
+         this.loginKey = loginKey;
+         this.publicKey = publicKey;
+         this.challenge = challenge;
++        this.hostname = hostname;
++    }
++
++    public PlayerHandshakeEvent(final String playerName, final String loginKey, final PublicKey publicKey, final byte[] challenge) {
++        this(playerName, loginKey, publicKey, challenge, "");
+     }
+ 
+     public String getPlayerName() {
+@@ -40,6 +46,10 @@ public class PlayerHandshakeEvent extends Event {
+         return this.challenge;
+     }
+ 
++    public String getHostname() {
++        return this.hostname;
++    }
++
+     @Override
+     public HandlerList getHandlers() {
+         return handlers;
+-- 
+1.8.3.msysgit.0
+

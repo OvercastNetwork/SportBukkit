@@ -1,0 +1,22 @@
+From 8e817440ec9f72c90eeba2821e0ad3fceecd07cf Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 22:10:42 +0200
+Subject: [PATCH] Add hostname to PlayerHandshakeEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
+index 2fb1b92..c6c36aa 100644
+--- a/src/main/java/net/minecraft/server/PendingConnection.java
++++ b/src/main/java/net/minecraft/server/PendingConnection.java
+@@ -86,7 +86,7 @@ public class PendingConnection extends Connection {
+                 random.nextBytes(this.d);
+ 
+                 // CraftBukkit start
+-                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d);
++                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d, this.hostname);
+                 this.server.server.getPluginManager().callEvent(handshakeEvent);
+                 this.loginKey = handshakeEvent.getLoginKey();
+                 // CraftBukkit end
+-- 
+1.8.3.msysgit.0
+

@@ -1,0 +1,50 @@
+From 94ab43e05034ba3409620e5eede7cb706a0dbc19 Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 18:04:19 +0200
+Subject: [PATCH] Update Furnace block when using Bukkit setBurnTime
+
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityFurnace.java b/src/main/java/net/minecraft/server/TileEntityFurnace.java
+index 01293b6..99cd5f1 100644
+--- a/src/main/java/net/minecraft/server/TileEntityFurnace.java
++++ b/src/main/java/net/minecraft/server/TileEntityFurnace.java
+@@ -25,6 +25,7 @@ public class TileEntityFurnace extends TileEntity implements IWorldInventory {
+     private int lastTick = MinecraftServer.currentTick;
+     private int maxStack = MAX_STACK;
+     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++    private boolean burningBlock;
+ 
+     public ItemStack[] getContents() {
+         return this.items;
+@@ -124,6 +125,7 @@ public class TileEntityFurnace extends TileEntity implements IWorldInventory {
+         }
+ 
+         this.burnTime = nbttagcompound.getShort("BurnTime");
++        this.burningBlock = this.burnTime > 0;
+         this.cookTime = nbttagcompound.getShort("CookTime");
+         this.ticksForCurrentFuel = fuelTime(this.items[1]);
+         if (nbttagcompound.hasKey("CustomName")) {
+@@ -162,7 +164,6 @@ public class TileEntityFurnace extends TileEntity implements IWorldInventory {
+     }
+ 
+     public void h() {
+-        boolean flag = this.burnTime > 0;
+         boolean flag1 = false;
+ 
+         // CraftBukkit start - Use wall time instead of ticks for cooking
+@@ -227,9 +228,10 @@ public class TileEntityFurnace extends TileEntity implements IWorldInventory {
+             }
+             // CraftBukkit end */
+ 
+-            if (flag != this.burnTime > 0) {
++            if (burningBlock != this.burnTime > 0) {
+                 flag1 = true;
+-                BlockFurnace.a(this.burnTime > 0, this.world, this.x, this.y, this.z);
++                burningBlock = this.burnTime > 0;
++                BlockFurnace.a(burningBlock, this.world, this.x, this.y, this.z);
+             }
+         }
+ 
+-- 
+1.8.3.msysgit.0
+

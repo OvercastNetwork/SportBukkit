@@ -1,6 +1,7 @@
 #!/bin/bash
 
-basedir=`pwd`
+ORIG_PWD="$(pwd)"
+cd "$(dirname "$0")"
 
 function compile {
     target=build/$1
@@ -10,14 +11,17 @@ function compile {
 
     if !(mvn clean install); then
         echo "  $1 failed to compile"
-        cd $basedir
+        cd "$ORIG_PWD"
         exit $?
     else
         echo "  $1 compiled"
         echo "  JAR location: $target/target/"
     fi
-    cd $basedir
+
+    cd ../..
 }
 
 compile Bukkit
 compile CraftBukkit
+
+cd "$ORIG_PWD"

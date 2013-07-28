@@ -1,6 +1,7 @@
 #!/bin/bash
 
-basedir=`pwd`
+ORIG_PWD="$(pwd)"
+cd "$(dirname "$0")"
 echo "  Rebuilding Forked projects.... "
 
 function applyPatches {
@@ -8,14 +9,14 @@ function applyPatches {
     target=build/$1
     patches=$1
 
-    cd $basedir/$what
+    cd $what
     git branch -f upstream >/dev/null
-    cd $basedir
-    if [ ! -d  "$basedir/$target" ]; then
+    cd ../../
+    if [ ! -d  $target ]; then
         git clone $what $target -b upstream
     fi
 
-    cd "$basedir/$target"
+    cd $target
     echo "  Resetting $target to $what..."
     git remote rm upstream 2>/dev/null 2>&1
     git remote add upstream ../../$what >/dev/null 2>&1
@@ -26,15 +27,20 @@ function applyPatches {
     echo "  Applying patches to $target..."
     git am --abort
 
-    if !(git am --3way $basedir/$patches/*.patch); then
+    if !(git am --3way ../../$patches/*.patch); then
         echo "  Something did not apply cleanly to $target."
         echo "  Please review above details and finish the apply then"
         echo "  save the changes with rebuildPatches.sh"
+        cd "$ORIG_PWD"
         exit $?
     else
         echo "  Patches applied cleanly to $target"
     fi
+
+    cd ../..
 }
 
 applyPatches Bukkit
 applyPatches CraftBukkit
+
+cd "$ORIG_PWD"

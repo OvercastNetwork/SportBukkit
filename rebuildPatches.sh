@@ -1,6 +1,6 @@
 #!/bin/bash
 
-basedir=`pwd`
+cd "$(dirname "$0")"
 echo "Rebuilding patch files from current fork state..."
 
 function cleanupPatches {
@@ -19,17 +19,18 @@ function cleanupPatches {
             git checkout -- $patch >/dev/null
         fi
     done
+    cd ..
 }
 
 function rebuildPatches {
     what=base/$1
     target=build/$1
     patches=$1
-    cd $basedir/$target/
-    git format-patch --no-stat -N -o $basedir/$patches/ upstream/upstream
-    cd $basedir
-    git add $basedir/$patches
-    cleanupPatches $basedir/$patches
+    cd $target
+    git format-patch --no-stat -N -o ../../$patches upstream/upstream
+    cd ../..
+    git add $patches
+    cleanupPatches $patches
     echo "  Patches saved for $what to $patches"
 }
 

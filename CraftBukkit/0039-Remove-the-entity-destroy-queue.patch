@@ -1,4 +1,4 @@
-From a1438779f6cb96da7925d2f9ddb3d262a1493e73 Mon Sep 17 00:00:00 2001
+From d0de6046c4ff8545a59b82f6d24d8ed9a3d24b9d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
@@ -43,7 +43,7 @@ index 08fbae9..a93406c 100644
  
      protected void a(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 053cf98..df83d80 100644
+index 04ecbe5..a08b587 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -339,18 +339,12 @@ public class EntityTrackerEntry {
@@ -76,7 +76,7 @@ index 053cf98..df83d80 100644
                      // CraftBukkit end
  
                      this.trackedPlayers.add(entityplayer);
-@@ -453,7 +447,7 @@ public class EntityTrackerEntry {
+@@ -445,7 +439,7 @@ public class EntityTrackerEntry {
                  }
              } else if (this.trackedPlayers.contains(entityplayer)) {
                  this.trackedPlayers.remove(entityplayer);
@@ -85,7 +85,7 @@ index 053cf98..df83d80 100644
              }
          }
      }
-@@ -575,7 +569,7 @@ public class EntityTrackerEntry {
+@@ -567,7 +561,7 @@ public class EntityTrackerEntry {
      public void clear(EntityPlayer entityplayer) {
          if (this.trackedPlayers.contains(entityplayer)) {
              this.trackedPlayers.remove(entityplayer);
@@ -95,5 +95,5 @@ index 053cf98..df83d80 100644
      }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

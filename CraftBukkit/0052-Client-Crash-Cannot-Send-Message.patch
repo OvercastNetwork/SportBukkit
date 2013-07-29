@@ -1,4 +1,4 @@
-From 53541634a1fdbe166943a1721cb1d80f0b199f1f Mon Sep 17 00:00:00 2001
+From 3b81e7cb10e5198d3c921ba7865a1a2dfd809fbf Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Wed, 10 Jul 2013 23:46:09 +1000
 Subject: [PATCH] Client Crash Cannot Send Message
@@ -18,5 +18,5 @@ index 4d853ec..76a9b48 100644
                  }
  
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

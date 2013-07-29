@@ -5,7 +5,7 @@ Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index e71c719..f9f934d 100644
+index 2401f81..b1eb3fd 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,10 +1,10 @@
@@ -53,6 +53,14 @@ index e71c719..f9f934d 100644
          </snapshotRepository>
      </distributionManagement>
  
+@@ -47,6 +36,7 @@
+                 <configuration>
+                     <source>1.6</source>
+                     <target>1.6</target>
++                    <encoding>UTF-8</encoding>
+                 </configuration>
+             </plugin>
+             <plugin>
 -- 
 1.7.9.6 (Apple Git-31.1)
 

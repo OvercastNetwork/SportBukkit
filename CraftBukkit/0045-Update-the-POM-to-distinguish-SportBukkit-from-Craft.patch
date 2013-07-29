@@ -5,7 +5,7 @@ Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index 1a8a2a2..c685a88 100644
+index 8139fbf..89be6c0 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,12 +1,12 @@
@@ -64,6 +64,14 @@ index 1a8a2a2..c685a88 100644
            <outputPostfix></outputPostfix>
          </configuration>
          <executions>
+@@ -280,6 +278,7 @@
+         <configuration>
+           <source>1.6</source>
+           <target>1.6</target>
++          <encoding>UTF-8</encoding>
+         </configuration>
+       </plugin>
+       <plugin>
 -- 
 1.7.9.6 (Apple Git-31.1)
 

@@ -6,13 +6,13 @@ CraftBukkit modifications and Bukkit API additions that fix bugs, add new featur
 How To
 ------
 
-Init a Craftbukkit and Bukkit module : `git submodule update --init`
+Initalize the Bukkit and Craftbukkit modules: `./init.sh`
 
-Apply Patches: `./applyPatches.sh`
+Apply the patches: `./applyPatches.sh`
 
 Compile SportBukkit: `./compile.sh`
 
-SportBukkit binary will be located in build/CraftBukkit/target.
+The SportBukkit binary will be located in build/CraftBukkit/target.
 
 People Using SportBukkit
 ------------------------

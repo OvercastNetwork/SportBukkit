@@ -1,0 +1,25 @@
+From 48aefc147cfe43c45ac935cbe752b1e41a9538ab Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Fri, 2 Aug 2013 21:12:38 +0200
+Subject: [PATCH] Make OfflinePlayer Metadatable
+
+
+diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
+index d344184..8cf215d 100644
+--- a/src/main/java/org/bukkit/OfflinePlayer.java
++++ b/src/main/java/org/bukkit/OfflinePlayer.java
+@@ -4,9 +4,10 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
+ import org.bukkit.entity.AnimalTamer;
+ import org.bukkit.entity.Player;
+ import org.bukkit.inventory.PlayerInventory;
++import org.bukkit.metadata.Metadatable;
+ import org.bukkit.permissions.ServerOperator;
+ 
+-public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable {
++public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, Metadatable {
+     /**
+      * Checks if this player is currently online
+      *
+-- 
+1.8.3.msysgit.0
+

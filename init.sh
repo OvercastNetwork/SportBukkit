@@ -3,9 +3,7 @@
 ORIG_PWD="$(pwd)"
 cd "$(dirname "$0")"
 
-if !([ -d base ]); then
-    git submodule update --init
-fi
+git submodule update --init
 
 if [ -d build ]; then
     rm -rf build

@@ -1,4 +1,4 @@
-From 2388853085e565a5e31c815754ce3aef79293ae2 Mon Sep 17 00:00:00 2001
+From da1f36bb86c0f652a2efd9c785b74dc5a013a231 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allowed playEffect to spawn particles
@@ -146,7 +146,7 @@ index d837b14..ec4fae5 100644
              distance = (int) player.getLocation().distanceSquared(location);
              if (distance <= radius) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 68c78ac..3a15a66 100644
+index 92b88f6..2192e23 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -48,6 +48,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
@@ -157,7 +157,7 @@ index 68c78ac..3a15a66 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -272,23 +273,54 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -279,23 +280,54 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getHandle().playerConnection.sendPacket(packet);
      }
  
@@ -223,5 +223,5 @@ index 68c78ac..3a15a66 100644
  
      public void sendBlockChange(Location loc, Material material, byte data) {
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

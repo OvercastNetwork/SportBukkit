@@ -1,4 +1,4 @@
-From a65f8e3cdfcc0802a4937b08e0a3c0ea457ca908 Mon Sep 17 00:00:00 2001
+From 0d238d7a1cc5e95d8291c8b3a3b61e64059dea95 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allowed playEffect to spawn particles
@@ -327,10 +327,10 @@ index e14fe40..aabd5b7 100644
       * data. Used for representing an ungenerated chunk, or for fetching only biome data without loading a chunk.
       *
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index f9d9c01..7856873 100644
+index 5fc29cf..c7e6e82 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -255,6 +255,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -269,6 +269,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       */
      public <T> void playEffect(Location loc, Effect effect, T data);
  
@@ -357,5 +357,5 @@ index 08aa71d..cfa90a3 100644
      }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

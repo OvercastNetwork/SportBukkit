@@ -1,4 +1,4 @@
-From db79b19624905f56301efcd5f205d6f9413a8481 Mon Sep 17 00:00:00 2001
+From cc36a94b5e7e96cbdb70cc771e3016c90cd2c1a1 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 21:57:34 +0200
 Subject: [PATCH] Add getHostname to Player
@@ -29,10 +29,10 @@ index 550c522..2d4b974 100644
          PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, pendingconnection.getSocket().getInetAddress());
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 38e3991..cb44cdc 100644
+index cbea899..148792e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1207,4 +1207,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1214,4 +1214,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              player.setInvisible(player.isInvisible());
          }
      }
@@ -42,5 +42,5 @@ index 38e3991..cb44cdc 100644
 +    }
  }
 -- 
-1.8.3.msysgit.0
+1.7.9.6 (Apple Git-31.1)
 

@@ -1,14 +1,14 @@
-From 4a1439cb17e4bd337078d8da868f9fa2d8e2999e Mon Sep 17 00:00:00 2001
+From 987ba441d8ec472bc1484c0a59623bb7e99bd89e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Apr 2012 01:39:04 -0400
 Subject: [PATCH] Add API to control if a player can push other entities
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 7856873..7ea894a 100644
+index c7e6e82..ce6a98a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -606,6 +606,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -620,6 +620,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void setFlying(boolean value);
  
      /**
@@ -28,5 +28,5 @@ index 7856873..7ea894a 100644
       * @param value The new speed, from -1 to 1.
       * @throws IllegalArgumentException If new speed is less than -1 or greater than 1
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

@@ -1,4 +1,4 @@
-From 0cf9662de75b06b0a7ea9ddd94308b8c2c5fa80b Mon Sep 17 00:00:00 2001
+From 22a2030b56e626a16d11d6df66a009c7dadd5650 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 4 Aug 2012 10:55:59 -0700
 Subject: [PATCH] Implement the overhead name API.
@@ -54,7 +54,7 @@ index 1843d9c..543d44e 100644
          this.d = MathHelper.floor(entityhuman.locY * 32.0D);
          this.e = MathHelper.floor(entityhuman.locZ * 32.0D);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 0ca0d83..68c78ac 100644
+index b7f6a1b..92b88f6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
@@ -65,7 +65,7 @@ index 0ca0d83..68c78ac 100644
  import java.util.LinkedHashMap;
  import java.util.List;
  import java.util.Map;
-@@ -975,6 +976,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -982,6 +983,44 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
      }
  
@@ -111,5 +111,5 @@ index 0ca0d83..68c78ac 100644
      public void setMaxHealth(double amount) {
          super.setMaxHealth(amount);
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

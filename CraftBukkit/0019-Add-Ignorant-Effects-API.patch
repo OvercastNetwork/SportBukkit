@@ -1,4 +1,4 @@
-From 39970e66a99c753dc92f696805c5c2d61f33e3ce Mon Sep 17 00:00:00 2001
+From 8e0aa0a345f47cae58c49cd447a962367755f500 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -53,7 +53,7 @@ index 9e8bbaa..894a232 100644
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 2a9dd2c..04ecbe5 100644
+index 43fcba0..4c1a1ea 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -164,7 +164,7 @@ index 2a9dd2c..04ecbe5 100644
                      }
  
                      if (this.tracker instanceof EntityLiving) {
-@@ -377,7 +436,10 @@ public class EntityTrackerEntry {
+@@ -381,7 +440,10 @@ public class EntityTrackerEntry {
                          while (iterator.hasNext()) {
                              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -223,7 +223,7 @@ index 1390008..1810ce2 100644
          // entityplayer1.syncInventory();
          // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index fd73856..0ca0d83 100644
+index d5d43c9..b7f6a1b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -51,6 +51,7 @@ import org.bukkit.metadata.MetadataValue;
@@ -242,7 +242,7 @@ index fd73856..0ca0d83 100644
      private int hash = 0;
      private double health = 20;
      private boolean scaledHealth = false;
-@@ -1065,4 +1067,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1072,4 +1074,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
          collection.add(new AttributeModifiable(getHandle().aW(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
      }

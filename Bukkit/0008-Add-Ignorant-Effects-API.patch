@@ -1,11 +1,11 @@
-From a4a55582c4974e8eaf227505c00a3c3453b46094 Mon Sep 17 00:00:00 2001
+From e8eaf6876420ae63a80cf7234b3cb5d37e32fedd Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 17:37:16 -0500
 Subject: [PATCH] Add Ignorant Effects API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3b58d12..a99e4c9 100644
+index d492790..5d57a0a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,6 +1,7 @@
@@ -24,7 +24,7 @@ index 3b58d12..a99e4c9 100644
  import org.bukkit.scoreboard.Scoreboard;
  
  /**
-@@ -691,4 +693,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -705,4 +707,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @see Player#setHealthScaled(boolean)
       */
      public double getHealthScale();
@@ -41,5 +41,5 @@ index 3b58d12..a99e4c9 100644
 +    public boolean hasIgnorantEffect(PotionEffectType effect);
 + }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

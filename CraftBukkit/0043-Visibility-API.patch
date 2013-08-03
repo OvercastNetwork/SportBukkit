@@ -1,11 +1,11 @@
-From 0bc056807702f2096699891768190b0ab48c10a6 Mon Sep 17 00:00:00 2001
+From c6db3eef76b9c5cc9eb33d696da2bb95e2b01817 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 29 May 2013 23:59:07 -0500
 Subject: [PATCH] Visibility API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index df83d80..6de9919 100644
+index 5fa459f..b9f399a 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -357,11 +357,8 @@ public class EntityTrackerEntry {
@@ -87,7 +87,7 @@ index d1a02e6..fe85acf 100644
  
      public void a(EntityHuman entityhuman, String s, double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ca17e3e..38e3991 100644
+index 2f62b28..cbea899 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
@@ -115,7 +115,7 @@ index ca17e3e..38e3991 100644
      private final Set<PotionEffectType> ignorantEffects = new HashSet<PotionEffectType>();
      private int hash = 0;
      private double health = 20;
-@@ -691,43 +693,59 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -698,43 +700,59 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      public void hidePlayer(Player player) {
@@ -191,5 +191,5 @@ index ca17e3e..38e3991 100644
  
      public Map<String, Object> serialize() {
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

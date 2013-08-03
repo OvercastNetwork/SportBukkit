@@ -1,4 +1,4 @@
-From 94ab43e05034ba3409620e5eede7cb706a0dbc19 Mon Sep 17 00:00:00 2001
+From 60afcb0b049f60a26aaf30c6e1e8198ebe34e200 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 18:04:19 +0200
 Subject: [PATCH] Update Furnace block when using Bukkit setBurnTime
@@ -46,5 +46,5 @@ index 01293b6..99cd5f1 100644
          }
  
 -- 
-1.8.3.msysgit.0
+1.7.9.6 (Apple Git-31.1)
 

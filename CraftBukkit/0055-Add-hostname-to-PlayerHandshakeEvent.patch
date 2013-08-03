@@ -1,4 +1,4 @@
-From 8e817440ec9f72c90eeba2821e0ad3fceecd07cf Mon Sep 17 00:00:00 2001
+From 2c216036776edf4c157eea5a821c6d7c55936fe6 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 22:10:42 +0200
 Subject: [PATCH] Add hostname to PlayerHandshakeEvent
@@ -18,5 +18,5 @@ index 2fb1b92..c6c36aa 100644
                  this.loginKey = handshakeEvent.getLoginKey();
                  // CraftBukkit end
 -- 
-1.8.3.msysgit.0
+1.7.9.6 (Apple Git-31.1)
 

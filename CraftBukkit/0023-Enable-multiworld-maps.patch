@@ -1,14 +1,14 @@
-From 2b4efe97739a505d045f2646185b4fbd48d9b539 Mon Sep 17 00:00:00 2001
+From c455cfff19c393de96308e0dccd2efa6933d3a98 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 13 Nov 2012 19:38:11 -0600
 Subject: [PATCH] Enable multiworld maps
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 03b4435..6525118 100644
+index d2ba3ce..cbc3ab0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -722,7 +722,7 @@ public final class CraftServer implements Server {
+@@ -726,7 +726,7 @@ public final class CraftServer implements Server {
              return null;
          }
  

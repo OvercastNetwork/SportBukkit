@@ -1,4 +1,4 @@
-From 8e0aa0a345f47cae58c49cd447a962367755f500 Mon Sep 17 00:00:00 2001
+From 91157ddabeecfd5277da99d6d95e7008336b1dc3 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -53,7 +53,7 @@ index 9e8bbaa..894a232 100644
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 43fcba0..4c1a1ea 100644
+index 8545b50..ff2e3ba 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -164,7 +164,7 @@ index 43fcba0..4c1a1ea 100644
                      }
  
                      if (this.tracker instanceof EntityLiving) {
-@@ -381,7 +440,10 @@ public class EntityTrackerEntry {
+@@ -387,7 +446,10 @@ public class EntityTrackerEntry {
                          while (iterator.hasNext()) {
                              MobEffect mobeffect = (MobEffect) iterator.next();
  

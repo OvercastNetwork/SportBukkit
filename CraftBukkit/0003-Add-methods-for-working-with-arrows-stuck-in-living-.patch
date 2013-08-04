@@ -1,14 +1,14 @@
-From bb8e7ecf93cad3e809c164cdfc66c83da5a8f4a5 Mon Sep 17 00:00:00 2001
+From d6438280457ec0b86c82f9a4ee08491bc4ffb9fe Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 3db1b22..b059565 100644
+index f20c664..86c5f19 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -446,4 +446,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -485,4 +485,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
      public void _INVALID_setMaxHealth(int health) {
          setMaxHealth(health);
      }

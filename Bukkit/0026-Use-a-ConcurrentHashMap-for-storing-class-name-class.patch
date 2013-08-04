@@ -1,4 +1,4 @@
-From 70bc775aaa03b30b6b061526412c47784fb05314 Mon Sep 17 00:00:00 2001
+From 807dbe43cb4c6008105a919208849666a98b532c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 3 Aug 2013 17:07:56 -0500
 Subject: [PATCH] Use a ConcurrentHashMap for storing class name -> class

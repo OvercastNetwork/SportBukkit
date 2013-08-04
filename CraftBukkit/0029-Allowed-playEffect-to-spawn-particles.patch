@@ -1,4 +1,4 @@
-From da1f36bb86c0f652a2efd9c785b74dc5a013a231 Mon Sep 17 00:00:00 2001
+From 40ab7da4e8e151e418017fbf4ab7c139a878f0ad Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allowed playEffect to spawn particles
@@ -62,10 +62,10 @@ index 7de0de5..7eca388 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index d837b14..ec4fae5 100644
+index 1f33b20..7f65439 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -45,6 +45,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
+@@ -44,6 +44,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
  import org.bukkit.generator.BlockPopulator;
  import org.bukkit.generator.ChunkGenerator;
  import org.bukkit.inventory.ItemStack;
@@ -73,7 +73,7 @@ index d837b14..ec4fae5 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -749,6 +750,10 @@ public class CraftWorld implements World {
+@@ -748,6 +749,10 @@ public class CraftWorld implements World {
          playEffect(player.getLocation(), effect, data, 0);
      }
  
@@ -84,7 +84,7 @@ index d837b14..ec4fae5 100644
      public void playEffect(Location location, Effect effect, int data) {
          playEffect(location, effect, data, 64);
      }
-@@ -763,23 +768,53 @@ public class CraftWorld implements World {
+@@ -762,23 +767,53 @@ public class CraftWorld implements World {
          } else {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }

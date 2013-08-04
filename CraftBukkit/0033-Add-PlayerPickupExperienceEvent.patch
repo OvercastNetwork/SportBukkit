@@ -1,4 +1,4 @@
-From a2b6d56e5dce524264aa2fdc65a2b40b5a752cf7 Mon Sep 17 00:00:00 2001
+From 30513dc2bc4264d06ba3c07a887c6423b631e832 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
@@ -31,12 +31,12 @@ index 5247d5a..066e682 100644
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 6db7b9b..e4df717 100644
+index cccfe75..fa41be4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -706,4 +706,11 @@ public class CraftEventFactory {
-             player.playerConnection.sendPacket(new Packet103SetSlot(player.activeContainer.windowId, slot.g, itemInHand));
-         }
+@@ -716,4 +716,11 @@ public class CraftEventFactory {
+         entity.world.getServer().getPluginManager().callEvent(event);
+         return event;
      }
 +
 +    public static PlayerPickupExperienceEvent callPlayerPickupExperienceEvent(EntityPlayer player, net.minecraft.server.EntityExperienceOrb orb) {

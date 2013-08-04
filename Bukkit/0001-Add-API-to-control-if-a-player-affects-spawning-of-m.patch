@@ -1,14 +1,14 @@
-From aa557c6cba820d2ed59a8c93e294fa3dbd543921 Mon Sep 17 00:00:00 2001
+From 63f747efcd557593dac02a6b7d31f377eae8797e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:12:10 -0700
 Subject: [PATCH] Add API to control if a player affects spawning of mobs
 
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index ffb5bce..19ed214 100644
+index 4464ea6..da6e35e 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
-@@ -160,4 +160,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+@@ -166,4 +166,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
       * @return Experience required to level up
       */
      public int getExpToLevel();
@@ -27,5 +27,5 @@ index ffb5bce..19ed214 100644
 +    public boolean getAffectsSpawning();
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

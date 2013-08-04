@@ -1,4 +1,4 @@
-From 836e5e9407402407df3b811956ff7c0ea6ff9e7d Mon Sep 17 00:00:00 2001
+From 76578ece5b4419ec98f46c541caa27a83e9d3559 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
@@ -28,10 +28,10 @@ index f389fc0..6639c98 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index ed02a8a..97b9dfe 100644
+index 7e8b80e..2fd40dd 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -699,4 +699,18 @@ public interface Server extends PluginMessageRecipient {
+@@ -706,4 +706,18 @@ public interface Server extends PluginMessageRecipient {
       * @return the scoreboard manager or null if no worlds are loaded.
       */
      ScoreboardManager getScoreboardManager();
@@ -51,5 +51,5 @@ index ed02a8a..97b9dfe 100644
 +    void setEntityCount(int count);
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.7.9.6 (Apple Git-31.1)
 

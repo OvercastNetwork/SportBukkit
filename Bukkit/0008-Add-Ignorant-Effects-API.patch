@@ -1,11 +1,11 @@
-From e8eaf6876420ae63a80cf7234b3cb5d37e32fedd Mon Sep 17 00:00:00 2001
+From 74c9800d6da14c98485a8974d13b2f35e339ac82 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 17:37:16 -0500
 Subject: [PATCH] Add Ignorant Effects API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index d492790..5d57a0a 100644
+index ab022b5..c5a8bca 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,6 +1,7 @@
@@ -24,7 +24,7 @@ index d492790..5d57a0a 100644
  import org.bukkit.scoreboard.Scoreboard;
  
  /**
-@@ -705,4 +707,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -709,4 +711,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @see Player#setHealthScaled(boolean)
       */
      public double getHealthScale();

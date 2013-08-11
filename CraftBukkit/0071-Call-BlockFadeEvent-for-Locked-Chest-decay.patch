@@ -1,0 +1,23 @@
+From a0b86bf29e0c320c8ce39c9d0d378936e0ad76ea Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 11 Aug 2013 20:55:40 +0200
+Subject: [PATCH] Call BlockFadeEvent for Locked Chest decay
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockLockedChest.java b/src/main/java/net/minecraft/server/BlockLockedChest.java
+index 7aa9b1d..65c9c22 100644
+--- a/src/main/java/net/minecraft/server/BlockLockedChest.java
++++ b/src/main/java/net/minecraft/server/BlockLockedChest.java
+@@ -13,6 +13,9 @@ public class BlockLockedChest extends Block {
+     }
+ 
+     public void a(World world, int i, int j, int k, Random random) {
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(world.getWorld().getBlockAt(i, j, k), 0).isCancelled()) {
++            return;
++        }
+         world.setAir(i, j, k);
+     }
+ }
+-- 
+1.8.3.msysgit.0
+

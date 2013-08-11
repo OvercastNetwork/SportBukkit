@@ -1,4 +1,4 @@
-From 90cb999185ba5de5970f2ac36f6f757c8cfef403 Mon Sep 17 00:00:00 2001
+From 3f3e62224924fbaac4e288ea5194aee034059b01 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -240,6 +240,30 @@ index 0000000..c2e4a7d
 +        for (int l = 0; l < 8; ++l) {
 +            world.addParticle("largesmoke", (double) i + Math.random(), (double) j + 1.2D, (double) k + Math.random(), 0.0D, 0.0D, 0.0D);
 +        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/BlockLockedChest.java b/src/main/java/net/minecraft/server/BlockLockedChest.java
+new file mode 100644
+index 0000000..7aa9b1d
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockLockedChest.java
+@@ -0,0 +1,18 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public class BlockLockedChest extends Block {
++
++    protected BlockLockedChest(int i) {
++        super(i, Material.WOOD);
++    }
++
++    public boolean canPlace(World world, int i, int j, int k) {
++        return true;
++    }
++
++    public void a(World world, int i, int j, int k, Random random) {
++        world.setAir(i, j, k);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockSand.java b/src/main/java/net/minecraft/server/BlockSand.java
@@ -1608,5 +1632,5 @@ index 0000000..12815ee
 +    }
 +}
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.3.msysgit.0
 

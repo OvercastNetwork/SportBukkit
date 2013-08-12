@@ -1,4 +1,4 @@
-From 2c216036776edf4c157eea5a821c6d7c55936fe6 Mon Sep 17 00:00:00 2001
+From cd9babde1b146258ba82f247c6f43ecfd4226dcf Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 22:10:42 +0200
 Subject: [PATCH] Add hostname to PlayerHandshakeEvent

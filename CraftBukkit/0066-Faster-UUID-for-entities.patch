@@ -1,4 +1,4 @@
-From a324fdceef9ba0d90a678fa48dd0d5124aaa916f Mon Sep 17 00:00:00 2001
+From 98f0eba500473cabf1012f58bb374c6236b91601 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sun, 17 Mar 2013 19:02:50 +1100
 Subject: [PATCH] Faster UUID for entities

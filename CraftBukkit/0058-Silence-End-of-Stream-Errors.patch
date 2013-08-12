@@ -1,4 +1,4 @@
-From 0f0c6b4b2bc2f13b375f64b40fc9b6df17db7b38 Mon Sep 17 00:00:00 2001
+From 1e0995fd123d21541b2b2650a3da9abc8d32f946 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Tue, 2 Jul 2013 13:51:38 +1000
 Subject: [PATCH] Silence End of Stream Errors

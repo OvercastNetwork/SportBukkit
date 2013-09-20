@@ -1,14 +1,14 @@
-From cb405ed16c8631a5734acc90cd8deae3a4a4c4af Mon Sep 17 00:00:00 2001
+From 8efa03b46e2c423d68b4fdb5674288fcd682b3e9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 23 Apr 2013 19:45:55 -0500
 Subject: [PATCH] Call AsyncPlayerPreLoginEvent regardless of online-mode
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index b8d234b..7958390 100644
+index 6d68a34..3bfc6e7 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
-@@ -106,10 +106,8 @@ public class PendingConnection extends Connection {
+@@ -107,10 +107,8 @@ public class PendingConnection extends Connection {
  
              this.j = true;
              if (this.server.getOnlineMode()) {

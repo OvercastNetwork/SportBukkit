@@ -1,14 +1,14 @@
-From 4f464ffc2f002fcf8d38254b1b080db27a34f959 Mon Sep 17 00:00:00 2001
+From 36d7d43e2d1bbf40ce3e9f273f059aecf7f9192e Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sun, 3 Feb 2013 12:28:17 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f7a7212..d9fd29d 100644
+index a3cbbf0..3936588 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -86,6 +86,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+@@ -87,6 +87,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
      public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
      public int autosavePeriod;
      // CraftBukkit end
@@ -21,21 +21,21 @@ index f7a7212..d9fd29d 100644
  
      public MinecraftServer(OptionSet options) { // CraftBukkit - signature file -> OptionSet
          this.c = Proxy.NO_PROXY;
-@@ -389,39 +395,23 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+@@ -391,39 +397,23 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
      public void run() {
          try {
              if (this.init()) {
 -                long i = aq();
 -
--                for (long j = 0L; this.isRunning; this.Q = true) {
+-                for (long j = 0L; this.isRunning; this.R = true) {
 -                    long k = aq();
 -                    long l = k - i;
 -
--                    if (l > 2000L && i - this.R >= 15000L) {
+-                    if (l > 2000L && i - this.S >= 15000L) {
 -                        if (this.server.getWarnOnOverload()) // CraftBukkit - Added option to suppress warning messages
 -                        this.getLogger().warning("Can\'t keep up! Did the system time change, or is the server overloaded?");
 -                        l = 2000L;
--                        this.R = i;
+-                        this.S = i;
 -                    }
 -
 -                    if (l < 0L) {
@@ -49,7 +49,7 @@ index f7a7212..d9fd29d 100644
 -                        this.s();
 -                        j = 0L;
 +                // Spigot start
-+                for (long lastTick = 0L; this.isRunning; this.Q = true) {
++                for (long lastTick = 0L; this.isRunning; this.R = true) {
 +                    long curTime = System.nanoTime();
 +                    long wait = TICK_TIME - (curTime - lastTick) - catchupTime;
 +                    if (wait > 0) {
@@ -76,5 +76,5 @@ index f7a7212..d9fd29d 100644
                  this.a((CrashReport) null);
              }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

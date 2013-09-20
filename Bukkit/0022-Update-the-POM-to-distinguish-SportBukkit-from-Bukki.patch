@@ -1,11 +1,11 @@
-From 23937f97d6046cb2d2f981152f01b4f0ae584b4b Mon Sep 17 00:00:00 2001
+From f02e3a7c7f6eb17fd1590af4e4bba8b46c8bf4cb Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 16:57:42 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index dd8dda7..4db5291 100644
+index f2c3af1..3fb9c55 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,10 +1,10 @@
@@ -15,7 +15,7 @@ index dd8dda7..4db5291 100644
 -    <artifactId>bukkit</artifactId>
 +    <groupId>tc.oc</groupId>
 +    <artifactId>sportbukkit-api</artifactId>
-     <version>1.6.2-R0.2-SNAPSHOT</version>
+     <version>1.6.4-R0.1-SNAPSHOT</version>
 -    <name>Bukkit</name>
 -    <url>http://www.bukkit.org</url>
 +    <name>SportBukkit API</name>
@@ -53,14 +53,6 @@ index dd8dda7..4db5291 100644
          </snapshotRepository>
      </distributionManagement>
  
-@@ -47,6 +36,7 @@
-                 <configuration>
-                     <source>1.6</source>
-                     <target>1.6</target>
-+                    <encoding>UTF-8</encoding>
-                 </configuration>
-             </plugin>
-             <plugin>
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

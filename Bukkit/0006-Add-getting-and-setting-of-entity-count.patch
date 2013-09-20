@@ -1,14 +1,14 @@
-From 76578ece5b4419ec98f46c541caa27a83e9d3559 Mon Sep 17 00:00:00 2001
+From a89cd6f8dc3b736f175a07754d40c896470cbbca Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index f389fc0..6639c98 100644
+index 7a9502a..e3b066c 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -652,4 +652,18 @@ public final class Bukkit {
+@@ -654,4 +654,18 @@ public final class Bukkit {
      public static ScoreboardManager getScoreboardManager() {
          return server.getScoreboardManager();
      }
@@ -28,10 +28,10 @@ index f389fc0..6639c98 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 7e8b80e..2fd40dd 100644
+index aa45f16..1b4f733 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -706,4 +706,18 @@ public interface Server extends PluginMessageRecipient {
+@@ -709,4 +709,18 @@ public interface Server extends PluginMessageRecipient {
       * @return the scoreboard manager or null if no worlds are loaded.
       */
      ScoreboardManager getScoreboardManager();
@@ -51,5 +51,5 @@ index 7e8b80e..2fd40dd 100644
 +    void setEntityCount(int count);
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

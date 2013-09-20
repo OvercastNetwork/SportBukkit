@@ -1,4 +1,4 @@
-From 449dde800f45f66ac368baf288fbf2b1a82b7772 Mon Sep 17 00:00:00 2001
+From 746638389a82b4b7d7a8b8aa4fb2958336be992a Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sat, 15 Jun 2013 21:34:48 +1000
 Subject: [PATCH] Firework Meta Crash Fix
@@ -27,5 +27,5 @@ index 3f9e4a3..93a1ce0 100644
      }
  
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From 9e059986bd2980f9f386fe2104bf7a5ba2c3cbba Mon Sep 17 00:00:00 2001
+From c17e65f2c8f9903a0c4c93b03fe03ce5274afd59 Mon Sep 17 00:00:00 2001
 From: Antony Riley <antony@cyberiantiger.org>
 Date: Wed, 27 Mar 2013 01:41:54 +0200
 Subject: [PATCH] Close Unloaded Save Files
@@ -62,5 +62,5 @@ index 8b4fc5f..0ccd668 100644
      }
  
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

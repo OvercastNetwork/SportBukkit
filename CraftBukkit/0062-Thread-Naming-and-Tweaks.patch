@@ -1,4 +1,4 @@
-From 6b4515c2d439997239f2cd5e9d9712f30eb794e9 Mon Sep 17 00:00:00 2001
+From 008e2a14359ac8645f0a5d163e3f487ca70887ff Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Tue, 23 Apr 2013 11:50:27 +1000
 Subject: [PATCH] Thread Naming and Tweaks
@@ -56,5 +56,5 @@ index 84dcfcc..a30f217 100644
      private CraftAsyncDebugger debugTail = debugHead;
      private static final int RECENT_TICKS;
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

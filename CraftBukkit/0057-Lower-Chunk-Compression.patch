@@ -1,4 +1,4 @@
-From 9252856afe32c6525c693f863eddb911872b879e Mon Sep 17 00:00:00 2001
+From a9cd703a7d60caf71dc84da07c14c7a90c683aab Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Tue, 2 Jul 2013 09:07:54 +1000
 Subject: [PATCH] Lower Chunk Compression
@@ -32,5 +32,5 @@ index 04c44fc..6fc5b4e 100644
      };
      // CraftBukkit end
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

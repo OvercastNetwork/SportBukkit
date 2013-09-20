@@ -1,4 +1,4 @@
-From 91157ddabeecfd5277da99d6d95e7008336b1dc3 Mon Sep 17 00:00:00 2001
+From 12f1ed9a342044d90fafd9ed3b82c7e9b3a22b98 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -28,10 +28,10 @@ index f5935f7..9d726b9 100644
  
          WatchableObject watchableobject;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 9e8bbaa..894a232 100644
+index c09352f..7b15d73 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -787,12 +787,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -792,12 +792,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
@@ -53,7 +53,7 @@ index 9e8bbaa..894a232 100644
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 8545b50..ff2e3ba 100644
+index baa5b55..06a52d7 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -101,7 +101,7 @@ index 8545b50..ff2e3ba 100644
 +        }
 +
 +        if (!flag && this.tracker instanceof EntityLiving) {
-+            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aW();
++            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aX();
 +            Set set = attributemapserver.b();
 +
 +            if (!set.isEmpty()) {
@@ -195,10 +195,10 @@ index 54299a7..a94eb75 100644
          this.a = i;
          if (flag) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 1390008..1810ce2 100644
+index e913cc1..64b91e7 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -112,7 +112,10 @@ public abstract class PlayerList {
+@@ -113,7 +113,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -210,7 +210,7 @@ index 1390008..1810ce2 100644
          }
  
          entityplayer.syncInventory();
-@@ -463,7 +466,10 @@ public abstract class PlayerList {
+@@ -464,7 +467,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
@@ -223,7 +223,7 @@ index 1390008..1810ce2 100644
          // entityplayer1.syncInventory();
          // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d5d43c9..b7f6a1b 100644
+index ac73273..ec4647e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -51,6 +51,7 @@ import org.bukkit.metadata.MetadataValue;
@@ -244,7 +244,7 @@ index d5d43c9..b7f6a1b 100644
      private boolean scaledHealth = false;
 @@ -1072,4 +1074,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
-         collection.add(new AttributeModifiable(getHandle().aW(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
+         collection.add(new AttributeModifiable(getHandle().aX(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
      }
 +
 +    public Set<PotionEffectType> getIgnorantEffects() {
@@ -287,5 +287,5 @@ index d5d43c9..b7f6a1b 100644
 +    }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

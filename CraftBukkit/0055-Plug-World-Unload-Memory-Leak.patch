@@ -1,4 +1,4 @@
-From 6b33e27a3fb58f86312de7af5bf947c290f2263d Mon Sep 17 00:00:00 2001
+From 6aeb75f5d4b9e9d22385b2c075ef1c5c4c0fcfed Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sat, 3 Aug 2013 19:02:59 +1000
 Subject: [PATCH] Plug World Unload Memory Leak
@@ -18,5 +18,5 @@ index f176e66..d4f3c51 100644
      private boolean a(World world, int i, int j, int k, boolean flag) {
          if (!b.containsKey(world)) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

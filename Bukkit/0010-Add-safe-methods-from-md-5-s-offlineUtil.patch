@@ -1,11 +1,11 @@
-From 347b70c224e8a60bb359e1c11e67b3bcb4f60922 Mon Sep 17 00:00:00 2001
+From 08b564b677ad9817b076d27f96dadba58f2524b7 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Wed, 6 Feb 2013 14:42:01 -0500
 Subject: [PATCH] Add safe methods from @md-5's offlineUtil
 
 
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index 013dc0a..d344184 100644
+index bf6682b..4517f7e 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
 @@ -3,6 +3,7 @@ package org.bukkit;
@@ -16,7 +16,7 @@ index 013dc0a..d344184 100644
  import org.bukkit.permissions.ServerOperator;
  
  public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable {
-@@ -93,4 +94,18 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+@@ -94,4 +95,18 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
       */
      public Location getBedSpawnLocation();
  

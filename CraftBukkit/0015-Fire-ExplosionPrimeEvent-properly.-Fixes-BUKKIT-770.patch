@@ -1,11 +1,11 @@
-From ead9451b1f81f6ab6dc9346ea03968db90ab4125 Mon Sep 17 00:00:00 2001
+From 7a81b32d8801df15e99f597168925c0e4a5df7b1 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index d336901..d272c3a 100644
+index 9acd4f2..a2b55ef 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -63,7 +63,7 @@ index d336901..d272c3a 100644
      }
  
      public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-         if (entityhuman.bx() != null && entityhuman.bx().id == Item.FLINT_AND_STEEL.id) {
+         if (entityhuman.by() != null && entityhuman.by().id == Item.FLINT_AND_STEEL.id) {
 -            this.a(world, i, j, k, 1, entityhuman);
 -            world.setAir(i, j, k);
 +            // CraftBukkit start - don't remove block if TNT priming is cancelled
@@ -72,11 +72,11 @@ index d336901..d272c3a 100644
 +                world.setAir(i, j, k);
 +            }
 +            // CraftBukkit end
-             entityhuman.bx().damage(1, entityhuman);
+             entityhuman.by().damage(1, entityhuman);
              return true;
          } else {
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 00c1352..4797ead 100644
+index 5424003..2607f35 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -80,9 +80,19 @@ public class EntityCreeper extends EntityMonster {
@@ -122,7 +122,7 @@ index 00c1352..4797ead 100644
              }
          }
 diff --git a/src/main/java/net/minecraft/server/EntityLargeFireball.java b/src/main/java/net/minecraft/server/EntityLargeFireball.java
-index 748acd8..064f92a 100644
+index df86311..002a76d 100644
 --- a/src/main/java/net/minecraft/server/EntityLargeFireball.java
 +++ b/src/main/java/net/minecraft/server/EntityLargeFireball.java
 @@ -20,16 +20,8 @@ public class EntityLargeFireball extends EntityFireball {
@@ -145,7 +145,7 @@ index 748acd8..064f92a 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index 99e7ac2..c99817e 100644
+index 858d11e..50c20bc 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 @@ -73,15 +73,10 @@ public class EntityTNTPrimed extends Entity {
@@ -168,5 +168,5 @@ index 99e7ac2..c99817e 100644
  
      protected void b(NBTTagCompound nbttagcompound) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

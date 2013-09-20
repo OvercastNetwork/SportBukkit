@@ -1,11 +1,11 @@
-From 0d238d7a1cc5e95d8291c8b3a3b61e64059dea95 Mon Sep 17 00:00:00 2001
+From 791e78e75961fa8e948d237479e75470cd6af03c Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
-Subject: [PATCH] Allowed playEffect to spawn particles
+Subject: [PATCH] Allow playEffect to spawn particles
 
 
 diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
-index 175750f..ed2b721 100644
+index 708bee9..8118033 100644
 --- a/src/main/java/org/bukkit/Effect.java
 +++ b/src/main/java/org/bukkit/Effect.java
 @@ -5,6 +5,7 @@ import java.util.Map;
@@ -16,7 +16,7 @@ index 175750f..ed2b721 100644
  import org.bukkit.potion.Potion;
  
  /**
-@@ -78,33 +79,203 @@ public enum Effect {
+@@ -78,23 +79,174 @@ public enum Effect {
      /**
       * The flames seen on a mobspawner; a visual effect.
       */
@@ -164,77 +164,55 @@ index 175750f..ed2b721 100644
 +    private static final Map<String, Effect> BY_NAME = Maps.newHashMap();
 +    private final String particleName;
  
--    Effect(int id, Type type) {
-+    private Effect(int id, Type type) {
-         this(id,type,null);
+     Effect(int id, Type type) {
+-        this(id,type,null);
++        this(id, type, null);
      }
  
--    Effect(int id, Type type, Class<?> data) {
-+    private Effect(int id, Type type, Class<?> data) {
+     Effect(int id, Type type, Class<?> data) {
          this.id = id;
          this.type = type;
          this.data = data;
-+        particleName = null;
-+    }
-+
-+    private Effect(String particleName, Type type, Class<?> data) {
++        this.particleName = null;
+     }
+ 
++    Effect(String particleName, Type type, Class<?> data) {
 +        this.particleName = particleName;
 +        this.type = type;
 +        id = 0;
 +        this.data = data;
 +    }
 +
-+    private Effect(String particleName, Type type) {
++    Effect(String particleName, Type type) {
 +        this.particleName = particleName;
 +        this.type = type;
 +        id = 0;
 +        this.data = null;
-     }
- 
++      }
++
      /**
       * Gets the ID for this effect.
       *
--     * @return ID of this effect
-+     * @return if this Effect isn't of type PARTICLE it returns ID of this effect
-      */
-+    @Deprecated
-     public int getId() {
-         return this.id;
-     }
- 
-     /**
-+     * Gets the ID for this effect.
-+     *
-+     * @return if this Effect isn't of type PARTICLE it returns ID of this effect
-+     */
-+    public int getIdInt() {
-+        return this.id;
-+    }
-+
-+    /**
-+     * Returns the effect's name. This returns null if the effect is not a particle
-+     *
-+     * @return The effect's name
-+     */
-+    public String getIdString() {
-+        return particleName;
-+    }
-+
-+    /**
-      * @return The type of the effect.
-      */
-     public Type getType() {
-@@ -112,7 +283,8 @@ public enum Effect {
+@@ -114,7 +266,17 @@ public enum Effect {
      }
  
      /**
 -     * @return The class which represents data for this effect, or null if none
++     * Returns the effect's name. This returns null if the effect is not a particle
++     *
++     * @return The effect's name
++     */
++    public String getName() {
++        return this.particleName;
++    }
++
++    /**
 +     * @return if this Effect isn't of type PARTICLE it returns the class which represents
 +     * data for this effect, or null if none.
       */
      public Class<?> getData() {
          return this.data;
-@@ -130,12 +302,32 @@ public enum Effect {
+@@ -134,12 +296,32 @@ public enum Effect {
  
      static {
          for (Effect effect : values()) {
@@ -270,7 +248,7 @@ index 175750f..ed2b721 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index e14fe40..aabd5b7 100644
+index 62fadda..1766396 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -13,6 +13,7 @@ import org.bukkit.block.Block;
@@ -281,7 +259,7 @@ index e14fe40..aabd5b7 100644
  import org.bukkit.metadata.Metadatable;
  import org.bukkit.plugin.messaging.PluginMessageRecipient;
  import org.bukkit.util.Vector;
-@@ -682,6 +683,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -686,6 +687,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
      /**
       * Plays an effect to all players within a default radius around a given location.
       *
@@ -298,7 +276,7 @@ index e14fe40..aabd5b7 100644
       * @param location the {@link Location} around which players must be to hear the sound
       * @param effect the {@link Effect}
       * @param data a data bit needed for some effects
-@@ -718,6 +729,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -722,6 +733,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
      public <T> void playEffect(Location location, Effect effect, T data, int radius);
  
      /**
@@ -327,10 +305,10 @@ index e14fe40..aabd5b7 100644
       * data. Used for representing an ungenerated chunk, or for fetching only biome data without loading a chunk.
       *
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 5fc29cf..c7e6e82 100644
+index c756796..aaedfd3 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -269,6 +269,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -275,6 +275,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       */
      public <T> void playEffect(Location loc, Effect effect, T data);
  
@@ -340,7 +318,7 @@ index 5fc29cf..c7e6e82 100644
       * Send a block change. This fakes a block change packet for a user at
       * a certain location. This will not actually change the world in any way.
 diff --git a/src/test/java/org/bukkit/EffectTest.java b/src/test/java/org/bukkit/EffectTest.java
-index 08aa71d..cfa90a3 100644
+index 08aa71d..5217aec 100644
 --- a/src/test/java/org/bukkit/EffectTest.java
 +++ b/src/test/java/org/bukkit/EffectTest.java
 @@ -9,7 +9,11 @@ public class EffectTest {
@@ -349,13 +327,13 @@ index 08aa71d..cfa90a3 100644
          for (Effect effect : Effect.values()) {
 -            assertThat(Effect.getById(effect.getId()), is(effect));
 +            if (effect.getType() != Effect.Type.PARTICLE) {
-+                assertThat(Effect.getById(effect.getIdInt()), is(effect));
++                assertThat(Effect.getById(effect.getId()), is(effect));
 +            } else {
-+                assertThat(Effect.getByName(effect.getIdString()), is(effect));
++                assertThat(Effect.getByName(effect.getName()), is(effect));
 +            }
          }
      }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

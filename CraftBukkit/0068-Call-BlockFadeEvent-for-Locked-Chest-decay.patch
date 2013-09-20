@@ -1,4 +1,4 @@
-From c1c8ef70e867520e9f36f90a49d1b48e141e217c Mon Sep 17 00:00:00 2001
+From e8d967dd0ac653aba7f29f5d007516d71df12b67 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 11 Aug 2013 20:55:40 +0200
 Subject: [PATCH] Call BlockFadeEvent for Locked Chest decay
@@ -19,5 +19,5 @@ index 7aa9b1d..65c9c22 100644
      }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,11 +1,11 @@
-From 2ba0111e3758e31735556c200956899f7d7ae673 Mon Sep 17 00:00:00 2001
+From dde3c66133e956735190480c146b49920d6f8880 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:11:38 -0600
 Subject: [PATCH] Add the PlayerHandshakeEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 7958390..6f5f779 100644
+index 3bfc6e7..5d4804c 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -11,6 +11,8 @@ import java.util.List;
@@ -18,19 +18,19 @@ index 7958390..6f5f779 100644
  
      private static Random random = new Random();
 @@ -81,6 +83,13 @@ public class PendingConnection extends Connection {
-                 this.loginKey = this.server.getOnlineMode() ? Long.toString(random.nextLong(), 16) : "-";
-                 this.d = new byte[4];
-                 random.nextBytes(this.d);
+                     this.loginKey = this.server.getOnlineMode() ? Long.toString(random.nextLong(), 16) : "-";
+                     this.d = new byte[4];
+                     random.nextBytes(this.d);
 +
-+                // CraftBukkit start
-+                PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d);
-+                this.server.server.getPluginManager().callEvent(handshakeEvent);
-+                this.loginKey = handshakeEvent.getLoginKey();
-+                // CraftBukkit end
++                    // CraftBukkit start
++                    PlayerHandshakeEvent handshakeEvent = new PlayerHandshakeEvent(this.g, this.loginKey, publickey, this.d);
++                    this.server.server.getPluginManager().callEvent(handshakeEvent);
++                    this.loginKey = handshakeEvent.getLoginKey();
++                    // CraftBukkit end
 +
-                 this.networkManager.queue(new Packet253KeyRequest(this.loginKey, publickey, this.d));
+                     this.networkManager.queue(new Packet253KeyRequest(this.loginKey, publickey, this.d));
+                 }
              }
-         }
 -- 
 1.7.12.4 (Apple Git-37)
 

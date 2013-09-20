@@ -1,7 +1,7 @@
-From 40ab7da4e8e151e418017fbf4ab7c139a878f0ad Mon Sep 17 00:00:00 2001
+From e81ff2c12664af58c10c4ddb532de220ed6745c8 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
-Subject: [PATCH] Allowed playEffect to spawn particles
+Subject: [PATCH] Allow playEffect to spawn particles
 
 
 diff --git a/src/main/java/net/minecraft/server/Packet63WorldParticles.java b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
@@ -62,7 +62,7 @@ index 7de0de5..7eca388 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 1f33b20..7f65439 100644
+index 1f33b20..5fd3273 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -44,6 +44,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
@@ -114,11 +114,11 @@ index 1f33b20..7f65439 100644
 +
 +        Packet packet = null;
 +        if (effect.getType() != Effect.Type.PARTICLE) {
-+            int packetData = effect.getIdInt();
++            int packetData = effect.getId();
 +            packet = new Packet61WorldEvent(packetData, location.getBlockX(), location.getBlockY(), location.getBlockZ(), id, false);
 +        } else {
 +            StringBuilder particleFullName = new StringBuilder();
-+            particleFullName.append(effect.getIdString());
++            particleFullName.append(effect.getName());
 +
 +            if (effect.getData().equals(Material.class) || effect.getData().equals(MaterialData.class)) {
 +                particleFullName.append('_').append(id);
@@ -127,7 +127,7 @@ index 1f33b20..7f65439 100644
 +            if (effect.getData().equals(MaterialData.class)) {
 +                particleFullName.append('_').append(data);
 +            }
-+            packet = new Packet63WorldParticles(effect.getIdString(), (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
++            packet = new Packet63WorldParticles(effect.getName(), (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
 +        }
 +
          int distance;
@@ -146,7 +146,7 @@ index 1f33b20..7f65439 100644
              distance = (int) player.getLocation().distanceSquared(location);
              if (distance <= radius) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 92b88f6..2192e23 100644
+index 92b88f6..ba69838 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -48,6 +48,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
@@ -198,11 +198,11 @@ index 92b88f6..2192e23 100644
 -        playEffect(loc, effect, datavalue);
 +        Packet packet = null;
 +        if (effect.getType() != Effect.Type.PARTICLE) {
-+            int packetData = effect.getIdInt();
++            int packetData = effect.getId();
 +            packet = new Packet61WorldEvent(packetData, location.getBlockX(), location.getBlockY(), location.getBlockZ(), id, false);
 +        } else {
 +            StringBuilder particleFullName = new StringBuilder();
-+            particleFullName.append(effect.getIdString());
++            particleFullName.append(effect.getName());
 +
 +            if (effect.getData() != null && (effect.getData().equals(Material.class) || effect.getData().equals(MaterialData.class))) {
 +                particleFullName.append('_').append(id);
@@ -211,7 +211,7 @@ index 92b88f6..2192e23 100644
 +            if (effect.getData() != null && effect.getData().equals(MaterialData.class)) {
 +                particleFullName.append('_').append(data);
 +            }
-+            packet = new Packet63WorldParticles(effect.getIdString(), (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
++            packet = new Packet63WorldParticles(effect.getName(), (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
 +        }
 +
 +        if (!location.getWorld().equals(getWorld())) {
@@ -223,5 +223,5 @@ index 92b88f6..2192e23 100644
  
      public void sendBlockChange(Location loc, Material material, byte data) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

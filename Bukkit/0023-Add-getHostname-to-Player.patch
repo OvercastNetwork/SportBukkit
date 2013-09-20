@@ -1,14 +1,14 @@
-From 4af2f232d7aef12252341e77a351dce8b770de6e Mon Sep 17 00:00:00 2001
+From d3d80cc9ace7ca3be73b4ec9524e0e8cec175e74 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 21:56:56 +0200
 Subject: [PATCH] Add getHostname to Player
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 6b6c992..f640b99 100644
+index 7da3890..c18564b 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -762,4 +762,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -774,4 +774,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void removeIgnorantEffect(PotionEffectType effect);
  
      public boolean hasIgnorantEffect(PotionEffectType effect);
@@ -24,5 +24,5 @@ index 6b6c992..f640b99 100644
 +    public String getHostname();
   }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

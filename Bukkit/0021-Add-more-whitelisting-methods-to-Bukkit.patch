@@ -1,14 +1,14 @@
-From c3ee4253cadbc7bfa78183224a0e10d40eb2140e Mon Sep 17 00:00:00 2001
+From e800950c252406b1bcc54180203b444a99963c1d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 10 Nov 2012 12:24:48 -0600
 Subject: [PATCH] Add more whitelisting methods to Bukkit
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 6639c98..423f4f8 100644
+index e3b066c..89b9542 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -465,6 +465,27 @@ public final class Bukkit {
+@@ -467,6 +467,27 @@ public final class Bukkit {
      }
  
      /**
@@ -37,10 +37,10 @@ index 6639c98..423f4f8 100644
       */
      public static ConsoleCommandSender getConsoleSender() {
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 97b9dfe..0b52067 100644
+index 1b4f733..033f7d2 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -176,6 +176,28 @@ public interface Server extends PluginMessageRecipient {
+@@ -177,6 +177,28 @@ public interface Server extends PluginMessageRecipient {
      public void reloadWhitelist();
  
      /**

@@ -1,4 +1,4 @@
-From 9ab20d021347ec9aedddc3987b9aacf47a4da7bb Mon Sep 17 00:00:00 2001
+From dbbf9acc7d552209bd1e96871518bf602d8e9a87 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 3 Aug 2013 13:25:51 -0500
 Subject: [PATCH] Compressed Nibble Arrays
@@ -400,5 +400,5 @@ index 1a21516..6921206 100644
          }
  
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

@@ -1,4 +1,4 @@
-From 2af2bf32c98fd31b109bd08901d0588410ab8c94 Mon Sep 17 00:00:00 2001
+From e3da2f2f72efbd77125ed5e28f184438069c1c9a Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:34 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in
@@ -6,7 +6,7 @@ Subject: [PATCH] Adds ability to set the number of online players sent in
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index d5d71d6..2fb1b92 100644
+index 5d4804c..1817301 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -12,6 +12,7 @@ import java.util.Random;
@@ -17,7 +17,7 @@ index d5d71d6..2fb1b92 100644
  
  public class PendingConnection extends Connection {
  
-@@ -155,10 +156,10 @@ public class PendingConnection extends Connection {
+@@ -156,10 +157,10 @@ public class PendingConnection extends Connection {
              org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), playerlist.getPlayerCount(), playerlist.getMaxPlayers());
              if (packet254getinfo.d()) {
                  // CraftBukkit
@@ -25,11 +25,11 @@ index d5d71d6..2fb1b92 100644
 +                s = ChatColor.stripColor(pingEvent.getMotd() + "\u00A7" + pingEvent.getNumPlayers() + "\u00A7" + pingEvent.getMaxPlayers());
              } else {
                  // CraftBukkit start - Don't create a list from an array
--                Object[] list = new Object[] { 1, 74, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
-+                Object[] list = new Object[] { 1, 74, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
+-                Object[] list = new Object[] { 1, 78, this.server.getVersion(), pingEvent.getMotd(), playerlist.getPlayerCount(), pingEvent.getMaxPlayers() };
++                Object[] list = new Object[] { 1, 78, this.server.getVersion(), pingEvent.getMotd(), pingEvent.getNumPlayers(), pingEvent.getMaxPlayers() };
  
                  StringBuilder builder = new StringBuilder();
                  for (Object object : list) {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

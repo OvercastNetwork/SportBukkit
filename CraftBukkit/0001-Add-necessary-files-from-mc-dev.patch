@@ -1,4 +1,4 @@
-From 3f3e62224924fbaac4e288ea5194aee034059b01 Mon Sep 17 00:00:00 2001
+From d52e2ca557db6bd5ecc204180bc99b1739dabe22 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -352,7 +352,7 @@ index 0000000..3ca6e41
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
 new file mode 100644
-index 0000000..d336901
+index 0000000..9acd4f2
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -0,0 +1,80 @@
@@ -411,10 +411,10 @@ index 0000000..d336901
 +    }
 +
 +    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-+        if (entityhuman.bx() != null && entityhuman.bx().id == Item.FLINT_AND_STEEL.id) {
++        if (entityhuman.by() != null && entityhuman.by().id == Item.FLINT_AND_STEEL.id) {
 +            this.a(world, i, j, k, 1, entityhuman);
 +            world.setAir(i, j, k);
-+            entityhuman.bx().damage(1, entityhuman);
++            entityhuman.by().damage(1, entityhuman);
 +            return true;
 +        } else {
 +            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
@@ -1632,5 +1632,5 @@ index 0000000..12815ee
 +    }
 +}
 -- 
-1.8.3.msysgit.0
+1.7.12.4 (Apple Git-37)
 

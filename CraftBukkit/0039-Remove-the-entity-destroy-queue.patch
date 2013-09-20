@@ -1,14 +1,14 @@
-From 37b1ccd3ee02ca2aeb67e1b6f892677febd1be78 Mon Sep 17 00:00:00 2001
+From 131e3da5b8b3f006e70880157418c8c0cf882d97 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 08fbae9..a93406c 100644
+index 119e3f3..c2c3faf 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -29,7 +29,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -30,7 +30,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public double d;
      public double e;
      public final List chunkCoordIntPairQueue = new LinkedList();
@@ -17,7 +17,7 @@ index 08fbae9..a93406c 100644
      private float bO = Float.MIN_VALUE;
      private float bP = -1.0E8F;
      private int bQ = -99999999;
-@@ -181,6 +181,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -182,6 +182,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          }
          // CraftBukkit end
  
@@ -25,7 +25,7 @@ index 08fbae9..a93406c 100644
          while (!this.removeQueue.isEmpty()) {
              int i = Math.min(this.removeQueue.size(), 127);
              int[] aint = new int[i];
-@@ -194,6 +195,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -195,6 +196,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
              this.playerConnection.sendPacket(new Packet29DestroyEntity(aint));
          }
@@ -33,7 +33,7 @@ index 08fbae9..a93406c 100644
  
          if (!this.chunkCoordIntPairQueue.isEmpty()) {
              ArrayList arraylist = new ArrayList();
-@@ -798,7 +800,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -803,7 +805,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.lastSentExp = -1;
          this.bP = -1.0F;
          this.bQ = -1;
@@ -43,7 +43,7 @@ index 08fbae9..a93406c 100644
  
      protected void a(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index ff2e3ba..dd6d1be 100644
+index 06a52d7..41ac87a 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -339,18 +339,12 @@ public class EntityTrackerEntry {
@@ -95,5 +95,5 @@ index ff2e3ba..dd6d1be 100644
      }
  }
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

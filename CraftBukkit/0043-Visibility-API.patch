@@ -1,11 +1,11 @@
-From c6db3eef76b9c5cc9eb33d696da2bb95e2b01817 Mon Sep 17 00:00:00 2001
+From 1d4837eef92ccca8ee4a79a8571d1a362ace7d89 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 29 May 2013 23:59:07 -0500
 Subject: [PATCH] Visibility API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 5fa459f..b9f399a 100644
+index dd6d1be..dc8bc63 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -357,11 +357,8 @@ public class EntityTrackerEntry {
@@ -23,10 +23,10 @@ index 5fa459f..b9f399a 100644
  
                      // entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.id));
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 9b0354a..ade4113 100644
+index 08dc065..fd1b8ae 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -947,19 +947,20 @@ public abstract class PlayerList {
+@@ -948,19 +948,20 @@ public abstract class PlayerList {
      }
  
      public void sendPacketNearby(double d0, double d1, double d2, double d3, int i, Packet packet) {
@@ -191,5 +191,5 @@ index 2f62b28..cbea899 100644
  
      public Map<String, Object> serialize() {
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.7.12.4 (Apple Git-37)
 

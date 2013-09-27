@@ -3,6 +3,11 @@
 ORIG_PWD="$(pwd)"
 cd "$(dirname "$0")"
 
+if [ ! -d .git ]; then
+    echo "Git repository not found. Initializing..."
+    git init
+fi
+
 git submodule update --init
 
 if [ -d build ]; then

@@ -1,4 +1,4 @@
-From 54da98ca3678da6a1b064f014742ddcb6e13c036 Mon Sep 17 00:00:00 2001
+From 8a217dc2a36a8400ef56ba7849b0c34206d62702 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -33,10 +33,10 @@ index a2bdfa3..21d5ad4 100644
      public void d() {
          if (!this.t) {
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 1bb77a9..6d68a34 100644
+index 2a96168..464a5ad 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
-@@ -221,4 +221,17 @@ public class PendingConnection extends Connection {
+@@ -222,4 +222,17 @@ public class PendingConnection extends Connection {
      static boolean a(PendingConnection pendingconnection, boolean flag) {
          return pendingconnection.h = flag;
      }

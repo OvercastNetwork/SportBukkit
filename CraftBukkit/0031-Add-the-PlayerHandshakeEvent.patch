@@ -1,11 +1,11 @@
-From dde3c66133e956735190480c146b49920d6f8880 Mon Sep 17 00:00:00 2001
+From 76a3fd3853bcd1832a2bdf1ae8495d710a800a12 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:11:38 -0600
 Subject: [PATCH] Add the PlayerHandshakeEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 3bfc6e7..5d4804c 100644
+index 4bd3fd1..29e2d98 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -11,6 +11,8 @@ import java.util.List;
@@ -17,7 +17,7 @@ index 3bfc6e7..5d4804c 100644
  public class PendingConnection extends Connection {
  
      private static Random random = new Random();
-@@ -81,6 +83,13 @@ public class PendingConnection extends Connection {
+@@ -82,6 +84,13 @@ public class PendingConnection extends Connection {
                      this.loginKey = this.server.getOnlineMode() ? Long.toString(random.nextLong(), 16) : "-";
                      this.d = new byte[4];
                      random.nextBytes(this.d);

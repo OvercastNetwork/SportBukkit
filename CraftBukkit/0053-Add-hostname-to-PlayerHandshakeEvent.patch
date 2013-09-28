@@ -1,14 +1,14 @@
-From c2f25842ea26920358b7153be12b06642d1b0ee4 Mon Sep 17 00:00:00 2001
+From e20576f5d0fa9a18b650f171e9945a550d475acd Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 22:10:42 +0200
 Subject: [PATCH] Add hostname to PlayerHandshakeEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 1817301..1ed8da0 100644
+index e6ad813..0a887cc 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
-@@ -86,7 +86,7 @@ public class PendingConnection extends Connection {
+@@ -87,7 +87,7 @@ public class PendingConnection extends Connection {
                      random.nextBytes(this.d);
  
                      // CraftBukkit start

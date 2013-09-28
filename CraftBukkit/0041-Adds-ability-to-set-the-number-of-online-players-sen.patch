@@ -1,4 +1,4 @@
-From e3da2f2f72efbd77125ed5e28f184438069c1c9a Mon Sep 17 00:00:00 2001
+From 6cf57101e72ad3faf5533a017d95284f3823388d Mon Sep 17 00:00:00 2001
 From: Daniel <ZetaetaDaniel@gmail.com>
 Date: Sat, 12 May 2012 16:07:34 +0100
 Subject: [PATCH] Adds ability to set the number of online players sent in
@@ -6,7 +6,7 @@ Subject: [PATCH] Adds ability to set the number of online players sent in
 
 
 diff --git a/src/main/java/net/minecraft/server/PendingConnection.java b/src/main/java/net/minecraft/server/PendingConnection.java
-index 5d4804c..1817301 100644
+index 29e2d98..e6ad813 100644
 --- a/src/main/java/net/minecraft/server/PendingConnection.java
 +++ b/src/main/java/net/minecraft/server/PendingConnection.java
 @@ -12,6 +12,7 @@ import java.util.Random;
@@ -17,7 +17,7 @@ index 5d4804c..1817301 100644
  
  public class PendingConnection extends Connection {
  
-@@ -156,10 +157,10 @@ public class PendingConnection extends Connection {
+@@ -157,10 +158,10 @@ public class PendingConnection extends Connection {
              org.bukkit.event.server.ServerListPingEvent pingEvent = org.bukkit.craftbukkit.event.CraftEventFactory.callServerListPingEvent(this.server.server, getSocket().getInetAddress(), this.server.getMotd(), playerlist.getPlayerCount(), playerlist.getMaxPlayers());
              if (packet254getinfo.d()) {
                  // CraftBukkit

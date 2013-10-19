@@ -1,14 +1,14 @@
-From 8f877ba4b804a7cb519fb23b1c091fca27391635 Mon Sep 17 00:00:00 2001
+From c686f8d86f5ee6bd15446582acb50db02a700fcb Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sun, 25 Nov 2012 18:56:49 -0800
 Subject: [PATCH] Update Guava to v13.0
 
 
 diff --git a/pom.xml b/pom.xml
-index 4209f2a..d1ef756 100644
+index 3f211e2..a3bf43a 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -119,7 +119,7 @@
+@@ -118,7 +118,7 @@
          <dependency>
              <groupId>com.google.guava</groupId>
              <artifactId>guava</artifactId>

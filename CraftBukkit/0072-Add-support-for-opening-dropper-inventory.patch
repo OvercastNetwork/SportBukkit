@@ -1,0 +1,38 @@
+From 1897b0a6769b2814fd1ac8b66cc738bd0aed3787 Mon Sep 17 00:00:00 2001
+From: YukonAppleGeek <yukonvinecki@gmail.com>
+Date: Sun, 10 Nov 2013 12:26:30 -0800
+Subject: [PATCH] Add support for opening dropper inventory
+
+---
+ src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 19d8842..ee09087 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -10,6 +10,7 @@ import net.minecraft.server.Packet100OpenWindow;
+ import net.minecraft.server.Packet101CloseWindow;
+ import net.minecraft.server.TileEntityBrewingStand;
+ import net.minecraft.server.TileEntityDispenser;
++import net.minecraft.server.TileEntityDropper;
+ import net.minecraft.server.TileEntityFurnace;
+ import net.minecraft.server.TileEntityHopper;
+ 
+@@ -228,6 +229,13 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+                 openCustomInventory(inventory, player, 9);
+             }
+             break;
++        case DROPPER:
++            if (craftinv.getInventory() instanceof TileEntityDropper) {
++                getHandle().openDispenser((TileEntityDropper) craftinv.getInventory());
++            } else {
++                openCustomInventory(inventory, player, 3);
++            }
++            break;
+         case CREATIVE:
+         case CRAFTING:
+             throw new IllegalArgumentException("Can't open a " + type + " inventory!");
+-- 
+1.8.3.4 (Apple Git-47)
+

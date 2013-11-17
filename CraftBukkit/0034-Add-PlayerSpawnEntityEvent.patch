@@ -20,7 +20,7 @@ index 06967d8..2b2ff26 100644
  public class ItemMonsterEgg extends Item {
  
      public ItemMonsterEgg(int i) {
-@@ -34,7 +40,31 @@ public class ItemMonsterEgg extends Item {
+@@ -34,7 +40,29 @@ public class ItemMonsterEgg extends Item {
                  d0 = 0.5D;
              }
  
@@ -37,22 +37,20 @@ index 06967d8..2b2ff26 100644
 +                return false;
 +            }
 +
-+            entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
-+            if (entity instanceof EntityLiving) {
-+                EntityLiving entityliving = (EntityLiving) entity;
-+                entityliving.aP = entityliving.yaw;
-+                entityliving.aN = entityliving.yaw;
-+                entityliving.a((EntityInsentient) null);
-+            }
-+            world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
-+            if (entity instanceof EntityInsentient) {
-+                ((EntityInsentient) entity).p();
++            if (entity != null && entity instanceof EntityLiving) {
++                EntityInsentient entityinsentient = (EntityInsentient) entity;
 +
++                entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
++                entityinsentient.aP = entityinsentient.yaw;
++                entityinsentient.aN = entityinsentient.yaw;
++                entityinsentient.a((GroupDataEntity) null);
++                world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++                entityinsentient.p();
 +            }
 +            // CraftBukkit end
  
              if (entity != null) {
                  if (entity instanceof EntityLiving && itemstack.hasName()) {
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.3.4 (Apple Git-47)
 

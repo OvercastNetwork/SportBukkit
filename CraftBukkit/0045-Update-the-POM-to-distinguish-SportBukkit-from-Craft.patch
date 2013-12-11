@@ -32,15 +32,15 @@ index b81ff44..9486ed7 100644
 -      <id>repobo-rel</id>
 -      <name>repo.bukkit.org Releases</name>
 -      <url>http://repo.bukkit.org/content/repositories/releases/</url>
-+      <id>repo.oc.tc</id>
-+      <url>http://repo.oc.tc/content/repositories/releases/</url>
++      <id>overcast-deployment</id>
++      <url>https://repo.oc.tc/content/repositories/releases/</url>
      </repository>
      <snapshotRepository>
 -      <id>repobo-snap</id>
 -      <name>repo.bukkit.org Snapshots</name>
 -      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
-+      <id>repo.oc.tc</id>
-+      <url>http://repo.oc.tc/content/repositories/snapshots/</url>
++      <id>overcast-deployment</id>
++      <url>https://repo.oc.tc/content/repositories/snapshots/</url>
      </snapshotRepository>
    </distributionManagement>
  

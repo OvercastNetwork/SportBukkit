@@ -1,4 +1,4 @@
-From 8a217dc2a36a8400ef56ba7849b0c34206d62702 Mon Sep 17 00:00:00 2001
+From 24152752d70ee6b5d25bae7349f1bcf986e848e4 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -55,7 +55,7 @@ index 2a96168..464a5ad 100644
 +    // Spigot end
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index df2efe2..997e46e 100644
+index d140c4f..1303b77 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -158,6 +158,7 @@ public final class CraftServer implements Server {
@@ -66,7 +66,7 @@ index df2efe2..997e46e 100644
      private File container;
      private WarningState warningState = WarningState.DEFAULT;
      private final BooleanWrapper online = new BooleanWrapper();
-@@ -206,6 +207,7 @@ public final class CraftServer implements Server {
+@@ -208,6 +209,7 @@ public final class CraftServer implements Server {
          warningState = WarningState.value(configuration.getString("settings.deprecated-verbose"));
          chunkGCPeriod = configuration.getInt("chunk-gc.period-in-ticks");
          chunkGCLoadThresh = configuration.getInt("chunk-gc.load-threshold");
@@ -75,7 +75,7 @@ index df2efe2..997e46e 100644
          updater = new AutoUpdater(new BukkitDLUpdaterService(configuration.getString("auto-updater.host")), getLogger(), configuration.getString("auto-updater.preferred-channel"));
          updater.setEnabled(configuration.getBoolean("auto-updater.enabled"));
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index 61a95e3..0fc12a1 100644
+index 60a894f..733ad13 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
 @@ -25,6 +25,8 @@ settings:
@@ -88,5 +88,5 @@ index 61a95e3..0fc12a1 100644
      monsters: 70
      animals: 15
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

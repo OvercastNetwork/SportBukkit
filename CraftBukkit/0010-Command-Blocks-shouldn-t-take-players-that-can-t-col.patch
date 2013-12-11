@@ -1,8 +1,8 @@
-From 95007fb4f115611007fa741cbeef1174a3cbf506 Mon Sep 17 00:00:00 2001
+From 5ea2f3d153026f08004e580add60878292ffbb79 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 22 May 2013 23:14:40 -0500
-Subject: [PATCH] Command Blocks shouldn't take players that can't collide
- with entites into account when doing calculations
+Subject: [PATCH] Command Blocks shouldn't take players that can't collide with
+ entites into account when doing calculations
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
@@ -18,5 +18,5 @@ index 5dafeaf..e913cc1 100644
                  if ((world == null || entityplayer.world == world) && (s == null || flag1 != s.equalsIgnoreCase(entityplayer.getLocalizedName()))) {
                      if (s1 != null) {
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

@@ -1,4 +1,4 @@
-From 0cc470e5211e77c1d9f905f87e245534bb9bc16a Mon Sep 17 00:00:00 2001
+From 52d1808ec7aa44773a8496a3cbfa856d5ce353b7 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 21 Aug 2012 19:51:54 -0500
 Subject: [PATCH] Allow spawning of ender pearls
@@ -20,10 +20,10 @@ index 585154e..efa092b 100644
          if (movingobjectposition.entity != null) {
              movingobjectposition.entity.damageEntity(DamageSource.projectile(this, this.getShooter()), 0);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index e8315dd..1f33b20 100644
+index 9f75d8e..f101db0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -841,6 +841,8 @@ public class CraftWorld implements World {
+@@ -842,6 +842,8 @@ public class CraftWorld implements World {
                  entity = new EntitySnowball(world, x, y, z);
              } else if (Egg.class.isAssignableFrom(clazz)) {
                  entity = new EntityEgg(world, x, y, z);
@@ -33,5 +33,5 @@ index e8315dd..1f33b20 100644
                  entity = new EntityArrow(world);
                  entity.setPositionRotation(x, y, z, 0, 0);
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.5.1
 

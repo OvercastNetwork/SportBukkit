@@ -1,22 +1,65 @@
-From c455cfff19c393de96308e0dccd2efa6933d3a98 Mon Sep 17 00:00:00 2001
+From bded8ab71e026a20634c1b821141a52e52258001 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 13 Nov 2012 19:38:11 -0600
 Subject: [PATCH] Enable multiworld maps
 
 
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index d2ba3ce..cbc3ab0 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -726,7 +726,7 @@ public final class CraftServer implements Server {
-             return null;
-         }
+diff --git a/src/main/java/net/minecraft/server/ItemMapEmpty.java b/src/main/java/net/minecraft/server/ItemMapEmpty.java
+index f774592..b7755b0 100644
+--- a/src/main/java/net/minecraft/server/ItemMapEmpty.java
++++ b/src/main/java/net/minecraft/server/ItemMapEmpty.java
+@@ -8,12 +8,11 @@ public class ItemMapEmpty extends ItemWorldMapBase {
+     }
  
--        internal.worldMaps = console.worlds.get(0).worldMaps;
-+        // internal.worldMaps = console.worlds.get(0).worldMaps; // CraftBukkit - enable multiworld maps
-         internal.scoreboard = getScoreboardManager().getMainScoreboard().getHandle();
+     public ItemStack a(ItemStack itemstack, World world, EntityHuman entityhuman) {
+-        World worldMain = world.getServer().getServer().worlds.get(0); // CraftBukkit - store reference to primary world
+-        ItemStack itemstack1 = new ItemStack(Item.MAP, 1, worldMain.b("map")); // CraftBukkit - use primary world for maps
++        ItemStack itemstack1 = new ItemStack(Item.MAP, 1, world.b("map"));
+         String s = "map_" + itemstack1.getData();
+         WorldMap worldmap = new WorldMap(s);
  
-         internal.tracker = new EntityTracker(internal);
+-        worldMain.a(s, (WorldMapBase) worldmap); // CraftBukkit - use primary world for maps
++        world.a(s, (WorldMapBase) worldmap);
+         worldmap.scale = 0;
+         int i = 128 * (1 << worldmap.scale);
+ 
+diff --git a/src/main/java/net/minecraft/server/ItemWorldMap.java b/src/main/java/net/minecraft/server/ItemWorldMap.java
+index 3866c1b..cf6ebd1 100644
+--- a/src/main/java/net/minecraft/server/ItemWorldMap.java
++++ b/src/main/java/net/minecraft/server/ItemWorldMap.java
+@@ -13,12 +13,11 @@ public class ItemWorldMap extends ItemWorldMapBase {
+     }
+ 
+     public WorldMap getSavedMap(ItemStack itemstack, World world) {
+-        World worldMain = world.getServer().getServer().worlds.get(0); // CraftBukkit - store reference to primary world
+         String s = "map_" + itemstack.getData();
+-        WorldMap worldmap = (WorldMap) worldMain.a(WorldMap.class, s); // CraftBukkit - use primary world for maps
++        WorldMap worldmap = (WorldMap) world.a(WorldMap.class, s);
+ 
+         if (worldmap == null && !world.isStatic) {
+-            itemstack.setData(worldMain.b("map")); // CraftBukkit - use primary world for maps
++            itemstack.setData(world.b("map"));
+             s = "map_" + itemstack.getData();
+             worldmap = new WorldMap(s);
+             worldmap.scale = 3;
+@@ -28,7 +27,7 @@ public class ItemWorldMap extends ItemWorldMapBase {
+             worldmap.centerZ = Math.round((float) (world.getWorldData().e() / i)) * i;
+             worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - fixes Bukkit multiworld maps
+             worldmap.c();
+-            worldMain.a(s, (WorldMapBase) worldmap); // CraftBukkit - use primary world for maps
++            world.a(s, (WorldMapBase) worldmap);
+ 
+             // CraftBukkit start
+             MapInitializeEvent event = new MapInitializeEvent(worldmap.mapView);
+@@ -238,8 +237,6 @@ public class ItemWorldMap extends ItemWorldMapBase {
+         if (itemstack.hasTag() && itemstack.getTag().getBoolean("map_is_scaling")) {
+             WorldMap worldmap = Item.MAP.getSavedMap(itemstack, world);
+ 
+-            world = world.getServer().getServer().worlds.get(0); // CraftBukkit - use primary world for maps
+-
+             itemstack.setData(world.b("map"));
+             WorldMap worldmap1 = new WorldMap("map_" + itemstack.getData());
+ 
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.5.1
 

@@ -1,11 +1,11 @@
-From f02e3a7c7f6eb17fd1590af4e4bba8b46c8bf4cb Mon Sep 17 00:00:00 2001
-From: Steve Anton <anxuiz.nx@gmail.com>
-Date: Thu, 2 Aug 2012 16:57:42 -0700
-Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit.
+From 1113216f4e158ab5ed0207d3bbdb0d7a092f18b5 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 10 Dec 2013 23:16:10 -0600
+Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
 
 
 diff --git a/pom.xml b/pom.xml
-index f2c3af1..3fb9c55 100644
+index 5773b70..73fc5b9 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,10 +1,10 @@
@@ -15,7 +15,7 @@ index f2c3af1..3fb9c55 100644
 -    <artifactId>bukkit</artifactId>
 +    <groupId>tc.oc</groupId>
 +    <artifactId>sportbukkit-api</artifactId>
-     <version>1.6.4-R0.1-SNAPSHOT</version>
+     <version>1.6.4-R2.1-SNAPSHOT</version>
 -    <name>Bukkit</name>
 -    <url>http://www.bukkit.org</url>
 +    <name>SportBukkit API</name>
@@ -42,17 +42,17 @@ index f2c3af1..3fb9c55 100644
 -            <name>repo.bukkit.org Releases</name>
 -            <url>http://repo.bukkit.org/content/repositories/releases/</url>
 +            <id>overcast-deployment</id>
-+            <url>https://repo.oc.tc/content/repositories/releases/</url>
++            <url>https://repo.oc.tc/content/repositories/releases</url>
          </repository>
          <snapshotRepository>
 -            <id>repobo-snap</id>
 -            <name>repo.bukkit.org Snapshots</name>
 -            <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
 +            <id>overcast-deployment</id>
-+            <url>https://repo.oc.tc/content/repositories/snapshots/</url>
++            <url>https://repo.oc.tc/content/repositories/snapshots</url>
          </snapshotRepository>
      </distributionManagement>
  
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

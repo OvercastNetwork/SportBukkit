@@ -1,11 +1,11 @@
-From 826136786c058fb386721e0761782ee7a471b3bc Mon Sep 17 00:00:00 2001
+From 71ca3cc29932112456dd69bc940659811569f39f Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index b81ff44..9486ed7 100644
+index 299eab7..6f3faab 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,12 +1,12 @@
@@ -17,7 +17,7 @@ index b81ff44..9486ed7 100644
 +  <groupId>tc.oc</groupId>
 +  <artifactId>sportbukkit</artifactId>
    <packaging>jar</packaging>
-   <version>1.6.4-R0.1-SNAPSHOT</version>
+   <version>1.6.4-R2.1-SNAPSHOT</version>
 -  <name>CraftBukkit</name>
 -  <url>http://www.bukkit.org</url>
 +  <name>SportBukkit</name>
@@ -25,7 +25,16 @@ index b81ff44..9486ed7 100644
  
    <properties>
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-@@ -24,14 +24,12 @@
+@@ -14,7 +14,7 @@
+     <junit.version>4.11</junit.version>
+     <minecraft.version>1.6.4</minecraft.version>
+     <minecraft_version>1_6_R3</minecraft_version>
+-    <buildtag.prefix>git-Bukkit-</buildtag.prefix>
++    <buildtag.prefix>git-SportBukkit-</buildtag.prefix>
+     <buildtag.suffix></buildtag.suffix>
+   </properties>
+ 
+@@ -26,14 +26,12 @@
  
    <distributionManagement>
      <repository>
@@ -44,7 +53,7 @@ index b81ff44..9486ed7 100644
      </snapshotRepository>
    </distributionManagement>
  
-@@ -51,8 +49,8 @@
+@@ -53,8 +51,8 @@
  
    <dependencies>
      <dependency>
@@ -55,15 +64,6 @@ index b81ff44..9486ed7 100644
        <version>${project.version}</version>
        <type>jar</type>
        <scope>compile</scope>
-@@ -156,7 +154,7 @@
-         <artifactId>gitdescribe-maven-plugin</artifactId>
-         <version>1.3</version>
-         <configuration>
--          <outputPrefix>git-Bukkit-</outputPrefix>
-+          <outputPrefix>git-SportBukkit-</outputPrefix>
-           <outputPostfix></outputPostfix>
-         </configuration>
-         <executions>
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

@@ -1,13 +1,12 @@
-From 2d2fef74f4fa29ab7b8c5ed67632224f2d34bfb7 Mon Sep 17 00:00:00 2001
+From 03b560d4fd6bb4805bab95f6ef14a3eeead57cd5 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Fri, 31 Aug 2012 12:30:14 -0700
 Subject: [PATCH] Allow for more complex logic by using L() method when
- determining whether a player should show up when looking
- for nearby players.
+ determining whether a player should show up when looking for nearby players.
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 11ebb90..e8b18b3 100644
+index a3d16f2..c7f0906 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -2530,7 +2530,7 @@ public abstract class World implements IBlockAccess {
@@ -20,5 +19,5 @@ index 11ebb90..e8b18b3 100644
              }
              // CraftBukkit end
 -- 
-1.7.9.6 (Apple Git-31.1)
+1.8.5.1
 

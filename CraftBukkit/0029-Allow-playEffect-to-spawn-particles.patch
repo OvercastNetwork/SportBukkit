@@ -120,11 +120,11 @@ index f101db0..e605efb 100644
 +            StringBuilder particleFullName = new StringBuilder();
 +            particleFullName.append(effect.getName());
 +
-+            if (effect.getData().equals(Material.class) || effect.getData().equals(MaterialData.class)) {
++            if (effect.getData() != null && (effect.getData().equals(Material.class) || effect.getData().equals(MaterialData.class))) {
 +                particleFullName.append('_').append(id);
 +            }
 +
-+            if (effect.getData().equals(MaterialData.class)) {
++            if (effect.getData() != null && effect.getData().equals(MaterialData.class)) {
 +                particleFullName.append('_').append(data);
 +            }
 +            packet = new Packet63WorldParticles(effect.getName(), (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);

@@ -1,0 +1,40 @@
+From aa25e8a227c3eafdee3240f7e5c4a3a30796b1b0 Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sun, 5 Jan 2014 20:35:57 -0600
+Subject: [PATCH] Allow plugins to access player locale
+
+---
+ src/main/java/net/minecraft/server/EntityPlayer.java         | 2 +-
+ src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java | 5 +++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 54dad5c..04d709d 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+ 
+ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+-    private String locale = "en_US";
++    public String locale = "en_US"; // SportBukkit - private -> public
+     public PlayerConnection playerConnection;
+     public MinecraftServer server;
+     public PlayerInteractManager playerInteractManager;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index e76dfd2..96d1ecf 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1218,4 +1218,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public String getHostname() {
+         return getHandle().hostname;
+     }
++
++    @Override
++    public String getLocale() {
++        return getHandle().locale;
++    }
+ }
+-- 
+1.8.4.2
+

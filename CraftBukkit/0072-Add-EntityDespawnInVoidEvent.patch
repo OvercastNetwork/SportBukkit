@@ -1,14 +1,11 @@
-From 4b566cdf218973494feb2635cf264aa7b7540e9c Mon Sep 17 00:00:00 2001
+From e87509cb8214b1c6d2478a4c6a679062d964d268 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Wed, 25 Dec 2013 20:11:34 -0600
 Subject: [PATCH] Add EntityDespawnInVoidEvent
 
----
- src/main/java/net/minecraft/server/Entity.java | 4 ++++
- 1 file changed, 4 insertions(+)
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 2158088..d67ccb9 100644
+index 7921b69..6f47a8a 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -15,6 +15,7 @@ import org.bukkit.entity.LivingEntity;
@@ -30,5 +27,5 @@ index 2158088..d67ccb9 100644
      }
  
 -- 
-1.7.11.1
+1.8.5.1
 

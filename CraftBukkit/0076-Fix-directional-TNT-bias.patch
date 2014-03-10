@@ -1,0 +1,36 @@
+From 6c6f6a601313e25015d16d7aebbc0886eb69aa69 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Mon, 10 Mar 2014 16:18:41 -0400
+Subject: [PATCH] Fix directional TNT bias
+
+
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index 216ecda..66e0297 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -1650,6 +1650,13 @@ public abstract class World implements IBlockAccess {
+         int i = 0;
+         int j = 0;
+ 
++        // CraftBukkit start
++        // Shift the sample points so they are centered on the BB, to avoid directional bias
++        double xOffset = (1.0 - Math.floor(1.0 / d0) * d0) / 2.0;
++        double yOffset = (1.0 - Math.floor(1.0 / d1) * d1) / 2.0;
++        double zOffset = (1.0 - Math.floor(1.0 / d2) * d2) / 2.0;
++        // CraftBukkit end
++
+         Vec3D vec3d2 = vec3d.b.create(0, 0, 0); // CraftBukkit
+         for (float f = 0.0F; f <= 1.0F; f = (float) ((double) f + d0)) {
+             for (float f1 = 0.0F; f1 <= 1.0F; f1 = (float) ((double) f1 + d1)) {
+@@ -1658,7 +1665,7 @@ public abstract class World implements IBlockAccess {
+                     double d4 = axisalignedbb.b + (axisalignedbb.e - axisalignedbb.b) * (double) f1;
+                     double d5 = axisalignedbb.c + (axisalignedbb.f - axisalignedbb.c) * (double) f2;
+ 
+-                    if (this.a(vec3d2.b(d3, d4, d5), vec3d) == null) { // CraftBukkit
++                    if (this.a(vec3d2.b(xOffset + d3, yOffset + d4, zOffset + d5), vec3d) == null) { // CraftBukkit
+                         ++i;
+                     }
+ 
+-- 
+1.7.3.5
+

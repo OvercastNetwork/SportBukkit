@@ -1,11 +1,11 @@
-From 1f37c2625901fb4f72acac0d8f9da96023526d89 Mon Sep 17 00:00:00 2001
+From b4650b3bfd117909fdb53ee00b163bba9e025dc5 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Fri, 12 Apr 2013 21:34:01 -0700
 Subject: [PATCH] Add BlockDispenseEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorBoat.java b/src/main/java/net/minecraft/server/DispenseBehaviorBoat.java
-index 708cf60..9bf7255 100644
+index 5bd6ec7..e9a9ed1 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorBoat.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorBoat.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -38,7 +38,7 @@ index 708cf60..9bf7255 100644
  
          world.addEntity(entityboat);
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorFireball.java b/src/main/java/net/minecraft/server/DispenseBehaviorFireball.java
-index 6d428c8..a7f642c 100644
+index d16f035..11fbd73 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorFireball.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorFireball.java
 @@ -4,7 +4,7 @@ import java.util.Random;
@@ -61,18 +61,18 @@ index 6d428c8..a7f642c 100644
          if (!BlockDispenser.eventFired) {
              world.getServer().getPluginManager().callEvent(event);
          }
-@@ -49,7 +50,8 @@ final class DispenseBehaviorFireball extends DispenseBehaviorItem {
+@@ -49,8 +50,8 @@ final class DispenseBehaviorFireball extends DispenseBehaviorItem {
              }
          }
  
--        world.addEntity(new EntitySmallFireball(world, d0, d1, d2, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ()));
+-        EntitySmallFireball entitysmallfireball = new EntitySmallFireball(world, d0, d1, d2, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
+         entitysmallfireball.projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((TileEntityDispenser) isourceblock.getTileEntity());
 +        entitysmallfireball.setDirection(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
-+        world.addEntity(entitysmallfireball);
-         // itemstack.a(1); // Handled during event processing
-         // CraftBukkit end
  
+         world.addEntity(entitysmallfireball);
+         // itemstack.a(1); // Handled during event processing
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorFireworks.java b/src/main/java/net/minecraft/server/DispenseBehaviorFireworks.java
-index 6abc928..b25e843 100644
+index 09a0842..e97b038 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorFireworks.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorFireworks.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -106,7 +106,7 @@ index 6abc928..b25e843 100644
          isourceblock.k().addEntity(entityfireworks);
          // itemstack.a(1); // Handled during event processing
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorItem.java b/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
-index 290b583..65bfe1f 100644
+index e7196db..9ad970f 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -128,7 +128,7 @@ index 290b583..65bfe1f 100644
              world.getServer().getPluginManager().callEvent(event);
          }
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorMinecart.java b/src/main/java/net/minecraft/server/DispenseBehaviorMinecart.java
-index 0682194..3d5ce90 100644
+index 3df54aa..06b4bb1 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorMinecart.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorMinecart.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -142,12 +142,12 @@ index 0682194..3d5ce90 100644
  final class DispenseBehaviorMinecart extends DispenseBehaviorItem {
 @@ -37,8 +37,9 @@ final class DispenseBehaviorMinecart extends DispenseBehaviorItem {
          ItemStack itemstack1 = itemstack.a(1);
-         org.bukkit.block.Block block = world.getWorld().getBlockAt(isourceblock.getBlockX(), isourceblock.getBlockY(), isourceblock.getBlockZ());
+         org.bukkit.block.Block block2 = world.getWorld().getBlockAt(isourceblock.getBlockX(), isourceblock.getBlockY(), isourceblock.getBlockZ());
          CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
 +        EntityMinecartAbstract entityminecartabstract = EntityMinecartAbstract.a(world, d0, d1 + d3, d2, ((ItemMinecart) itemstack1.getItem()).a);
  
--        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector(d0, d1 + d3, d2));
-+        BlockDispenseEntityEvent event = new BlockDispenseEntityEvent(block, craftItem.clone(), new org.bukkit.util.Vector(d0, d1 + d3, d2), entityminecartabstract.getBukkitEntity());
+-        BlockDispenseEvent event = new BlockDispenseEvent(block2, craftItem.clone(), new org.bukkit.util.Vector(d0, d1 + d3, d2));
++        BlockDispenseEntityEvent event = new BlockDispenseEntityEvent(block2, craftItem.clone(), new org.bukkit.util.Vector(d0, d1 + d3, d2), entityminecartabstract.getBukkitEntity());
          if (!BlockDispenser.eventFired) {
              world.getServer().getPluginManager().callEvent(event);
          }
@@ -162,7 +162,7 @@ index 0682194..3d5ce90 100644
  
          if (itemstack.hasName()) {
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorMonsterEgg.java b/src/main/java/net/minecraft/server/DispenseBehaviorMonsterEgg.java
-index b3d0128..8a58f85 100644
+index c345410..68c6a33 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorMonsterEgg.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorMonsterEgg.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -178,7 +178,7 @@ index b3d0128..8a58f85 100644
          ItemStack itemstack1 = itemstack.a(1);
          org.bukkit.block.Block block = world.getWorld().getBlockAt(isourceblock.getBlockX(), isourceblock.getBlockY(), isourceblock.getBlockZ());
          CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
-+        Entity entity = ItemMonsterEgg.a(isourceblock.k(), itemstack.getData(), d0, d1, d2);
++        Entity entity = ItemMonsterEgg.spawnCreature(isourceblock.k(), itemstack.getData(), d0, d1, d2, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DISPENSE_EGG);
  
 -        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector(d0, d1, d2));
 +        BlockDispenseEntityEvent event = new BlockDispenseEntityEvent(block, craftItem.clone(), new org.bukkit.util.Vector(d0, d1, d2), entity.getBukkitEntity());
@@ -189,13 +189,13 @@ index b3d0128..8a58f85 100644
  
          itemstack1 = CraftItemStack.asNMSCopy(event.getItem());
  
--        Entity entity = ItemMonsterEgg.a(isourceblock.k(), itemstack.getData(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
+-        Entity entity = ItemMonsterEgg.spawnCreature(isourceblock.k(), itemstack.getData(), event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DISPENSE_EGG);
 +        entity.setPosition(event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ());
  
          if (entity instanceof EntityLiving && itemstack.hasName()) {
              ((EntityInsentient) entity).setCustomName(itemstack.getName());
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java b/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
-index 2194808..f318496 100644
+index b906373..05ceb36 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -211,13 +211,13 @@ index 2194808..f318496 100644
          org.bukkit.block.Block block = world.getWorld().getBlockAt(isourceblock.getBlockX(), isourceblock.getBlockY(), isourceblock.getBlockZ());
          CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
  
--        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector((double) enumfacing.c(), (double) ((float) enumfacing.d() + 0.1F), (double) enumfacing.e()));
-+        BlockDispenseEntityEvent event = new BlockDispenseEntityEvent(block, craftItem.clone(), new org.bukkit.util.Vector((double) enumfacing.c(), (double) ((float) enumfacing.d() + 0.1F), (double) enumfacing.e()), ((Entity) iprojectile).getBukkitEntity());
+-        BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector((double) enumfacing.getAdjacentX(), (double) ((float) enumfacing.getAdjacentY() + 0.1F), (double) enumfacing.getAdjacentZ()));
++        BlockDispenseEntityEvent event = new BlockDispenseEntityEvent(block, craftItem.clone(), new org.bukkit.util.Vector((double) enumfacing.getAdjacentX(), (double) ((float) enumfacing.getAdjacentY() + 0.1F), (double) enumfacing.getAdjacentZ()), ((Entity) iprojectile).getBukkitEntity());
          if (!BlockDispenser.eventFired) {
              world.getServer().getPluginManager().callEvent(event);
          }
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorTNT.java b/src/main/java/net/minecraft/server/DispenseBehaviorTNT.java
-index affe3ec..f63dd5c 100644
+index d949339..32fd28b 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorTNT.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorTNT.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -251,5 +251,5 @@ index affe3ec..f63dd5c 100644
  
          world.addEntity(entitytntprimed);
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

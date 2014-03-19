@@ -1,0 +1,47 @@
+From 495187d4ddceafcace3fa1eb4072de4a97261486 Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 21:57:34 +0200
+Subject: [PATCH] Add getHostname to Player
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 0aa04bd..13f0aab 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -64,6 +64,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public boolean keepLevel = false;
+     public double maxHealthCache;
+     public boolean joining = true;
++    public String hostname;
+     // CraftBukkit end
+ 
+     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index a3cd668..ec80354 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -343,6 +343,8 @@ public abstract class PlayerList {
+         SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
+ 
+         EntityPlayer entity = new EntityPlayer(this.server, this.server.getWorldServer(0), gameprofile, new PlayerInteractManager(this.server.getWorldServer(0)));
++        entity.hostname = hostname;
++
+         Player player = entity.getBukkitEntity();
+         PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 7f3b568..2bdf723 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1376,4 +1376,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+             player.setInvisible(player.isInvisible());
+         }
+     }
++
++    public String getHostname() {
++        return getHandle().hostname;
++    }
+ }
+-- 
+1.8.5.1
+

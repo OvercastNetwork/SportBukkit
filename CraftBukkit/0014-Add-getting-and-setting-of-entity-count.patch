@@ -1,11 +1,11 @@
-From ad73e639ad9b4a446790b8d7d7b6389ea1116fe2 Mon Sep 17 00:00:00 2001
+From 3f26f4f4d525123bf7ee1ff79dd84b9204396d3e Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 17:03:07 -0500
 Subject: [PATCH] Add getting and setting of entity count
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 2158088..dc04d42 100644
+index 9d933cb..5cc487c 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -38,7 +38,7 @@ public abstract class Entity {
@@ -14,26 +14,28 @@ index 2158088..dc04d42 100644
  
 -    private static int entityCount;
 +    public static int entityCount; // CraftBukkit - private -> public
-     public int id;
-     public double l;
-     public boolean m;
+     private int id;
+     public double j;
+     public boolean k;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1303b77..45d814f 100644
+index 020053a..ba8e6ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1390,4 +1390,12 @@ public final class CraftServer implements Server {
-         this.printSaveWarning = true;
+@@ -1599,6 +1599,14 @@ public final class CraftServer implements Server {
          getLogger().log(Level.WARNING, "A manual (plugin-induced) save has been detected while server is configured to auto-save. This may affect performance.", warningState == WarningState.ON ? new Throwable() : null);
      }
-+
+ 
 +    public int getEntityCount() {
 +        return net.minecraft.server.Entity.entityCount;
 +    }
-+    
++
 +    public void setEntityCount(int count) {
 +        net.minecraft.server.Entity.entityCount = count;
 +    }
- }
++
+     @Override
+     public CraftIconCache getServerIcon() {
+         return icon;
 -- 
 1.8.5.1
 

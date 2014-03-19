@@ -1,0 +1,189 @@
+From 93aec38a695215ec28358887043274934aca1062 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 23 Jan 2014 00:17:31 -0500
+Subject: [PATCH] Add fake name API
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index fd435d9..2ed3eaa 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -203,6 +203,27 @@ public final class Bukkit {
+     }
+ 
+     /**
++     * @see Server#getPlayer(String, CommandSender)
++     */
++    public static Player getPlayer(String name, CommandSender viewer) {
++        return server.getPlayer(name, viewer);
++    }
++
++    /**
++     * @see Server#getPlayerExact(String, CommandSender)
++     */
++    public static Player getPlayerExact(String name, CommandSender viewer) {
++        return server.getPlayerExact(name, viewer);
++    }
++
++    /**
++     * @see Server#matchPlayer(String, CommandSender)
++     */
++    public static List<Player> matchPlayer(String name, CommandSender viewer) {
++        return server.matchPlayer(name, viewer);
++    }
++
++    /**
+      * @see Server#getPluginManager()
+      */
+     public static PluginManager getPluginManager() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index abbbc06..41dd852 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -311,7 +311,22 @@ public interface Server extends PluginMessageRecipient {
+     public Player getPlayer(UUID id);
+ 
+     /**
+-     * Gets the plugin manager for interfacing with plugins.
++     * Fake name aware version of {@link #getPlayer(String)}
++     */
++    public Player getPlayer(String name, CommandSender viewer);
++
++    /**
++     * Fake name aware version of {@link #getPlayerExact(String)}
++     */
++    public Player getPlayerExact(String name, CommandSender viewer);
++
++    /**
++     * Fake name aware version of {@link #matchPlayer(String)}
++     */
++    public List<Player> matchPlayer(String name, CommandSender viewer);
++
++    /**
++     * Gets the PluginManager for interfacing with plugins
+      *
+      * @return a plugin manager for this Server instance
+      */
+diff --git a/src/main/java/org/bukkit/command/Command.java b/src/main/java/org/bukkit/command/Command.java
+index 87c33d9..15a0dc6 100644
+--- a/src/main/java/org/bukkit/command/Command.java
++++ b/src/main/java/org/bukkit/command/Command.java
+@@ -90,7 +90,7 @@ public abstract class Command {
+ 
+         ArrayList<String> matchedPlayers = new ArrayList<String>();
+         for (Player player : sender.getServer().getOnlinePlayers()) {
+-            String name = player.getName();
++            String name = player.getName(sender);
+             if ((senderPlayer == null || senderPlayer.canSee(player)) && StringUtil.startsWithIgnoreCase(name, lastWord)) {
+                 matchedPlayers.add(name);
+             }
+diff --git a/src/main/java/org/bukkit/command/CommandSender.java b/src/main/java/org/bukkit/command/CommandSender.java
+index 148756b..52c5947 100644
+--- a/src/main/java/org/bukkit/command/CommandSender.java
++++ b/src/main/java/org/bukkit/command/CommandSender.java
+@@ -32,4 +32,10 @@ public interface CommandSender extends Permissible {
+      * @return Name of the sender
+      */
+     public String getName();
++
++    /**
++     * Return this sender's name as viewed by the given sender. Used by
++     * {@link org.bukkit.entity.Player}s to support fake names.
++     */
++    public String getName(CommandSender viewer);
+ }
+diff --git a/src/main/java/org/bukkit/command/defaults/ListCommand.java b/src/main/java/org/bukkit/command/defaults/ListCommand.java
+index 80c6135..109c9b5 100644
+--- a/src/main/java/org/bukkit/command/defaults/ListCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/ListCommand.java
+@@ -34,7 +34,7 @@ public class ListCommand extends VanillaCommand {
+                 online.append(", ");
+             }
+ 
+-            online.append(player.getDisplayName());
++            online.append(player.getDisplayName(sender instanceof Player ? (Player) sender : null));
+         }
+ 
+         sender.sendMessage("There are " + players.length + "/" + Bukkit.getMaxPlayers() + " players online:\n" + online.toString());
+diff --git a/src/main/java/org/bukkit/command/defaults/TellCommand.java b/src/main/java/org/bukkit/command/defaults/TellCommand.java
+index 287f49f..5f79ad6 100644
+--- a/src/main/java/org/bukkit/command/defaults/TellCommand.java
++++ b/src/main/java/org/bukkit/command/defaults/TellCommand.java
+@@ -24,7 +24,8 @@ public class TellCommand extends VanillaCommand {
+             return false;
+         }
+ 
+-        Player player = Bukkit.getPlayerExact(args[0]);
++        Player viewer = sender instanceof Player ? (Player) sender : null;
++        Player player = Bukkit.getPlayerExact(args[0], viewer);
+ 
+         // If a player is hidden from the sender pretend they are offline
+         if (player == null || (sender instanceof Player && !((Player) sender).canSee(player))) {
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index c6aa0e4..d2e18f9 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -27,6 +27,60 @@ import org.bukkit.scoreboard.Scoreboard;
+ public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient {
+ 
+     /**
++     * Set a fake name for this player when viewed by the given player.
++     * If the name is null then the fake name is cleared.
++     */
++    public void setFakeName(CommandSender viewer, String name);
++
++    /**
++     * Return this player's fake name for the given viewer,
++     * or null if no fake name is set for that viewer
++     */
++    public String getFakeName(CommandSender viewer);
++
++    /**
++     * Test if this player has a fake name set for the given viewer
++     */
++    public boolean hasFakeName(CommandSender viewer);
++
++    /**
++     * Clear this player's fake names for all viewers
++     */
++    public void clearFakeNames();
++
++    /**
++     * Set a fake display name for this player when viewed by the given player.
++     * If the name is null then the fake name is cleared.
++     */
++    public void setFakeDisplayName(CommandSender viewer, String name);
++
++    /**
++     * Return this player's fake display name for the given viewer,
++     * or null if no fake name is set for that viewer
++     */
++    public String getFakeDisplayName(CommandSender viewer);
++
++    /**
++     * Test if this player has a fake display name set for the given viewer
++     */
++    public boolean hasFakeDisplayName(CommandSender viewer);
++
++    /**
++     * Clear this player's fake display names for all viewers
++     */
++    public void clearFakeDisplayNames();
++
++    /**
++     * Return this player's list name as viewed by the given player, fake or not
++     */
++    public String getPlayerListName(CommandSender viewer);
++
++    /**
++     * Return this player's display name as viewed by the given player, fake or not
++     */
++    public String getDisplayName(CommandSender viewer);
++
++    /**
+      * Gets the "friendly" name to display of this player. This may include
+      * color.
+      * <p>
+-- 
+1.8.5.1
+

@@ -1,0 +1,44 @@
+From e72c3c9c0b2dd5186715d54d895c7fd465301b26 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 9 Jul 2013 17:06:59 -0500
+Subject: [PATCH] Fix invalid positions kicking players
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 5fc23db..8b0981b 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -222,6 +222,11 @@ public class PlayerConnection implements PacketPlayInListener {
+             double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);
+             float deltaAngle = Math.abs(this.lastYaw - to.getYaw()) + Math.abs(this.lastPitch - to.getPitch());
+ 
++            if (Double.isNaN(packetplayinflying.x) || Double.isNaN(packetplayinflying.y) || Double.isNaN(packetplayinflying.z) || Double.isNaN(packetplayinflying.stance) || (packetplayinflying.hasLook && (Double.isNaN(packetplayinflying.yaw) || Double.isNaN(packetplayinflying.pitch)))) {
++                player.teleport(to, PlayerTeleportEvent.TeleportCause.UNKNOWN);
++                return;
++            }
++
+             if ((delta > 1f / 256 || deltaAngle > 10f) && (this.checkMovement && !this.player.dead)) {
+                 this.lastPosX = to.getX();
+                 this.lastPosY = to.getY();
+@@ -461,6 +466,18 @@ public class PlayerConnection implements PacketPlayInListener {
+             f1 = 0;
+         }
+ 
++        if(Double.isNaN(d0)) {
++            d0 = this.y;
++        }
++
++        if(Double.isNaN(d1)) {
++            d1 = this.z;
++        }
++
++        if(Double.isNaN(d2)) {
++            d2 = this.q;
++        }
++
+         this.lastPosX = d0;
+         this.lastPosY = d1;
+         this.lastPosZ = d2;
+-- 
+1.8.5.1
+

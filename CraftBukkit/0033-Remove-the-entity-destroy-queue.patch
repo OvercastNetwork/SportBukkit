@@ -1,0 +1,116 @@
+From 856acc16acfd48bf94912943f49566bc8d396a80 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sun, 25 Nov 2012 13:56:45 -0600
+Subject: [PATCH] Remove the entity destroy queue
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index b3c6d39..0aa04bd 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -37,7 +37,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public double d;
+     public double e;
+     public final List chunkCoordIntPairQueue = new LinkedList();
+-    public final List removeQueue = new LinkedList(); // CraftBukkit - private -> public
++    // public final List removeQueue = new LinkedList(); CraftBukkit - remove the removeQueue
+     private final ServerStatisticManager bO;
+     private float bP = Float.MIN_VALUE;
+     private float bQ = -1.0E8F;
+@@ -192,6 +192,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             this.activeContainer = this.defaultContainer;
+         }
+ 
++        /* CraftBukkit - remove the removeQueue
+         while (!this.removeQueue.isEmpty()) {
+             int i = Math.min(this.removeQueue.size(), 127);
+             int[] aint = new int[i];
+@@ -205,6 +206,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(aint));
+         }
++        */
+ 
+         if (!this.chunkCoordIntPairQueue.isEmpty()) {
+             ArrayList arraylist = new ArrayList();
+@@ -880,7 +882,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.lastSentExp = -1;
+         this.bQ = -1.0F;
+         this.bR = -1;
+-        this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
++        // this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);  CraftBukkit - remove the removeQueue
+     }
+ 
+     protected void a(MobEffect mobeffect) {
+@@ -992,6 +994,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         return this.bO;
+     }
+ 
++    /* CraftBukkit - remove destroy queue
+     public void d(Entity entity) {
+         if (entity instanceof EntityHuman) {
+             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(new int[] { entity.getId()}));
+@@ -999,6 +1002,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             this.removeQueue.add(Integer.valueOf(entity.getId()));
+         }
+     }
++    */
++
+     // CraftBukkit start - Add per-player time and weather.
+     public long timeOffset = 0;
+     public boolean relativeTime = true;
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index f824ea1..fed51e7 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -341,18 +341,12 @@ public class EntityTrackerEntry {
+     // CraftBukkit end
+ 
+     public void a() {
+-        Iterator iterator = this.trackedPlayers.iterator();
+-
+-        while (iterator.hasNext()) {
+-            EntityPlayer entityplayer = (EntityPlayer) iterator.next();
+-
+-            entityplayer.d(this.tracker);
+-        }
++        this.broadcast(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+     }
+ 
+     public void a(EntityPlayer entityplayer) {
+         if (this.trackedPlayers.contains(entityplayer)) {
+-            entityplayer.d(this.tracker);
++            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+             this.trackedPlayers.remove(entityplayer);
+         }
+     }
+@@ -372,7 +366,7 @@ public class EntityTrackerEntry {
+                         }
+                     }
+ 
+-                    entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId()));
++                    // entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId())); CraftBukkit - remove destroy queue
+                     // CraftBukkit end
+ 
+                     this.trackedPlayers.add(entityplayer);
+@@ -456,7 +450,7 @@ public class EntityTrackerEntry {
+                 }
+             } else if (this.trackedPlayers.contains(entityplayer)) {
+                 this.trackedPlayers.remove(entityplayer);
+-                entityplayer.d(this.tracker);
++                entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+             }
+         }
+     }
+@@ -578,7 +572,7 @@ public class EntityTrackerEntry {
+     public void clear(EntityPlayer entityplayer) {
+         if (this.trackedPlayers.contains(entityplayer)) {
+             this.trackedPlayers.remove(entityplayer);
+-            entityplayer.d(this.tracker);
++            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+         }
+     }
+ }
+-- 
+1.8.5.1
+

@@ -1,0 +1,32 @@
+From 88416158c009812faead50a1597f2ad2a0bfd542 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 9 Mar 2014 04:39:21 -0400
+Subject: [PATCH] Option to disable player list updates for a Player
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index d2e18f9..c4cd0d7 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -133,6 +133,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public void setPlayerListName(String name);
+ 
+     /**
++     * Enables/disables default player (TAB) list updates. It is enabled by default. When it's disabled,
++     * the player's list will be cleared and the server will not send any further updates for it, giving
++     * plugins complete control.
++     */
++    public void setPlayerListUpdates(boolean enabled);
++
++    /**
++     * Getter for {@link #setPlayerListUpdates}
++     */
++    public boolean getPlayerListUpdates();
++
++    /**
+      * Set the target of the player's compass.
+      *
+      * @param loc Location to point to
+-- 
+1.8.5.1
+

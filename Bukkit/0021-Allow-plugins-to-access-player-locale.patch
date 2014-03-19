@@ -1,0 +1,25 @@
+From aa90dbbbf812bd8ac2e7de17fa40629455d7432f Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sun, 5 Jan 2014 20:32:00 -0600
+Subject: [PATCH] Allow plugins to access player locale
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index df2905e..c6aa0e4 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1089,4 +1089,11 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * @return The hostname and port
+      */
+     public String getHostname();
++
++    /**
++     * Gets the player's client-determined, ISO-standard locale.
++     *
++     * @return The locale
++     */
++    public String getLocale();
+  }
+-- 
+1.8.5.1
+

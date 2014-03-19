@@ -1,4 +1,4 @@
-From ae9cb8706d4ceec24c4d1758e4c6be0d0cb67b32 Mon Sep 17 00:00:00 2001
+From 940405696fb4e35b01cb9852bb3b7097827ceb56 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -6,24 +6,26 @@ Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index d77a4cc..dcdf9d2 100644
+index bceba7b..5493765 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-@@ -111,6 +111,13 @@ public class PlayerInteractManager {
-             // CraftBukkit start
+@@ -105,6 +105,15 @@ public class PlayerInteractManager {
              if (event.isCancelled()) {
                  // Let the client know the block still exists
+                 ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(i, j, k, this.world));
++
 +                // Check to see if fire was doused, if so, update the fire instead of the block the fire is on
 +                org.bukkit.block.Block block = this.world.getWorld().getBlockAt(i, j, k).getRelative(org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(l));
-+                if (block.getTypeId() == Block.FIRE.id) {
++                if (block == Blocks.FIRE) {
 +                    i = block.getX();
 +                    j = block.getY();
 +                    k = block.getZ();
 +                }
-                 ((EntityPlayer) this.player).playerConnection.sendPacket(new Packet53BlockChange(i, j, k, this.world));
++
                  // Update any tile entity data for this block
                  TileEntity tileentity = this.world.getTileEntity(i, j, k);
-@@ -121,11 +128,11 @@ public class PlayerInteractManager {
+                 if (tileentity != null) {
+@@ -114,7 +123,7 @@ public class PlayerInteractManager {
              }
              // CraftBukkit end
              if (this.isCreative()) {
@@ -32,30 +34,23 @@ index d77a4cc..dcdf9d2 100644
                      this.breakBlock(i, j, k);
                  }
              } else {
--                this.world.douseFire((EntityHuman) null, i, j, k, l);
-+                this.world.douseFire(this.player, i, j, k, l); // CraftBukkit - add this.player
-                 this.lastDigTick = this.currentTick;
-                 float f = 1.0F;
-                 int i1 = this.world.getTypeId(i, j, k);
-@@ -142,8 +149,8 @@ public class PlayerInteractManager {
-                     }
-                 } else if (i1 > 0) {
-                     Block.byId[i1].attack(this.world, i, j, k, this.player);
--                    // Allow fire punching to be blocked
+@@ -137,7 +146,7 @@ public class PlayerInteractManager {
+                     block.attack(this.world, i, j, k, this.player);
+                     f = block.getDamage(this.player, this.player.world, i, j, k);
+                     // Allow fire punching to be blocked
 -                    this.world.douseFire((EntityHuman) null, i, j, k, l);
-+                    // Allow fire punching to be blocked, add this.player
-+                    this.world.douseFire(this.player, i, j, k, l);
++                    this.world.douseFire(this.player, i, j, k, l); // CraftBukkit - add this.player
                  }
  
-                 // Handle hitting a block
+                 if (event.useItemInHand() == Event.Result.DENY) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 14e108f..e2035d0 100644
+index dec1470..1879b59 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1686,8 +1686,13 @@ public abstract class World implements IBlockAccess {
+@@ -1678,8 +1678,13 @@ public abstract class World implements IBlockAccess {
          }
  
-         if (this.getTypeId(i, j, k) == Block.FIRE.id) {
+         if (this.getType(i, j, k) == Blocks.FIRE) {
 -            this.a(entityhuman, 1004, i, j, k, 0);
 -            this.setAir(i, j, k);
 +            // CraftBukkit start
@@ -69,5 +64,5 @@ index 14e108f..e2035d0 100644
          } else {
              return false;
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

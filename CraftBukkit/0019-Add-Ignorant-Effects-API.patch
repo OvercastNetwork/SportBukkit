@@ -1,59 +1,95 @@
-From 12f1ed9a342044d90fafd9ed3b82c7e9b3a22b98 Mon Sep 17 00:00:00 2001
+From 47c3979fa3125f492bd8ed62e8210fdb1d0e030a Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index f5935f7..9d726b9 100644
+index c630b38..8fa1dc6 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -16,7 +16,7 @@ public class DataWatcher {
-     private boolean a = true;
-     private static final HashMap b = new HashMap();
-     private final Map c = new HashMap();
--    private boolean d;
-+    public boolean d; // CraftBukkit - private -> public
-     private ReadWriteLock e = new ReentrantReadWriteLock();
+     private boolean b = true;
+     private static final HashMap c = new HashMap();
+     private final Map d = new HashMap();
+-    private boolean e;
++    public boolean e; // CraftBukkit - private -> public
+     private ReadWriteLock f = new ReentrantReadWriteLock();
  
-     public DataWatcher() {}
-@@ -73,7 +73,8 @@ public class DataWatcher {
+     public DataWatcher(Entity entity) {
+@@ -75,7 +75,8 @@ public class DataWatcher {
          return (ItemStack) this.i(i).b();
      }
  
 -    private WatchableObject i(int i) {
 +    // CraftBukkit - private -> public
 +    public WatchableObject i(int i) {
-         this.e.readLock().lock();
+         this.f.readLock().lock();
  
          WatchableObject watchableobject;
+@@ -114,7 +115,7 @@ public class DataWatcher {
+         return this.e;
+     }
+ 
+-    public static void a(List list, PacketDataSerializer packetdataserializer) {
++    public static void a(List list, PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         if (list != null) {
+             Iterator iterator = list.iterator();
+ 
+@@ -155,7 +156,7 @@ public class DataWatcher {
+         return arraylist;
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) {
++    public void a(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         this.f.readLock().lock();
+         Iterator iterator = this.d.values().iterator();
+ 
+@@ -187,7 +188,7 @@ public class DataWatcher {
+         return arraylist;
+     }
+ 
+-    private static void a(PacketDataSerializer packetdataserializer, WatchableObject watchableobject) {
++    private static void a(PacketDataSerializer packetdataserializer, WatchableObject watchableobject) throws java.io.IOException { // CraftBukkit - added throws
+         int i = (watchableobject.c() << 5 | watchableobject.a() & 31) & 255;
+ 
+         packetdataserializer.writeByte(i);
+@@ -227,7 +228,7 @@ public class DataWatcher {
+         }
+     }
+ 
+-    public static List b(PacketDataSerializer packetdataserializer) {
++    public static List b(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         ArrayList arraylist = null;
+ 
+         for (byte b0 = packetdataserializer.readByte(); b0 != 127; b0 = packetdataserializer.readByte()) {
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index c09352f..7b15d73 100644
+index 5f1bc26..5b25c8b 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -792,12 +792,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -871,12 +871,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
--        this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
+-        this.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.getId(), mobeffect));
 +        // CraftBukkit - account for ignorant effects
 +        if (!this.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
-+            this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++            this.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.getId(), mobeffect));
 +        }
      }
  
      protected void a(MobEffect mobeffect, boolean flag) {
          super.a(mobeffect, flag);
--        this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
+-        this.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.getId(), mobeffect));
 +        // CraftBukkit - account for ignorant effects
 +        if (!this.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
-+            this.playerConnection.sendPacket(new Packet41MobEffect(this.id, mobeffect));
++            this.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.getId(), mobeffect));
 +        }
      }
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index baa5b55..06a52d7 100644
+index c148c4d..f824ea1 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -63,16 +99,16 @@ index baa5b55..06a52d7 100644
  import java.util.Collection;
  import java.util.HashSet;
  import java.util.Iterator;
-@@ -97,7 +98,7 @@ public class EntityTrackerEntry {
+@@ -99,7 +100,7 @@ public class EntityTrackerEntry {
                  }
              }
  
 -            this.b();
 +            this.sendMetadata(this.tracker.getDataWatcher(), false); // CraftBukkit - custom metadata sender
-         } else if (this.m % this.c == 0 || this.tracker.an || this.tracker.getDataWatcher().a()) {
+         } else if (this.m % this.c == 0 || this.tracker.al || this.tracker.getDataWatcher().a()) {
              int i;
              int j;
-@@ -168,7 +169,7 @@ public class EntityTrackerEntry {
+@@ -170,7 +171,7 @@ public class EntityTrackerEntry {
                      this.broadcast((Packet) object);
                  }
  
@@ -81,16 +117,16 @@ index baa5b55..06a52d7 100644
                  /* CraftBukkit start - Code moved up
                  if (flag) {
                      this.xLoc = i;
-@@ -197,7 +198,7 @@ public class EntityTrackerEntry {
-                 this.xLoc = this.tracker.at.a(this.tracker.locX);
+@@ -199,7 +200,7 @@ public class EntityTrackerEntry {
+                 this.xLoc = this.tracker.as.a(this.tracker.locX);
                  this.yLoc = MathHelper.floor(this.tracker.locY * 32.0D);
-                 this.zLoc = this.tracker.at.a(this.tracker.locZ);
+                 this.zLoc = this.tracker.as.a(this.tracker.locZ);
 -                this.b();
 +                this.sendMetadata(this.tracker.getDataWatcher(), false); // CraftBukkit - custom metadata sender
-                 this.w = true;
+                 this.x = true;
              }
  
-@@ -279,6 +280,64 @@ public class EntityTrackerEntry {
+@@ -281,6 +282,64 @@ public class EntityTrackerEntry {
          }
      }
  
@@ -101,11 +137,11 @@ index baa5b55..06a52d7 100644
 +        }
 +
 +        if (!flag && this.tracker instanceof EntityLiving) {
-+            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).aX();
++            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).bb();
 +            Set set = attributemapserver.b();
 +
 +            if (!set.isEmpty()) {
-+                this.broadcastIncludingSelf(new Packet44UpdateAttributes(this.tracker.id, set));
++                this.broadcastIncludingSelf(new PacketPlayOutUpdateAttributes(this.tracker.getId(), set));
 +            }
 +
 +            set.clear();
@@ -125,8 +161,8 @@ index baa5b55..06a52d7 100644
 +            dataVisible.add(visible);
 +        }
 +
-+        Packet40EntityMetadata normal = new Packet40EntityMetadata(this.tracker.id, dataNormal);
-+        Packet40EntityMetadata visible = new Packet40EntityMetadata(this.tracker.id, dataVisible);
++        PacketPlayOutEntityMetadata normal = new PacketPlayOutEntityMetadata(this.tracker.getId(), dataNormal);
++        PacketPlayOutEntityMetadata visible = new PacketPlayOutEntityMetadata(this.tracker.getId(), dataVisible);
 +        Iterator iterator = this.trackedPlayers.iterator();
 +
 +        if(entityplayer == null) {
@@ -143,7 +179,7 @@ index baa5b55..06a52d7 100644
 +        }
 +    }
 +
-+    private void sendMetadata(EntityPlayer entityplayer, Packet40EntityMetadata normal, Packet40EntityMetadata visible) {
++    private void sendMetadata(EntityPlayer entityplayer, PacketPlayOutEntityMetadata normal, PacketPlayOutEntityMetadata visible) {
 +        if (entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(MobEffectList.INVISIBILITY.getId()))) {
 +            entityplayer.playerConnection.sendPacket(visible);
 +        } else {
@@ -155,86 +191,129 @@ index baa5b55..06a52d7 100644
      public void a() {
          Iterator iterator = this.trackedPlayers.iterator();
  
-@@ -319,7 +378,7 @@ public class EntityTrackerEntry {
+@@ -321,7 +380,7 @@ public class EntityTrackerEntry {
  
                      entityplayer.playerConnection.sendPacket(packet);
                      if (!this.tracker.getDataWatcher().d()) {
--                        entityplayer.playerConnection.sendPacket(new Packet40EntityMetadata(this.tracker.id, this.tracker.getDataWatcher(), true));
+-                        entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityMetadata(this.tracker.getId(), this.tracker.getDataWatcher(), true));
 +                        this.sendMetadata(this.tracker.getDataWatcher(), true, entityplayer); // CraftBukkit - custom metadata sender
                      }
  
                      if (this.tracker instanceof EntityLiving) {
-@@ -387,7 +446,10 @@ public class EntityTrackerEntry {
+@@ -388,8 +447,10 @@ public class EntityTrackerEntry {
+ 
                          while (iterator.hasNext()) {
                              MobEffect mobeffect = (MobEffect) iterator.next();
- 
--                            entityplayer.playerConnection.sendPacket(new Packet41MobEffect(this.tracker.id, mobeffect));
+-
+-                            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect));
 +                            // CraftBukkit - account for ignorant effects
 +                            if (!entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
-+                                entityplayer.playerConnection.sendPacket(new Packet41MobEffect(this.tracker.id, mobeffect));
++                                entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.tracker.getId(), mobeffect));
 +                            }
                          }
                      }
                  }
-diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
-index 54299a7..a94eb75 100644
---- a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
-+++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
-@@ -12,6 +12,13 @@ public class Packet40EntityMetadata extends Packet {
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
+index a95877f..42c99a1 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
+@@ -18,12 +18,19 @@ public class PacketPlayOutEntityMetadata extends Packet {
+         }
+     }
  
-     public Packet40EntityMetadata() {}
- 
+-    public void a(PacketDataSerializer packetdataserializer) {
 +    // CraftBukkit start - add constructor
-+    public Packet40EntityMetadata(int i, List list) {
++    public PacketPlayOutEntityMetadata(int i, List list) {
 +        this.a = i;
 +        this.b = list;
 +    }
 +    // CraftBukkit end
 +
-     public Packet40EntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
-         this.a = i;
-         if (flag) {
++    public void a(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         this.a = packetdataserializer.readInt();
+         this.b = DataWatcher.b(packetdataserializer);
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) {
++    public void b(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         packetdataserializer.writeInt(this.a);
+         DataWatcher.a(this.b, packetdataserializer);
+     }
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+index a58dc60..cfb98ab 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+@@ -14,13 +14,13 @@ public class PacketPlayOutPlayerInfo extends Packet {
+         this.c = i;
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) {
++    public void a(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         this.a = packetdataserializer.c(16);
+         this.b = packetdataserializer.readBoolean();
+         this.c = packetdataserializer.readShort();
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) {
++    public void b(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - added throws
+         packetdataserializer.a(this.a);
+         packetdataserializer.writeBoolean(this.b);
+         packetdataserializer.writeShort(this.c);
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index e913cc1..64b91e7 100644
+index 7600c0b..e1c5481 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -113,7 +113,10 @@ public abstract class PlayerList {
+@@ -126,7 +126,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
--            playerconnection.sendPacket(new Packet41MobEffect(entityplayer.id, mobeffect));
+-            playerconnection.sendPacket(new PacketPlayOutEntityEffect(entityplayer.getId(), mobeffect));
 +            // CraftBukkit - account for ignorant effects
 +            if (!entityplayer.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
-+                playerconnection.sendPacket(new Packet41MobEffect(entityplayer.id, mobeffect));
++                playerconnection.sendPacket(new PacketPlayOutEntityEffect(entityplayer.getId(), mobeffect));
 +            }
          }
  
          entityplayer.syncInventory();
-@@ -464,7 +467,10 @@ public abstract class PlayerList {
+@@ -517,7 +520,10 @@ public abstract class PlayerList {
          while (iterator.hasNext()) {
              MobEffect mobeffect = (MobEffect) iterator.next();
  
--            entityplayer1.playerConnection.sendPacket(new Packet41MobEffect(entityplayer1.id, mobeffect));
+-            entityplayer1.playerConnection.sendPacket(new PacketPlayOutEntityEffect(entityplayer1.getId(), mobeffect));
 +            // CraftBukkit - account for ignorant effects
 +            if (!entityplayer1.getBukkitEntity().hasIgnorantEffect(org.bukkit.potion.PotionEffectType.getById(mobeffect.getEffectId()))) {
-+                entityplayer1.playerConnection.sendPacket(new Packet41MobEffect(entityplayer1.id, mobeffect));
++                entityplayer1.playerConnection.sendPacket(new PacketPlayOutEntityEffect(entityplayer1.getId(), mobeffect));
 +            }
          }
          // entityplayer1.syncInventory();
          // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/server/WatchableObject.java b/src/main/java/net/minecraft/server/WatchableObject.java
+index 678aa91..cb84fef 100644
+--- a/src/main/java/net/minecraft/server/WatchableObject.java
++++ b/src/main/java/net/minecraft/server/WatchableObject.java
+@@ -38,7 +38,8 @@ public class WatchableObject {
+         this.d = flag;
+     }
+ 
+-    static boolean a(WatchableObject watchableobject, boolean flag) {
++    // CraftBukkit - public
++    public static boolean a(WatchableObject watchableobject, boolean flag) {
+         return watchableobject.d = flag;
+     }
+ }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ac73273..ec4647e 100644
+index 17c16dc..51cafd7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -51,6 +51,7 @@ import org.bukkit.metadata.MetadataValue;
+@@ -55,6 +55,7 @@ import org.bukkit.map.MapView;
+ import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
- import org.bukkit.plugin.messaging.Messenger;
  import org.bukkit.plugin.messaging.StandardMessenger;
 +import org.bukkit.potion.PotionEffectType;
  import org.bukkit.scoreboard.Scoreboard;
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
-@@ -61,6 +62,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -65,6 +66,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      private final ConversationTracker conversationTracker = new ConversationTracker();
      private final Set<String> channels = new HashSet<String>();
      private final Map<String, Player> hiddenPlayers = new MapMaker().softValues().makeMap();
@@ -242,9 +321,9 @@ index ac73273..ec4647e 100644
      private int hash = 0;
      private double health = 20;
      private boolean scaledHealth = false;
-@@ -1072,4 +1074,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1275,4 +1277,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
-         collection.add(new AttributeModifiable(getHandle().aX(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
+         collection.add(new AttributeModifiable(getHandle().bb(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
      }
 +
 +    public Set<PotionEffectType> getIgnorantEffects() {
@@ -287,5 +366,5 @@ index ac73273..ec4647e 100644
 +    }
  }
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

@@ -1,0 +1,52 @@
+From b9e789c4a35610100364ce3a876fcd92df3720d7 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 29 May 2013 23:52:37 -0500
+Subject: [PATCH] Visibility API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 1fcbd0c..5593816 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -841,6 +841,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      */
+     public void hidePlayer(Player player);
+ 
++    public void hide(Entity entity);
++
+     /**
+      * Allows this player to see a player that was previously hidden
+      *
+@@ -849,6 +851,13 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public void showPlayer(Player player);
+ 
+     /**
++     * Allows this player to see an entity that was previously hidden
++     *
++     * @param player Player to show
++     */
++    public void show(Entity entity);
++
++    /**
+      * Checks to see if a player has been hidden from this player
+      *
+      * @param player Player to check
+@@ -858,6 +867,15 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+     public boolean canSee(Player player);
+ 
+     /**
++     * Checks to see if an entity has been hidden from this player
++     *
++     * @param player Player to check
++     * @return True if the provided entity is not being hidden from this
++     *     player
++     */
++    public boolean canSee(Entity entity);
++
++    /**
+      * Checks to see if this player is currently standing on a block. This
+      * information may not be reliable, as it is a state provided by the
+      * client, and may therefore not be accurate.
+-- 
+1.8.5.1
+

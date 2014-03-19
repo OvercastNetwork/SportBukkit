@@ -1,24 +1,32 @@
-From 1c251eb68823f4092b6911663b25387248d5e4d5 Mon Sep 17 00:00:00 2001
+From 03891816f7c4f1a82360125ae01e7f33e6da3877 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:42:05 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
-index 4e4b3a2..bc4e5b0 100644
+index 1d57188..01c41f1 100644
 --- a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
 +++ b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
-@@ -16,12 +16,17 @@ public class AsyncPlayerPreLoginEvent extends Event {
-     private final String name;
-     private final InetAddress ipAddress;
+@@ -20,17 +20,23 @@ public class AsyncPlayerPreLoginEvent extends Event {
+     private final UUID uniqueId;
  
+     @Deprecated
 -    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress) {
+-        this(name, ipAddress, null);
 +    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final boolean allowed) {
++        this(name, ipAddress, null, allowed);
+     }
+ 
+-    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final UUID uniqueId) {
++    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final UUID uniqueId, final boolean allowed) {
          super(true);
 -        this.result = Result.ALLOWED;
          this.message = "";
          this.name = name;
          this.ipAddress = ipAddress;
+         this.uniqueId = uniqueId;
++
 +        if(allowed) {
 +            this.result = Result.ALLOWED;
 +        } else {
@@ -28,7 +36,7 @@ index 4e4b3a2..bc4e5b0 100644
      }
  
      /**
-@@ -166,6 +171,10 @@ public class AsyncPlayerPreLoginEvent extends Event {
+@@ -189,6 +195,10 @@ public class AsyncPlayerPreLoginEvent extends Event {
           */
          KICK_WHITELIST,
          /**
@@ -40,10 +48,10 @@ index 4e4b3a2..bc4e5b0 100644
           */
          KICK_OTHER;
 diff --git a/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
-index bc62248..850d8da 100644
+index e8553f0..aa49dfa 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerPreLoginEvent.java
-@@ -130,6 +130,10 @@ public class PlayerPreLoginEvent extends Event {
+@@ -152,6 +152,10 @@ public class PlayerPreLoginEvent extends Event {
           */
          KICK_WHITELIST,
          /**
@@ -55,5 +63,5 @@ index bc62248..850d8da 100644
           */
          KICK_OTHER
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

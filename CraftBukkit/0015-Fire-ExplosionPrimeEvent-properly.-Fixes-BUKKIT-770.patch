@@ -1,11 +1,11 @@
-From 7a81b32d8801df15e99f597168925c0e4a5df7b1 Mon Sep 17 00:00:00 2001
+From 8cb7d62e57d3547e0ea08c139b4af4f8bd0f41c6 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 9acd4f2..a2b55ef 100644
+index 6d5090b..cff5a10 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -14,8 +14,8 @@ index 9acd4f2..a2b55ef 100644
  public class BlockTNT extends Block {
 +    boolean removeBlock = false; // CraftBukkit
  
-     public BlockTNT(int i) {
-         super(i, Material.TNT);
+     public BlockTNT() {
+         super(Material.TNT);
 @@ -32,8 +33,17 @@ public class BlockTNT extends Block {
          if (!world.isStatic) {
              EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), explosion.c());
@@ -30,13 +30,13 @@ index 9acd4f2..a2b55ef 100644
 +                entitytntprimed.fuseTicks = world.random.nextInt(entitytntprimed.fuseTicks / 4) + entitytntprimed.fuseTicks / 8;
 +                world.addEntity(entitytntprimed);
 +            } else {
-+                this.b(world, i, j, k, new ItemStack(Block.TNT.id, 1, 0));
++                this.a(world, i, j, k, new ItemStack(this, 1, 0));
 +            }
 +            // CraftBukkit end
          }
      }
  
-@@ -42,20 +52,34 @@ public class BlockTNT extends Block {
+@@ -42,21 +52,35 @@ public class BlockTNT extends Block {
      }
  
      public void a(World world, int i, int j, int k, int l, EntityLiving entityliving) {
@@ -46,7 +46,7 @@ index 9acd4f2..a2b55ef 100644
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), entityliving);
  
 -                world.addEntity(entitytntprimed);
--                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
+-                world.makeSound(entitytntprimed, "game.tnt.primed", 1.0F, 1.0F);
 +                // CraftBukkit start - fire ExplosionPrimeEvent
 +                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                world.getServer().getPluginManager().callEvent(event);
@@ -55,7 +55,7 @@ index 9acd4f2..a2b55ef 100644
 +                    removeBlock = false;
 +                } else {
 +                    world.addEntity(entitytntprimed);
-+                    world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++                    world.makeSound(entitytntprimed, "game.tnt.primed", 1.0F, 1.0F);
 +                }
 +                // CraftBukkit end
              }
@@ -63,73 +63,56 @@ index 9acd4f2..a2b55ef 100644
      }
  
      public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-         if (entityhuman.by() != null && entityhuman.by().id == Item.FLINT_AND_STEEL.id) {
+-        if (entityhuman.bD() != null && entityhuman.bD().getItem() == Items.FLINT_AND_STEEL) {
 -            this.a(world, i, j, k, 1, entityhuman);
 -            world.setAir(i, j, k);
+-            entityhuman.bD().damage(1, entityhuman);
++        if (entityhuman.bE() != null && entityhuman.bE().getItem() == Items.FLINT_AND_STEEL) {
 +            // CraftBukkit start - don't remove block if TNT priming is cancelled
 +            this.a(world, i, j, k, 1, (EntityLiving) entityhuman);
 +            if (removeBlock) {
 +                world.setAir(i, j, k);
 +            }
 +            // CraftBukkit end
-             entityhuman.by().damage(1, entityhuman);
++            entityhuman.bE().damage(1, entityhuman);
              return true;
          } else {
+             return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 5424003..2607f35 100644
+index e5d72b7..bf54e38 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
-@@ -80,9 +80,19 @@ public class EntityCreeper extends EntityMonster {
-             this.bp = this.fuseTicks;
-             int i = this.bV();
+@@ -90,9 +90,20 @@ public class EntityCreeper extends EntityMonster {
+ 
+             int i = this.cb();
  
 +            // CraftBukkit start - fire ExplosionPrimeEvent
 +            float radius = this.isPowered() ? 6.0F : 3.0F;
++
              if (i > 0 && this.fuseTicks == 0) {
--                this.makeSound("random.fuse", 1.0F, 0.5F);
+-                this.makeSound("creeper.primed", 1.0F, 0.5F);
 +                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
 +                this.world.getServer().getPluginManager().callEvent(event);
 +
 +                if (event.isCancelled()) {
 +                    i = 0;
 +                } else {
-+                    this.makeSound("random.fuse", 1.0F, 0.5F);
++                    this.makeSound("creeper.primed", 1.0F, 0.5F);
 +                }
              }
 +            // CraftBukkit end
  
              this.fuseTicks += i;
              if (this.fuseTicks < 0) {
-@@ -93,18 +103,8 @@ public class EntityCreeper extends EntityMonster {
-                 this.fuseTicks = this.maxFuseTicks;
-                 if (!this.world.isStatic) {
-                     boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
--                    // CraftBukkit start
--                    float radius = this.isPowered() ? 6.0F : 3.0F;
--
--                    ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
--                    this.world.getServer().getPluginManager().callEvent(event);
--                    if (!event.isCancelled()) {
--                        this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
--                        this.die();
--                    } else {
--                        this.fuseTicks = 0;
--                    }
--                    // CraftBukkit end
-+                    this.world.createExplosion(this, this.locX, this.locY, this.locZ, radius, false, flag); // CraftBukkit
-+                    this.die();
-                 }
-             }
-         }
 diff --git a/src/main/java/net/minecraft/server/EntityLargeFireball.java b/src/main/java/net/minecraft/server/EntityLargeFireball.java
-index df86311..002a76d 100644
+index 326f7ea..b3ab7ee 100644
 --- a/src/main/java/net/minecraft/server/EntityLargeFireball.java
 +++ b/src/main/java/net/minecraft/server/EntityLargeFireball.java
 @@ -20,16 +20,8 @@ public class EntityLargeFireball extends EntityFireball {
                  movingobjectposition.entity.damageEntity(DamageSource.fireball(this, this.shooter), 6.0F);
              }
  
--            // CraftBukkit start
+-            // CraftBukkit start - fire ExplosionPrimeEvent
 -            ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(this.world.getServer(), this));
 -            this.world.getServer().getPluginManager().callEvent(event);
 -
@@ -145,7 +128,7 @@ index df86311..002a76d 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index 858d11e..50c20bc 100644
+index a442cb1..a97f8b6 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 @@ -73,15 +73,10 @@ public class EntityTNTPrimed extends Entity {
@@ -168,5 +151,5 @@ index 858d11e..50c20bc 100644
  
      protected void b(NBTTagCompound nbttagcompound) {
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

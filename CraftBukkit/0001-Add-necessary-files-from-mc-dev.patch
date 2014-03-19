@@ -1,12 +1,96 @@
-From d52e2ca557db6bd5ecc204180bc99b1739dabe22 Mon Sep 17 00:00:00 2001
+From 74b425d65fd9fecb6aa353e5bc60bf2dd9cca5b1 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
 
 
+diff --git a/src/main/java/net/minecraft/server/BlockFalling.java b/src/main/java/net/minecraft/server/BlockFalling.java
+new file mode 100644
+index 0000000..473fc31
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/BlockFalling.java
+@@ -0,0 +1,78 @@
++package net.minecraft.server;
++
++import java.util.Random;
++
++public class BlockFalling extends Block {
++
++    public static boolean instaFall;
++
++    public BlockFalling() {
++        super(Material.SAND);
++        this.a(CreativeModeTab.b);
++    }
++
++    public BlockFalling(Material material) {
++        super(material);
++    }
++
++    public void onPlace(World world, int i, int j, int k) {
++        world.a(i, j, k, this, this.a(world));
++    }
++
++    public void doPhysics(World world, int i, int j, int k, Block block) {
++        world.a(i, j, k, this, this.a(world));
++    }
++
++    public void a(World world, int i, int j, int k, Random random) {
++        if (!world.isStatic) {
++            this.m(world, i, j, k);
++        }
++    }
++
++    private void m(World world, int i, int j, int k) {
++        if (canFall(world, i, j - 1, k) && j >= 0) {
++            byte b0 = 32;
++
++            if (!instaFall && world.b(i - b0, j - b0, k - b0, i + b0, j + b0, k + b0)) {
++                if (!world.isStatic) {
++                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), this, world.getData(i, j, k));
++
++                    this.a(entityfallingblock);
++                    world.addEntity(entityfallingblock);
++                }
++            } else {
++                world.setAir(i, j, k);
++
++                while (canFall(world, i, j - 1, k) && j > 0) {
++                    --j;
++                }
++
++                if (j > 0) {
++                    world.setTypeUpdate(i, j, k, this);
++                }
++            }
++        }
++    }
++
++    protected void a(EntityFallingBlock entityfallingblock) {}
++
++    public int a(World world) {
++        return 2;
++    }
++
++    public static boolean canFall(World world, int i, int j, int k) {
++        Block block = world.getType(i, j, k);
++
++        if (block.material == Material.AIR) {
++            return true;
++        } else if (block == Blocks.FIRE) {
++            return true;
++        } else {
++            Material material = block.material;
++
++            return material == Material.WATER ? true : material == Material.LAVA;
++        }
++    }
++
++    public void a(World world, int i, int j, int k, int l) {}
++}
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
-index 0000000..c2e4a7d
+index 0000000..da76b53
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
 @@ -0,0 +1,232 @@
@@ -16,20 +100,20 @@ index 0000000..c2e4a7d
 +
 +public abstract class BlockFluids extends Block {
 +
-+    protected BlockFluids(int i, Material material) {
-+        super(i, material);
++    protected BlockFluids(Material material) {
++        super(material);
 +        float f = 0.0F;
 +        float f1 = 0.0F;
 +
 +        this.a(0.0F + f1, 0.0F + f, 0.0F + f1, 1.0F + f1, 1.0F + f, 1.0F + f1);
-+        this.b(true);
++        this.a(true);
 +    }
 +
 +    public boolean b(IBlockAccess iblockaccess, int i, int j, int k) {
 +        return this.material != Material.LAVA;
 +    }
 +
-+    public static float d(int i) {
++    public static float b(int i) {
 +        if (i >= 8) {
 +            i = 0;
 +        }
@@ -37,12 +121,12 @@ index 0000000..c2e4a7d
 +        return (float) (i + 1) / 9.0F;
 +    }
 +
-+    protected int l_(World world, int i, int j, int k) {
-+        return world.getMaterial(i, j, k) == this.material ? world.getData(i, j, k) : -1;
++    protected int e(World world, int i, int j, int k) {
++        return world.getType(i, j, k).getMaterial() == this.material ? world.getData(i, j, k) : -1;
 +    }
 +
-+    protected int d(IBlockAccess iblockaccess, int i, int j, int k) {
-+        if (iblockaccess.getMaterial(i, j, k) != this.material) {
++    protected int e(IBlockAccess iblockaccess, int i, int j, int k) {
++        if (iblockaccess.getType(i, j, k).getMaterial() != this.material) {
 +            return -1;
 +        } else {
 +            int l = iblockaccess.getData(i, j, k);
@@ -55,7 +139,7 @@ index 0000000..c2e4a7d
 +        }
 +    }
 +
-+    public boolean b() {
++    public boolean d() {
 +        return false;
 +    }
 +
@@ -67,31 +151,31 @@ index 0000000..c2e4a7d
 +        return flag && i == 0;
 +    }
 +
-+    public boolean a_(IBlockAccess iblockaccess, int i, int j, int k, int l) {
-+        Material material = iblockaccess.getMaterial(i, j, k);
++    public boolean d(IBlockAccess iblockaccess, int i, int j, int k, int l) {
++        Material material = iblockaccess.getType(i, j, k).getMaterial();
 +
-+        return material == this.material ? false : (l == 1 ? true : (material == Material.ICE ? false : super.a_(iblockaccess, i, j, k, l)));
++        return material == this.material ? false : (l == 1 ? true : (material == Material.ICE ? false : super.d(iblockaccess, i, j, k, l)));
 +    }
 +
-+    public AxisAlignedBB b(World world, int i, int j, int k) {
++    public AxisAlignedBB a(World world, int i, int j, int k) {
 +        return null;
 +    }
 +
-+    public int d() {
++    public int b() {
 +        return 4;
 +    }
 +
-+    public int getDropType(int i, Random random, int j) {
-+        return 0;
++    public Item getDropType(int i, Random random, int j) {
++        return null;
 +    }
 +
 +    public int a(Random random) {
 +        return 0;
 +    }
 +
-+    private Vec3D g(IBlockAccess iblockaccess, int i, int j, int k) {
-+        Vec3D vec3d = iblockaccess.getVec3DPool().create(0.0D, 0.0D, 0.0D);
-+        int l = this.d(iblockaccess, i, j, k);
++    private Vec3D f(IBlockAccess iblockaccess, int i, int j, int k) {
++        Vec3D vec3d = Vec3D.a(0.0D, 0.0D, 0.0D);
++        int l = this.e(iblockaccess, i, j, k);
 +
 +        for (int i1 = 0; i1 < 4; ++i1) {
 +            int j1 = i;
@@ -113,12 +197,12 @@ index 0000000..c2e4a7d
 +                ++k1;
 +            }
 +
-+            int l1 = this.d(iblockaccess, j1, j, k1);
++            int l1 = this.e(iblockaccess, j1, j, k1);
 +            int i2;
 +
 +            if (l1 < 0) {
-+                if (!iblockaccess.getMaterial(j1, j, k1).isSolid()) {
-+                    l1 = this.d(iblockaccess, j1, j - 1, k1);
++                if (!iblockaccess.getType(j1, j, k1).getMaterial().isSolid()) {
++                    l1 = this.e(iblockaccess, j1, j - 1, k1);
 +                    if (l1 >= 0) {
 +                        i2 = l1 - (l - 8);
 +                        vec3d = vec3d.add((double) ((j1 - i) * i2), (double) ((j - j) * i2), (double) ((k1 - k) * i2));
@@ -133,35 +217,35 @@ index 0000000..c2e4a7d
 +        if (iblockaccess.getData(i, j, k) >= 8) {
 +            boolean flag = false;
 +
-+            if (flag || this.a_(iblockaccess, i, j, k - 1, 2)) {
++            if (flag || this.d(iblockaccess, i, j, k - 1, 2)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i, j, k + 1, 3)) {
++            if (flag || this.d(iblockaccess, i, j, k + 1, 3)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i - 1, j, k, 4)) {
++            if (flag || this.d(iblockaccess, i - 1, j, k, 4)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i + 1, j, k, 5)) {
++            if (flag || this.d(iblockaccess, i + 1, j, k, 5)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i, j + 1, k - 1, 2)) {
++            if (flag || this.d(iblockaccess, i, j + 1, k - 1, 2)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i, j + 1, k + 1, 3)) {
++            if (flag || this.d(iblockaccess, i, j + 1, k + 1, 3)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i - 1, j + 1, k, 4)) {
++            if (flag || this.d(iblockaccess, i - 1, j + 1, k, 4)) {
 +                flag = true;
 +            }
 +
-+            if (flag || this.a_(iblockaccess, i + 1, j + 1, k, 5)) {
++            if (flag || this.d(iblockaccess, i + 1, j + 1, k, 5)) {
 +                flag = true;
 +            }
 +
@@ -175,11 +259,11 @@ index 0000000..c2e4a7d
 +    }
 +
 +    public void a(World world, int i, int j, int k, Entity entity, Vec3D vec3d) {
-+        Vec3D vec3d1 = this.g((IBlockAccess) world, i, j, k);
++        Vec3D vec3d1 = this.f(world, i, j, k);
 +
++        vec3d.a += vec3d1.a;
++        vec3d.b += vec3d1.b;
 +        vec3d.c += vec3d1.c;
-+        vec3d.d += vec3d1.d;
-+        vec3d.e += vec3d1.e;
 +    }
 +
 +    public int a(World world) {
@@ -187,35 +271,35 @@ index 0000000..c2e4a7d
 +    }
 +
 +    public void onPlace(World world, int i, int j, int k) {
-+        this.k(world, i, j, k);
++        this.n(world, i, j, k);
 +    }
 +
-+    public void doPhysics(World world, int i, int j, int k, int l) {
-+        this.k(world, i, j, k);
++    public void doPhysics(World world, int i, int j, int k, Block block) {
++        this.n(world, i, j, k);
 +    }
 +
-+    private void k(World world, int i, int j, int k) {
-+        if (world.getTypeId(i, j, k) == this.id) {
++    private void n(World world, int i, int j, int k) {
++        if (world.getType(i, j, k) == this) {
 +            if (this.material == Material.LAVA) {
 +                boolean flag = false;
 +
-+                if (flag || world.getMaterial(i, j, k - 1) == Material.WATER) {
++                if (flag || world.getType(i, j, k - 1).getMaterial() == Material.WATER) {
 +                    flag = true;
 +                }
 +
-+                if (flag || world.getMaterial(i, j, k + 1) == Material.WATER) {
++                if (flag || world.getType(i, j, k + 1).getMaterial() == Material.WATER) {
 +                    flag = true;
 +                }
 +
-+                if (flag || world.getMaterial(i - 1, j, k) == Material.WATER) {
++                if (flag || world.getType(i - 1, j, k).getMaterial() == Material.WATER) {
 +                    flag = true;
 +                }
 +
-+                if (flag || world.getMaterial(i + 1, j, k) == Material.WATER) {
++                if (flag || world.getType(i + 1, j, k).getMaterial() == Material.WATER) {
 +                    flag = true;
 +                }
 +
-+                if (flag || world.getMaterial(i, j + 1, k) == Material.WATER) {
++                if (flag || world.getType(i, j + 1, k).getMaterial() == Material.WATER) {
 +                    flag = true;
 +                }
 +
@@ -223,9 +307,9 @@ index 0000000..c2e4a7d
 +                    int l = world.getData(i, j, k);
 +
 +                    if (l == 0) {
-+                        world.setTypeIdUpdate(i, j, k, Block.OBSIDIAN.id);
++                        world.setTypeUpdate(i, j, k, Blocks.OBSIDIAN);
 +                    } else if (l <= 4) {
-+                        world.setTypeIdUpdate(i, j, k, Block.COBBLESTONE.id);
++                        world.setTypeUpdate(i, j, k, Blocks.COBBLESTONE);
 +                    }
 +
 +                    this.fizz(world, i, j, k);
@@ -242,117 +326,9 @@ index 0000000..c2e4a7d
 +        }
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/BlockLockedChest.java b/src/main/java/net/minecraft/server/BlockLockedChest.java
-new file mode 100644
-index 0000000..7aa9b1d
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/BlockLockedChest.java
-@@ -0,0 +1,18 @@
-+package net.minecraft.server;
-+
-+import java.util.Random;
-+
-+public class BlockLockedChest extends Block {
-+
-+    protected BlockLockedChest(int i) {
-+        super(i, Material.WOOD);
-+    }
-+
-+    public boolean canPlace(World world, int i, int j, int k) {
-+        return true;
-+    }
-+
-+    public void a(World world, int i, int j, int k, Random random) {
-+        world.setAir(i, j, k);
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/BlockSand.java b/src/main/java/net/minecraft/server/BlockSand.java
-new file mode 100644
-index 0000000..3ca6e41
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/BlockSand.java
-@@ -0,0 +1,78 @@
-+package net.minecraft.server;
-+
-+import java.util.Random;
-+
-+public class BlockSand extends Block {
-+
-+    public static boolean instaFall;
-+
-+    public BlockSand(int i) {
-+        super(i, Material.SAND);
-+        this.a(CreativeModeTab.b);
-+    }
-+
-+    public BlockSand(int i, Material material) {
-+        super(i, material);
-+    }
-+
-+    public void onPlace(World world, int i, int j, int k) {
-+        world.a(i, j, k, this.id, this.a(world));
-+    }
-+
-+    public void doPhysics(World world, int i, int j, int k, int l) {
-+        world.a(i, j, k, this.id, this.a(world));
-+    }
-+
-+    public void a(World world, int i, int j, int k, Random random) {
-+        if (!world.isStatic) {
-+            this.k(world, i, j, k);
-+        }
-+    }
-+
-+    private void k(World world, int i, int j, int k) {
-+        if (canFall(world, i, j - 1, k) && j >= 0) {
-+            byte b0 = 32;
-+
-+            if (!instaFall && world.e(i - b0, j - b0, k - b0, i + b0, j + b0, k + b0)) {
-+                if (!world.isStatic) {
-+                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), this.id, world.getData(i, j, k));
-+
-+                    this.a(entityfallingblock);
-+                    world.addEntity(entityfallingblock);
-+                }
-+            } else {
-+                world.setAir(i, j, k);
-+
-+                while (canFall(world, i, j - 1, k) && j > 0) {
-+                    --j;
-+                }
-+
-+                if (j > 0) {
-+                    world.setTypeIdUpdate(i, j, k, this.id);
-+                }
-+            }
-+        }
-+    }
-+
-+    protected void a(EntityFallingBlock entityfallingblock) {}
-+
-+    public int a(World world) {
-+        return 2;
-+    }
-+
-+    public static boolean canFall(World world, int i, int j, int k) {
-+        int l = world.getTypeId(i, j, k);
-+
-+        if (l == 0) {
-+            return true;
-+        } else if (l == Block.FIRE.id) {
-+            return true;
-+        } else {
-+            Material material = Block.byId[l].material;
-+
-+            return material == Material.WATER ? true : material == Material.LAVA;
-+        }
-+    }
-+
-+    public void a_(World world, int i, int j, int k, int l) {}
-+}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
 new file mode 100644
-index 0000000..9acd4f2
+index 0000000..6d5090b
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -0,0 +1,80 @@
@@ -362,8 +338,8 @@ index 0000000..9acd4f2
 +
 +public class BlockTNT extends Block {
 +
-+    public BlockTNT(int i) {
-+        super(i, Material.TNT);
++    public BlockTNT() {
++        super(Material.TNT);
 +        this.a(CreativeModeTab.d);
 +    }
 +
@@ -375,7 +351,7 @@ index 0000000..9acd4f2
 +        }
 +    }
 +
-+    public void doPhysics(World world, int i, int j, int k, int l) {
++    public void doPhysics(World world, int i, int j, int k, Block block) {
 +        if (world.isBlockIndirectlyPowered(i, j, k)) {
 +            this.postBreak(world, i, j, k, 1);
 +            world.setAir(i, j, k);
@@ -405,16 +381,16 @@ index 0000000..9acd4f2
 +                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), entityliving);
 +
 +                world.addEntity(entitytntprimed);
-+                world.makeSound(entitytntprimed, "random.fuse", 1.0F, 1.0F);
++                world.makeSound(entitytntprimed, "game.tnt.primed", 1.0F, 1.0F);
 +            }
 +        }
 +    }
 +
 +    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-+        if (entityhuman.by() != null && entityhuman.by().id == Item.FLINT_AND_STEEL.id) {
++        if (entityhuman.bD() != null && entityhuman.bD().getItem() == Items.FLINT_AND_STEEL) {
 +            this.a(world, i, j, k, 1, entityhuman);
 +            world.setAir(i, j, k);
-+            entityhuman.by().damage(1, entityhuman);
++            entityhuman.bD().damage(1, entityhuman);
 +            return true;
 +        } else {
 +            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
@@ -438,15 +414,12 @@ index 0000000..9acd4f2
 +}
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
 new file mode 100644
-index 0000000..f5935f7
+index 0000000..c630b38
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -0,0 +1,295 @@
+@@ -0,0 +1,298 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInput;
-+import java.io.DataOutput;
-+import java.io.IOException;
 +import java.util.ArrayList;
 +import java.util.HashMap;
 +import java.util.Iterator;
@@ -455,42 +428,47 @@ index 0000000..f5935f7
 +import java.util.concurrent.locks.ReadWriteLock;
 +import java.util.concurrent.locks.ReentrantReadWriteLock;
 +
++import net.minecraft.util.org.apache.commons.lang3.ObjectUtils;
++
 +public class DataWatcher {
 +
-+    private boolean a = true;
-+    private static final HashMap b = new HashMap();
-+    private final Map c = new HashMap();
-+    private boolean d;
-+    private ReadWriteLock e = new ReentrantReadWriteLock();
++    private final Entity a;
++    private boolean b = true;
++    private static final HashMap c = new HashMap();
++    private final Map d = new HashMap();
++    private boolean e;
++    private ReadWriteLock f = new ReentrantReadWriteLock();
 +
-+    public DataWatcher() {}
++    public DataWatcher(Entity entity) {
++        this.a = entity;
++    }
 +
 +    public void a(int i, Object object) {
-+        Integer integer = (Integer) b.get(object.getClass());
++        Integer integer = (Integer) c.get(object.getClass());
 +
 +        if (integer == null) {
 +            throw new IllegalArgumentException("Unknown data type: " + object.getClass());
 +        } else if (i > 31) {
 +            throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 31 + ")");
-+        } else if (this.c.containsKey(Integer.valueOf(i))) {
++        } else if (this.d.containsKey(Integer.valueOf(i))) {
 +            throw new IllegalArgumentException("Duplicate id value for " + i + "!");
 +        } else {
 +            WatchableObject watchableobject = new WatchableObject(integer.intValue(), i, object);
 +
-+            this.e.writeLock().lock();
-+            this.c.put(Integer.valueOf(i), watchableobject);
-+            this.e.writeLock().unlock();
-+            this.a = false;
++            this.f.writeLock().lock();
++            this.d.put(Integer.valueOf(i), watchableobject);
++            this.f.writeLock().unlock();
++            this.b = false;
 +        }
 +    }
 +
 +    public void a(int i, int j) {
 +        WatchableObject watchableobject = new WatchableObject(j, i, null);
 +
-+        this.e.writeLock().lock();
-+        this.c.put(Integer.valueOf(i), watchableobject);
-+        this.e.writeLock().unlock();
-+        this.a = false;
++        this.f.writeLock().lock();
++        this.d.put(Integer.valueOf(i), watchableobject);
++        this.f.writeLock().unlock();
++        this.b = false;
 +    }
 +
 +    public byte getByte(int i) {
@@ -518,12 +496,12 @@ index 0000000..f5935f7
 +    }
 +
 +    private WatchableObject i(int i) {
-+        this.e.readLock().lock();
++        this.f.readLock().lock();
 +
 +        WatchableObject watchableobject;
 +
 +        try {
-+            watchableobject = (WatchableObject) this.c.get(Integer.valueOf(i));
++            watchableobject = (WatchableObject) this.d.get(Integer.valueOf(i));
 +        } catch (Throwable throwable) {
 +            CrashReport crashreport = CrashReport.a(throwable, "Getting synched entity data");
 +            CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Synched entity data");
@@ -532,49 +510,50 @@ index 0000000..f5935f7
 +            throw new ReportedException(crashreport);
 +        }
 +
-+        this.e.readLock().unlock();
++        this.f.readLock().unlock();
 +        return watchableobject;
 +    }
 +
 +    public void watch(int i, Object object) {
 +        WatchableObject watchableobject = this.i(i);
 +
-+        if (!object.equals(watchableobject.b())) {
++        if (ObjectUtils.notEqual(object, watchableobject.b())) {
 +            watchableobject.a(object);
++            this.a.i(i);
 +            watchableobject.a(true);
-+            this.d = true;
++            this.e = true;
 +        }
 +    }
 +
 +    public void h(int i) {
-+        this.i(i).a(true); // CraftBukkit - visibility decompile fix
-+        this.d = true;
++        WatchableObject.a(this.i(i), true);
++        this.e = true;
 +    }
 +
 +    public boolean a() {
-+        return this.d;
++        return this.e;
 +    }
 +
-+    public static void a(List list, DataOutput dataoutput) throws IOException {
++    public static void a(List list, PacketDataSerializer packetdataserializer) {
 +        if (list != null) {
 +            Iterator iterator = list.iterator();
 +
 +            while (iterator.hasNext()) {
 +                WatchableObject watchableobject = (WatchableObject) iterator.next();
 +
-+                a(dataoutput, watchableobject);
++                a(packetdataserializer, watchableobject);
 +            }
 +        }
 +
-+        dataoutput.writeByte(127);
++        packetdataserializer.writeByte(127);
 +    }
 +
 +    public List b() {
 +        ArrayList arraylist = null;
 +
-+        if (this.d) {
-+            this.e.readLock().lock();
-+            Iterator iterator = this.c.values().iterator();
++        if (this.e) {
++            this.f.readLock().lock();
++            Iterator iterator = this.d.values().iterator();
 +
 +            while (iterator.hasNext()) {
 +                WatchableObject watchableobject = (WatchableObject) iterator.next();
@@ -589,89 +568,89 @@ index 0000000..f5935f7
 +                }
 +            }
 +
-+            this.e.readLock().unlock();
++            this.f.readLock().unlock();
 +        }
 +
-+        this.d = false;
++        this.e = false;
 +        return arraylist;
 +    }
 +
-+    public void a(DataOutput dataoutput) throws IOException {
-+        this.e.readLock().lock();
-+        Iterator iterator = this.c.values().iterator();
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.f.readLock().lock();
++        Iterator iterator = this.d.values().iterator();
 +
 +        while (iterator.hasNext()) {
 +            WatchableObject watchableobject = (WatchableObject) iterator.next();
 +
-+            a(dataoutput, watchableobject);
++            a(packetdataserializer, watchableobject);
 +        }
 +
-+        this.e.readLock().unlock();
-+        dataoutput.writeByte(127);
++        this.f.readLock().unlock();
++        packetdataserializer.writeByte(127);
 +    }
 +
 +    public List c() {
 +        ArrayList arraylist = null;
 +
-+        this.e.readLock().lock();
++        this.f.readLock().lock();
 +
 +        WatchableObject watchableobject;
 +
-+        for (Iterator iterator = this.c.values().iterator(); iterator.hasNext(); arraylist.add(watchableobject)) {
++        for (Iterator iterator = this.d.values().iterator(); iterator.hasNext(); arraylist.add(watchableobject)) {
 +            watchableobject = (WatchableObject) iterator.next();
 +            if (arraylist == null) {
 +                arraylist = new ArrayList();
 +            }
 +        }
 +
-+        this.e.readLock().unlock();
++        this.f.readLock().unlock();
 +        return arraylist;
 +    }
 +
-+    private static void a(DataOutput dataoutput, WatchableObject watchableobject) throws IOException {
++    private static void a(PacketDataSerializer packetdataserializer, WatchableObject watchableobject) {
 +        int i = (watchableobject.c() << 5 | watchableobject.a() & 31) & 255;
 +
-+        dataoutput.writeByte(i);
++        packetdataserializer.writeByte(i);
 +        switch (watchableobject.c()) {
 +        case 0:
-+            dataoutput.writeByte(((Byte) watchableobject.b()).byteValue());
++            packetdataserializer.writeByte(((Byte) watchableobject.b()).byteValue());
 +            break;
 +
 +        case 1:
-+            dataoutput.writeShort(((Short) watchableobject.b()).shortValue());
++            packetdataserializer.writeShort(((Short) watchableobject.b()).shortValue());
 +            break;
 +
 +        case 2:
-+            dataoutput.writeInt(((Integer) watchableobject.b()).intValue());
++            packetdataserializer.writeInt(((Integer) watchableobject.b()).intValue());
 +            break;
 +
 +        case 3:
-+            dataoutput.writeFloat(((Float) watchableobject.b()).floatValue());
++            packetdataserializer.writeFloat(((Float) watchableobject.b()).floatValue());
 +            break;
 +
 +        case 4:
-+            Packet.a((String) watchableobject.b(), dataoutput);
++            packetdataserializer.a((String) watchableobject.b());
 +            break;
 +
 +        case 5:
 +            ItemStack itemstack = (ItemStack) watchableobject.b();
 +
-+            Packet.a(itemstack, dataoutput);
++            packetdataserializer.a(itemstack);
 +            break;
 +
 +        case 6:
 +            ChunkCoordinates chunkcoordinates = (ChunkCoordinates) watchableobject.b();
 +
-+            dataoutput.writeInt(chunkcoordinates.x);
-+            dataoutput.writeInt(chunkcoordinates.y);
-+            dataoutput.writeInt(chunkcoordinates.z);
++            packetdataserializer.writeInt(chunkcoordinates.x);
++            packetdataserializer.writeInt(chunkcoordinates.y);
++            packetdataserializer.writeInt(chunkcoordinates.z);
 +        }
 +    }
 +
-+    public static List a(DataInput datainput) throws IOException {
++    public static List b(PacketDataSerializer packetdataserializer) {
 +        ArrayList arraylist = null;
 +
-+        for (byte b0 = datainput.readByte(); b0 != 127; b0 = datainput.readByte()) {
++        for (byte b0 = packetdataserializer.readByte(); b0 != 127; b0 = packetdataserializer.readByte()) {
 +            if (arraylist == null) {
 +                arraylist = new ArrayList();
 +            }
@@ -682,33 +661,33 @@ index 0000000..f5935f7
 +
 +            switch (i) {
 +            case 0:
-+                watchableobject = new WatchableObject(i, j, Byte.valueOf(datainput.readByte()));
++                watchableobject = new WatchableObject(i, j, Byte.valueOf(packetdataserializer.readByte()));
 +                break;
 +
 +            case 1:
-+                watchableobject = new WatchableObject(i, j, Short.valueOf(datainput.readShort()));
++                watchableobject = new WatchableObject(i, j, Short.valueOf(packetdataserializer.readShort()));
 +                break;
 +
 +            case 2:
-+                watchableobject = new WatchableObject(i, j, Integer.valueOf(datainput.readInt()));
++                watchableobject = new WatchableObject(i, j, Integer.valueOf(packetdataserializer.readInt()));
 +                break;
 +
 +            case 3:
-+                watchableobject = new WatchableObject(i, j, Float.valueOf(datainput.readFloat()));
++                watchableobject = new WatchableObject(i, j, Float.valueOf(packetdataserializer.readFloat()));
 +                break;
 +
 +            case 4:
-+                watchableobject = new WatchableObject(i, j, Packet.a(datainput, 64));
++                watchableobject = new WatchableObject(i, j, packetdataserializer.c(32767));
 +                break;
 +
 +            case 5:
-+                watchableobject = new WatchableObject(i, j, Packet.c(datainput));
++                watchableobject = new WatchableObject(i, j, packetdataserializer.c());
 +                break;
 +
 +            case 6:
-+                int k = datainput.readInt();
-+                int l = datainput.readInt();
-+                int i1 = datainput.readInt();
++                int k = packetdataserializer.readInt();
++                int l = packetdataserializer.readInt();
++                int i1 = packetdataserializer.readInt();
 +
 +                watchableobject = new WatchableObject(i, j, new ChunkCoordinates(k, l, i1));
 +            }
@@ -720,48 +699,48 @@ index 0000000..f5935f7
 +    }
 +
 +    public boolean d() {
-+        return this.a;
++        return this.b;
 +    }
 +
 +    public void e() {
-+        this.d = false;
++        this.e = false;
 +    }
 +
 +    static {
-+        b.put(Byte.class, Integer.valueOf(0));
-+        b.put(Short.class, Integer.valueOf(1));
-+        b.put(Integer.class, Integer.valueOf(2));
-+        b.put(Float.class, Integer.valueOf(3));
-+        b.put(String.class, Integer.valueOf(4));
-+        b.put(ItemStack.class, Integer.valueOf(5));
-+        b.put(ChunkCoordinates.class, Integer.valueOf(6));
++        c.put(Byte.class, Integer.valueOf(0));
++        c.put(Short.class, Integer.valueOf(1));
++        c.put(Integer.class, Integer.valueOf(2));
++        c.put(Float.class, Integer.valueOf(3));
++        c.put(String.class, Integer.valueOf(4));
++        c.put(ItemStack.class, Integer.valueOf(5));
++        c.put(ChunkCoordinates.class, Integer.valueOf(6));
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/NextTickListEntry.java b/src/main/java/net/minecraft/server/NextTickListEntry.java
 new file mode 100644
-index 0000000..acf8838
+index 0000000..06934a1
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/NextTickListEntry.java
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,60 @@
 +package net.minecraft.server;
 +
 +public class NextTickListEntry implements Comparable {
 +
-+    private static long g;
++    private static long f;
++    private final Block g;
 +    public int a;
 +    public int b;
 +    public int c;
-+    public int d;
-+    public long e;
-+    public int f;
++    public long d;
++    public int e;
 +    private long h;
 +
-+    public NextTickListEntry(int i, int j, int k, int l) {
-+        this.h = (long) (g++);
++    public NextTickListEntry(int i, int j, int k, Block block) {
++        this.h = (long) (f++);
 +        this.a = i;
 +        this.b = j;
 +        this.c = k;
-+        this.d = l;
++        this.g = block;
 +    }
 +
 +    public boolean equals(Object object) {
@@ -770,7 +749,7 @@ index 0000000..acf8838
 +        } else {
 +            NextTickListEntry nextticklistentry = (NextTickListEntry) object;
 +
-+            return this.a == nextticklistentry.a && this.b == nextticklistentry.b && this.c == nextticklistentry.c && Block.b(this.d, nextticklistentry.d);
++            return this.a == nextticklistentry.a && this.b == nextticklistentry.b && this.c == nextticklistentry.c && Block.a(this.g, nextticklistentry.g);
 +        }
 +    }
 +
@@ -779,20 +758,24 @@ index 0000000..acf8838
 +    }
 +
 +    public NextTickListEntry a(long i) {
-+        this.e = i;
++        this.d = i;
 +        return this;
 +    }
 +
 +    public void a(int i) {
-+        this.f = i;
++        this.e = i;
 +    }
 +
 +    public int compareTo(NextTickListEntry nextticklistentry) {
-+        return this.e < nextticklistentry.e ? -1 : (this.e > nextticklistentry.e ? 1 : (this.f != nextticklistentry.f ? this.f - nextticklistentry.f : (this.h < nextticklistentry.h ? -1 : (this.h > nextticklistentry.h ? 1 : 0))));
++        return this.d < nextticklistentry.d ? -1 : (this.d > nextticklistentry.d ? 1 : (this.e != nextticklistentry.e ? this.e - nextticklistentry.e : (this.h < nextticklistentry.h ? -1 : (this.h > nextticklistentry.h ? 1 : 0))));
 +    }
 +
 +    public String toString() {
-+        return this.d + ": (" + this.a + ", " + this.b + ", " + this.c + "), " + this.e + ", " + this.f + ", " + this.h;
++        return Block.b(this.g) + ": (" + this.a + ", " + this.b + ", " + this.c + "), " + this.d + ", " + this.e + ", " + this.h;
++    }
++
++    public Block a() {
++        return this.g;
 +    }
 +
 +    public int compareTo(Object object) {
@@ -847,7 +830,7 @@ index 0000000..5d75a54
 +}
 diff --git a/src/main/java/net/minecraft/server/OldChunkLoader.java b/src/main/java/net/minecraft/server/OldChunkLoader.java
 new file mode 100644
-index 0000000..53c1cb5
+index 0000000..fcb9912
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/OldChunkLoader.java
 @@ -0,0 +1,120 @@
@@ -866,9 +849,9 @@ index 0000000..53c1cb5
 +        oldchunk.d = new OldNibbleArray(nbttagcompound.getByteArray("BlockLight"), 7);
 +        oldchunk.c = nbttagcompound.getByteArray("HeightMap");
 +        oldchunk.b = nbttagcompound.getBoolean("TerrainPopulated");
-+        oldchunk.h = nbttagcompound.getList("Entities");
-+        oldchunk.i = nbttagcompound.getList("TileEntities");
-+        oldchunk.j = nbttagcompound.getList("TileTicks");
++        oldchunk.h = nbttagcompound.getList("Entities", 10);
++        oldchunk.i = nbttagcompound.getList("TileEntities", 10);
++        oldchunk.j = nbttagcompound.getList("TileTicks", 10);
 +
 +        try {
 +            oldchunk.a = nbttagcompound.getLong("LastUpdate");
@@ -891,7 +874,7 @@ index 0000000..53c1cb5
 +
 +        nbttagcompound.setIntArray("HeightMap", aint);
 +        nbttagcompound.setBoolean("TerrainPopulated", oldchunk.b);
-+        NBTTagList nbttaglist = new NBTTagList("Sections");
++        NBTTagList nbttaglist = new NBTTagList();
 +
 +        int j;
 +
@@ -971,27 +954,24 @@ index 0000000..53c1cb5
 +        }
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/Packet40EntityMetadata.java b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
 new file mode 100644
-index 0000000..54299a7
+index 0000000..a95877f
 --- /dev/null
-+++ b/src/main/java/net/minecraft/server/Packet40EntityMetadata.java
-@@ -0,0 +1,41 @@
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
+@@ -0,0 +1,38 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInput;
-+import java.io.DataOutput;
-+import java.io.IOException;
 +import java.util.List;
 +
-+public class Packet40EntityMetadata extends Packet {
++public class PacketPlayOutEntityMetadata extends Packet {
 +
-+    public int a;
++    private int a;
 +    private List b;
 +
-+    public Packet40EntityMetadata() {}
++    public PacketPlayOutEntityMetadata() {}
 +
-+    public Packet40EntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
++    public PacketPlayOutEntityMetadata(int i, DataWatcher datawatcher, boolean flag) {
 +        this.a = i;
 +        if (flag) {
 +            this.b = datawatcher.c();
@@ -1000,60 +980,55 @@ index 0000000..54299a7
 +        }
 +    }
 +
-+    public void a(DataInput datainput) throws IOException {
-+        this.a = datainput.readInt();
-+        this.b = DataWatcher.a(datainput);
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.readInt();
++        this.b = DataWatcher.b(packetdataserializer);
 +    }
 +
-+    public void a(DataOutput dataoutput) throws IOException {
-+        dataoutput.writeInt(this.a);
-+        DataWatcher.a(this.b, dataoutput);
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.writeInt(this.a);
++        DataWatcher.a(this.b, packetdataserializer);
 +    }
 +
-+    public void handle(Connection connection) {
-+        connection.a(this);
++    public void a(PacketPlayOutListener packetplayoutlistener) {
++        packetplayoutlistener.a(this);
 +    }
 +
-+    public int a() {
-+        return 5;
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketPlayOutListener) packetlistener);
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/Packet51MapChunk.java b/src/main/java/net/minecraft/server/Packet51MapChunk.java
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 new file mode 100644
-index 0000000..4409c4a
+index 0000000..0239d12
 --- /dev/null
-+++ b/src/main/java/net/minecraft/server/Packet51MapChunk.java
-@@ -0,0 +1,186 @@
++++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
+@@ -0,0 +1,189 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInput;
-+import java.io.DataOutput;
 +import java.io.IOException;
 +import java.util.zip.DataFormatException;
 +import java.util.zip.Deflater;
 +import java.util.zip.Inflater;
 +
-+public class Packet51MapChunk extends Packet {
++public class PacketPlayOutMapChunk extends Packet {
 +
-+    public int a;
-+    public int b;
-+    public int c;
-+    public int d;
++    private int a;
++    private int b;
++    private int c;
++    private int d;
++    private byte[] e;
 +    private byte[] buffer;
-+    private byte[] inflatedBuffer;
-+    public boolean e;
++    private boolean inflatedBuffer;
 +    private int size;
 +    private static byte[] buildBuffer = new byte[196864];
 +
-+    public Packet51MapChunk() {
-+        this.lowPriority = true;
-+    }
++    public PacketPlayOutMapChunk() {}
 +
-+    public Packet51MapChunk(Chunk chunk, boolean flag, int i) {
-+        this.lowPriority = true;
-+        this.a = chunk.x;
-+        this.b = chunk.z;
-+        this.e = flag;
++    public PacketPlayOutMapChunk(Chunk chunk, boolean flag, int i) {
++        this.a = chunk.locX;
++        this.b = chunk.locZ;
++        this.inflatedBuffer = flag;
 +        ChunkMap chunkmap = a(chunk, flag, i);
 +        Deflater deflater = new Deflater(-1);
 +
@@ -1061,28 +1036,32 @@ index 0000000..4409c4a
 +        this.c = chunkmap.b;
 +
 +        try {
-+            this.inflatedBuffer = chunkmap.a;
++            this.buffer = chunkmap.a;
 +            deflater.setInput(chunkmap.a, 0, chunkmap.a.length);
 +            deflater.finish();
-+            this.buffer = new byte[chunkmap.a.length];
-+            this.size = deflater.deflate(this.buffer);
++            this.e = new byte[chunkmap.a.length];
++            this.size = deflater.deflate(this.e);
 +        } finally {
 +            deflater.end();
 +        }
 +    }
 +
-+    public void a(DataInput datainput) throws java.io.IOException {
-+        this.a = datainput.readInt();
-+        this.b = datainput.readInt();
-+        this.e = datainput.readBoolean();
-+        this.c = datainput.readShort();
-+        this.d = datainput.readShort();
-+        this.size = datainput.readInt();
++    public static int c() {
++        return 196864;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.readInt();
++        this.b = packetdataserializer.readInt();
++        this.inflatedBuffer = packetdataserializer.readBoolean();
++        this.c = packetdataserializer.readShort();
++        this.d = packetdataserializer.readShort();
++        this.size = packetdataserializer.readInt();
 +        if (buildBuffer.length < this.size) {
 +            buildBuffer = new byte[this.size];
 +        }
 +
-+        datainput.readFully(buildBuffer, 0, this.size);
++        packetdataserializer.readBytes(buildBuffer, 0, this.size);
 +        int i = 0;
 +
 +        int j;
@@ -1092,17 +1071,17 @@ index 0000000..4409c4a
 +        }
 +
 +        j = 12288 * i;
-+        if (this.e) {
++        if (this.inflatedBuffer) {
 +            j += 256;
 +        }
 +
-+        this.inflatedBuffer = new byte[j];
++        this.buffer = new byte[j];
 +        Inflater inflater = new Inflater();
 +
 +        inflater.setInput(buildBuffer, 0, this.size);
 +
 +        try {
-+            inflater.inflate(this.inflatedBuffer);
++            inflater.inflate(this.buffer);
 +        } catch (DataFormatException dataformatexception) {
 +            throw new IOException("Bad compressed data format");
 +        } finally {
@@ -1110,22 +1089,22 @@ index 0000000..4409c4a
 +        }
 +    }
 +
-+    public void a(DataOutput dataoutput) throws java.io.IOException {
-+        dataoutput.writeInt(this.a);
-+        dataoutput.writeInt(this.b);
-+        dataoutput.writeBoolean(this.e);
-+        dataoutput.writeShort((short) (this.c & '\uffff'));
-+        dataoutput.writeShort((short) (this.d & '\uffff'));
-+        dataoutput.writeInt(this.size);
-+        dataoutput.write(this.buffer, 0, this.size);
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.writeInt(this.a);
++        packetdataserializer.writeInt(this.b);
++        packetdataserializer.writeBoolean(this.inflatedBuffer);
++        packetdataserializer.writeShort((short) (this.c & '\uffff'));
++        packetdataserializer.writeShort((short) (this.d & '\uffff'));
++        packetdataserializer.writeInt(this.size);
++        packetdataserializer.writeBytes(this.e, 0, this.size);
 +    }
 +
-+    public void handle(Connection connection) {
-+        connection.a(this);
++    public void a(PacketPlayOutListener packetplayoutlistener) {
++        packetplayoutlistener.a(this);
 +    }
 +
-+    public int a() {
-+        return 17 + this.size;
++    public String b() {
++        return String.format("x=%d, z=%d, full=%b, sects=%d, add=%d, size=%d", new Object[] { Integer.valueOf(this.a), Integer.valueOf(this.b), Boolean.valueOf(this.inflatedBuffer), Integer.valueOf(this.c), Integer.valueOf(this.d), Integer.valueOf(this.size)});
 +    }
 +
 +    public static ChunkMap a(Chunk chunk, boolean flag, int i) {
@@ -1136,7 +1115,7 @@ index 0000000..4409c4a
 +        byte[] abyte = buildBuffer;
 +
 +        if (flag) {
-+            chunk.seenByPlayer = true;
++            chunk.q = true;
 +        }
 +
 +        int l;
@@ -1209,62 +1188,151 @@ index 0000000..4409c4a
 +        System.arraycopy(abyte, 0, chunkmap.a, 0, j);
 +        return chunkmap;
 +    }
++
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketPlayOutListener) packetlistener);
++    }
 +}
-diff --git a/src/main/java/net/minecraft/server/Packet63WorldParticles.java b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 new file mode 100644
-index 0000000..d7f4d2a
+index 0000000..a58dc60
 --- /dev/null
-+++ b/src/main/java/net/minecraft/server/Packet63WorldParticles.java
-@@ -0,0 +1,51 @@
++++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+@@ -0,0 +1,36 @@
 +package net.minecraft.server;
 +
-+import java.io.DataInput;
-+import java.io.DataOutput;
-+
-+public class Packet63WorldParticles extends Packet {
++public class PacketPlayOutPlayerInfo extends Packet {
 +
 +    private String a;
-+    private float b;
-+    private float c;
-+    private float d;
-+    private float e;
-+    private float f;
-+    private float g;
-+    private float h;
-+    private int i;
++    private boolean b;
++    private int c;
 +
-+    public Packet63WorldParticles() {}
++    public PacketPlayOutPlayerInfo() {}
 +
-+    public void a(DataInput datainput) {
-+        this.a = a(datainput, 64);
-+        this.b = datainput.readFloat();
-+        this.c = datainput.readFloat();
-+        this.d = datainput.readFloat();
-+        this.e = datainput.readFloat();
-+        this.f = datainput.readFloat();
-+        this.g = datainput.readFloat();
-+        this.h = datainput.readFloat();
-+        this.i = datainput.readInt();
++    public PacketPlayOutPlayerInfo(String s, boolean flag, int i) {
++        this.a = s;
++        this.b = flag;
++        this.c = i;
 +    }
 +
-+    public void a(DataOutput dataoutput) {
-+        a(this.a, dataoutput);
-+        dataoutput.writeFloat(this.b);
-+        dataoutput.writeFloat(this.c);
-+        dataoutput.writeFloat(this.d);
-+        dataoutput.writeFloat(this.e);
-+        dataoutput.writeFloat(this.f);
-+        dataoutput.writeFloat(this.g);
-+        dataoutput.writeFloat(this.h);
-+        dataoutput.writeInt(this.i);
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.c(16);
++        this.b = packetdataserializer.readBoolean();
++        this.c = packetdataserializer.readShort();
 +    }
 +
-+    public void handle(Connection connection) {
-+        connection.a(this);
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.a(this.a);
++        packetdataserializer.writeBoolean(this.b);
++        packetdataserializer.writeShort(this.c);
 +    }
 +
-+    public int a() {
-+        return 64;
++    public void a(PacketPlayOutListener packetplayoutlistener) {
++        packetplayoutlistener.a(this);
++    }
++
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketPlayOutListener) packetlistener);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
+new file mode 100644
+index 0000000..35d3be1
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
+@@ -0,0 +1,94 @@
++package net.minecraft.server;
++
++import java.util.ArrayList;
++import java.util.Collection;
++import java.util.Iterator;
++
++public class PacketPlayOutScoreboardTeam extends Packet {
++
++    private String a = "";
++    private String b = "";
++    private String c = "";
++    private String d = "";
++    private Collection e = new ArrayList();
++    private int f;
++    private int g;
++
++    public PacketPlayOutScoreboardTeam() {}
++
++    public PacketPlayOutScoreboardTeam(ScoreboardTeam scoreboardteam, int i) {
++        this.a = scoreboardteam.getName();
++        this.f = i;
++        if (i == 0 || i == 2) {
++            this.b = scoreboardteam.getDisplayName();
++            this.c = scoreboardteam.getPrefix();
++            this.d = scoreboardteam.getSuffix();
++            this.g = scoreboardteam.packOptionData();
++        }
++
++        if (i == 0) {
++            this.e.addAll(scoreboardteam.getPlayerNameSet());
++        }
++    }
++
++    public PacketPlayOutScoreboardTeam(ScoreboardTeam scoreboardteam, Collection collection, int i) {
++        if (i != 3 && i != 4) {
++            throw new IllegalArgumentException("Method must be join or leave for player constructor");
++        } else if (collection != null && !collection.isEmpty()) {
++            this.f = i;
++            this.a = scoreboardteam.getName();
++            this.e.addAll(collection);
++        } else {
++            throw new IllegalArgumentException("Players cannot be null/empty");
++        }
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.c(16);
++        this.f = packetdataserializer.readByte();
++        if (this.f == 0 || this.f == 2) {
++            this.b = packetdataserializer.c(32);
++            this.c = packetdataserializer.c(16);
++            this.d = packetdataserializer.c(16);
++            this.g = packetdataserializer.readByte();
++        }
++
++        if (this.f == 0 || this.f == 3 || this.f == 4) {
++            short short1 = packetdataserializer.readShort();
++
++            for (int i = 0; i < short1; ++i) {
++                this.e.add(packetdataserializer.c(16));
++            }
++        }
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.a(this.a);
++        packetdataserializer.writeByte(this.f);
++        if (this.f == 0 || this.f == 2) {
++            packetdataserializer.a(this.b);
++            packetdataserializer.a(this.c);
++            packetdataserializer.a(this.d);
++            packetdataserializer.writeByte(this.g);
++        }
++
++        if (this.f == 0 || this.f == 3 || this.f == 4) {
++            packetdataserializer.writeShort(this.e.size());
++            Iterator iterator = this.e.iterator();
++
++            while (iterator.hasNext()) {
++                String s = (String) iterator.next();
++
++                packetdataserializer.a(s);
++            }
++        }
++    }
++
++    public void a(PacketPlayOutListener packetplayoutlistener) {
++        packetplayoutlistener.a(this);
++    }
++
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketPlayOutListener) packetlistener);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/RegionFileCache.java b/src/main/java/net/minecraft/server/RegionFileCache.java
@@ -1340,297 +1408,56 @@ index 0000000..900ed68
 +        return regionfile.b(i & 31, j & 31);
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/RemoteStatusListener.java b/src/main/java/net/minecraft/server/RemoteStatusListener.java
+diff --git a/src/main/java/net/minecraft/server/WatchableObject.java b/src/main/java/net/minecraft/server/WatchableObject.java
 new file mode 100644
-index 0000000..12815ee
+index 0000000..678aa91
 --- /dev/null
-+++ b/src/main/java/net/minecraft/server/RemoteStatusListener.java
-@@ -0,0 +1,285 @@
++++ b/src/main/java/net/minecraft/server/WatchableObject.java
+@@ -0,0 +1,44 @@
 +package net.minecraft.server;
 +
-+import java.io.IOException;
-+import java.net.DatagramPacket;
-+import java.net.DatagramSocket;
-+import java.net.InetAddress;
-+import java.net.PortUnreachableException;
-+import java.net.SocketAddress;
-+import java.net.SocketException;
-+import java.net.SocketTimeoutException;
-+import java.net.UnknownHostException;
-+import java.util.Date;
-+import java.util.HashMap;
-+import java.util.Iterator;
-+import java.util.Map;
-+import java.util.Map.Entry;
++public class WatchableObject {
 +
-+public class RemoteStatusListener extends RemoteConnectionThread {
++    private final int a;
++    private final int b;
++    private Object c;
++    private boolean d;
 +
-+    private long clearedTime;
-+    private int bindPort;
-+    private int serverPort;
-+    private int maxPlayers;
-+    private String localAddress;
-+    private String worldName;
-+    private DatagramSocket socket;
-+    private byte[] n = new byte[1460];
-+    private DatagramPacket o;
-+    private Map p;
-+    private String hostname;
-+    private String motd;
-+    private Map challenges;
-+    private long t;
-+    private RemoteStatusReply cachedReply;
-+    private long cacheTime;
-+
-+    public RemoteStatusListener(IMinecraftServer iminecraftserver) {
-+        super(iminecraftserver);
-+        this.bindPort = iminecraftserver.a("query.port", 0);
-+        this.motd = iminecraftserver.w();
-+        this.serverPort = iminecraftserver.x();
-+        this.localAddress = iminecraftserver.y();
-+        this.maxPlayers = iminecraftserver.B();
-+        this.worldName = iminecraftserver.L();
-+        this.cacheTime = 0L;
-+        this.hostname = "0.0.0.0";
-+        if (0 != this.motd.length() && !this.hostname.equals(this.motd)) {
-+            this.hostname = this.motd;
-+        } else {
-+            this.motd = "0.0.0.0";
-+
-+            try {
-+                InetAddress inetaddress = InetAddress.getLocalHost();
-+
-+                this.hostname = inetaddress.getHostAddress();
-+            } catch (UnknownHostException unknownhostexception) {
-+                this.warning("Unable to determine local host IP, please set server-ip in \'" + iminecraftserver.b_() + "\' : " + unknownhostexception.getMessage());
-+            }
-+        }
-+
-+        if (0 == this.bindPort) {
-+            this.bindPort = this.serverPort;
-+            this.info("Setting default query port to " + this.bindPort);
-+            iminecraftserver.a("query.port", Integer.valueOf(this.bindPort));
-+            iminecraftserver.a("debug", Boolean.valueOf(false));
-+            iminecraftserver.a();
-+        }
-+
-+        this.p = new HashMap();
-+        this.cachedReply = new RemoteStatusReply(1460);
-+        this.challenges = new HashMap();
-+        this.t = (new Date()).getTime();
++    public WatchableObject(int i, int j, Object object) {
++        this.b = j;
++        this.c = object;
++        this.a = i;
++        this.d = true;
 +    }
 +
-+    private void send(byte[] abyte, DatagramPacket datagrampacket) {
-+        this.socket.send(new DatagramPacket(abyte, abyte.length, datagrampacket.getSocketAddress()));
++    public int a() {
++        return this.b;
 +    }
 +
-+    private boolean parsePacket(DatagramPacket datagrampacket) {
-+        byte[] abyte = datagrampacket.getData();
-+        int i = datagrampacket.getLength();
-+        SocketAddress socketaddress = datagrampacket.getSocketAddress();
-+
-+        this.debug("Packet len " + i + " [" + socketaddress + "]");
-+        if (3 <= i && -2 == abyte[0] && -3 == abyte[1]) {
-+            this.debug("Packet \'" + StatusChallengeUtils.a(abyte[2]) + "\' [" + socketaddress + "]");
-+            switch (abyte[2]) {
-+            case 0:
-+                if (!this.hasChallenged(datagrampacket).booleanValue()) {
-+                    this.debug("Invalid challenge [" + socketaddress + "]");
-+                    return false;
-+                } else if (15 == i) {
-+                    this.send(this.getFullReply(datagrampacket), datagrampacket);
-+                    this.debug("Rules [" + socketaddress + "]");
-+                } else {
-+                    RemoteStatusReply remotestatusreply = new RemoteStatusReply(1460);
-+
-+                    remotestatusreply.write((int) 0);
-+                    remotestatusreply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
-+                    remotestatusreply.write(this.localAddress);
-+                    remotestatusreply.write("SMP");
-+                    remotestatusreply.write(this.worldName);
-+                    remotestatusreply.write(Integer.toString(this.d()));
-+                    remotestatusreply.write(Integer.toString(this.maxPlayers));
-+                    remotestatusreply.write((short) this.serverPort);
-+                    remotestatusreply.write(this.hostname);
-+                    this.send(remotestatusreply.getBytes(), datagrampacket);
-+                    this.debug("Status [" + socketaddress + "]");
-+                }
-+
-+            case 9:
-+                this.createChallenge(datagrampacket);
-+                this.debug("Challenge [" + socketaddress + "]");
-+                return true;
-+
-+            default:
-+                return true;
-+            }
-+        } else {
-+            this.debug("Invalid packet [" + socketaddress + "]");
-+            return false;
-+        }
++    public void a(Object object) {
++        this.c = object;
 +    }
 +
-+    private byte[] getFullReply(DatagramPacket datagrampacket) {
-+        long i = MinecraftServer.aq();
-+
-+        if (i < this.cacheTime + 5000L) {
-+            byte[] abyte = this.cachedReply.getBytes();
-+            byte[] abyte1 = this.getIdentityToken(datagrampacket.getSocketAddress());
-+
-+            abyte[1] = abyte1[0];
-+            abyte[2] = abyte1[1];
-+            abyte[3] = abyte1[2];
-+            abyte[4] = abyte1[3];
-+            return abyte;
-+        } else {
-+            this.cacheTime = i;
-+            this.cachedReply.reset();
-+            this.cachedReply.write((int) 0);
-+            this.cachedReply.write(this.getIdentityToken(datagrampacket.getSocketAddress()));
-+            this.cachedReply.write("splitnum");
-+            this.cachedReply.write((int) 128);
-+            this.cachedReply.write((int) 0);
-+            this.cachedReply.write("hostname");
-+            this.cachedReply.write(this.localAddress);
-+            this.cachedReply.write("gametype");
-+            this.cachedReply.write("SMP");
-+            this.cachedReply.write("game_id");
-+            this.cachedReply.write("MINECRAFT");
-+            this.cachedReply.write("version");
-+            this.cachedReply.write(this.server.getVersion());
-+            this.cachedReply.write("plugins");
-+            this.cachedReply.write(this.server.getPlugins());
-+            this.cachedReply.write("map");
-+            this.cachedReply.write(this.worldName);
-+            this.cachedReply.write("numplayers");
-+            this.cachedReply.write("" + this.d());
-+            this.cachedReply.write("maxplayers");
-+            this.cachedReply.write("" + this.maxPlayers);
-+            this.cachedReply.write("hostport");
-+            this.cachedReply.write("" + this.serverPort);
-+            this.cachedReply.write("hostip");
-+            this.cachedReply.write(this.hostname);
-+            this.cachedReply.write((int) 0);
-+            this.cachedReply.write((int) 1);
-+            this.cachedReply.write("player_");
-+            this.cachedReply.write((int) 0);
-+            String[] astring = this.server.getPlayers();
-+            byte b0 = (byte) astring.length;
-+
-+            for (byte b1 = (byte) (b0 - 1); b1 >= 0; --b1) {
-+                this.cachedReply.write(astring[b1]);
-+            }
-+
-+            this.cachedReply.write((int) 0);
-+            return this.cachedReply.getBytes();
-+        }
++    public Object b() {
++        return this.c;
 +    }
 +
-+    private byte[] getIdentityToken(SocketAddress socketaddress) {
-+        return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getIdentityToken();
++    public int c() {
++        return this.a;
 +    }
 +
-+    private Boolean hasChallenged(DatagramPacket datagrampacket) {
-+        SocketAddress socketaddress = datagrampacket.getSocketAddress();
-+
-+        if (!this.challenges.containsKey(socketaddress)) {
-+            return Boolean.valueOf(false);
-+        } else {
-+            byte[] abyte = datagrampacket.getData();
-+
-+            return ((RemoteStatusChallenge) this.challenges.get(socketaddress)).getToken() != StatusChallengeUtils.c(abyte, 7, datagrampacket.getLength()) ? Boolean.valueOf(false) : Boolean.valueOf(true);
-+        }
++    public boolean d() {
++        return this.d;
 +    }
 +
-+    private void createChallenge(DatagramPacket datagrampacket) {
-+        RemoteStatusChallenge remotestatuschallenge = new RemoteStatusChallenge(this, datagrampacket);
-+
-+        this.challenges.put(datagrampacket.getSocketAddress(), remotestatuschallenge);
-+        this.send(remotestatuschallenge.getChallengeResponse(), datagrampacket);
++    public void a(boolean flag) {
++        this.d = flag;
 +    }
 +
-+    private void cleanChallenges() {
-+        if (this.running) {
-+            long i = MinecraftServer.aq();
-+
-+            if (i >= this.clearedTime + 30000L) {
-+                this.clearedTime = i;
-+                Iterator iterator = this.challenges.entrySet().iterator();
-+
-+                while (iterator.hasNext()) {
-+                    Entry entry = (Entry) iterator.next();
-+
-+                    if (((RemoteStatusChallenge) entry.getValue()).isExpired(i).booleanValue()) {
-+                        iterator.remove();
-+                    }
-+                }
-+            }
-+        }
-+    }
-+
-+    public void run() {
-+        this.info("Query running on " + this.motd + ":" + this.bindPort);
-+        this.clearedTime = MinecraftServer.aq();
-+        this.o = new DatagramPacket(this.n, this.n.length);
-+
-+        try {
-+            while (this.running) {
-+                try {
-+                    this.socket.receive(this.o);
-+                    this.cleanChallenges();
-+                    this.parsePacket(this.o);
-+                } catch (SocketTimeoutException sockettimeoutexception) {
-+                    this.cleanChallenges();
-+                } catch (PortUnreachableException portunreachableexception) {
-+                    ;
-+                } catch (IOException ioexception) {
-+                    this.a(ioexception);
-+                }
-+            }
-+        } finally {
-+            this.e();
-+        }
-+    }
-+
-+    public void a() {
-+        if (!this.running) {
-+            if (0 < this.bindPort && '\uffff' >= this.bindPort) {
-+                if (this.g()) {
-+                    super.a();
-+                }
-+            } else {
-+                this.warning("Invalid query port " + this.bindPort + " found in \'" + this.server.b_() + "\' (queries disabled)");
-+            }
-+        }
-+    }
-+
-+    private void a(Exception exception) {
-+        if (this.running) {
-+            this.warning("Unexpected exception, buggy JRE? (" + exception.toString() + ")");
-+            if (!this.g()) {
-+                this.error("Failed to recover from buggy JRE, shutting down!");
-+                this.running = false;
-+            }
-+        }
-+    }
-+
-+    private boolean g() {
-+        try {
-+            this.socket = new DatagramSocket(this.bindPort, InetAddress.getByName(this.motd));
-+            this.a(this.socket);
-+            this.socket.setSoTimeout(500);
-+            return true;
-+        } catch (SocketException socketexception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Socket): " + socketexception.getMessage());
-+        } catch (UnknownHostException unknownhostexception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (Unknown Host): " + unknownhostexception.getMessage());
-+        } catch (Exception exception) {
-+            this.warning("Unable to initialise query system on " + this.motd + ":" + this.bindPort + " (E): " + exception.getMessage());
-+        }
-+
-+        return false;
++    static boolean a(WatchableObject watchableobject, boolean flag) {
++        return watchableobject.d = flag;
 +    }
 +}
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

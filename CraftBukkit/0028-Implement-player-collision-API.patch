@@ -1,0 +1,87 @@
+From 2c03fe28eb544bce29e3311f177196141754c81c Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 2 Aug 2012 17:54:44 -0700
+Subject: [PATCH] Implement player collision API
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index fc85bb4..0f428f3 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -430,7 +430,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+ 
+             List list = this.world.getEntities(this, axisalignedbb);
+ 
+-            if (list != null) {
++            if (this.R() && list != null) { // CraftBukkit
+                 for (int i = 0; i < list.size(); ++i) {
+                     Entity entity = (Entity) list.get(i);
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index f90e2a3..c091dc8 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -1483,7 +1483,7 @@ public abstract class EntityLiving extends Entity {
+     protected void bn() {
+         List list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
+ 
+-        if (list != null && !list.isEmpty()) {
++        if (this.R() && list != null && !list.isEmpty()) { // CraftBukkit
+             for (int i = 0; i < list.size(); ++i) {
+                 Entity entity = (Entity) list.get(i);
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 5b25c8b..b3c6d39 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -57,6 +57,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public String listName;
+     public org.bukkit.Location compassTarget;
+     public int newExp = 0;
++    public boolean collidesWithEntities = true; // CraftBukkit
++
+     public int newLevel = 0;
+     public int newTotalExp = 0;
+     public boolean keepLevel = false;
+@@ -155,6 +157,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.height = 0.0F;
+     }
+ 
++    // CraftBukkit start
++    @Override
++    public boolean Q() {
++        return this.collidesWithEntities && super.Q();
++    }
++
++    @Override
++    public boolean R() {
++        return this.collidesWithEntities && super.R();
++    }
++    // CraftBukkit end
++
+     public float getHeadHeight() {
+         return 1.62F;
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index f8d984b..d4d2f4e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1161,6 +1161,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         getHandle().updateAbilities();
+     }
+ 
++    public void setCollidesWithEntities(boolean yes) {
++        getHandle().collidesWithEntities = yes;
++        getHandle().k = yes;
++    }
++
++    public boolean getCollidesWithEntities() {
++        return getHandle().collidesWithEntities;
++    }
++
+     public boolean getAllowFlight() {
+         return getHandle().abilities.canFly;
+     }
+-- 
+1.8.5.1
+

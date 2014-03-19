@@ -1,24 +1,24 @@
-From a92f07f993643e63e1e37f27294a572e10b237b3 Mon Sep 17 00:00:00 2001
+From 1d0ea02a18afd4b15d634e124ab123e632d9ae72 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sat, 29 Jun 2013 22:03:21 -0700
 Subject: [PATCH] Add BlockFallEvent
 
 
-diff --git a/src/main/java/net/minecraft/server/BlockSand.java b/src/main/java/net/minecraft/server/BlockSand.java
-index 3ca6e41..0f65eb3 100644
---- a/src/main/java/net/minecraft/server/BlockSand.java
-+++ b/src/main/java/net/minecraft/server/BlockSand.java
+diff --git a/src/main/java/net/minecraft/server/BlockFalling.java b/src/main/java/net/minecraft/server/BlockFalling.java
+index 473fc31..5d5e1fd 100644
+--- a/src/main/java/net/minecraft/server/BlockFalling.java
++++ b/src/main/java/net/minecraft/server/BlockFalling.java
 @@ -2,6 +2,8 @@ package net.minecraft.server;
  
  import java.util.Random;
  
-+import org.bukkit.event.block.BlockFallEvent;  //Craftbukkit
++import org.bukkit.event.block.BlockFallEvent; //Craftbukkit
 +
- public class BlockSand extends Block {
+ public class BlockFalling extends Block {
  
      public static boolean instaFall;
-@@ -38,6 +40,18 @@ public class BlockSand extends Block {
-                     EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), this.id, world.getData(i, j, k));
+@@ -38,6 +40,18 @@ public class BlockFalling extends Block {
+                     EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) ((float) i + 0.5F), (double) ((float) j + 0.5F), (double) ((float) k + 0.5F), this, world.getData(i, j, k));
  
                      this.a(entityfallingblock);
 +
@@ -27,7 +27,7 @@ index 3ca6e41..0f65eb3 100644
 +
 +                    BlockFallEvent blockFallEvent = new BlockFallEvent(block, (org.bukkit.entity.FallingBlock) entityfallingblock.getBukkitEntity());
 +                    world.getServer().getPluginManager().callEvent(blockFallEvent);
-+                    
++
 +                    if (blockFallEvent.isCancelled()) {
 +                        return;
 +                    }
@@ -37,5 +37,5 @@ index 3ca6e41..0f65eb3 100644
                  }
              } else {
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

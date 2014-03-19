@@ -1,4 +1,4 @@
-From 5ea2f3d153026f08004e580add60878292ffbb79 Mon Sep 17 00:00:00 2001
+From 5f0f26f60c608eca457896a56cd529ce2698d1c7 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 22 May 2013 23:14:40 -0500
 Subject: [PATCH] Command Blocks shouldn't take players that can't collide with
@@ -6,16 +6,16 @@ Subject: [PATCH] Command Blocks shouldn't take players that can't collide with
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 5dafeaf..e913cc1 100644
+index 5b0590e..7600c0b 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -840,6 +840,7 @@ public abstract class PlayerList {
+@@ -899,6 +899,7 @@ public abstract class PlayerList {
  
              for (int i2 = 0; i2 < this.players.size(); ++i2) {
                  EntityPlayer entityplayer = (EntityPlayer) this.players.get(i2);
 +                if(!entityplayer.getBukkitEntity().getCollidesWithEntities()) continue; // CraftBukkit
  
-                 if ((world == null || entityplayer.world == world) && (s == null || flag1 != s.equalsIgnoreCase(entityplayer.getLocalizedName()))) {
+                 if ((world == null || entityplayer.world == world) && (s == null || flag1 != s.equalsIgnoreCase(entityplayer.getName()))) {
                      if (s1 != null) {
 -- 
 1.8.5.1

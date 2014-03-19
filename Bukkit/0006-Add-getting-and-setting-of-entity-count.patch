@@ -1,19 +1,17 @@
-From a89cd6f8dc3b736f175a07754d40c896470cbbca Mon Sep 17 00:00:00 2001
+From 73736e1a11db1e91a6a41583e6cdb362b6f8ea0c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 7a9502a..e3b066c 100644
+index 6b9c9f3..fd435d9 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -654,4 +654,18 @@ public final class Bukkit {
-     public static ScoreboardManager getScoreboardManager() {
-         return server.getScoreboardManager();
+@@ -684,6 +684,20 @@ public final class Bukkit {
      }
-+
-+    /**
+ 
+     /**
 +     * @see Server#getEntityCount()
 +     */
 +    public static int getEntityCount() {
@@ -26,17 +24,19 @@ index 7a9502a..e3b066c 100644
 +    public static void setEntityCount(int count) {
 +        server.setEntityCount(count);
 +    }
- }
-diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index aa45f16..1b4f733 100644
---- a/src/main/java/org/bukkit/Server.java
-+++ b/src/main/java/org/bukkit/Server.java
-@@ -709,4 +709,18 @@ public interface Server extends PluginMessageRecipient {
-      * @return the scoreboard manager or null if no worlds are loaded.
-      */
-     ScoreboardManager getScoreboardManager();
 +
 +    /**
+      * @see Server#getServerIcon()
+      */
+     public static CachedServerIcon getServerIcon() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index d2cb517..abbbc06 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -794,6 +794,20 @@ public interface Server extends PluginMessageRecipient {
+     ScoreboardManager getScoreboardManager();
+ 
+     /**
 +     * Gets the current entity count
 +     *
 +     * @return current entity count
@@ -49,7 +49,11 @@ index aa45f16..1b4f733 100644
 +     * @param count The new entity count
 +     */
 +    void setEntityCount(int count);
- }
++
++    /**
+      * Gets an instance of the server's default server-icon.
+      *
+      * @return the default server-icon; null values may be used by the
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

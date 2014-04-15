@@ -1,42 +1,14 @@
-From 03891816f7c4f1a82360125ae01e7f33e6da3877 Mon Sep 17 00:00:00 2001
+From 240af66c45804ff9ac8a9d4f8220f62793b45719 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:42:05 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
-index 1d57188..01c41f1 100644
+index 1d57188..78c5ea2 100644
 --- a/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
 +++ b/src/main/java/org/bukkit/event/player/AsyncPlayerPreLoginEvent.java
-@@ -20,17 +20,23 @@ public class AsyncPlayerPreLoginEvent extends Event {
-     private final UUID uniqueId;
- 
-     @Deprecated
--    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress) {
--        this(name, ipAddress, null);
-+    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final boolean allowed) {
-+        this(name, ipAddress, null, allowed);
-     }
- 
--    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final UUID uniqueId) {
-+    public AsyncPlayerPreLoginEvent(final String name, final InetAddress ipAddress, final UUID uniqueId, final boolean allowed) {
-         super(true);
--        this.result = Result.ALLOWED;
-         this.message = "";
-         this.name = name;
-         this.ipAddress = ipAddress;
-         this.uniqueId = uniqueId;
-+
-+        if(allowed) {
-+            this.result = Result.ALLOWED;
-+        } else {
-+            this.result = Result.KICK_VERIFY;
-+            this.message = "Failed to verify username!";
-+        }
-     }
- 
-     /**
-@@ -189,6 +195,10 @@ public class AsyncPlayerPreLoginEvent extends Event {
+@@ -189,6 +189,10 @@ public class AsyncPlayerPreLoginEvent extends Event {
           */
          KICK_WHITELIST,
          /**
@@ -63,5 +35,5 @@ index e8553f0..aa49dfa 100644
           */
          KICK_OTHER
 -- 
-1.8.5.1
+1.7.9
 

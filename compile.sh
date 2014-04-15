@@ -9,7 +9,7 @@ function compile {
     echo "  $1 compiling..."
     cd $target
 
-    if !(MAVEN_OPTS=-Xmx256M mvn clean install); then
+    if !(MAVEN_OPTS=-Xmx512M mvn clean install); then
         echo "  $1 failed to compile"
         cd "$ORIG_PWD"
         exit $?

@@ -29,7 +29,7 @@ function rebuildPatches {
     cd $target
     git format-patch --no-stat -N -o ../../$patches upstream/upstream
     cd ../..
-    git add $patches
+    git add --all $patches
     cleanupPatches $patches
     echo "  Patches saved for $what to $patches"
 }

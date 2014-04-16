@@ -1,4 +1,0 @@
-before_script:
-  - git config --global user.email "support@oc.tc"
-  - git config --global user.name "Overcast Network"
-script: ./build.sh

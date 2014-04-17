@@ -1,4 +1,4 @@
-From a1119badc905b4916b3ae42be0551e20306f1588 Mon Sep 17 00:00:00 2001
+From 5d0a5a90d13f12f667f07ff42d3c969c9af9f4ec Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -71,7 +71,7 @@ index 9ff1694..f1dff28 100644
      private EnumProtocol p;
      private IChatBaseComponent q;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2b5aa31..020053a 100644
+index 2b5aa31..1cd1281 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -223,6 +223,7 @@ public final class CraftServer implements Server {
@@ -86,27 +86,14 @@ index 2b5aa31..020053a 100644
          }
  
          saveCommandsConfig();
-+        bungee = configuration.getBoolean("settings.bungee");
++        bungee = configuration.getBoolean("settings.bungeecord");
          overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
          ((SimplePluginManager) pluginManager).useTimings(configuration.getBoolean("settings.plugin-profiling"));
          monsterSpawn = configuration.getInt("spawn-limits.monsters");
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index 129ac34..c76d5ae 100644
+index 129ac34..5236ec0 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
-@@ -2,10 +2,10 @@
- # As you can see, there's actually not that much to configure without any plugins.
- # For a reference for any variable inside this file, check out the Bukkit Wiki at
- # http://wiki.bukkit.org/Bukkit.yml
--# 
-+#
- # If you need help on this file, feel free to join us on irc or leave a message
- # on the forums asking for advice.
--# 
-+#
- # IRC: #bukkit @ esper.net
- #    (If this means nothing to you, just go to http://webchat.esper.net/?channels=bukkit )
- # Forums: http://forums.bukkit.org/forums/bukkit-help.6/
 @@ -25,6 +25,7 @@ settings:
      query-plugins: true
      deprecated-verbose: default

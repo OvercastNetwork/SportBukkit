@@ -1,18 +1,27 @@
-From 11d3d688284712ae8850f9ce7690510b41de3a1d Mon Sep 17 00:00:00 2001
+From 271f00109e0022b8fd092d8c494c27e7f8eead3e Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Thu, 4 Jul 2013 10:11:46 +1000
 Subject: [PATCH] Colour Console Messages
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 6788c5d..b92aec7 100644
+index 00bb455..c020f85 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -972,7 +972,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+@@ -399,7 +399,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+             if (this.worldServer != null) {
+                 i.info("Saving worlds");
+                 this.saveChunks(false);
+-            
++
+                 /* CraftBukkit start - Handled in saveChunks
+                 for (int i = 0; i < this.worldServer.length; ++i) {
+                     WorldServer worldserver = this.worldServer[i];
+@@ -986,7 +986,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
      }
  
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {
--        h.info(ichatbasecomponent.c());
+-        i.info(ichatbasecomponent.c());
 +        this.console.sendMessage(ichatbasecomponent.c()); // CraftBukkit - we want coloured and pretty messages too!
      }
  

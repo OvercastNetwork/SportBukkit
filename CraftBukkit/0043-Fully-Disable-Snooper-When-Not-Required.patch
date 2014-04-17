@@ -1,25 +1,26 @@
-From 3b7b07d5bc9ee1511f6ccf09b93e91a5cae8add3 Mon Sep 17 00:00:00 2001
+From 166913642a53423adaf95d0113a4452c59b37e57 Mon Sep 17 00:00:00 2001
 From: agentk20 <agentkid20@gmail.com>
 Date: Sat, 3 Aug 2013 19:28:48 +1000
 Subject: [PATCH] Fully Disable Snooper When Not Required
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b92aec7..22a4662 100644
+index c020f85..5bb51cc 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -571,11 +571,11 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
-         this.f[this.ticks % 100] = System.nanoTime() - i;
+@@ -581,11 +581,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+         this.g[this.ticks % 100] = System.nanoTime() - i;
          this.methodProfiler.b();
          this.methodProfiler.a("snooper");
--        if (!this.k.d() && this.ticks > 100) {
-+        if (getSnooperEnabled() && !this.k.d() && this.ticks > 100) {
-             this.k.a();
+-        if (!this.l.d() && this.ticks > 100) {
++
++        if (getSnooperEnabled() && !this.l.d() && this.ticks > 100) {
+             this.l.a();
          }
  
 -        if (this.ticks % 6000 == 0) {
 +        if (getSnooperEnabled() && this.ticks % 6000 == 0) {
-             this.k.b();
+             this.l.b();
          }
  
 -- 

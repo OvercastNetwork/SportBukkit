@@ -1,4 +1,4 @@
-From aed28634c7830ce910f57a30f2740eaf862e286c Mon Sep 17 00:00:00 2001
+From 549bdd36d4096c4a0c3c22899ff958bcae331b59 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Add fake name API
@@ -37,10 +37,10 @@ index 6941bb8..a6fd63f 100644
                      if (!this.tracker.getDataWatcher().d()) {
                          this.sendMetadata(this.tracker.getDataWatcher(), true, entityplayer); // CraftBukkit - custom metadata sender
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
-index 8bab528..f92b915 100644
+index 7bae405..1b02d08 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
-@@ -9,7 +9,7 @@ import java.io.IOException; // CraftBukkit
+@@ -12,7 +12,7 @@ import java.io.IOException; // CraftBukkit
  public class PacketPlayOutNamedEntitySpawn extends Packet {
  
      private int a;
@@ -112,10 +112,10 @@ index 35d3be1..0b638fa 100644
          packetdataserializer.writeByte(this.f);
          if (this.f == 0 || this.f == 2) {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 8b0981b..a78814e 100644
+index 7e19dc6..ed14698 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -21,7 +21,9 @@ import java.io.UnsupportedEncodingException;
+@@ -22,7 +22,9 @@ import java.io.UnsupportedEncodingException;
  import java.util.concurrent.ExecutionException;
  import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
  import java.util.HashSet;
@@ -125,7 +125,7 @@ index 8b0981b..a78814e 100644
  import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.craftbukkit.inventory.CraftInventoryView;
-@@ -755,6 +757,90 @@ public class PlayerConnection implements PacketPlayInListener {
+@@ -756,6 +758,90 @@ public class PlayerConnection implements PacketPlayInListener {
              PacketPlayOutSpawnPosition packet6 = (PacketPlayOutSpawnPosition) packet;
              this.player.compassTarget = new Location(this.getPlayer().getWorld(), packet6.x, packet6.y, packet6.z);
          }
@@ -217,7 +217,7 @@ index 8b0981b..a78814e 100644
  
          try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2873b34..7172d24 100644
+index 357f47b..506c67e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -482,7 +482,8 @@ public final class CraftServer implements Server {
@@ -297,7 +297,7 @@ index 2873b34..7172d24 100644
      public int getMaxPlayers() {
          return playerList.getMaxPlayers();
      }
-@@ -1591,8 +1609,8 @@ public final class CraftServer implements Server {
+@@ -1604,8 +1622,8 @@ public final class CraftServer implements Server {
          PlayerChatTabCompleteEvent event = new PlayerChatTabCompleteEvent(player, message, completions);
          String token = event.getLastToken();
          for (Player p : players) {
@@ -339,7 +339,7 @@ index 4c23727..75169ae 100644
          return true;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 15c83ef..09d1c91 100644
+index ff6a01a..ac193a9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1,5 +1,6 @@
@@ -358,8 +358,8 @@ index 15c83ef..09d1c91 100644
 +
  import net.minecraft.server.*;
  
- import org.apache.commons.lang.Validate;
-@@ -28,6 +32,7 @@ import org.bukkit.Statistic;
+ import net.minecraft.util.com.mojang.authlib.GameProfile;
+@@ -29,6 +33,7 @@ import org.bukkit.Statistic;
  import org.bukkit.Material;
  import org.bukkit.Statistic.Type;
  import org.bukkit.World;
@@ -367,7 +367,7 @@ index 15c83ef..09d1c91 100644
  import org.bukkit.configuration.serialization.DelegateDeserialization;
  import org.bukkit.conversations.Conversation;
  import org.bukkit.conversations.ConversationAbandonedEvent;
-@@ -75,6 +80,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -76,6 +81,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      private boolean scaledHealth = false;
      private double healthScale = 20;
  
@@ -377,7 +377,7 @@ index 15c83ef..09d1c91 100644
      public CraftPlayer(CraftServer server, EntityPlayer entity) {
          super(server, entity);
  
-@@ -162,6 +170,184 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -167,6 +175,184 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -562,7 +562,7 @@ index 15c83ef..09d1c91 100644
      public String getDisplayName() {
          return getHandle().displayName;
      }
-@@ -193,9 +379,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -198,9 +384,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
  
          // Collisions will make for invisible people
@@ -578,7 +578,7 @@ index 15c83ef..09d1c91 100644
              }
          }
  
-@@ -1162,6 +1351,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1171,6 +1360,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      public void disconnect(String reason) {

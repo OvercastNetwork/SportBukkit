@@ -1,14 +1,14 @@
-From efee2bfc7c78589f4433efd94d7b1b979774d720 Mon Sep 17 00:00:00 2001
+From 8f2d78a101690185cb9c809b3f8e3085df6c0841 Mon Sep 17 00:00:00 2001
 From: Mike Primm <mike@primmhome.com>
 Date: Wed, 16 Jan 2013 15:27:22 -0600
 Subject: [PATCH] Sync Free Chunk Reference Cache
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 7a9d7a2..d65cc24 100644
+index a321339..4714a95 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -260,20 +260,18 @@ public abstract class World implements IBlockAccess {
+@@ -261,20 +261,18 @@ public abstract class World implements IBlockAccess {
          return this.getChunkAt(i >> 4, j >> 4);
      }
  

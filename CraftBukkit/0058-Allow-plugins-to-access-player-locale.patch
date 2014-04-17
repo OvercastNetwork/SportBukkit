@@ -1,11 +1,11 @@
-From c613f6a106dfdaf649b0ed87ef8f1a24ca8753e7 Mon Sep 17 00:00:00 2001
+From 1ec183af72e022d6fcc9d983a669a0f47a659e0d Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 13f0aab..237567d 100644
+index c61d147..aabf33a 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -30,7 +30,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -18,10 +18,10 @@ index 13f0aab..237567d 100644
      public final MinecraftServer server;
      public final PlayerInteractManager playerInteractManager;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 2bdf723..15c83ef 100644
+index d175818..ff6a01a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1380,4 +1380,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1389,4 +1389,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public String getHostname() {
          return getHandle().hostname;
      }

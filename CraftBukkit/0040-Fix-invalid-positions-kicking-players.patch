@@ -1,14 +1,14 @@
-From e72c3c9c0b2dd5186715d54d895c7fd465301b26 Mon Sep 17 00:00:00 2001
+From 52650dc09e99460d843de5aa9aa7e71ea7b0ee8c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 9 Jul 2013 17:06:59 -0500
 Subject: [PATCH] Fix invalid positions kicking players
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 5fc23db..8b0981b 100644
+index 00ba2da..7e19dc6 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -222,6 +222,11 @@ public class PlayerConnection implements PacketPlayInListener {
+@@ -223,6 +223,11 @@ public class PlayerConnection implements PacketPlayInListener {
              double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);
              float deltaAngle = Math.abs(this.lastYaw - to.getYaw()) + Math.abs(this.lastPitch - to.getPitch());
  
@@ -20,7 +20,7 @@ index 5fc23db..8b0981b 100644
              if ((delta > 1f / 256 || deltaAngle > 10f) && (this.checkMovement && !this.player.dead)) {
                  this.lastPosX = to.getX();
                  this.lastPosY = to.getY();
-@@ -461,6 +466,18 @@ public class PlayerConnection implements PacketPlayInListener {
+@@ -462,6 +467,18 @@ public class PlayerConnection implements PacketPlayInListener {
              f1 = 0;
          }
  

@@ -1,4 +1,4 @@
-From eeeeba51da31386ce81ecadabc520a41d6228573 Mon Sep 17 00:00:00 2001
+From 2027118d8105b98b3a3d18658854dd931e3dc57b Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 7 Dec 2013 17:53:32 -0600
 Subject: [PATCH] Make scoreboard classes public
@@ -18,7 +18,7 @@ index d2e3096..1807e19 100644
      static final CraftCriteria DUMMY;
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftObjective.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftObjective.java
-index 431807a..3193485 100644
+index 9eaec71..97cb517 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftObjective.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftObjective.java
 @@ -9,7 +9,7 @@ import org.bukkit.scoreboard.DisplaySlot;
@@ -40,7 +40,7 @@ index 431807a..3193485 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
-index 0ffbe9b..64732b7 100644
+index 7095f6d..5d523d8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScore.java
 @@ -16,7 +16,7 @@ import org.bukkit.scoreboard.Score;
@@ -49,7 +49,7 @@ index 0ffbe9b..64732b7 100644
   */
 -final class CraftScore implements Score {
 +public final class CraftScore implements Score {
-     private final String playerName;
+     private final String entry;
      private final CraftObjective objective;
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftScoreboardComponent.java

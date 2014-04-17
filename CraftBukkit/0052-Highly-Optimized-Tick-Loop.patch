@@ -1,14 +1,14 @@
-From a0f862ec8a7b94bbd25dce2454a868eb0133cb5e Mon Sep 17 00:00:00 2001
+From fdb53cfba0b2ffc9b96f9c93f7fd5b315c6b56b5 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sun, 3 Feb 2013 12:28:17 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 22a4662..973f19b 100644
+index 5bb51cc..8bffe55 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -101,6 +101,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+@@ -106,6 +106,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
      public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
      public int autosavePeriod;
      // CraftBukkit end
@@ -20,26 +20,26 @@ index 22a4662..973f19b 100644
 +    // Spigot end
  
      public MinecraftServer(OptionSet options, Proxy proxy) { // CraftBukkit - signature file -> OptionSet
-         i = this;
-@@ -431,38 +437,28 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
-                 this.p.setServerInfo(new ServerPingServerData("1.7.5", 4));
-                 this.a(this.p);
+         this.X = new UserCache(this, a);
+@@ -441,38 +447,28 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+                 this.q.setServerInfo(new ServerPingServerData("1.7.8", 5));
+                 this.a(this.q);
  
 +                // Spigot start
 +                long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                  while (this.isRunning) {
--                    long k = aq();
+-                    long k = ar();
 -                    long l = k - i;
 -
--                    if (l > 2000L && i - this.O >= 15000L) {
+-                    if (l > 2000L && i - this.P >= 15000L) {
 -                        if (this.server.getWarnOnOverload()) // CraftBukkit - Added option to suppress warning messages
--                        h.warn("Can\'t keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", new Object[] { Long.valueOf(l), Long.valueOf(l / 50L)});
+-                        MinecraftServer.i.warn("Can\'t keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", new Object[] { Long.valueOf(l), Long.valueOf(l / 50L)});
 -                        l = 2000L;
--                        this.O = i;
+-                        this.P = i;
 -                    }
 -
 -                    if (l < 0L) {
--                        h.warn("Time ran backwards! Did the system time change?");
+-                        MinecraftServer.i.warn("Time ran backwards! Did the system time change?");
 -                        l = 0L;
 +                    curTime = System.nanoTime();
 +                    wait = TICK_TIME - (curTime - lastTick) - catchupTime;
@@ -69,7 +69,7 @@ index 22a4662..973f19b 100644
  
 -                    Thread.sleep(Math.max(1L,  50L - j));
 +                    this.u();
-                     this.N = true;
+                     this.O = true;
                  }
 +                // Spigot end
              } else {

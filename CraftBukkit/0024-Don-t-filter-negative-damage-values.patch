@@ -1,11 +1,11 @@
-From 67f157a7fb43856aed38dcaf59fa4f531b723fed Mon Sep 17 00:00:00 2001
+From 86e4bf356dcc4d3fb2f4410a45a3fe32157cb08b Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 30 Mar 2013 19:22:48 -0500
 Subject: [PATCH] Don't filter negative damage values
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
-index b308e03..77e0154 100644
+index 791467b..dbdafa6 100644
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
 @@ -164,12 +164,12 @@ public final class ItemStack {

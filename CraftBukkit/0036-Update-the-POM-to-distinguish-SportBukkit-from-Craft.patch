@@ -1,11 +1,11 @@
-From d09dec7ddb9304a177290f8f98de3f67658d363e Mon Sep 17 00:00:00 2001
+From 8f9b4c5cc3a2fed0a241830bd16aa129765a2550 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index 08f2511..c343955 100644
+index e003320..40deab4 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,12 +1,12 @@
@@ -17,7 +17,7 @@ index 08f2511..c343955 100644
 +  <groupId>tc.oc</groupId>
 +  <artifactId>sportbukkit</artifactId>
    <packaging>jar</packaging>
-   <version>1.7.5-R0.1-SNAPSHOT</version>
+   <version>1.7.8-R0.1-SNAPSHOT</version>
 -  <name>CraftBukkit</name>
 -  <url>http://www.bukkit.org</url>
 +  <name>SportBukkit</name>
@@ -27,8 +27,8 @@ index 08f2511..c343955 100644
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 @@ -14,7 +14,7 @@
      <junit.version>4.11</junit.version>
-     <minecraft.version>1.7.5</minecraft.version>
-     <minecraft_version>1_7_R2</minecraft_version>
+     <minecraft.version>1.7.8</minecraft.version>
+     <minecraft_version>1_7_R3</minecraft_version>
 -    <buildtag.prefix>git-Bukkit-</buildtag.prefix>
 +    <buildtag.prefix>git-SportBukkit-</buildtag.prefix>
      <buildtag.suffix></buildtag.suffix>

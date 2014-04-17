@@ -1,14 +1,14 @@
-From 02cb977e75aa205e71d2e60744e9e5095312a0ac Mon Sep 17 00:00:00 2001
+From 31f2b8cdb5f96ee4041e77ed993eed4f8bc889e3 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 21 Feb 2013 19:21:29 -0600
 Subject: [PATCH] Be less strict with illegal stances, fixes BUKKIT-2578
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 3e8517c..ffb43d0 100644
+index 00d924c..6c60872 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -322,7 +322,7 @@ public class PlayerConnection implements PacketPlayInListener {
+@@ -323,7 +323,7 @@ public class PlayerConnection implements PacketPlayInListener {
                      d2 = packetplayinflying.d();
                      d3 = packetplayinflying.e();
                      d4 = packetplayinflying.f() - packetplayinflying.d();

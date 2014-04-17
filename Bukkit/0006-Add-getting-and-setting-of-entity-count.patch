@@ -1,4 +1,4 @@
-From 73736e1a11db1e91a6a41583e6cdb362b6f8ea0c Mon Sep 17 00:00:00 2001
+From 42f977ac107dc7955df378ae50a027ad7eaf417a Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
@@ -30,10 +30,10 @@ index 6b9c9f3..fd435d9 100644
       */
      public static CachedServerIcon getServerIcon() {
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index d2cb517..abbbc06 100644
+index 22dc74a..742efb1 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -794,6 +794,20 @@ public interface Server extends PluginMessageRecipient {
+@@ -801,6 +801,20 @@ public interface Server extends PluginMessageRecipient {
      ScoreboardManager getScoreboardManager();
  
      /**

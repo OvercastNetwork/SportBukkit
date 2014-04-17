@@ -1,4 +1,4 @@
-From f6d9e976c9715a74690615b4e92ca5df76be0032 Mon Sep 17 00:00:00 2001
+From bd51020fcf0eeddbcbc67067c658f06b4a84e255 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -102,10 +102,10 @@ index c42b7e4..98e2711 100644
              distance = (int) player.getLocation().distanceSquared(location);
              if (distance <= radius) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 51cafd7..f8d984b 100644
+index c9eced5..f155274 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -52,6 +52,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
+@@ -54,6 +54,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
  import org.bukkit.event.player.PlayerUnregisterChannelEvent;
  import org.bukkit.inventory.InventoryView.Property;
  import org.bukkit.map.MapView;
@@ -113,7 +113,7 @@ index 51cafd7..f8d984b 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -335,24 +336,56 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -341,24 +342,56 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

@@ -1,16 +1,16 @@
-From 7e498ff9c7002e4bf498b5076ad65bec4e712312 Mon Sep 17 00:00:00 2001
+From 1598ad9f4c0cf1afc0cd65eaf2fea85b9c50f4e2 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 23 Apr 2013 19:45:55 -0500
 Subject: [PATCH] Call AsyncPlayerPreLoginEvent regardless of online-mode
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 44a6bfe..3a6f269 100644
+index b14cc80..99bf06c 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
-@@ -106,7 +106,8 @@ public class LoginListener implements PacketLoginInListener {
+@@ -97,7 +97,8 @@ public class LoginListener implements PacketLoginInListener {
              this.g = EnumProtocolState.KEY;
-             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.J().getPublic(), this.e), new GenericFutureListener[0]);
+             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.K().getPublic(), this.e), new GenericFutureListener[0]);
          } else {
 -            this.g = EnumProtocolState.READY_TO_ACCEPT;
 +            // CraftBukkit - call async login event no matter what
@@ -19,44 +19,44 @@ index 44a6bfe..3a6f269 100644
      }
  
 diff --git a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
-index c01a934..885980b 100644
+index 6de0b6e..d2c2951 100644
 --- a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
 +++ b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
-@@ -22,27 +22,30 @@ class ThreadPlayerLookupUUID extends Thread {
- 
+@@ -24,27 +24,30 @@ class ThreadPlayerLookupUUID extends Thread {
      public void run() {
+         GameProfile gameprofile = LoginListener.a(this.a);
          String errorMessage = null;
-+        final org.bukkit.craftbukkit.CraftServer server = LoginListener.b(this.a).server;
++        final org.bukkit.craftbukkit.CraftServer server = LoginListener.c(this.a).server;
  
 -        try {
--            String s = (new BigInteger(MinecraftEncryption.a(LoginListener.a(this.a), LoginListener.b(this.a).J().getPublic(), LoginListener.c(this.a)))).toString(16);
+-            String s = (new BigInteger(MinecraftEncryption.a(LoginListener.b(this.a), LoginListener.c(this.a).K().getPublic(), LoginListener.d(this.a)))).toString(16);
 +        if (server.getOnlineMode()) {
 +            try {
-+                String s = (new BigInteger(MinecraftEncryption.a(LoginListener.a(this.a), LoginListener.b(this.a).J().getPublic(), LoginListener.c(this.a)))).toString(16);
++                String s = (new BigInteger(MinecraftEncryption.a(LoginListener.b(this.a), LoginListener.c(this.a).K().getPublic(), LoginListener.d(this.a)))).toString(16);
  
--            LoginListener.a(this.a, LoginListener.b(this.a).at().hasJoinedServer(new GameProfile((String) null, LoginListener.d(this.a).getName()), s));
--            if (LoginListener.d(this.a) != null) {
+-            LoginListener.a(this.a, LoginListener.c(this.a).av().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
+-            if (LoginListener.a(this.a) != null) {
 -                if (!this.a.networkManager.isConnected()) {
 -                    return;
-+                LoginListener.a(this.a, LoginListener.b(this.a).at().hasJoinedServer(new GameProfile((String) null, LoginListener.d(this.a).getName()), s));
-+                if (LoginListener.d(this.a) != null) {
++                LoginListener.a(this.a, LoginListener.c(this.a).av().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
++                if (LoginListener.a(this.a) != null) {
 +                    if (!this.a.networkManager.isConnected()) {
 +                        return;
 +                    }
 +                } else {
 +                    errorMessage = "Failed to verify username: invalid session";
-+                    LoginListener.e().error("Username \'" + LoginListener.d(this.a).getName() + "\' tried to join with an invalid session");
++                    LoginListener.e().error("Username \'" + LoginListener.a(this.a).getName() + "\' tried to join with an invalid session");
                  }
 -            } else {
 -                errorMessage = "Failed to verify username: invalid session";
--                LoginListener.e().error("Username \'" + LoginListener.d(this.a).getName() + "\' tried to join with an invalid session");
+-                LoginListener.e().error("Username \'" + LoginListener.a(this.a).getName() + "\' tried to join with an invalid session");
 +            } catch (AuthenticationUnavailableException authenticationunavailableexception) {
 +                errorMessage = "Authentication servers are down. Please try again later, sorry!";
 +                LoginListener.e().error("Couldn\'t verify username because servers are unavailable");
 +                // CraftBukkit start - catch all exceptions
 +            } catch (Exception exception) {
 +                errorMessage = "Failed to verify username: internal server error";
-+                LoginListener.b(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.d(this.a).getName(), exception);
++                LoginListener.c(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
 +                // CraftBukkit end
              }
 -        } catch (AuthenticationUnavailableException authenticationunavailableexception) {
@@ -65,16 +65,16 @@ index c01a934..885980b 100644
 -            // CraftBukkit start - catch all exceptions
 -        } catch (Exception exception) {
 -            errorMessage = "Failed to verify username: internal server error";
--            LoginListener.b(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.d(this.a).getName(), exception);
+-            LoginListener.c(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
 -            // CraftBukkit end
          }
  
          // CraftBukkit start - fire PlayerPreLoginEvent
-@@ -50,7 +53,6 @@ class ThreadPlayerLookupUUID extends Thread {
-             String playerName = LoginListener.d(this.a).getName();
+@@ -52,7 +55,6 @@ class ThreadPlayerLookupUUID extends Thread {
+             String playerName = LoginListener.a(this.a).getName();
              java.net.InetAddress address = ((java.net.InetSocketAddress) a.networkManager.getSocketAddress()).getAddress();
-             java.util.UUID uniqueId = UtilUUID.b(LoginListener.d(this.a).getId());
--            final org.bukkit.craftbukkit.CraftServer server = LoginListener.b(this.a).server;
+             java.util.UUID uniqueId = LoginListener.a(this.a).getId();
+-            final org.bukkit.craftbukkit.CraftServer server = LoginListener.c(this.a).server;
  
              AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
              if (errorMessage != null) {

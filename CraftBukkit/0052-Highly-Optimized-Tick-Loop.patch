@@ -1,11 +1,11 @@
-From fdb53cfba0b2ffc9b96f9c93f7fd5b315c6b56b5 Mon Sep 17 00:00:00 2001
+From d8a9f5a8759bd4b437ad110b9e5239ee8a64caab Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sun, 3 Feb 2013 12:28:17 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5bb51cc..8bffe55 100644
+index 81210ff..efeee97 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -106,6 +106,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
@@ -22,7 +22,7 @@ index 5bb51cc..8bffe55 100644
      public MinecraftServer(OptionSet options, Proxy proxy) { // CraftBukkit - signature file -> OptionSet
          this.X = new UserCache(this, a);
 @@ -441,38 +447,28 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
-                 this.q.setServerInfo(new ServerPingServerData("1.7.8", 5));
+                 this.q.setServerInfo(new ServerPingServerData("1.7.9", 5));
                  this.a(this.q);
  
 +                // Spigot start

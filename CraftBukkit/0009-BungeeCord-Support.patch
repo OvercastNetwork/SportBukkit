@@ -1,4 +1,4 @@
-From 1020514e55d80124bea3f218562a4ae8b7e8d46c Mon Sep 17 00:00:00 2001
+From 7aa98a6c9fdb74a323794755f3387ee632d99035 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,7 +7,7 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 17e69db..f69a9ac 100644
+index 9cc9581..8a0c63b 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -73,6 +73,21 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -53,10 +53,10 @@ index 8f982f1..b14cc80 100644
          return new GameProfile(uuid, gameprofile.getName());
      }
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index 1dd2227..64fd00a 100644
+index 1b080c7..9f73dc6 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -36,7 +36,8 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+@@ -37,7 +37,8 @@ public class NetworkManager extends SimpleChannelInboundHandler {
      private final Queue k = Queues.newConcurrentLinkedQueue();
      private final Queue l = Queues.newConcurrentLinkedQueue();
      private Channel m;
@@ -67,18 +67,18 @@ index 1dd2227..64fd00a 100644
      private EnumProtocol p;
      private IChatBaseComponent q;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c4ef9fa..b521e67 100644
+index 111abb8..3fb5df2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -223,6 +223,7 @@ public final class CraftServer implements Server {
-     private boolean printSaveWarning;
-     private CraftIconCache icon;
+@@ -230,6 +230,7 @@ public final class CraftServer implements Server {
      private boolean overrideAllCommandBlockCommands = false;
+     private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
+     private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
 +    public boolean bungee = false;
  
      private final class BooleanWrapper {
          private boolean value = true;
-@@ -290,6 +291,7 @@ public final class CraftServer implements Server {
+@@ -297,6 +298,7 @@ public final class CraftServer implements Server {
          }
  
          saveCommandsConfig();

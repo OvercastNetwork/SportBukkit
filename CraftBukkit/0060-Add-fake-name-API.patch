@@ -1,4 +1,4 @@
-From 549bdd36d4096c4a0c3c22899ff958bcae331b59 Mon Sep 17 00:00:00 2001
+From 303a32770d4854667e6c16421ba526e8282a20f0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Add fake name API
@@ -112,7 +112,7 @@ index 35d3be1..0b638fa 100644
          packetdataserializer.writeByte(this.f);
          if (this.f == 0 || this.f == 2) {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 7e19dc6..ed14698 100644
+index a5ac7f0..96107a2 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -22,7 +22,9 @@ import java.io.UnsupportedEncodingException;
@@ -217,10 +217,10 @@ index 7e19dc6..ed14698 100644
  
          try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 357f47b..506c67e 100644
+index 5a4d1ec..099c0ee 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -482,7 +482,8 @@ public final class CraftServer implements Server {
+@@ -489,7 +489,8 @@ public final class CraftServer implements Server {
          return players;
      }
  
@@ -230,7 +230,7 @@ index 357f47b..506c67e 100644
          Validate.notNull(name, "Name cannot be null");
  
          Player[] players = getOnlinePlayers();
-@@ -491,8 +492,8 @@ public final class CraftServer implements Server {
+@@ -498,8 +499,8 @@ public final class CraftServer implements Server {
          String lowerName = name.toLowerCase();
          int delta = Integer.MAX_VALUE;
          for (Player player : players) {
@@ -241,7 +241,7 @@ index 357f47b..506c67e 100644
                  if (curDelta < delta) {
                      found = player;
                      delta = curDelta;
-@@ -503,13 +504,14 @@ public final class CraftServer implements Server {
+@@ -510,13 +511,14 @@ public final class CraftServer implements Server {
          return found;
      }
  
@@ -258,7 +258,7 @@ index 357f47b..506c67e 100644
                  return player;
              }
          }
-@@ -536,13 +538,14 @@ public final class CraftServer implements Server {
+@@ -543,13 +545,14 @@ public final class CraftServer implements Server {
          return entity.playerConnection.getPlayer();
      }
  
@@ -275,7 +275,7 @@ index 357f47b..506c67e 100644
  
              if (partialName.equalsIgnoreCase(iterPlayerName)) {
                  // Exact match
-@@ -559,6 +562,21 @@ public final class CraftServer implements Server {
+@@ -566,6 +569,21 @@ public final class CraftServer implements Server {
          return matchedPlayers;
      }
  
@@ -297,7 +297,7 @@ index 357f47b..506c67e 100644
      public int getMaxPlayers() {
          return playerList.getMaxPlayers();
      }
-@@ -1604,8 +1622,8 @@ public final class CraftServer implements Server {
+@@ -1611,8 +1629,8 @@ public final class CraftServer implements Server {
          PlayerChatTabCompleteEvent event = new PlayerChatTabCompleteEvent(player, message, completions);
          String token = event.getLastToken();
          for (Player p : players) {
@@ -339,7 +339,7 @@ index 4c23727..75169ae 100644
          return true;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ff6a01a..ac193a9 100644
+index 4e6978c..2b5ca18 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1,5 +1,6 @@

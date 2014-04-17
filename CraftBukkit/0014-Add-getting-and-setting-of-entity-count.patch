@@ -1,4 +1,4 @@
-From 44131fd153c226c75755e4ff6d73c1d0f49d9cdb Mon Sep 17 00:00:00 2001
+From 730d439eb5f1830307069d6d78a7d1d0c05d2b1d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 17:03:07 -0500
 Subject: [PATCH] Add getting and setting of entity count
@@ -18,10 +18,10 @@ index 9d933cb..5cc487c 100644
      public double j;
      public boolean k;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c8b3a21..b54c53f 100644
+index 3fb5df2..7bc571a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1612,6 +1612,14 @@ public final class CraftServer implements Server {
+@@ -1619,6 +1619,14 @@ public final class CraftServer implements Server {
          getLogger().log(Level.WARNING, "A manual (plugin-induced) save has been detected while server is configured to auto-save. This may affect performance.", warningState == WarningState.ON ? new Throwable() : null);
      }
  

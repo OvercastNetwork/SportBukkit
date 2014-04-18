@@ -1,0 +1,115 @@
+From 6888040b9a194c6f2eadb94c623fbc9d924b2ae6 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Fri, 18 Apr 2014 14:34:24 -0500
+Subject: [PATCH] Support 1.7.2-1.7.9
+
+
+diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
+index 8a0c63b..a4ec141 100644
+--- a/src/main/java/net/minecraft/server/HandshakeListener.java
++++ b/src/main/java/net/minecraft/server/HandshakeListener.java
+@@ -23,6 +23,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
+     }
+ 
+     public void a(PacketHandshakingInSetProtocol packethandshakinginsetprotocol) {
++        NetworkManager.a( this.b ).attr( NetworkManager.protocolVersion ).set( packethandshakinginsetprotocol.d() ); // Spigot
+         switch (ProtocolOrdinalWrapper.a[packethandshakinginsetprotocol.c().ordinal()]) {
+         case 1:
+             this.b.a(EnumProtocol.LOGIN);
+@@ -67,7 +68,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
+                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.7.9");
+                 this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
+                 this.b.close(chatcomponenttext);
+-            } else if (packethandshakinginsetprotocol.d() < 5) {
++            } else if (packethandshakinginsetprotocol.d() < 4) {
+                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.7.9");
+                 this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
+                 this.b.close(chatcomponenttext);
+diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
+index 9f73dc6..adc240f 100644
+--- a/src/main/java/net/minecraft/server/NetworkManager.java
++++ b/src/main/java/net/minecraft/server/NetworkManager.java
+@@ -43,6 +43,19 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+     private EnumProtocol p;
+     private IChatBaseComponent q;
+     private boolean r;
++    // Spigot Start
++    public static final AttributeKey<Integer> protocolVersion = new AttributeKey<Integer>("protocol_version");
++    public static final int CURRENT_VERSION = 5;
++    public static int getVersion(Channel attr)
++    {
++        Integer ver = attr.attr( protocolVersion ).get();
++        return ( ver != null ) ? ver : CURRENT_VERSION;
++    }
++    public int getVersion()
++    {
++        return getVersion( this.m );
++    }
++    // Spigot End
+ 
+     public NetworkManager(boolean flag) {
+         this.j = flag;
+diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+index f6f870f..855e85e 100644
+--- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
++++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+@@ -19,10 +19,19 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
+ public class PacketDataSerializer extends ByteBuf {
+ 
+     private final ByteBuf a;
++    // Spigot Start
++    public final int version;
+ 
+-    public PacketDataSerializer(ByteBuf bytebuf) {
++    public PacketDataSerializer(ByteBuf bytebuf)
++    {
++        this( bytebuf, NetworkManager.CURRENT_VERSION );
++    }
++
++    public PacketDataSerializer(ByteBuf bytebuf, int version) {
+         this.a = bytebuf;
++        this.version = version;
+     }
++    // Spigot End
+ 
+     public static int a(int i) {
+         return (i & -128) == 0 ? 1 : ((i & -16384) == 0 ? 2 : ((i & -2097152) == 0 ? 3 : ((i & -268435456) == 0 ? 4 : 5)));
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+index 1b02d08..33ce130 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+@@ -66,8 +66,9 @@ public class PacketPlayOutNamedEntitySpawn extends Packet {
+         packetdataserializer.b(this.a);
+         UUID uuid = this.b.getId();
+ 
+-        packetdataserializer.a(uuid == null ? "" : uuid.toString());
++        packetdataserializer.a( uuid == null ? "" : ( ( packetdataserializer.version >= 5 ) ? uuid.toString() : uuid.toString().replaceAll( "-", "" ) ) ); // Spigot
+         packetdataserializer.a(this.b.getName().length() > 16 ? this.b.getName().substring(0, 16) : this.b.getName()); // CraftBukkit - Limit name length to 16 characters
++        if (packetdataserializer.version >= 5 ) { // Spigot
+         packetdataserializer.b(this.b.getProperties().size());
+         Iterator iterator = this.b.getProperties().values().iterator();
+ 
+@@ -78,6 +79,7 @@ public class PacketPlayOutNamedEntitySpawn extends Packet {
+             packetdataserializer.a(property.getValue());
+             packetdataserializer.a(property.getSignature());
+         }
++        } // Spigot
+ 
+         packetdataserializer.writeInt(this.c);
+         packetdataserializer.writeInt(this.d);
+diff --git a/src/main/java/net/minecraft/server/PacketStatusListener.java b/src/main/java/net/minecraft/server/PacketStatusListener.java
+index cd06305..1c75706 100644
+--- a/src/main/java/net/minecraft/server/PacketStatusListener.java
++++ b/src/main/java/net/minecraft/server/PacketStatusListener.java
+@@ -116,7 +116,7 @@ public class PacketStatusListener implements PacketStatusInListener {
+         ping.setFavicon(event.icon.value);
+         ping.setMOTD(new ChatComponentText(event.getMotd()));
+         ping.setPlayerSample(playerSample);
+-        ping.setServerInfo(new ServerPingServerData(minecraftServer.getServerModName() + " " + minecraftServer.getVersion(), 5)); // TODO: Update when protocol changes
++        ping.setServerInfo(new ServerPingServerData(minecraftServer.getServerModName() + " " + minecraftServer.getVersion(), networkManager.getVersion())); // TODO: Update when protocol changes
+ 
+         this.networkManager.handle(new PacketStatusOutServerInfo(ping), new GenericFutureListener[0]);
+         // CraftBukkit end
+-- 
+1.8.5.1
+

@@ -1,4 +1,4 @@
-From 6888040b9a194c6f2eadb94c623fbc9d924b2ae6 Mon Sep 17 00:00:00 2001
+From f9d469cc69d591a9a99fcf3f1f92155ff3ce713e Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 18 Apr 2014 14:34:24 -0500
 Subject: [PATCH] Support 1.7.2-1.7.9
@@ -74,6 +74,63 @@ index f6f870f..855e85e 100644
  
      public static int a(int i) {
          return (i & -128) == 0 ? 1 : ((i & -16384) == 0 ? 2 : ((i & -2097152) == 0 ? 3 : ((i & -268435456) == 0 ? 4 : 5)));
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+index bcbabe1..67bd6cc 100644
+--- a/src/main/java/net/minecraft/server/PacketEncoder.java
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -21,7 +21,7 @@ public class PacketEncoder extends MessageToByteEncoder {
+         this.c = networkstatistics;
+     }
+ 
+-    protected void a(ChannelHandlerContext channelhandlercontext, Packet packet, ByteBuf bytebuf) {
++    protected void a(ChannelHandlerContext channelhandlercontext, Packet packet, ByteBuf bytebuf) throws java.io.IOException { // Spigot - throws
+         Integer integer = (Integer) ((BiMap) channelhandlercontext.channel().attr(NetworkManager.f).get()).inverse().get(packet.getClass());
+ 
+         if (a.isDebugEnabled()) {
+@@ -31,7 +31,7 @@ public class PacketEncoder extends MessageToByteEncoder {
+         if (integer == null) {
+             throw new IOException("Can\'t serialize unregistered packet");
+         } else {
+-            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
++            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf, NetworkManager.getVersion(channelhandlercontext.channel())); // Spigot
+ 
+             packetdataserializer.b(integer.intValue());
+             packet.b(packetdataserializer);
+@@ -39,7 +39,7 @@ public class PacketEncoder extends MessageToByteEncoder {
+         }
+     }
+ 
+-    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) {
++    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws java.io.IOException { // Spigot - throws
+         this.a(channelhandlercontext, (Packet) object, bytebuf);
+     }
+ }
+diff --git a/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
+index 2dac506..1973ec9 100644
+--- a/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
++++ b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
+@@ -14,7 +14,7 @@ public class PacketLoginOutSuccess extends Packet {
+         this.a = gameprofile;
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) {
++    public void a(PacketDataSerializer packetdataserializer) throws java.io.IOException { // Spigot - throws
+         String s = packetdataserializer.c(36);
+         String s1 = packetdataserializer.c(16);
+         UUID uuid = UUID.fromString(s);
+@@ -22,10 +22,10 @@ public class PacketLoginOutSuccess extends Packet {
+         this.a = new GameProfile(uuid, s1);
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) {
++    public void b(PacketDataSerializer packetdataserializer) throws java.io.IOException { // Spigot - throws
+         UUID uuid = this.a.getId();
+ 
+-        packetdataserializer.a(uuid == null ? "" : uuid.toString());
++        packetdataserializer.a(uuid == null ? "" : ( ( packetdataserializer.version >= 5 ) ? uuid.toString() : uuid.toString().replaceAll( "-", "" ) ) ); // Spigot
+         packetdataserializer.a(this.a.getName());
+     }
+ 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
 index 1b02d08..33ce130 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java

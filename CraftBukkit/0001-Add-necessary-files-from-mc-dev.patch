@@ -1,4 +1,4 @@
-From 419c210c30c2824376f86caa02bd986d5b210d09 Mon Sep 17 00:00:00 2001
+From fb35306210b10f5c18d7e6a44a7a804344d134df Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -952,6 +952,106 @@ index 0000000..fcb9912
 +        if (oldchunk.j != null) {
 +            nbttagcompound.set("TileTicks", oldchunk.j);
 +        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+new file mode 100644
+index 0000000..bcbabe1
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -0,0 +1,45 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++import net.minecraft.util.com.google.common.collect.BiMap;
++import net.minecraft.util.io.netty.buffer.ByteBuf;
++import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
++import net.minecraft.util.io.netty.handler.codec.MessageToByteEncoder;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.apache.logging.log4j.Marker;
++import org.apache.logging.log4j.MarkerManager;
++
++public class PacketEncoder extends MessageToByteEncoder {
++
++    private static final Logger a = LogManager.getLogger();
++    private static final Marker b = MarkerManager.getMarker("PACKET_SENT", NetworkManager.b);
++    private final NetworkStatistics c;
++
++    public PacketEncoder(NetworkStatistics networkstatistics) {
++        this.c = networkstatistics;
++    }
++
++    protected void a(ChannelHandlerContext channelhandlercontext, Packet packet, ByteBuf bytebuf) {
++        Integer integer = (Integer) ((BiMap) channelhandlercontext.channel().attr(NetworkManager.f).get()).inverse().get(packet.getClass());
++
++        if (a.isDebugEnabled()) {
++            a.debug(b, "OUT: [{}:{}] {}[{}]", new Object[] { channelhandlercontext.channel().attr(NetworkManager.d).get(), integer, packet.getClass().getName(), packet.b()});
++        }
++
++        if (integer == null) {
++            throw new IOException("Can\'t serialize unregistered packet");
++        } else {
++            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
++
++            packetdataserializer.b(integer.intValue());
++            packet.b(packetdataserializer);
++            this.c.b(integer.intValue(), (long) packetdataserializer.readableBytes());
++        }
++    }
++
++    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) {
++        this.a(channelhandlercontext, (Packet) object, bytebuf);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
+new file mode 100644
+index 0000000..2dac506
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
+@@ -0,0 +1,43 @@
++package net.minecraft.server;
++
++import java.util.UUID;
++
++import net.minecraft.util.com.mojang.authlib.GameProfile;
++
++public class PacketLoginOutSuccess extends Packet {
++
++    private GameProfile a;
++
++    public PacketLoginOutSuccess() {}
++
++    public PacketLoginOutSuccess(GameProfile gameprofile) {
++        this.a = gameprofile;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) {
++        String s = packetdataserializer.c(36);
++        String s1 = packetdataserializer.c(16);
++        UUID uuid = UUID.fromString(s);
++
++        this.a = new GameProfile(uuid, s1);
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) {
++        UUID uuid = this.a.getId();
++
++        packetdataserializer.a(uuid == null ? "" : uuid.toString());
++        packetdataserializer.a(this.a.getName());
++    }
++
++    public void a(PacketLoginOutListener packetloginoutlistener) {
++        packetloginoutlistener.a(this);
++    }
++
++    public boolean a() {
++        return true;
++    }
++
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketLoginOutListener) packetlistener);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java

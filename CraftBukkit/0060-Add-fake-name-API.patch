@@ -1,11 +1,11 @@
-From 303a32770d4854667e6c16421ba526e8282a20f0 Mon Sep 17 00:00:00 2001
+From fc5e7d3625ce08f8b49b1da7d85113e029585d43 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Add fake name API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 6941bb8..a6fd63f 100644
+index 6941bb8..7515540 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
@@ -16,7 +16,7 @@ index 6941bb8..a6fd63f 100644
  // CraftBukkit end
  
  public class EntityTrackerEntry {
-@@ -364,11 +365,18 @@ public class EntityTrackerEntry {
+@@ -364,11 +365,19 @@ public class EntityTrackerEntry {
                      }
  
                      // entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId())); CraftBukkit - remove destroy queue
@@ -28,6 +28,7 @@ index 6941bb8..a6fd63f 100644
 +                    if(packet instanceof PacketPlayOutNamedEntitySpawn) {
 +                        EntityPlayer tracked = (EntityPlayer) this.tracker;
 +                        GameProfile newProfile = new GameProfile(tracked.getProfile().getId(), tracked.getBukkitEntity().getName(entityplayer.getBukkitEntity()));
++                        newProfile.getProperties().putAll(tracked.getProfile().getProperties());
 +                        ((PacketPlayOutNamedEntitySpawn) packet).b = newProfile;
 +                    }
 +

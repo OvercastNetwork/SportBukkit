@@ -1,4 +1,4 @@
-From c9e8c827adcfadb20bf88c14a89b5592079c905a Mon Sep 17 00:00:00 2001
+From cef137730ffc43009f9c356d87e5ce02f69b1c2f Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -34,7 +34,7 @@ index 9cc9581..ea7245c 100644
              }
              break;
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index c7bf4ba..4988201 100644
+index c7bf4ba..0f6682e 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -61,9 +61,20 @@ public class LoginListener implements PacketLoginInListener {
@@ -59,22 +59,6 @@ index c7bf4ba..4988201 100644
      }
  
      public void c() {
-@@ -126,7 +137,14 @@ public class LoginListener implements PacketLoginInListener {
-     }
- 
-     protected GameProfile a(GameProfile gameprofile) {
--        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
-+        // CraftBukkit start
-+        UUID uuid;
-+        if (networkManager.spoofedUUID != null) {
-+            uuid = networkManager.spoofedUUID;
-+        } else {
-+            uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
-+        }
-+        // CraftBukkit end
- 
-         return new GameProfile(uuid, gameprofile.getName());
-     }
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
 index 1b080c7..8ea7a2b 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java

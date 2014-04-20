@@ -1,0 +1,130 @@
+From c9e8c827adcfadb20bf88c14a89b5592079c905a Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Sat, 13 Apr 2013 10:50:21 -0700
+Subject: [PATCH] BungeeCord Support
+
+- Allows BungeeCord to set the players real IP address very early in the login process, so that the BungeeCord proxy IP is never even seen by a plugin.
+- Ported from Spigot
+
+diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
+index 9cc9581..ea7245c 100644
+--- a/src/main/java/net/minecraft/server/HandshakeListener.java
++++ b/src/main/java/net/minecraft/server/HandshakeListener.java
+@@ -73,6 +73,22 @@ public class HandshakeListener implements PacketHandshakingInListener {
+                 this.b.close(chatcomponenttext);
+             } else {
+                 this.b.a((PacketListener) (new LoginListener(this.a, this.b)));
++                // CraftBukkit Start
++                if (this.a.server.bungee) {
++                    String[] split = packethandshakinginsetprotocol.b.split("\00");
++                    if (split.length == 4) {
++                        packethandshakinginsetprotocol.b = split[0];
++                        b.n = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) b.getSocketAddress()).getPort());
++                        b.spoofedUUID = net.minecraft.util.com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
++                        b.spoofedProfile = this.a.server.gson.fromJson(split[3], net.minecraft.util.com.mojang.authlib.properties.Property[].class);
++                    } else {
++                        chatcomponenttext = new ChatComponentText("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
++                        this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
++                        this.b.close(chatcomponenttext);
++                        return;
++                    }
++                }
++                // CraftBukkit End
+                 ((LoginListener) this.b.getPacketListener()).hostname = packethandshakinginsetprotocol.b + ":" + packethandshakinginsetprotocol.c; // CraftBukkit - set hostname
+             }
+             break;
+diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
+index c7bf4ba..4988201 100644
+--- a/src/main/java/net/minecraft/server/LoginListener.java
++++ b/src/main/java/net/minecraft/server/LoginListener.java
+@@ -61,9 +61,20 @@ public class LoginListener implements PacketLoginInListener {
+ 
+     // CraftBukkit - add method
+     public void initUUID() {
+-        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
++        UUID uuid;
++        if (networkManager.spoofedUUID != null) {
++            uuid = networkManager.spoofedUUID;
++        } else {
++            uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + this.i.getName()).getBytes(Charsets.UTF_8));
++        }
+ 
+         this.i = new GameProfile(uuid, this.i.getName());
++
++        if (networkManager.spoofedProfile != null) {
++            for (net.minecraft.util.com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
++                this.i.getProperties().put(property.getName(), property);
++            }
++        }
+     }
+ 
+     public void c() {
+@@ -126,7 +137,14 @@ public class LoginListener implements PacketLoginInListener {
+     }
+ 
+     protected GameProfile a(GameProfile gameprofile) {
+-        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
++        // CraftBukkit start
++        UUID uuid;
++        if (networkManager.spoofedUUID != null) {
++            uuid = networkManager.spoofedUUID;
++        } else {
++            uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
++        }
++        // CraftBukkit end
+ 
+         return new GameProfile(uuid, gameprofile.getName());
+     }
+diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
+index 1b080c7..8ea7a2b 100644
+--- a/src/main/java/net/minecraft/server/NetworkManager.java
++++ b/src/main/java/net/minecraft/server/NetworkManager.java
+@@ -37,7 +37,11 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+     private final Queue k = Queues.newConcurrentLinkedQueue();
+     private final Queue l = Queues.newConcurrentLinkedQueue();
+     private Channel m;
+-    private SocketAddress n;
++    // CraftBukkit Start
++    public SocketAddress n;
++    public java.util.UUID spoofedUUID;
++    public net.minecraft.util.com.mojang.authlib.properties.Property[] spoofedProfile;
++    // CraftBukkit End
+     private PacketListener o;
+     private EnumProtocol p;
+     private IChatBaseComponent q;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 111abb8..9e9f5a5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -230,6 +230,8 @@ public final class CraftServer implements Server {
+     private boolean overrideAllCommandBlockCommands = false;
+     private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
+     private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
++    public boolean bungee = false;
++    public static final com.google.gson.Gson gson = new com.google.gson.Gson();
+ 
+     private final class BooleanWrapper {
+         private boolean value = true;
+@@ -297,6 +299,7 @@ public final class CraftServer implements Server {
+         }
+ 
+         saveCommandsConfig();
++        bungee = configuration.getBoolean("settings.bungeecord");
+         overrideAllCommandBlockCommands = commandsConfiguration.getStringList("command-block-overrides").contains("*");
+         ((SimplePluginManager) pluginManager).useTimings(configuration.getBoolean("settings.plugin-profiling"));
+         monsterSpawn = configuration.getInt("spawn-limits.monsters");
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index 129ac34..5236ec0 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -25,6 +25,7 @@ settings:
+     query-plugins: true
+     deprecated-verbose: default
+     shutdown-message: Server closed
++    bungeecord: false
+ spawn-limits:
+     monsters: 70
+     animals: 15
+-- 
+1.8.5.1
+

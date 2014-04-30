@@ -1,4 +1,4 @@
-From cef137730ffc43009f9c356d87e5ce02f69b1c2f Mon Sep 17 00:00:00 2001
+From ce4dced90be118ebf3524ed023b93a86df04eac2 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -76,6 +76,19 @@ index 1b080c7..8ea7a2b 100644
      private PacketListener o;
      private EnumProtocol p;
      private IChatBaseComponent q;
+diff --git a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
+index 16d4765..d3751d6 100644
+--- a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
++++ b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
+@@ -13,7 +13,7 @@ public class PacketHandshakingInSetProtocol extends Packet {
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException { // CraftBukkit - added throws
+         this.a = packetdataserializer.a();
+-        this.b = packetdataserializer.c(255);
++        this.b = packetdataserializer.c(Short.MAX_VALUE); // CraftBukkit - needed to read long/fake host
+         this.c = packetdataserializer.readUnsignedShort();
+         this.d = EnumProtocol.a(packetdataserializer.a());
+     }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index 111abb8..9e9f5a5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java

@@ -1,4 +1,4 @@
-From fb35306210b10f5c18d7e6a44a7a804344d134df Mon Sep 17 00:00:00 2001
+From 52daf390f5d485942eb0826ddd84e5e4327bad12 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -716,6 +716,71 @@ index 0000000..c630b38
 +        c.put(ChunkCoordinates.class, Integer.valueOf(6));
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
+new file mode 100644
+index 0000000..5657270
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/GameProfileBanList.java
+@@ -0,0 +1,59 @@
++package net.minecraft.server;
++
++import java.io.File;
++import java.util.Iterator;
++
++import net.minecraft.util.com.google.gson.JsonObject;
++import net.minecraft.util.com.mojang.authlib.GameProfile;
++
++public class GameProfileBanList extends JsonList {
++
++    public GameProfileBanList(File file1) {
++        super(file1);
++    }
++
++    protected JsonListEntry a(JsonObject jsonobject) {
++        return new GameProfileBanEntry(jsonobject);
++    }
++
++    public boolean isBanned(GameProfile gameprofile) {
++        return this.d(gameprofile);
++    }
++
++    public String[] getEntries() {
++        String[] astring = new String[this.e().size()];
++        int i = 0;
++
++        GameProfileBanEntry gameprofilebanentry;
++
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) gameprofilebanentry.f()).getName()) {
++            gameprofilebanentry = (GameProfileBanEntry) iterator.next();
++        }
++
++        return astring;
++    }
++
++    protected String b(GameProfile gameprofile) {
++        return gameprofile.getId().toString();
++    }
++
++    public GameProfile a(String s) {
++        Iterator iterator = this.e().values().iterator();
++
++        GameProfileBanEntry gameprofilebanentry;
++
++        do {
++            if (!iterator.hasNext()) {
++                return null;
++            }
++
++            gameprofilebanentry = (GameProfileBanEntry) iterator.next();
++        } while (!s.equalsIgnoreCase(((GameProfile) gameprofilebanentry.f()).getName()));
++
++        return (GameProfile) gameprofilebanentry.f();
++    }
++
++    protected String a(Object object) {
++        return this.b((GameProfile) object);
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/NextTickListEntry.java b/src/main/java/net/minecraft/server/NextTickListEntry.java
 new file mode 100644
 index 0000000..06934a1
@@ -952,6 +1017,67 @@ index 0000000..fcb9912
 +        if (oldchunk.j != null) {
 +            nbttagcompound.set("TileTicks", oldchunk.j);
 +        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/OpList.java b/src/main/java/net/minecraft/server/OpList.java
+new file mode 100644
+index 0000000..d4d22d8
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/OpList.java
+@@ -0,0 +1,55 @@
++package net.minecraft.server;
++
++import java.io.File;
++import java.util.Iterator;
++
++import net.minecraft.util.com.google.gson.JsonObject;
++import net.minecraft.util.com.mojang.authlib.GameProfile;
++
++public class OpList extends JsonList {
++
++    public OpList(File file1) {
++        super(file1);
++    }
++
++    protected JsonListEntry a(JsonObject jsonobject) {
++        return new OpListEntry(jsonobject);
++    }
++
++    public String[] getEntries() {
++        String[] astring = new String[this.e().size()];
++        int i = 0;
++
++        OpListEntry oplistentry;
++
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) oplistentry.f()).getName()) {
++            oplistentry = (OpListEntry) iterator.next();
++        }
++
++        return astring;
++    }
++
++    protected String b(GameProfile gameprofile) {
++        return gameprofile.getId().toString();
++    }
++
++    public GameProfile a(String s) {
++        Iterator iterator = this.e().values().iterator();
++
++        OpListEntry oplistentry;
++
++        do {
++            if (!iterator.hasNext()) {
++                return null;
++            }
++
++            oplistentry = (OpListEntry) iterator.next();
++        } while (!s.equalsIgnoreCase(((GameProfile) oplistentry.f()).getName()));
++
++        return (GameProfile) oplistentry.f();
++    }
++
++    protected String a(Object object) {
++        return this.b((GameProfile) object);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
@@ -1895,6 +2021,71 @@ index 0000000..678aa91
 +
 +    static boolean a(WatchableObject watchableobject, boolean flag) {
 +        return watchableobject.d = flag;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
+new file mode 100644
+index 0000000..ea9a75d
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/WhiteList.java
+@@ -0,0 +1,59 @@
++package net.minecraft.server;
++
++import java.io.File;
++import java.util.Iterator;
++
++import net.minecraft.util.com.google.gson.JsonObject;
++import net.minecraft.util.com.mojang.authlib.GameProfile;
++
++public class WhiteList extends JsonList {
++
++    public WhiteList(File file1) {
++        super(file1);
++    }
++
++    protected JsonListEntry a(JsonObject jsonobject) {
++        return new WhiteListEntry(jsonobject);
++    }
++
++    public boolean isWhitelisted(GameProfile gameprofile) {
++        return this.d(gameprofile);
++    }
++
++    public String[] getEntries() {
++        String[] astring = new String[this.e().size()];
++        int i = 0;
++
++        WhiteListEntry whitelistentry;
++
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) whitelistentry.f()).getName()) {
++            whitelistentry = (WhiteListEntry) iterator.next();
++        }
++
++        return astring;
++    }
++
++    protected String b(GameProfile gameprofile) {
++        return gameprofile.getId().toString();
++    }
++
++    public GameProfile a(String s) {
++        Iterator iterator = this.e().values().iterator();
++
++        WhiteListEntry whitelistentry;
++
++        do {
++            if (!iterator.hasNext()) {
++                return null;
++            }
++
++            whitelistentry = (WhiteListEntry) iterator.next();
++        } while (!s.equalsIgnoreCase(((GameProfile) whitelistentry.f()).getName()));
++
++        return (GameProfile) whitelistentry.f();
++    }
++
++    protected String a(Object object) {
++        return this.b((GameProfile) object);
 +    }
 +}
 -- 

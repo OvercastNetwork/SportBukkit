@@ -1,0 +1,64 @@
+From 831cb84aa2a991aeebc4f85deab12663dcc92d70 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 9 May 2014 23:48:01 -0400
+Subject: [PATCH] Add API to disable potion particles
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index c091dc8..3915385 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -11,6 +11,7 @@ import java.util.UUID;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.event.entity.EntityDamageEvent;
+ import org.bukkit.event.entity.EntityRegainHealthEvent;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+ // CraftBukkit end
+ 
+ public abstract class EntityLiving extends Entity {
+@@ -452,7 +453,7 @@ public abstract class EntityLiving extends Entity {
+ 
+         int i;
+ 
+-        if (this.updateEffects) {
++        if (this.updateEffects && ((CraftLivingEntity) this.getBukkitEntity()).getPotionParticles()) {
+             if (!this.world.isStatic) {
+                 if (this.effects.isEmpty()) {
+                     this.datawatcher.watch(8, Byte.valueOf((byte) 0));
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index 556d811..07398ba 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -63,6 +63,7 @@ import org.bukkit.util.Vector;
+ 
+ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     private CraftEntityEquipment equipment;
++    private boolean potionParticles = true;
+ 
+     public CraftLivingEntity(final CraftServer server, final EntityLiving entity) {
+         super(server, entity);
+@@ -294,6 +295,21 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+         return effects;
+     }
+ 
++    @Override
++    public void setPotionParticles(boolean enabled) {
++        this.potionParticles = enabled;
++        if(enabled) {
++            this.getHandle().updateEffects = true;
++        } else {
++            this.getHandle().getDataWatcher().watch(7, (int) 0); // particle color
++            this.getHandle().getDataWatcher().watch(8, (byte) 0); // ambient flag
++        }
++    }
++
++    public boolean getPotionParticles() {
++        return this.potionParticles;
++    }
++
+     public <T extends Projectile> T launchProjectile(Class<? extends T> projectile) {
+         return launchProjectile(projectile, null);
+     }
+-- 
+1.8.5.2 (Apple Git-48)
+

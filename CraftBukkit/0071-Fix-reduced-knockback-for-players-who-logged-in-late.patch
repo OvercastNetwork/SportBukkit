@@ -1,0 +1,80 @@
+From f086f0a7b596a00e9e8420dda7d9b74b9acca111 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Mon, 5 May 2014 23:49:32 -0400
+Subject: [PATCH] Fix reduced knockback for players who logged in later
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index d569822..1efde90 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -916,6 +916,13 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+                         entity.setOnFire(1);
+                     }
+ 
++                    // CraftBukkit start
++                    // Save the victim's velocity before they are potentially knocked back
++                    double victimMotX = entity.motX;
++                    double victimMotY = entity.motY;
++                    double victimMotZ = entity.motZ;
++                    // CraftBukkit end
++
+                     boolean flag2 = entity.damageEntity(DamageSource.playerAttack(this), f);
+ 
+                     if (flag2) {
+@@ -926,6 +933,25 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
+                             this.setSprinting(false);
+                         }
+ 
++                        // CraftBukkit start
++                        // If the attack caused knockback, send the new velocity to the victim's client immediately,
++                        // and undo the change. Otherwise, if movement packets from the victim are processed before
++                        // the end of the tick, then friction may reduce the velocity considerably before it's sent
++                        // to the client, particularly if the victim was standing on the ground when those packets
++                        // were generated. And because this glitch is also likely to make server-side velocity very
++                        // inconsistent, we simply reverse the knockback after sending it so that KB, like most other
++                        // things, doesn't affect server velocity at all.
++                        if(entity instanceof EntityPlayer && entity.velocityChanged) {
++                            EntityPlayer attackedPlayer = (EntityPlayer) entity;
++
++                            attackedPlayer.playerConnection.sendPacket(new PacketPlayOutEntityVelocity(attackedPlayer));
++                            attackedPlayer.velocityChanged = false;
++                            attackedPlayer.motX = victimMotX;
++                            attackedPlayer.motY = victimMotY;
++                            attackedPlayer.motZ = victimMotZ;
++                        }
++                        // CraftBukkit end
++
+                         if (flag) {
+                             this.b(entity);
+                         }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 681c51e..d79ec7a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -66,6 +66,7 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.StandardMessenger;
+ import org.bukkit.potion.PotionEffectType;
+ import org.bukkit.scoreboard.Scoreboard;
++import org.bukkit.util.Vector;
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1612,4 +1613,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     public String getLocale() {
+         return getHandle().locale;
+     }
++
++    @Override
++    public void setVelocity(Vector vel) {
++        // Send the new velocity to the player's client immediately, so it isn't affected by
++        // any movement packets from this player that may be processed before the end of the tick.
++        // Without this, player velocity changes tend to be very inconsistent.
++        super.setVelocity(vel);
++        this.getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(this.getHandle()));
++        this.getHandle().velocityChanged = false;
++    }
+ }
+-- 
+1.8.5.2 (Apple Git-48)
+

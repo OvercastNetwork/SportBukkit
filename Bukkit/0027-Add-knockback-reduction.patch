@@ -1,0 +1,24 @@
+From 7ee7d80f3fe1bc8b7a8d93a3b27175ca4201fdd2 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 18 May 2014 03:16:26 -0400
+Subject: [PATCH] Add knockback reduction
+
+
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index 396ea20..9862e2d 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -48,6 +48,10 @@ public interface Entity extends Metadatable {
+      */
+     public Vector getVelocity();
+ 
++    public void setKnockbackReduction(float n);
++
++    public float getKnockbackReduction();
++
+     /**
+      * Returns true if the entity is supported by a block. This value is a
+      * state updated by the server and is not recalculated unless the entity
+-- 
+1.8.5.2 (Apple Git-48)
+

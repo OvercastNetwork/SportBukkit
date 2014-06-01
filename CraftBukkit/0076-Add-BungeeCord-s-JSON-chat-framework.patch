@@ -1,0 +1,147 @@
+From 4ca75bd2be74a2172e96a50318347f8e9d9c6615 Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sun, 1 Jun 2014 15:54:05 -0500
+Subject: [PATCH] Add BungeeCord's JSON chat framework
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
+index bdee7d7..92964b5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftBlockCommandSender.java
+@@ -4,6 +4,7 @@ import net.minecraft.server.ICommandListener;
+ import net.minecraft.server.TileEntityCommandListener;
+ 
+ import org.bukkit.block.Block;
++import org.bukkit.chat.BaseComponent;
+ import org.bukkit.command.BlockCommandSender;
+ 
+ /**
+@@ -27,6 +28,12 @@ public class CraftBlockCommandSender extends ServerCommandSender implements Bloc
+     public void sendMessage(String[] messages) {
+     }
+ 
++    public void sendMessage(BaseComponent... message) {
++    }
++
++    public void sendMessage(BaseComponent message) {
++    }
++
+     public String getName() {
+         return commandBlock.getName();
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+index 9abcf92..592d242 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+@@ -1,6 +1,7 @@
+ package org.bukkit.craftbukkit.command;
+ 
+ import org.bukkit.ChatColor;
++import org.bukkit.chat.BaseComponent;
+ import org.bukkit.command.ConsoleCommandSender;
+ import org.bukkit.conversations.Conversation;
+ import org.bukkit.conversations.ConversationAbandonedEvent;
+@@ -32,6 +33,14 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
+         }
+     }
+ 
++    public void sendMessage(BaseComponent... message) {
++        sendMessage(BaseComponent.toLegacyText(message));
++    }
++
++    public void sendMessage(BaseComponent message) {
++        sendMessage(message.toLegacyText());
++    }
++
+     public String getName() {
+         return "CONSOLE";
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
+index 25d1255..ac6ce83 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftRemoteConsoleCommandSender.java
+@@ -1,6 +1,7 @@
+ package org.bukkit.craftbukkit.command;
+ 
+ import net.minecraft.server.RemoteControlCommandListener;
++import org.bukkit.chat.BaseComponent;
+ import org.bukkit.command.RemoteConsoleCommandSender;
+ 
+ public class CraftRemoteConsoleCommandSender extends ServerCommandSender implements RemoteConsoleCommandSender {
+@@ -21,6 +22,16 @@ public class CraftRemoteConsoleCommandSender extends ServerCommandSender impleme
+     }
+ 
+     @Override
++    public void sendMessage(BaseComponent... message) {
++        sendMessage(BaseComponent.toLegacyText(message));
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++        sendMessage(message.toLegacyText());
++    }
++
++    @Override
+     public String getName() {
+         return "Rcon";
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java
+index 75169ae..63a2b49 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java
+@@ -6,6 +6,7 @@ import net.minecraft.server.EntityMinecartCommandBlock;
+ 
+ import org.bukkit.Bukkit;
+ import org.bukkit.Server;
++import org.bukkit.chat.BaseComponent;
+ import org.bukkit.craftbukkit.CraftServer;
+ import org.bukkit.entity.EntityType;
+ import org.bukkit.entity.minecart.CommandMinecart;
+@@ -51,6 +52,14 @@ public class CraftMinecartCommand extends CraftMinecart implements CommandMineca
+     }
+ 
+     @Override
++    public void sendMessage(BaseComponent... message) {
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++    }
++
++    @Override
+     public String getName() {
+         return ((EntityMinecartCommandBlock) getHandle()).e().getName();
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 61ea0d0..4be719a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -33,6 +33,8 @@ import org.bukkit.Statistic;
+ import org.bukkit.Material;
+ import org.bukkit.Statistic.Type;
+ import org.bukkit.World;
++import org.bukkit.chat.BaseComponent;
++import org.bukkit.chat.serialization.ComponentSerializer;
+ import org.bukkit.command.CommandSender;
+ import org.bukkit.configuration.serialization.DelegateDeserialization;
+ import org.bukkit.conversations.Conversation;
+@@ -179,6 +181,16 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
++    public void sendMessage(BaseComponent... message) {
++        sendRawMessage(ComponentSerializer.toString(message));
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++        sendRawMessage(ComponentSerializer.toString(message));
++    }
++
++    @Override
+     public boolean hasFakeName(CommandSender viewer) {
+         return viewer != null && this.fakeNames.containsKey(viewer);
+     }
+-- 
+1.8.4.msysgit.0
+

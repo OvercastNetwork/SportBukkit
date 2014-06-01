@@ -1,0 +1,1544 @@
+From 77a21bfb22d5bdf120c01a2999df8de960e6765d Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sun, 1 Jun 2014 15:51:59 -0500
+Subject: [PATCH] Add BungeeCord's JSON chat framework
+
+
+diff --git a/pom.xml b/pom.xml
+index aa1b012..ec2380d 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -105,6 +105,12 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
++            <groupId>com.google.code.gson</groupId>
++            <artifactId>gson</artifactId>
++            <version>2.2.4</version>
++            <scope>compile</scope>
++        </dependency>
++        <dependency>
+             <groupId>com.google.guava</groupId>
+             <artifactId>guava</artifactId>
+             <version>14.0.1</version>
+diff --git a/src/main/java/org/bukkit/chat/BaseComponent.java b/src/main/java/org/bukkit/chat/BaseComponent.java
+new file mode 100644
+index 0000000..2b78fe3
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/BaseComponent.java
+@@ -0,0 +1,466 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++import org.bukkit.ChatColor;
++
++import java.util.ArrayList;
++import java.util.List;
++
++public abstract class BaseComponent {
++    BaseComponent parent;
++
++    /**
++     * The color of this component and any child components (unless overridden)
++     */
++    private ChatColor color;
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * bold
++     */
++    private Boolean bold;
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * italic
++     */
++    private Boolean italic;
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * underlined
++     */
++    private Boolean underlined;
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * strikethrough
++     */
++    private Boolean strikethrough;
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * obfuscated
++     */
++    private Boolean obfuscated;
++
++    /**
++     * Appended components that inherit this component's formatting and events
++     */
++    private List<BaseComponent> extra;
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * clicked
++     */
++    private ClickEvent clickEvent;
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * hovered over
++     */
++    private HoverEvent hoverEvent;
++
++    protected BaseComponent(BaseComponent old) {
++        setColor(old.getColorRaw());
++        setBold(old.isBoldRaw());
++        setItalic(old.isItalicRaw());
++        setUnderlined(old.isUnderlined());
++        setStrikethrough(old.isStrikethroughRaw());
++        setObfuscated(old.isObfuscatedRaw());
++        setClickEvent(old.getClickEvent());
++        setHoverEvent(old.getHoverEvent());
++    }
++
++    public BaseComponent() {
++    }
++
++    /**
++     * Converts the components to a string that uses the old formatting codes
++     * <p/>
++     * ({@link org.bukkit.ChatColor#COLOR_CHAR}
++     *
++     * @param components the components to convert
++     * @return the string in the old format
++     */
++    public static String toLegacyText(BaseComponent... components) {
++        StringBuilder builder = new StringBuilder();
++        for (BaseComponent msg : components) {
++            builder.append(msg.toLegacyText());
++        }
++        return builder.toString();
++    }
++
++    /**
++     * Converts the components into a string without any formatting
++     *
++     * @param components the components to convert
++     * @return the string as plain text
++     */
++    public static String toPlainText(BaseComponent... components) {
++        StringBuilder builder = new StringBuilder();
++        for (BaseComponent msg : components) {
++            builder.append(msg.toPlainText());
++        }
++        return builder.toString();
++    }
++
++    /**
++     * Returns the color of this component. This uses the parent's color if this
++     * <p/>
++     * component doesn't have one. {@link org.bukkit.ChatColor#WHITE}
++     * <p/>
++     * is returned if no color is found.
++     *
++     * @return the color of this component
++     */
++    public ChatColor getColor() {
++        if(color == null) {
++            if(parent == null) {
++                return ChatColor.WHITE;
++            }
++            return parent.getColor();
++        }
++        return color;
++    }
++
++    /**
++     * The color of this component and any child components (unless overridden)
++     */
++    public void setColor(final ChatColor color) {
++        this.color = color;
++    }
++
++    /**
++     * Returns the color of this component without checking the parents color.
++     * <p/>
++     * May return null
++     *
++     * @return the color of this component
++     */
++    public ChatColor getColorRaw() {
++        return color;
++    }
++
++    /**
++     * Returns whether this component is bold. This uses the parent's setting if
++     * <p/>
++     * this component hasn't been set. false is returned if none of the parent
++     * <p/>
++     * chain has been set.
++     *
++     * @return whether the component is bold
++     */
++    public boolean isBold() {
++        if(bold == null) {
++            return parent != null && parent.isBold();
++        }
++        return bold;
++    }
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * bold
++     */
++    public void setBold(final Boolean bold) {
++        this.bold = bold;
++    }
++
++    /**
++     * Returns whether this component is bold without checking the parents
++     * <p/>
++     * setting. May return null
++     *
++     * @return whether the component is bold
++     */
++    public Boolean isBoldRaw() {
++        return bold;
++    }
++
++    /**
++     * Returns whether this component is italic. This uses the parent's setting
++     * <p/>
++     * if this component hasn't been set. false is returned if none of the
++     * <p/>
++     * parent chain has been set.
++     *
++     * @return whether the component is italic
++     */
++    public boolean isItalic() {
++        if(italic == null) {
++            return parent != null && parent.isItalic();
++        }
++        return italic;
++    }
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * italic
++     */
++    public void setItalic(final Boolean italic) {
++        this.italic = italic;
++    }
++
++    /**
++     * Returns whether this component is italic without checking the parents
++     * <p/>
++     * setting. May return null
++     *
++     * @return whether the component is italic
++     */
++    public Boolean isItalicRaw() {
++        return italic;
++    }
++
++    /**
++     * Returns whether this component is underlined. This uses the parent's
++     * <p/>
++     * setting if this component hasn't been set. false is returned if none of
++     * <p/>
++     * the parent chain has been set.
++     *
++     * @return whether the component is underlined
++     */
++    public boolean isUnderlined() {
++        if(underlined == null) {
++            return parent != null && parent.isUnderlined();
++        }
++        return underlined;
++    }
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * underlined
++     */
++    public void setUnderlined(final Boolean underlined) {
++        this.underlined = underlined;
++    }
++
++    /**
++     * Returns whether this component is underlined without checking the parents
++     * <p/>
++     * setting. May return null
++     *
++     * @return whether the component is underlined
++     */
++    public Boolean isUnderlinedRaw() {
++        return underlined;
++    }
++
++    /**
++     * Returns whether this component is strikethrough. This uses the parent's
++     * <p/>
++     * setting if this component hasn't been set. false is returned if none of
++     * <p/>
++     * the parent chain has been set.
++     *
++     * @return whether the component is strikethrough
++     */
++    public boolean isStrikethrough() {
++        if(strikethrough == null) {
++            return parent != null && parent.isStrikethrough();
++        }
++        return strikethrough;
++    }
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * strikethrough
++     */
++    public void setStrikethrough(final Boolean strikethrough) {
++        this.strikethrough = strikethrough;
++    }
++
++    /**
++     * Returns whether this component is strikethrough without checking the
++     * <p/>
++     * parents setting. May return null
++     *
++     * @return whether the component is strikethrough
++     */
++    public Boolean isStrikethroughRaw() {
++        return strikethrough;
++    }
++
++    /**
++     * Returns whether this component is obfuscated. This uses the parent's
++     * <p/>
++     * setting if this component hasn't been set. false is returned if none of
++     * <p/>
++     * the parent chain has been set.
++     *
++     * @return whether the component is obfuscated
++     */
++    public boolean isObfuscated() {
++        if(obfuscated == null) {
++            return parent != null && parent.isObfuscated();
++        }
++        return obfuscated;
++    }
++
++    /**
++     * Whether this component and any child components (unless overridden) is
++     * <p/>
++     * obfuscated
++     */
++    public void setObfuscated(final Boolean obfuscated) {
++        this.obfuscated = obfuscated;
++    }
++
++    /**
++     * Returns whether this component is obfuscated without checking the parents
++     * <p/>
++     * setting. May return null
++     *
++     * @return whether the component is obfuscated
++     */
++    public Boolean isObfuscatedRaw() {
++        return obfuscated;
++    }
++
++    /**
++     * Appends a text element to the component. The text will inherit this
++     * <p/>
++     * component's formatting
++     *
++     * @param text the text to append
++     */
++    public void addExtra(String text) {
++        addExtra(new TextComponent(text));
++    }
++
++    /**
++     * Appends a component to the component. The text will inherit this
++     * <p/>
++     * component's formatting
++     *
++     * @param component the component to append
++     */
++    public void addExtra(BaseComponent component) {
++        if(extra == null) {
++            extra = new ArrayList<>();
++        }
++        component.parent = this;
++        extra.add(component);
++    }
++
++    /**
++     * Returns whether the component has any formatting or events applied to it
++     *
++     * @return
++     */
++    public boolean hasFormatting() {
++        return color != null || bold != null || italic != null || underlined != null || strikethrough != null || obfuscated != null || hoverEvent != null || clickEvent != null;
++    }
++
++    /**
++     * Converts the component into a string without any formatting
++     *
++     * @return the string as plain text
++     */
++    public String toPlainText() {
++        StringBuilder builder = new StringBuilder();
++        toPlainText(builder);
++        return builder.toString();
++    }
++
++    protected void toPlainText(StringBuilder builder) {
++        if(extra != null) {
++            for (BaseComponent e : extra) {
++                e.toPlainText(builder);
++            }
++        }
++    }
++
++    /**
++     * Converts the component to a string that uses the old formatting codes
++     * <p/>
++     * ({@link org.bukkit.ChatColor#COLOR_CHAR}
++     *
++     * @return the string in the old format
++     */
++    public String toLegacyText() {
++        StringBuilder builder = new StringBuilder();
++        toLegacyText(builder);
++        return builder.toString();
++    }
++
++    protected void toLegacyText(StringBuilder builder) {
++        if(extra != null) {
++            for (BaseComponent e : extra) {
++                e.toLegacyText(builder);
++            }
++        }
++    }
++
++    @Override
++    public String toString() {
++        return String.format("BaseComponent{color=%s, bold=%b, italic=%b, underlined=%b, strikethrough=%b, obfuscated=%b, clickEvent=%s, hoverEvent=%s, extra=%s}", getColor().name(), isBold(), isItalic(), isUnderlined(), isStrikethrough(), isObfuscated(), getClickEvent(), getHoverEvent(), getExtra());
++    }
++
++    /**
++     * Appended components that inherit this component's formatting and events
++     */
++    public List<BaseComponent> getExtra() {
++        return this.extra;
++    }
++
++    public void setExtra(List<BaseComponent> components) {
++        for (BaseComponent component : components) {
++            component.parent = this;
++        }
++        extra = components;
++    }
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * clicked
++     */
++    public ClickEvent getClickEvent() {
++        return this.clickEvent;
++    }
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * clicked
++     */
++    public void setClickEvent(final ClickEvent clickEvent) {
++        this.clickEvent = clickEvent;
++    }
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * hovered over
++     */
++    public HoverEvent getHoverEvent() {
++        return this.hoverEvent;
++    }
++
++    /**
++     * The action to preform when this component (and child components) are
++     * <p/>
++     * hovered over
++     */
++    public void setHoverEvent(final HoverEvent hoverEvent) {
++        this.hoverEvent = hoverEvent;
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/ClickEvent.java b/src/main/java/org/bukkit/chat/ClickEvent.java
+new file mode 100644
+index 0000000..7421dc5
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/ClickEvent.java
+@@ -0,0 +1,82 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++public final class ClickEvent {
++
++    /**
++     * The type of action to preform on click
++     */
++    private final Action action;
++
++    /**
++     * Depends on action
++     *
++     * @see org.bukkit.chat.ClickEvent.Action
++     */
++    private final String value;
++
++    public ClickEvent(final Action action, final String value) {
++        this.action = action;
++        this.value = value;
++    }
++
++    @Override
++    public String toString() {
++        return String.format("ClickEvent{action=%s, value=%s}", action, value);
++    }
++
++    /**
++     * The type of action to preform on click
++     */
++    public Action getAction() {
++        return this.action;
++    }
++
++    /**
++     * Depends on action
++     *
++     * @see org.bukkit.chat.ClickEvent.Action
++     */
++    public String getValue() {
++        return this.value;
++    }
++
++    public enum Action {
++
++        /**
++         * Open a url at the path given by
++         * <p/>
++         * {@link org.bukkit.chat.ClickEvent#getValue()}
++         */
++        OPEN_URL,
++
++        /**
++         * Open a file at the path given by
++         * <p/>
++         * {@link org.bukkit.chat.ClickEvent#getValue()}
++         */
++        OPEN_FILE,
++
++        /**
++         * Run the command given by
++         * <p/>
++         * {@link org.bukkit.chat.ClickEvent#getValue()}
++         */
++        RUN_COMMAND,
++
++        /**
++         * Inserts the string given by
++         * <p/>
++         * {@link org.bukkit.chat.ClickEvent#getValue()} into the
++         * <p/>
++         * players text box
++         */
++        SUGGEST_COMMAND
++
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/ComponentBuilder.java b/src/main/java/org/bukkit/chat/ComponentBuilder.java
+new file mode 100644
+index 0000000..2ec9fc3
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/ComponentBuilder.java
+@@ -0,0 +1,150 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++import org.bukkit.ChatColor;
++
++import java.util.ArrayList;
++import java.util.List;
++
++/**
++ * ComponentBuilder simplifies creating basic messages by allowing the use of a chainable builder.
++ * <p/>
++ * < pre> new ComponentBuilder("Hello ").color(ChatColor.RED). append("World").color(ChatColor.BLUE).
++ * append("!").bold(true).create(); </pre>
++ * <p/>
++ * All methods (excluding {@link #append(String)} and {@link #create()} work on the last part appended to the builder,
++ * so in the example above "Hello " would be {@link org.bukkit.ChatColor#RED} and "World" would be {@link
++ * org.bukkit.ChatColor#BLUE} but "!" would be bold and {@link org.bukkit.ChatColor#BLUE} because append copies the
++ * previous part's formatting
++ */
++public class ComponentBuilder {
++
++    private TextComponent current;
++    private List<BaseComponent> parts = new ArrayList<>();
++
++    /**
++     * Creates a ComponentBuilder with the given text as the first part.
++     *
++     * @param text the first text element
++     */
++    public ComponentBuilder(String text) {
++        current = new TextComponent(text);
++    }
++
++    /**
++     * Appends the text to the builder and makes it the current target for formatting. The text will have all the
++     * formatting from the previous part.
++     *
++     * @param text the text to append
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder append(String text) {
++        parts.add(current);
++        current = new TextComponent(current);
++        current.setText(text);
++        return this;
++    }
++
++    /**
++     * Sets the color of the current part.
++     *
++     * @param color the new color
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder color(ChatColor color) {
++        current.setColor(color);
++        return this;
++    }
++
++    /**
++     * Sets whether the current part is bold.
++     *
++     * @param bold whether this part is bold
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder bold(boolean bold) {
++        current.setBold(bold);
++        return this;
++    }
++
++    /**
++     * Sets whether the current part is italic.
++     *
++     * @param italic whether this part is italic
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder italic(boolean italic) {
++        current.setItalic(italic);
++        return this;
++    }
++
++    /**
++     * Sets whether the current part is underlined.
++     *
++     * @param underlined whether this part is underlined
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder underlined(boolean underlined) {
++        current.setUnderlined(underlined);
++        return this;
++    }
++
++    /**
++     * Sets whether the current part is strikethrough.
++     *
++     * @param strikethrough whether this part is strikethrough
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder strikethrough(boolean strikethrough) {
++        current.setStrikethrough(strikethrough);
++        return this;
++    }
++
++    /**
++     * Sets whether the current part is obfuscated.
++     *
++     * @param obfuscated whether this part is obfuscated
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder obfuscated(boolean obfuscated) {
++        current.setObfuscated(obfuscated);
++        return this;
++    }
++
++    /**
++     * Sets the click event for the current part.
++     *
++     * @param clickEvent the click event
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder event(ClickEvent clickEvent) {
++        current.setClickEvent(clickEvent);
++        return this;
++    }
++
++    /**
++     * Sets the hover event for the current part.
++     *
++     * @param hoverEvent the hover event
++     * @return this ComponentBuilder for chaining
++     */
++    public ComponentBuilder event(HoverEvent hoverEvent) {
++        current.setHoverEvent(hoverEvent);
++        return this;
++    }
++
++    /**
++     * Returns the components needed to display the message created by this builder.
++     *
++     * @return the created components
++     */
++    public BaseComponent[] create() {
++        parts.add(current);
++        return parts.toArray(new BaseComponent[parts.size()]);
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/HoverEvent.java b/src/main/java/org/bukkit/chat/HoverEvent.java
+new file mode 100644
+index 0000000..cff4770
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/HoverEvent.java
+@@ -0,0 +1,37 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++public final class HoverEvent {
++    private final Action action;
++    private final BaseComponent[] value;
++
++    public HoverEvent(final Action action, final BaseComponent[] value) {
++        this.action = action;
++        this.value = value;
++    }
++
++    @Override
++    public String toString() {
++        return String.format("HoverEvent{action=%s, value=%s}", action, value);
++    }
++
++    public Action getAction() {
++        return this.action;
++    }
++
++    public BaseComponent[] getValue() {
++        return this.value;
++    }
++
++    public enum Action {
++        SHOW_TEXT,
++        SHOW_ACHIEVEMENT,
++        SHOW_ITEM
++
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/TextComponent.java b/src/main/java/org/bukkit/chat/TextComponent.java
+new file mode 100644
+index 0000000..f4eb77b
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/TextComponent.java
+@@ -0,0 +1,202 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++import org.bukkit.ChatColor;
++
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++public class TextComponent extends BaseComponent {
++    private static final Pattern url = Pattern.compile("^(?:(https?)://)?([-\\w_\\.]{2,}\\.[a-z]{2,4})(/\\S*)?$");
++    /**
++     * The text of the component that will be displayed to the client
++     */
++    private String text;
++
++    /**
++     * Creates a TextComponent with formatting and text from the passed
++     * <p/>
++     * component
++     *
++     * @param textComponent the component to copy from
++     */
++    public TextComponent(TextComponent textComponent) {
++        super(textComponent);
++        setText(textComponent.getText());
++    }
++
++    /**
++     * Creates a TextComponent with blank text and the extras set to the passed
++     * <p/>
++     * array
++     *
++     * @param extras the extras to set
++     */
++    public TextComponent(BaseComponent... extras) {
++        setText("");
++        setExtra(Arrays.asList(extras));
++    }
++
++    public TextComponent(final String text) {
++        this.text = text;
++    }
++
++    public TextComponent() {
++    }
++
++    /**
++     * Converts the old formatting system that used
++     * <p/>
++     * {@link org.bukkit.ChatColor#COLOR_CHAR} into the new json based
++     * <p/>
++     * system.
++     *
++     * @param message the text to convert
++     * @return the components needed to print the message to the client
++     */
++    public static BaseComponent[] fromLegacyText(String message) {
++        ArrayList<BaseComponent> components = new ArrayList<>();
++        StringBuilder builder = new StringBuilder();
++        TextComponent component = new TextComponent();
++        Matcher matcher = url.matcher(message);
++        for (int i = 0; i < message.length(); i++) {
++            char c = message.charAt(i);
++            if(c == ChatColor.COLOR_CHAR) {
++                i++;
++                c = message.charAt(i);
++                if(c >= 'A' && c <= 'Z') {
++                    c += 32;
++                }
++                ChatColor format = ChatColor.getByChar(c);
++                if(format == null) {
++                    continue;
++                }
++                if(builder.length() > 0) {
++                    TextComponent old = component;
++                    component = new TextComponent(old);
++                    old.setText(builder.toString());
++                    builder = new StringBuilder();
++                    components.add(old);
++                }
++                switch (format) {
++                    case BOLD:
++                        component.setBold(true);
++                        break;
++
++                    case ITALIC:
++                        component.setItalic(true);
++                        break;
++
++                    case UNDERLINE:
++                        component.setUnderlined(true);
++                        break;
++
++                    case STRIKETHROUGH:
++                        component.setStrikethrough(true);
++                        break;
++
++                    case MAGIC:
++                        component.setObfuscated(true);
++                        break;
++
++                    case RESET:
++                        format = ChatColor.WHITE;
++
++                    default:
++                        component = new TextComponent();
++                        component.setColor(format);
++                        break;
++
++                }
++                continue;
++            }
++            int pos = message.indexOf(' ', i);
++            if(pos == -1) {
++                pos = message.length();
++            }
++            if(matcher.region(i, pos).find()) {
++                //Web link handling
++                if(builder.length() > 0) {
++                    TextComponent old = component;
++                    component = new TextComponent(old);
++                    old.setText(builder.toString());
++                    builder = new StringBuilder();
++                    components.add(old);
++                }
++                TextComponent old = component;
++                component = new TextComponent(old);
++                String urlString = message.substring(i, pos);
++                component.setText(urlString);
++                component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, urlString.startsWith("http") ? urlString : "http://" + urlString));
++                components.add(component);
++                i += pos - i - 1;
++                component = old;
++                continue;
++            }
++            builder.append(c);
++        }
++        if(builder.length() > 0) {
++            component.setText(builder.toString());
++            components.add(component);
++        }
++        //The client will crash if the array is empty
++        if(components.size() == 0) {
++            components.add(new TextComponent(""));
++        }
++        return components.toArray(new BaseComponent[components.size()]);
++    }
++
++    @Override
++    protected void toPlainText(StringBuilder builder) {
++        builder.append(text);
++        super.toPlainText(builder);
++    }
++
++    @Override
++    protected void toLegacyText(StringBuilder builder) {
++        builder.append(getColor());
++        if(isBold()) {
++            builder.append(ChatColor.BOLD);
++        }
++        if(isItalic()) {
++            builder.append(ChatColor.ITALIC);
++        }
++        if(isUnderlined()) {
++            builder.append(ChatColor.UNDERLINE);
++        }
++        if(isStrikethrough()) {
++            builder.append(ChatColor.STRIKETHROUGH);
++        }
++        if(isObfuscated()) {
++            builder.append(ChatColor.MAGIC);
++        }
++        builder.append(text);
++        super.toLegacyText(builder);
++    }
++
++    @Override
++    public String toString() {
++        return String.format("TextComponent{text=%s, %s}", text, super.toString());
++    }
++
++    /**
++     * The text of the component that will be displayed to the client
++     */
++    public String getText() {
++        return this.text;
++    }
++
++    /**
++     * The text of the component that will be displayed to the client
++     */
++    public void setText(final String text) {
++        this.text = text;
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/TranslatableComponent.java b/src/main/java/org/bukkit/chat/TranslatableComponent.java
+new file mode 100644
+index 0000000..e5e2bf5
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/TranslatableComponent.java
+@@ -0,0 +1,235 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat;
++
++import org.bukkit.ChatColor;
++
++import java.util.ArrayList;
++import java.util.List;
++import java.util.ResourceBundle;
++import java.util.regex.Matcher;
++import java.util.regex.Pattern;
++
++public class TranslatableComponent extends BaseComponent {
++    private final ResourceBundle locales = ResourceBundle.getBundle("mojang-translations/en_US");
++    private final Pattern format = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
++
++    /**
++     * The key into the Minecraft locale files to use for the translation. The
++     * <p/>
++     * text depends on the client's locale setting. The console is always en_US
++     */
++    private String translate;
++
++    /**
++     * The components to substitute into the translation
++     */
++    private List<BaseComponent> with;
++
++    /**
++     * Creates a translatable component with the passed substitutions
++     *
++     * @param translate the translation key
++     * @param with      the {@link String}s and
++     *                  <p/>
++     *                  {@link org.bukkit.chat.BaseComponent}s to use into the
++     *                  <p/>
++     *                  translation
++     * @see #setTranslate(String)
++     * @see #setWith(java.util.List)
++     */
++    public TranslatableComponent(String translate, Object... with) {
++        setTranslate(translate);
++        List<BaseComponent> temp = new ArrayList<>();
++        for (Object w : with) {
++            if(w instanceof String) {
++                temp.add(new TextComponent((String) w));
++            } else {
++                temp.add((BaseComponent) w);
++            }
++        }
++        setWith(temp);
++    }
++
++    public TranslatableComponent() {
++    }
++
++    /**
++     * Adds a text substitution to the component. The text will inherit this
++     * <p/>
++     * component's formatting
++     *
++     * @param text the text to substitute
++     */
++    public void addWith(String text) {
++        addWith(new TextComponent(text));
++    }
++
++    /**
++     * Adds a component substitution to the component. The text will inherit
++     * <p/>
++     * this component's formatting
++     *
++     * @param component the component to substitute
++     */
++    public void addWith(BaseComponent component) {
++        if(with == null) {
++            with = new ArrayList<>();
++        }
++        component.parent = this;
++        with.add(component);
++    }
++
++    @Override
++    protected void toPlainText(StringBuilder builder) {
++        String trans = locales.getString(translate);
++        if(trans == null) {
++            builder.append(translate);
++        } else {
++            Matcher matcher = format.matcher(trans);
++            int position = 0;
++            int i = 0;
++            while (matcher.find(position)) {
++                int pos = matcher.start();
++                if(pos != position) {
++                    builder.append(trans.substring(position, pos));
++                }
++                position = matcher.end();
++                String formatCode = matcher.group(2);
++                switch (formatCode.charAt(0)) {
++                    case 's':
++
++                    case 'd':
++                        String withIndex = matcher.group(1);
++                        with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++).toPlainText(builder);
++                        break;
++
++                    case '%':
++                        builder.append('%');
++                        break;
++
++                }
++            }
++            if(trans.length() != position) {
++                builder.append(trans.substring(position, trans.length()));
++            }
++        }
++        super.toPlainText(builder);
++    }
++
++    @Override
++    protected void toLegacyText(StringBuilder builder) {
++        String trans = locales.getString(translate);
++        if(trans == null) {
++            addFormat(builder);
++            builder.append(translate);
++        } else {
++            Matcher matcher = format.matcher(trans);
++            int position = 0;
++            int i = 0;
++            while (matcher.find(position)) {
++                int pos = matcher.start();
++                if(pos != position) {
++                    addFormat(builder);
++                    builder.append(trans.substring(position, pos));
++                }
++                position = matcher.end();
++                String formatCode = matcher.group(2);
++                switch (formatCode.charAt(0)) {
++                    case 's':
++
++                    case 'd':
++                        String withIndex = matcher.group(1);
++                        with.get(withIndex != null ? Integer.parseInt(withIndex) - 1 : i++).toLegacyText(builder);
++                        break;
++
++                    case '%':
++                        addFormat(builder);
++                        builder.append('%');
++                        break;
++
++                }
++            }
++            if(trans.length() != position) {
++                addFormat(builder);
++                builder.append(trans.substring(position, trans.length()));
++            }
++        }
++        super.toLegacyText(builder);
++    }
++
++    private void addFormat(StringBuilder builder) {
++        builder.append(getColor());
++        if(isBold()) {
++            builder.append(ChatColor.BOLD);
++        }
++        if(isItalic()) {
++            builder.append(ChatColor.ITALIC);
++        }
++        if(isUnderlined()) {
++            builder.append(ChatColor.UNDERLINE);
++        }
++        if(isStrikethrough()) {
++            builder.append(ChatColor.STRIKETHROUGH);
++        }
++        if(isObfuscated()) {
++            builder.append(ChatColor.MAGIC);
++        }
++    }
++
++    @Override
++    public String toString() {
++        return String.format("TranslatableComponent{translate=%s, with=%s, %s}", translate, with, super.toString());
++    }
++
++    public ResourceBundle getLocales() {
++        return this.locales;
++    }
++
++    public Pattern getFormat() {
++        return this.format;
++    }
++
++    /**
++     * The key into the Minecraft locale files to use for the translation. The
++     * <p/>
++     * text depends on the client's locale setting. The console is always en_US
++     */
++    public String getTranslate() {
++        return this.translate;
++    }
++
++    /**
++     * The key into the Minecraft locale files to use for the translation. The
++     * <p/>
++     * text depends on the client's locale setting. The console is always en_US
++     */
++    public void setTranslate(final String translate) {
++        this.translate = translate;
++    }
++
++    /**
++     * The components to substitute into the translation
++     */
++    public List<BaseComponent> getWith() {
++        return this.with;
++    }
++
++    /**
++     * Sets the translation substitutions to be used in this component. Removes
++     * <p/>
++     * any previously set substitutions
++     *
++     * @param components the components to substitute
++     */
++    public void setWith(List<BaseComponent> components) {
++        for (BaseComponent component : components) {
++            component.parent = this;
++        }
++        with = components;
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/serialization/BaseComponentSerializer.java b/src/main/java/org/bukkit/chat/serialization/BaseComponentSerializer.java
+new file mode 100644
+index 0000000..3ab2b42
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/serialization/BaseComponentSerializer.java
+@@ -0,0 +1,120 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat.serialization;
++
++import com.google.common.base.Preconditions;
++import com.google.gson.JsonDeserializationContext;
++import com.google.gson.JsonObject;
++import com.google.gson.JsonSerializationContext;
++import org.bukkit.ChatColor;
++import org.bukkit.chat.BaseComponent;
++import org.bukkit.chat.ClickEvent;
++import org.bukkit.chat.HoverEvent;
++
++import java.util.Arrays;
++import java.util.HashSet;
++
++public class BaseComponentSerializer {
++
++    protected void deserialize(JsonObject object, BaseComponent component, JsonDeserializationContext context) {
++        if(object.has("color")) {
++            component.setColor(ChatColor.valueOf(object.get("color").getAsString().toUpperCase()));
++        }
++        if(object.has("bold")) {
++            component.setBold(object.get("bold").getAsBoolean());
++        }
++        if(object.has("italic")) {
++            component.setItalic(object.get("italic").getAsBoolean());
++        }
++        if(object.has("underlined")) {
++            component.setUnderlined(object.get("underlined").getAsBoolean());
++        }
++        if(object.has("strikethrough")) {
++            component.setUnderlined(object.get("strikethrough").getAsBoolean());
++        }
++        if(object.has("obfuscated")) {
++            component.setUnderlined(object.get("obfuscated").getAsBoolean());
++        }
++        if(object.has("extra")) {
++            component.setExtra(Arrays.<BaseComponent>asList(context.<BaseComponent[]>deserialize(object.get("extra"), BaseComponent[].class)));
++        }
++
++        //Events
++        if(object.has("clickEvent")) {
++            JsonObject event = object.getAsJsonObject("clickEvent");
++            component.setClickEvent(new ClickEvent(
++                    ClickEvent.Action.valueOf(event.get("action").getAsString().toUpperCase()),
++                    event.get("value").getAsString()));
++        }
++        if(object.has("hoverEvent")) {
++            JsonObject event = object.getAsJsonObject("hoverEvent");
++            BaseComponent[] res;
++            if(event.get("value").isJsonArray()) {
++                res = context.deserialize(event.get("value"), BaseComponent[].class);
++            } else {
++                res = new BaseComponent[]
++                        {
++                                context.<BaseComponent>deserialize(event.get("value"), BaseComponent.class)
++                        };
++            }
++            component.setHoverEvent(new HoverEvent(HoverEvent.Action.valueOf(event.get("action").getAsString().toUpperCase()), res));
++        }
++    }
++
++    protected void serialize(JsonObject object, BaseComponent component, JsonSerializationContext context) {
++        boolean first = false;
++        if(ComponentSerializer.serializedComponents.get() == null) {
++            first = true;
++            ComponentSerializer.serializedComponents.set(new HashSet<BaseComponent>());
++        }
++        try {
++            Preconditions.checkArgument(!ComponentSerializer.serializedComponents.get().contains(component), "Component loop");
++            ComponentSerializer.serializedComponents.get().add(component);
++            if(component.getColorRaw() != null) {
++                object.addProperty("color", component.getColorRaw().name());
++            }
++            if(component.isBoldRaw() != null) {
++                object.addProperty("bold", component.isBoldRaw());
++            }
++            if(component.isItalicRaw() != null) {
++                object.addProperty("italic", component.isItalicRaw());
++            }
++            if(component.isUnderlinedRaw() != null) {
++                object.addProperty("underlined", component.isUnderlinedRaw());
++            }
++            if(component.isStrikethroughRaw() != null) {
++                object.addProperty("strikethrough", component.isStrikethroughRaw());
++            }
++            if(component.isObfuscatedRaw() != null) {
++                object.addProperty("obfuscated", component.isObfuscatedRaw());
++            }
++
++            if(component.getExtra() != null) {
++                object.add("extra", context.serialize(component.getExtra()));
++            }
++
++            //Events
++            if(component.getClickEvent() != null) {
++                JsonObject clickEvent = new JsonObject();
++                clickEvent.addProperty("action", component.getClickEvent().getAction().toString().toLowerCase());
++                clickEvent.addProperty("value", component.getClickEvent().getValue());
++                object.add("clickEvent", clickEvent);
++            }
++            if(component.getHoverEvent() != null) {
++                JsonObject hoverEvent = new JsonObject();
++                hoverEvent.addProperty("action", component.getHoverEvent().getAction().toString().toLowerCase());
++                hoverEvent.add("value", context.serialize(component.getHoverEvent().getValue()));
++                object.add("hoverEvent", hoverEvent);
++            }
++        } finally {
++            ComponentSerializer.serializedComponents.get().remove(component);
++            if(first) {
++                ComponentSerializer.serializedComponents.set(null);
++            }
++        }
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/serialization/ComponentSerializer.java b/src/main/java/org/bukkit/chat/serialization/ComponentSerializer.java
+new file mode 100644
+index 0000000..25d2e8a
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/serialization/ComponentSerializer.java
+@@ -0,0 +1,55 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat.serialization;
++
++import com.google.gson.*;
++import org.bukkit.chat.BaseComponent;
++import org.bukkit.chat.TextComponent;
++import org.bukkit.chat.TranslatableComponent;
++
++import java.lang.reflect.Type;
++import java.util.HashSet;
++
++public class ComponentSerializer implements JsonDeserializer<BaseComponent> {
++
++    public final static ThreadLocal<HashSet<BaseComponent>> serializedComponents = new ThreadLocal<>();
++    private final static Gson gson = new GsonBuilder().
++            registerTypeAdapter(BaseComponent.class, new ComponentSerializer()).
++            registerTypeAdapter(TextComponent.class, new TextComponentSerializer()).
++            registerTypeAdapter(TranslatableComponent.class, new TranslatableComponentSerializer()).
++            create();
++
++    public static BaseComponent[] parse(String json) {
++        if(json.startsWith("[")) { //Array
++            return gson.fromJson(json, BaseComponent[].class);
++        }
++        return new BaseComponent[]
++                {
++                        gson.fromJson(json, BaseComponent.class)
++                };
++    }
++
++    public static String toString(BaseComponent component) {
++        return gson.toJson(component);
++    }
++
++    public static String toString(BaseComponent... components) {
++        return gson.toJson(new TextComponent(components));
++    }
++
++    @Override
++    public BaseComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
++        if(json.isJsonPrimitive()) {
++            return new TextComponent(json.getAsString());
++        }
++        JsonObject object = json.getAsJsonObject();
++        if(object.has("translate")) {
++            return context.deserialize(json, TranslatableComponent.class);
++        }
++        return context.deserialize(json, TextComponent.class);
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/serialization/TextComponentSerializer.java b/src/main/java/org/bukkit/chat/serialization/TextComponentSerializer.java
+new file mode 100644
+index 0000000..ab35053
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/serialization/TextComponentSerializer.java
+@@ -0,0 +1,38 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat.serialization;
++
++import com.google.gson.*;
++import org.bukkit.chat.BaseComponent;
++import org.bukkit.chat.TextComponent;
++
++import java.lang.reflect.Type;
++import java.util.List;
++
++public class TextComponentSerializer extends BaseComponentSerializer implements JsonSerializer<TextComponent>, JsonDeserializer<TextComponent> {
++
++    @Override
++    public TextComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
++        TextComponent component = new TextComponent();
++        JsonObject object = json.getAsJsonObject();
++        deserialize(object, component, context);
++        component.setText(object.get("text").getAsString());
++        return component;
++    }
++
++    @Override
++    public JsonElement serialize(TextComponent src, Type typeOfSrc, JsonSerializationContext context) {
++        List<BaseComponent> extra = src.getExtra();
++        if(!src.hasFormatting() && (extra == null || extra.size() == 0)) {
++            return new JsonPrimitive(src.getText());
++        }
++        JsonObject object = new JsonObject();
++        serialize(object, src, context);
++        object.addProperty("text", src.getText());
++        return object;
++    }
++}
+diff --git a/src/main/java/org/bukkit/chat/serialization/TranslatableComponentSerializer.java b/src/main/java/org/bukkit/chat/serialization/TranslatableComponentSerializer.java
+new file mode 100644
+index 0000000..bfb6b8a
+--- /dev/null
++++ b/src/main/java/org/bukkit/chat/serialization/TranslatableComponentSerializer.java
+@@ -0,0 +1,40 @@
++/*
++ * Copyright (c) 2014 md_5.
++ *
++ * Code taken from BungeeCord and used with permission. BungeeCord can be found at https://github.com/SpigotMC/BungeeCord
++ */
++
++package org.bukkit.chat.serialization;
++
++import com.google.gson.*;
++import org.bukkit.chat.BaseComponent;
++import org.bukkit.chat.TranslatableComponent;
++
++import java.lang.reflect.Type;
++import java.util.Arrays;
++
++public class TranslatableComponentSerializer extends BaseComponentSerializer implements JsonSerializer<TranslatableComponent>, JsonDeserializer<TranslatableComponent> {
++
++    @Override
++    public TranslatableComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
++        TranslatableComponent component = new TranslatableComponent();
++        JsonObject object = json.getAsJsonObject();
++        deserialize(object, component, context);
++        component.setTranslate(object.get("translate").getAsString());
++        if(object.has("with")) {
++            component.setWith(Arrays.asList((BaseComponent[]) context.deserialize(object.get("with"), BaseComponent[].class)));
++        }
++        return component;
++    }
++
++    @Override
++    public JsonElement serialize(TranslatableComponent src, Type typeOfSrc, JsonSerializationContext context) {
++        JsonObject object = new JsonObject();
++        serialize(object, src, context);
++        object.addProperty("translate", src.getTranslate());
++        if(src.getWith() != null) {
++            object.add("with", context.serialize(src.getWith()));
++        }
++        return object;
++    }
++}
+diff --git a/src/main/java/org/bukkit/command/CommandSender.java b/src/main/java/org/bukkit/command/CommandSender.java
+index 52c5947..456d6b9 100644
+--- a/src/main/java/org/bukkit/command/CommandSender.java
++++ b/src/main/java/org/bukkit/command/CommandSender.java
+@@ -1,6 +1,7 @@
+ package org.bukkit.command;
+ 
+ import org.bukkit.Server;
++import org.bukkit.chat.BaseComponent;
+ import org.bukkit.permissions.Permissible;
+ 
+ public interface CommandSender extends Permissible {
+@@ -20,6 +21,20 @@ public interface CommandSender extends Permissible {
+     public void sendMessage(String[] messages);
+ 
+     /**
++     * Send a message to this sender.
++     *
++     * @param message the message to send
++     */
++    public void sendMessage(BaseComponent... message);
++
++    /**
++     * Send a message to this sender.
++     *
++     * @param message the message to send
++     */
++    public void sendMessage(BaseComponent message);
++
++    /**
+      * Returns the server instance that this command is running on
+      *
+      * @return Server instance
+-- 
+1.8.4.msysgit.0
+

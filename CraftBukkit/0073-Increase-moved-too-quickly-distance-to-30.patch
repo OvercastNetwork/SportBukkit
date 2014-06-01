@@ -1,25 +1,23 @@
-From 42ec56e81fa86bb88d721b61174c3d9566b97974 Mon Sep 17 00:00:00 2001
+From 8ed31c04bfb735f96c48d5a86913b4d9d626ed75 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Tue, 13 May 2014 16:27:21 -0700
 Subject: [PATCH] Increase moved too quickly distance to 30
 
----
- src/main/java/net/minecraft/server/PlayerConnection.java | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 9fa307e..054f2cd 100644
+index 96107a2..e075534 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -357,7 +357,8 @@ public class PlayerConnection implements PacketPlayInListener {
+@@ -365,7 +365,8 @@ public class PlayerConnection implements PacketPlayInListener {
                  // CraftBukkit end
                  double d10 = d7 * d7 + d8 * d8 + d9 * d9;
-
+ 
 -                if (d10 > 100.0D && this.checkMovement && (!this.minecraftServer.N() || !this.minecraftServer.M().equals(this.player.getName()))) { // CraftBukkit - Added this.checkMovement condition to solve this check being triggered by teleports
 +                // CraftBukkit - Added this.checkMovement condition to solve this check being triggered by teleports. Also increases blocks moved per tick limit to 30.
 +                if (d10 > 900.0D && this.checkMovement && (!this.minecraftServer.N() || !this.minecraftServer.M().equals(this.player.getName()))) {
                      c.warn(this.player.getName() + " moved too quickly! " + d4 + "," + d5 + "," + d6 + " (" + d7 + ", " + d8 + ", " + d9 + ")");
                      this.a(this.y, this.z, this.q, this.player.yaw, this.player.pitch);
                      return;
---
-1.8.5.2 (Apple Git-48)
+-- 
+1.8.4.msysgit.0
+

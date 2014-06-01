@@ -1,0 +1,24 @@
+From 4938a63f8eb609cb7bd7c245a065d8350a3e9a06 Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Sun, 1 Jun 2014 15:50:58 -0500
+Subject: [PATCH] Update to Java 1.7
+
+
+diff --git a/pom.xml b/pom.xml
+index ac1fa7c..aa1b012 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -34,8 +34,8 @@
+                 <artifactId>maven-compiler-plugin</artifactId>
+                 <version>2.3.2</version>
+                 <configuration>
+-                    <source>1.6</source>
+-                    <target>1.6</target>
++                    <source>1.7</source>
++                    <target>1.7</target>
+                 </configuration>
+             </plugin>
+             <plugin>
+-- 
+1.8.4.msysgit.0
+

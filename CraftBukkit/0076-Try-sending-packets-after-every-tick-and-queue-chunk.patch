@@ -1,0 +1,229 @@
+From abdd99f4e790535d8e85d67e94156eb0dc473871 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 10 Jun 2014 04:24:59 -0500
+Subject: [PATCH] Try sending packets after every tick and queue chunk packets
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 5554a11..1bd2939 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -223,7 +223,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+                     if (this.world.isLoaded(chunkcoordintpair.x << 4, 0, chunkcoordintpair.z << 4)) {
+                         chunk = this.world.getChunkAt(chunkcoordintpair.x, chunkcoordintpair.z);
+                         if (chunk.k()) {
+-                            arraylist.add(chunk);
++                            arraylist.add(new NetworkManager.QueuedChunk(chunk, true, '\uffff')); // CraftBukkit - use queued chunks
+                             arraylist1.addAll(chunk.tileEntities.values()); // CraftBukkit - Get tile entities directly from the chunk instead of the world
+                             iterator1.remove();
+                         }
+@@ -234,7 +234,11 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             }
+ 
+             if (!arraylist.isEmpty()) {
+-                this.playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(arraylist));
++                // CraftBukkit start - use queued chunks
++                // this.playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(arraylist));
++                this.playerConnection.networkManager.chunks.addAll(arraylist);
++                // CraftBukkit end
++
+                 Iterator iterator2 = arraylist1.iterator();
+ 
+                 while (iterator2.hasNext()) {
+@@ -246,7 +250,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+                 iterator2 = arraylist.iterator();
+ 
+                 while (iterator2.hasNext()) {
+-                    chunk = (Chunk) iterator2.next();
++                    chunk = ((NetworkManager.QueuedChunk) iterator2.next()).chunk; // CraftBukkit - fix queued chunk cast
+                     this.r().getTracker().a(this, chunk);
+                 }
+             }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index a41c668..7ef2cf0 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -675,6 +675,13 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
+             ((IUpdatePlayerListBox) this.n.get(i)).a();
+         }
+ 
++        // CraftBukkit start - send pending packets to everyone
++        for (i = 0; i < this.getPlayerList().players.size(); ++i) {
++            EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(i);
++            entityplayer.playerConnection.networkManager.i();
++        }
++        // CraftBukkit end
++
+         this.methodProfiler.b();
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
+index c479125..9be100c 100644
+--- a/src/main/java/net/minecraft/server/NetworkManager.java
++++ b/src/main/java/net/minecraft/server/NetworkManager.java
+@@ -41,6 +41,18 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+     public SocketAddress n;
+     public java.util.UUID spoofedUUID;
+     public net.minecraft.util.com.mojang.authlib.properties.Property[] spoofedProfile;
++    public final java.util.ArrayList chunks = com.google.common.collect.Lists.newArrayList();
++    public static class QueuedChunk {
++        public final Chunk chunk;
++        public final boolean flag;
++        public final int i;
++
++        public QueuedChunk(Chunk chunk, boolean flag, int i) {
++            this.chunk = chunk;
++            this.flag = flag;
++            this.i = i;
++        }
++    }
+     // CraftBukkit End
+     private PacketListener o;
+     private EnumProtocol p;
+@@ -113,13 +125,19 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+ 
+     public void handle(Packet packet, GenericFutureListener... agenericfuturelistener) {
+         if (this.m != null && this.m.isOpen()) {
+-            this.i();
+-            this.b(packet, agenericfuturelistener);
+-        } else {
++            EnumProtocol enumprotocol = EnumProtocol.a(packet);
++            EnumProtocol enumprotocol1 = (EnumProtocol) this.m.attr(d).get();
++
++            if (enumprotocol != enumprotocol1) {
++                i.debug("Disabled auto read");
++                this.m.config().setAutoRead(false);
++            }
++
+             this.l.add(new QueuedPacket(packet, agenericfuturelistener));
+         }
+     }
+ 
++    /*
+     private void b(Packet packet, GenericFutureListener[] agenericfuturelistener) {
+         EnumProtocol enumprotocol = EnumProtocol.a(packet);
+         EnumProtocol enumprotocol1 = (EnumProtocol) this.m.attr(d).get();
+@@ -139,14 +157,61 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+             this.m.eventLoop().execute(new QueuedProtocolSwitch(this, enumprotocol, enumprotocol1, packet, agenericfuturelistener));
+         }
+     }
++    */
+ 
+-    private void i() {
++    public void i() {
+         if (this.m != null && this.m.isOpen()) {
+-            while (!this.l.isEmpty()) {
+-                QueuedPacket queuedpacket = (QueuedPacket) this.l.poll();
++            final Queue queue = Queues.newConcurrentLinkedQueue();
+ 
+-                this.b(QueuedPacket.a(queuedpacket), QueuedPacket.b(queuedpacket));
++            if(this.chunks.size() > 0) {
++                Packet packet = new PacketPlayOutMapChunkBulk(com.google.common.collect.Lists.newArrayList(this.chunks));
++                queue.add(new QueuedPacket(packet, new GenericFutureListener[0]));
++                this.chunks.clear();
+             }
++
++            queue.addAll(this.l);
++            this.l.clear();
++
++            this.m.eventLoop().execute(new Runnable(){
++                public void run() {
++                    NetworkManager manager = NetworkManager.this;
++
++                    int size = queue.size();
++
++                    java.util.HashMap<Class, Integer> classes = com.google.common.collect.Maps.newHashMap();
++
++                    while (!queue.isEmpty()) {
++                        QueuedPacket queuedpacket = (QueuedPacket) queue.poll();
++
++                        Packet packet = QueuedPacket.a(queuedpacket);
++                        GenericFutureListener[] listeners = QueuedPacket.b(queuedpacket);
++                        EnumProtocol toProtocol = EnumProtocol.a(packet);
++                        EnumProtocol fromProtocol = (EnumProtocol) NetworkManager.a(manager).attr(manager.d).get();
++
++                        if (toProtocol != fromProtocol) {
++                            manager.a(toProtocol);
++                        }
++
++                        NetworkManager.a(manager).write(packet).addListeners(listeners).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
++
++                        Integer total = classes.get(packet.getClass());
++                        if(total == null) {
++                            classes.put(packet.getClass(), new Integer(1));
++                        } else {
++                            classes.put(packet.getClass(), new Integer(((int) total) + 1));
++                        }
++                    }
++
++                    NetworkManager.a(manager).flush();
++
++
++                    String message = "Runnable thread: " + Thread.currentThread().toString() + " Queue size: " + queue.size() + " ";
++                    for(java.util.Map.Entry<Class, Integer> entry : classes.entrySet()) {
++                        message += entry.getKey().getName() + ": " + entry.getValue().toString() + " ";
++                    }
++                    System.out.println(message);
++                }
++            });
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunkBulk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunkBulk.java
+index bf3a139..83ba5ad 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutMapChunkBulk.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunkBulk.java
+@@ -37,12 +37,15 @@ public class PacketPlayOutMapChunkBulk extends Packet {
+         this.c = new int[i];
+         this.d = new int[i];
+         this.inflatedBuffers = new byte[i][];
+-        this.h = !list.isEmpty() && !((Chunk) list.get(0)).world.worldProvider.g;
++        this.h = !list.isEmpty() && !((NetworkManager.QueuedChunk) list.get(0)).chunk.world.worldProvider.g; // CraftBukkit - fix queued chunk cast
+         int j = 0;
+ 
+         for (int k = 0; k < i; ++k) {
+-            Chunk chunk = (Chunk) list.get(k);
+-            ChunkMap chunkmap = PacketPlayOutMapChunk.a(chunk, true, '\uffff');
++            // CraftBukkit start - used queued chunks
++            NetworkManager.QueuedChunk queuedchunk = (NetworkManager.QueuedChunk) list.get(k);
++            Chunk chunk = queuedchunk.chunk;
++            ChunkMap chunkmap = PacketPlayOutMapChunk.a(chunk, queuedchunk.flag, queuedchunk.i);
++            // CraftBukkit end
+ 
+             if (buildBuffer.length < j + chunkmap.a.length) {
+                 byte[] abyte = new byte[j + chunkmap.a.length];
+diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
+index 3cd8066..f4b6c6c 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunk.java
++++ b/src/main/java/net/minecraft/server/PlayerChunk.java
+@@ -85,7 +85,10 @@ class PlayerChunk {
+             Chunk chunk = PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z);
+ 
+             if (chunk.k()) {
+-                entityplayer.playerConnection.sendPacket(new PacketPlayOutMapChunk(chunk, true, 0));
++                // CraftBukkit start - use queued chunks
++                // entityplayer.playerConnection.sendPacket(new PacketPlayOutMapChunk(chunk, true, 0));
++                entityplayer.playerConnection.networkManager.chunks.add(new NetworkManager.QueuedChunk(chunk, true, 0));
++                // CraftBukkit end
+             }
+ 
+             this.players.remove(entityplayer); // CraftBukkit
+@@ -164,7 +167,14 @@ class PlayerChunk {
+                 if (this.dirtyCount == 64) {
+                     i = this.location.x * 16;
+                     j = this.location.z * 16;
+-                    this.sendAll(new PacketPlayOutMapChunk(PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z), (this.f == 0xFFFF), this.f)); // CraftBukkit - send everything (including biome) if all sections flagged
++                    // CraftBukkit start - use queued chunks
++                    // this.sendAll(new PacketPlayOutMapChunk(PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z), (this.f == 0xFFFF), this.f)); // CraftBukkit - send everything (including biome) if all sections flagged
++                    NetworkManager.QueuedChunk queuedchunk = new NetworkManager.QueuedChunk(PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z), (this.f == 0xFFFF), this.f);
++                    for (int num = 0; i < this.b.size(); ++num) {
++                        EntityPlayer entityplayer = (EntityPlayer) this.b.get(num);
++                        entityplayer.playerConnection.networkManager.chunks.add(queuedchunk);
++                    }
++                    // CraftBukkit end
+ 
+                     for (k = 0; k < 16; ++k) {
+                         if ((this.f & 1 << k) != 0) {
+-- 
+1.8.5.1
+

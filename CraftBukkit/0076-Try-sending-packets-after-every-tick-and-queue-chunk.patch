@@ -1,4 +1,4 @@
-From abdd99f4e790535d8e85d67e94156eb0dc473871 Mon Sep 17 00:00:00 2001
+From 341a0e19e6960794ea69ea1d5070368c069a8d8e Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Jun 2014 04:24:59 -0500
 Subject: [PATCH] Try sending packets after every tick and queue chunk packets
@@ -58,7 +58,7 @@ index a41c668..7ef2cf0 100644
      }
  
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index c479125..9be100c 100644
+index c479125..596a6ce 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -41,6 +41,18 @@ public class NetworkManager extends SimpleChannelInboundHandler {
@@ -103,7 +103,7 @@ index c479125..9be100c 100644
      private void b(Packet packet, GenericFutureListener[] agenericfuturelistener) {
          EnumProtocol enumprotocol = EnumProtocol.a(packet);
          EnumProtocol enumprotocol1 = (EnumProtocol) this.m.attr(d).get();
-@@ -139,14 +157,61 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+@@ -139,14 +157,43 @@ public class NetworkManager extends SimpleChannelInboundHandler {
              this.m.eventLoop().execute(new QueuedProtocolSwitch(this, enumprotocol, enumprotocol1, packet, agenericfuturelistener));
          }
      }
@@ -130,10 +130,6 @@ index c479125..9be100c 100644
 +                public void run() {
 +                    NetworkManager manager = NetworkManager.this;
 +
-+                    int size = queue.size();
-+
-+                    java.util.HashMap<Class, Integer> classes = com.google.common.collect.Maps.newHashMap();
-+
 +                    while (!queue.isEmpty()) {
 +                        QueuedPacket queuedpacket = (QueuedPacket) queue.poll();
 +
@@ -147,23 +143,9 @@ index c479125..9be100c 100644
 +                        }
 +
 +                        NetworkManager.a(manager).write(packet).addListeners(listeners).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
-+
-+                        Integer total = classes.get(packet.getClass());
-+                        if(total == null) {
-+                            classes.put(packet.getClass(), new Integer(1));
-+                        } else {
-+                            classes.put(packet.getClass(), new Integer(((int) total) + 1));
-+                        }
 +                    }
 +
 +                    NetworkManager.a(manager).flush();
-+
-+
-+                    String message = "Runnable thread: " + Thread.currentThread().toString() + " Queue size: " + queue.size() + " ";
-+                    for(java.util.Map.Entry<Class, Integer> entry : classes.entrySet()) {
-+                        message += entry.getKey().getName() + ": " + entry.getValue().toString() + " ";
-+                    }
-+                    System.out.println(message);
 +                }
 +            });
          }

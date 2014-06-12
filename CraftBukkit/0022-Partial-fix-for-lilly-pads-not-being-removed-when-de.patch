@@ -1,4 +1,4 @@
-From eb743bf35d7c6b7959cd3dcaa329454bd3a89ecb Mon Sep 17 00:00:00 2001
+From 9f896f04a6af459de64689d41aec54004a22784b Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Wed, 15 May 2013 19:04:24 -0700
 Subject: [PATCH] Partial fix for lilly pads not being removed when denied
@@ -6,12 +6,12 @@ Subject: [PATCH] Partial fix for lilly pads not being removed when denied
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemWaterLily.java b/src/main/java/net/minecraft/server/ItemWaterLily.java
-index 691ad46..50d237a 100644
+index 246090d..57fc47f 100644
 --- a/src/main/java/net/minecraft/server/ItemWaterLily.java
 +++ b/src/main/java/net/minecraft/server/ItemWaterLily.java
-@@ -18,9 +18,10 @@ public class ItemWaterLily extends ItemWithAuxData {
+@@ -17,9 +17,10 @@ public class ItemWaterLily extends ItemWithAuxData {
+                 int j = movingobjectposition.c;
                  int k = movingobjectposition.d;
-                 final int clickedX = i, clickedY = j, clickedZ = k; // CraftBukkit
  
 -                if (!world.a(entityhuman, i, j, k)) {
 -                    return itemstack;
@@ -24,5 +24,5 @@ index 691ad46..50d237a 100644
                  if (!entityhuman.a(i, j, k, movingobjectposition.face, itemstack)) {
                      return itemstack;
 -- 
-1.7.12.4 (Apple Git-37)
+1.8.5.1
 

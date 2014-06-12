@@ -1,4 +1,4 @@
-From 21434fa786572c2f4e840c5e1629fb650169ab64 Mon Sep 17 00:00:00 2001
+From 45b9618f10d84507c81f975be0d8e345ad5a9af5 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 29 May 2013 23:59:07 -0500
 Subject: [PATCH] Visibility API
@@ -56,10 +56,10 @@ index 0d94b71..f79e701 100644
                  double d5 = d1 - entityplayer.locY;
                  double d6 = d2 - entityplayer.locZ;
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index b18b6b3..1485b5c 100644
+index e8b6c45..74f6e4b 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -829,7 +829,7 @@ public abstract class World implements IBlockAccess {
+@@ -904,7 +904,7 @@ public abstract class World implements IBlockAccess {
  
      public void makeSound(Entity entity, String s, float f, float f1) {
          for (int i = 0; i < this.u.size(); ++i) {
@@ -90,7 +90,7 @@ index b349902..6863299 100644
  
      public void a(EntityHuman entityhuman, String s, double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4fe38f0..e1b9e60 100644
+index 8c7a80e..96a4bf5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -47,6 +47,7 @@ import org.bukkit.craftbukkit.scoreboard.CraftScoreboard;

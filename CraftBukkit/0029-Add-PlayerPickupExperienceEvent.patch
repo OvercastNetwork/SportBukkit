@@ -1,4 +1,4 @@
-From c921afd87b3e88672f2838edc8c48a7f852e12ea Mon Sep 17 00:00:00 2001
+From 3608d1f62a25571abf564d1246d9359c4b0df252 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
@@ -31,10 +31,10 @@ index 8ed492b..b9c8f61 100644
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 4cc25f2..18e624a 100644
+index 522d6b0..e0655f4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -735,6 +735,13 @@ public class CraftEventFactory {
+@@ -756,6 +756,13 @@ public class CraftEventFactory {
          return event;
      }
  

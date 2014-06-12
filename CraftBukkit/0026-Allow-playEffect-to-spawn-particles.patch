@@ -1,4 +1,4 @@
-From 12c2dfda9bfcbe72ab154e789ff6d9bdee6dda42 Mon Sep 17 00:00:00 2001
+From 7e119efe435af01aff1f0a09b587cd8a22547bb3 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -18,10 +18,10 @@ index 7de0de5..7eca388 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index c42b7e4..98e2711 100644
+index e8351c8..77352ce 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -44,6 +44,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
+@@ -47,6 +47,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
  import org.bukkit.generator.BlockPopulator;
  import org.bukkit.generator.ChunkGenerator;
  import org.bukkit.inventory.ItemStack;
@@ -29,7 +29,7 @@ index c42b7e4..98e2711 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -761,6 +762,10 @@ public class CraftWorld implements World {
+@@ -790,6 +791,10 @@ public class CraftWorld implements World {
          playEffect(player.getLocation(), effect, data, 0);
      }
  
@@ -40,7 +40,7 @@ index c42b7e4..98e2711 100644
      public void playEffect(Location location, Effect effect, int data) {
          playEffect(location, effect, data, 64);
      }
-@@ -775,23 +780,53 @@ public class CraftWorld implements World {
+@@ -804,23 +809,53 @@ public class CraftWorld implements World {
          } else {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }
@@ -102,7 +102,7 @@ index c42b7e4..98e2711 100644
              distance = (int) player.getLocation().distanceSquared(location);
              if (distance <= radius) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 55a8142..7376850 100644
+index af3d0df..28ec80c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -54,6 +54,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;

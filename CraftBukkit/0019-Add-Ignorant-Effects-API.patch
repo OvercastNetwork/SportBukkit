@@ -1,4 +1,4 @@
-From b6105a1410d8fb8569e891b3c90f00af3af3ff1c Mon Sep 17 00:00:00 2001
+From cfcb5965b36a00461283df434dca845f9e44cab7 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
@@ -64,10 +64,10 @@ index c630b38..8fa1dc6 100644
  
          for (byte b0 = packetdataserializer.readByte(); b0 != 127; b0 = packetdataserializer.readByte()) {
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 210875e..45380e4 100644
+index be70b18..b4796a9 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -871,12 +871,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -903,12 +903,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
@@ -260,7 +260,7 @@ index a58dc60..cfb98ab 100644
          packetdataserializer.writeBoolean(this.b);
          packetdataserializer.writeShort(this.c);
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index a9754e3..d8067a9 100644
+index ae38a5a..6b72660 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -148,7 +148,10 @@ public abstract class PlayerList {
@@ -302,7 +302,7 @@ index 678aa91..cb84fef 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 220967b..c9eced5 100644
+index a0e27bc..af3d0df 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -57,6 +57,7 @@ import org.bukkit.map.MapView;

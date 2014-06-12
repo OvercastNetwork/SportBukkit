@@ -1,11 +1,11 @@
-From af897c32baf148c30d753236021dbc418cd1585c Mon Sep 17 00:00:00 2001
+From c7db5b108e9b7a9e0584133da31690aca28201a6 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 1732289..d569822 100644
+index 15c6e55..400e88e 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -430,7 +430,7 @@ public abstract class EntityHuman extends EntityLiving implements ICommandListen
@@ -18,10 +18,10 @@ index 1732289..d569822 100644
                      Entity entity = (Entity) list.get(i);
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index f90e2a3..c091dc8 100644
+index b3bf43a..5894344 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1483,7 +1483,7 @@ public abstract class EntityLiving extends Entity {
+@@ -1488,7 +1488,7 @@ public abstract class EntityLiving extends Entity {
      protected void bn() {
          List list = this.world.getEntities(this, this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D));
  
@@ -31,7 +31,7 @@ index f90e2a3..c091dc8 100644
                  Entity entity = (Entity) list.get(i);
  
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 45380e4..28c86fb 100644
+index b4796a9..eef04f6 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -57,6 +57,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -63,7 +63,7 @@ index 45380e4..28c86fb 100644
          return 1.62F;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7376850..4fe38f0 100644
+index 28ec80c..8c7a80e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1171,6 +1171,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

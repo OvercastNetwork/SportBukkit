@@ -1,4 +1,4 @@
-From f26a81aab5f7d0648d78049cd5696588712579e3 Mon Sep 17 00:00:00 2001
+From 79b4015f83a3d456c5340422431026a7794482d8 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -44,10 +44,10 @@ index 2db45ad..750eb82 100644
  
                  if (event.useItemInHand() == Event.Result.DENY) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 9351836..eeb3d9b 100644
+index 3b2d7f6..f648342 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1679,8 +1679,13 @@ public abstract class World implements IBlockAccess {
+@@ -1754,8 +1754,13 @@ public abstract class World implements IBlockAccess {
          }
  
          if (this.getType(i, j, k) == Blocks.FIRE) {

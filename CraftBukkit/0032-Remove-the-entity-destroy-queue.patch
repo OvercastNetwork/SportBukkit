@@ -1,11 +1,11 @@
-From 59431103fc0a5ae8ff48ed7d4a112c99f13e24a8 Mon Sep 17 00:00:00 2001
+From 0b516fc1959a391f873152a8b763e4bc3a8fc952 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 28c86fb..61fa733 100644
+index eef04f6..b3aeb80 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -37,7 +37,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -33,7 +33,7 @@ index 28c86fb..61fa733 100644
  
          if (!this.chunkCoordIntPairQueue.isEmpty()) {
              ArrayList arraylist = new ArrayList();
-@@ -880,7 +882,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -912,7 +914,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.lastSentExp = -1;
          this.bQ = -1.0F;
          this.bR = -1;
@@ -42,7 +42,7 @@ index 28c86fb..61fa733 100644
      }
  
      protected void a(MobEffect mobeffect) {
-@@ -1004,6 +1006,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1036,6 +1038,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          return this.bO;
      }
  
@@ -50,7 +50,7 @@ index 28c86fb..61fa733 100644
      public void d(Entity entity) {
          if (entity instanceof EntityHuman) {
              this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(new int[] { entity.getId()}));
-@@ -1011,6 +1014,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1043,6 +1046,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              this.removeQueue.add(Integer.valueOf(entity.getId()));
          }
      }

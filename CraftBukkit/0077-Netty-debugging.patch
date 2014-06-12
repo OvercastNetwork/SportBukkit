@@ -1,28 +1,27 @@
-From bc9cd18f09e6fae1ad091dc2b5bfb9e7179f3c5b Mon Sep 17 00:00:00 2001
+From e5e31327789fd275e19c41178dcf7e869050d29d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 12 Jun 2014 13:59:25 -0500
 Subject: [PATCH] Netty debugging
 
 
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index a73cf27..b92bd7f 100644
+index a73cf27..7611198 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -90,6 +90,14 @@ public class NetworkManager extends SimpleChannelInboundHandler {
-     public void exceptionCaught(ChannelHandlerContext channelhandlercontext, Throwable throwable) {
-         ChatMessage chatmessage;
+@@ -92,6 +92,13 @@ public class NetworkManager extends SimpleChannelInboundHandler {
  
-+        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
-+            System.out.println(ste);
-+        }
-+
-+        for (StackTraceElement ste : throwable.getStackTrace()) {
-+            System.out.println(ste);
-+        }
-+
          if (throwable instanceof TimeoutException) {
              chatmessage = new ChatMessage("disconnect.timeout", new Object[0]);
++
++
++            for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
++                System.out.println(ste);
++            }
++
++            throwable.printStackTrace();
          } else {
+             chatmessage = new ChatMessage("disconnect.genericReason", new Object[] { "Internal Exception: " + throwable});
+         }
 -- 
 1.8.5.1
 

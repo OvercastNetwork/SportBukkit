@@ -1,80 +1,28 @@
-From be2a382fed7d6f93d89717d61f73c4648d0caa1d Mon Sep 17 00:00:00 2001
+From bc9cd18f09e6fae1ad091dc2b5bfb9e7179f3c5b Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
-Date: Thu, 12 Jun 2014 10:47:16 -0500
+Date: Thu, 12 Jun 2014 13:59:25 -0500
 Subject: [PATCH] Netty debugging
 
 
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index a73cf27..1ec9d98 100644
+index a73cf27..b92bd7f 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -41,6 +41,9 @@ public class NetworkManager extends SimpleChannelInboundHandler {
-     public SocketAddress n;
-     public java.util.UUID spoofedUUID;
-     public net.minecraft.util.com.mojang.authlib.properties.Property[] spoofedProfile;
-+    public PlayerConnection playerConnection;
-+    public String debug1 = "";
-+    public String debug2 = "";
-     // CraftBukkit End
-     public boolean preparing = true;
-     private PacketListener o;
-@@ -166,6 +169,10 @@ public class NetworkManager extends SimpleChannelInboundHandler {
-             this.p = enumprotocol;
-         }
+@@ -90,6 +90,14 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+     public void exceptionCaught(ChannelHandlerContext channelhandlercontext, Throwable throwable) {
+         ChatMessage chatmessage;
  
-+        String name = null;
-+        if(this.playerConnection != null) name = this.playerConnection.player.getName();
-+        String debug2 = "Inside  " + name + "'s network manager: " + String.valueOf(this.o) + " " + this.isConnected() + " " + this.m.config().isAutoRead() + " " + this.k.size();
++        for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
++            System.out.println(ste);
++        }
 +
-         if (this.o != null) {
-             for (int i = 1000; !this.k.isEmpty() && i >= 0; --i) {
-                 Packet packet = (Packet) this.k.poll();
-@@ -176,11 +183,16 @@ public class NetworkManager extends SimpleChannelInboundHandler {
-                 }
-                 // CraftBukkit end
-                 packet.handle(this.o);
++        for (StackTraceElement ste : throwable.getStackTrace()) {
++            System.out.println(ste);
++        }
 +
-+                debug2 += " " + packet.toString();
-             }
- 
-             this.o.a();
-         }
- 
-+        if(!this.debug2.equals(debug2)) System.out.println(debug2);
-+        this.debug2 = debug2;
-+
-         this.m.flush();
-     }
- 
-diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index eb4c6cb..1449303 100644
---- a/src/main/java/net/minecraft/server/PlayerConnection.java
-+++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -89,6 +89,7 @@ public class PlayerConnection implements PacketPlayInListener {
-         networkmanager.a((PacketListener) this);
-         this.player = entityplayer;
-         entityplayer.playerConnection = this;
-+        networkmanager.playerConnection = this;
- 
-         // CraftBukkit start - add fields and methods
-         this.server = minecraftserver.server;
-diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index 70d432c..48ec684 100644
---- a/src/main/java/net/minecraft/server/ServerConnection.java
-+++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -58,6 +58,12 @@ public class ServerConnection {
-             while (iterator.hasNext()) {
-                 NetworkManager networkmanager = (NetworkManager) iterator.next();
- 
-+                String name = null;
-+                if(networkmanager.playerConnection != null) name = networkmanager.playerConnection.player.getName();
-+                String debug1 = "Ticking " + name + "'s network manager: " + networkmanager.isConnected();
-+                if(!networkmanager.debug1.equals(debug1)) System.out.println(debug1);
-+                networkmanager.debug1 = debug1;
-+
-                 if (!networkmanager.isConnected()) {
-                     // Spigot Start
-                     // Fix a race condition where a NetworkManager could be unregistered just before connection.
+         if (throwable instanceof TimeoutException) {
+             chatmessage = new ChatMessage("disconnect.timeout", new Object[0]);
+         } else {
 -- 
 1.8.5.1
 

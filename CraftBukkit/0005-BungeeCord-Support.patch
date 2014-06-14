@@ -1,4 +1,4 @@
-From 0283af56c1d7949a75631f21857acef417eca6ab Mon Sep 17 00:00:00 2001
+From 3bd3f4d5c0df1f1a7eb609b4e580022aca796de8 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,21 +7,24 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 9cc9581..ea7245c 100644
+index 9cc9581..ed0f8ed 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
-@@ -73,6 +73,22 @@ public class HandshakeListener implements PacketHandshakingInListener {
+@@ -73,6 +73,25 @@ public class HandshakeListener implements PacketHandshakingInListener {
                  this.b.close(chatcomponenttext);
              } else {
                  this.b.a((PacketListener) (new LoginListener(this.a, this.b)));
 +                // CraftBukkit Start
 +                if (this.a.server.bungee) {
 +                    String[] split = packethandshakinginsetprotocol.b.split("\00");
-+                    if (split.length == 4) {
++                    if (split.length >= 3) {
 +                        packethandshakinginsetprotocol.b = split[0];
 +                        b.n = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) b.getSocketAddress()).getPort());
 +                        b.spoofedUUID = net.minecraft.util.com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
-+                        b.spoofedProfile = this.a.server.gson.fromJson(split[3], net.minecraft.util.com.mojang.authlib.properties.Property[].class);
++
++                        if(split.length == 4) {
++                            b.spoofedProfile = this.a.server.gson.fromJson(split[3], net.minecraft.util.com.mojang.authlib.properties.Property[].class);
++                        }
 +                    } else {
 +                        chatcomponenttext = new ChatComponentText("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
 +                        this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);

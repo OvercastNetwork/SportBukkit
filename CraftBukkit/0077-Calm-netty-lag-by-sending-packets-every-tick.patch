@@ -1,11 +1,11 @@
-From 37984d8cf6c9101112a434d5778f4dd13d9cba78 Mon Sep 17 00:00:00 2001
+From ae7e3cf583e33d21f17dea3b589350ed75cee5b8 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Jun 2014 04:24:59 -0500
 Subject: [PATCH] Calm netty lag by sending packets every tick
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a41c668..22ef453 100644
+index a41c668..e8931e3 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -675,6 +675,12 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IMo
@@ -13,7 +13,7 @@ index a41c668..22ef453 100644
          }
  
 +        // Send pending packets to everyone
-+        for (int i = 0; i < this.getPlayerList().players.size(); ++i) {
++        for (i = 0; i < this.getPlayerList().players.size(); ++i) {
 +            EntityPlayer entityplayer = (EntityPlayer) this.getPlayerList().players.get(i);
 +            entityplayer.playerConnection.networkManager.i();
 +        }

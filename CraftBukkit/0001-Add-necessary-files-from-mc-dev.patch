@@ -1,4 +1,4 @@
-From f4996244ecdbe332158ff6aa9ac48e6f7e0e360c Mon Sep 17 00:00:00 2001
+From f0593ca01f56fb31b4af393f219da3a254a03233 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -779,72 +779,6 @@ index 0000000..5657270
 +
 +    protected String a(Object object) {
 +        return this.b((GameProfile) object);
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/NextTickListEntry.java b/src/main/java/net/minecraft/server/NextTickListEntry.java
-new file mode 100644
-index 0000000..06934a1
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/NextTickListEntry.java
-@@ -0,0 +1,60 @@
-+package net.minecraft.server;
-+
-+public class NextTickListEntry implements Comparable {
-+
-+    private static long f;
-+    private final Block g;
-+    public int a;
-+    public int b;
-+    public int c;
-+    public long d;
-+    public int e;
-+    private long h;
-+
-+    public NextTickListEntry(int i, int j, int k, Block block) {
-+        this.h = (long) (f++);
-+        this.a = i;
-+        this.b = j;
-+        this.c = k;
-+        this.g = block;
-+    }
-+
-+    public boolean equals(Object object) {
-+        if (!(object instanceof NextTickListEntry)) {
-+            return false;
-+        } else {
-+            NextTickListEntry nextticklistentry = (NextTickListEntry) object;
-+
-+            return this.a == nextticklistentry.a && this.b == nextticklistentry.b && this.c == nextticklistentry.c && Block.a(this.g, nextticklistentry.g);
-+        }
-+    }
-+
-+    public int hashCode() {
-+        return (this.a * 1024 * 1024 + this.c * 1024 + this.b) * 256;
-+    }
-+
-+    public NextTickListEntry a(long i) {
-+        this.d = i;
-+        return this;
-+    }
-+
-+    public void a(int i) {
-+        this.e = i;
-+    }
-+
-+    public int compareTo(NextTickListEntry nextticklistentry) {
-+        return this.d < nextticklistentry.d ? -1 : (this.d > nextticklistentry.d ? 1 : (this.e != nextticklistentry.e ? this.e - nextticklistentry.e : (this.h < nextticklistentry.h ? -1 : (this.h > nextticklistentry.h ? 1 : 0))));
-+    }
-+
-+    public String toString() {
-+        return Block.b(this.g) + ": (" + this.a + ", " + this.b + ", " + this.c + "), " + this.d + ", " + this.e + ", " + this.h;
-+    }
-+
-+    public Block a() {
-+        return this.g;
-+    }
-+
-+    public int compareTo(Object object) {
-+        return this.compareTo((NextTickListEntry) object);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/NibbleArray.java b/src/main/java/net/minecraft/server/NibbleArray.java
@@ -2197,5 +2131,5 @@ index 0000000..ea9a75d
 +    }
 +}
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

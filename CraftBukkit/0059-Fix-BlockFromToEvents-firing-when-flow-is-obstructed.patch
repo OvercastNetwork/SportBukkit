@@ -1,0 +1,22 @@
+From 215678a7ccc9145faae29778a96805c71b12f22f Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 12 Apr 2014 22:42:11 -0400
+Subject: [PATCH] Fix BlockFromToEvents firing when flow is obstructed
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockFlowing.java b/src/main/java/net/minecraft/server/BlockFlowing.java
+index 5ebba1e..f0661d5 100644
+--- a/src/main/java/net/minecraft/server/BlockFlowing.java
++++ b/src/main/java/net/minecraft/server/BlockFlowing.java
+@@ -133,7 +133,7 @@ public class BlockFlowing extends BlockFluids {
+             int index = 0;
+ 
+             for (BlockFace currentFace : faces) {
+-                if (aboolean[index]) {
++                if (aboolean[index] && this.q(world, i + currentFace.getModX(), j, k + currentFace.getModZ())) {
+                     BlockFromToEvent event = new BlockFromToEvent(source, currentFace);
+ 
+                     if (server != null) {
+-- 
+1.8.5.2 (Apple Git-48)
+

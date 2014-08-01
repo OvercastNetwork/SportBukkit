@@ -1,4 +1,4 @@
-From 6d964b820f77b2f5e91e5f1cc24d80f706283624 Mon Sep 17 00:00:00 2001
+From 826b942676748450d24fa98cfed70acdf924f911 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 31 Jul 2014 15:52:00 -0500
 Subject: [PATCH] Async chunk compressing and caching
@@ -274,7 +274,7 @@ index 3cd8066..76c7d9b 100644
                      this.sendAll(new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, PlayerChunkMap.a(this.playerChunkMap).getChunkAt(this.location.x, this.location.z)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
-index ae53635..cbdc42a 100644
+index ae53635..eedeab5 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
 @@ -12,6 +12,7 @@ import java.util.LinkedList;
@@ -285,7 +285,7 @@ index ae53635..cbdc42a 100644
  
  public class PlayerChunkMap {
  
-@@ -25,10 +26,12 @@ public class PlayerChunkMap {
+@@ -25,10 +26,16 @@ public class PlayerChunkMap {
      private long h;
      private final int[][] i = new int[][] { { 1, 0}, { 0, 1}, { -1, 0}, { 0, -1}};
      private boolean wasNotEmpty; // CraftBukkit - add field
@@ -294,7 +294,11 @@ index ae53635..cbdc42a 100644
      public PlayerChunkMap(WorldServer worldserver) {
          this.world = worldserver;
          this.a(worldserver.getMinecraftServer().getPlayerList().s());
-+        new Thread(this.queuedChunkThread).start();
++
++        // CraftBukkit - start queued chunk thread
++        Thread queuedChunkThread = new Thread(this.queuedChunkThread);
++        queuedChunkThread.setDaemon(true);
++        queuedChunkThread.start();
      }
  
      public WorldServer a() {
@@ -342,38 +346,28 @@ index 0000000..7d31380
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunkThread.java b/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunkThread.java
 new file mode 100644
-index 0000000..f1bd9fa
+index 0000000..5f2d160
 --- /dev/null
 +++ b/src/main/java/org/bukkit/craftbukkit/chunkio/QueuedChunkThread.java
-@@ -0,0 +1,31 @@
+@@ -0,0 +1,21 @@
 +package org.bukkit.craftbukkit.chunkio;
 +
 +import java.util.concurrent.LinkedBlockingDeque;
 +
 +import net.minecraft.server.Chunk;
++import net.minecraft.server.MinecraftServer;
 +
 +public class QueuedChunkThread implements Runnable {
 +    public LinkedBlockingDeque<QueuedChunkPacket> chunks = new LinkedBlockingDeque<QueuedChunkPacket>();
 +
 +    @Override
 +    public void run() {
-+        while (true) {
-+            this.emptyQueue();
-+
++        while (MinecraftServer.getServer().isRunning()) {
 +            try {
-+                Thread.sleep(50);
-+            } catch (InterruptedException e) {
++                this.chunks.take().run();
++            } catch(InterruptedException e) {
 +                e.printStackTrace();
 +            }
-+        }
-+    }
-+
-+    private void emptyQueue() {
-+        while (true) {
-+            QueuedChunkPacket packet = this.chunks.poll();
-+            if (packet == null) break;
-+
-+            packet.run();
 +        }
 +    }
 +}

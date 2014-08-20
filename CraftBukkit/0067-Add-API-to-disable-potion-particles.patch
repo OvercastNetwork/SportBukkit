@@ -1,11 +1,11 @@
-From 454b6746288da0933c2dcc630b48173a3aa022c6 Mon Sep 17 00:00:00 2001
+From c364bee91b8403a994fc97dd96e262a3e3d4ca23 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 5894344..6b8c94e 100644
+index 5894344..4e4cd14 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -12,6 +12,7 @@ import java.util.ArrayList;
@@ -16,15 +16,15 @@ index 5894344..6b8c94e 100644
  // CraftBukkit end
  
  public abstract class EntityLiving extends Entity {
-@@ -454,7 +455,7 @@ public abstract class EntityLiving extends Entity {
- 
-         int i;
- 
--        if (this.updateEffects) {
-+        if (this.updateEffects && ((CraftLivingEntity) this.getBukkitEntity()).getPotionParticles()) {
-             if (!this.world.isStatic) {
-                 if (this.effects.isEmpty()) {
-                     this.datawatcher.watch(8, Byte.valueOf((byte) 0));
+@@ -461,7 +462,7 @@ public abstract class EntityLiving extends Entity {
+                     this.datawatcher.watch(7, Integer.valueOf(0));
+                     this.setInvisible(false);
+                 } else {
+-                    i = PotionBrewer.a(this.effects.values());
++                    i = ((CraftLivingEntity) this.getBukkitEntity()).getPotionParticles() ? PotionBrewer.a(this.effects.values()) : 0;
+                     this.datawatcher.watch(8, Byte.valueOf((byte) (PotionBrewer.b(this.effects.values()) ? 1 : 0)));
+                     this.datawatcher.watch(7, Integer.valueOf(i));
+                     this.setInvisible(this.hasEffect(MobEffectList.INVISIBILITY.id));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 index 556d811..07398ba 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java

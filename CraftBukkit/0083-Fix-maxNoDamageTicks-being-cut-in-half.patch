@@ -1,0 +1,31 @@
+From d4748d1ae5ce9356c3d10e68de0c1fbd479a5c9d Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 28 Aug 2014 00:15:07 -0400
+Subject: [PATCH] Fix maxNoDamageTicks being cut in half
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index a0dc703..f594a4e 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -37,7 +37,7 @@ public abstract class EntityLiving extends Entity {
+     public float aE;
+     public float aF;
+     public float aG;
+-    public int maxNoDamageTicks = 20;
++    public int maxNoDamageTicks = 10; // CraftBukkit - change from 20 to 10
+     public float aI;
+     public float aJ;
+     public float aK;
+@@ -665,7 +665,7 @@ public abstract class EntityLiving extends Entity {
+                 }
+                 // CraftBukkit end
+ 
+-                if ((float) this.noDamageTicks > (float) this.maxNoDamageTicks / 2.0F) {
++                if (this.noDamageTicks > 0) { // CraftBukkit - compare with 0 instead of maxNoDamageTicks/2
+                     if (f <= this.lastDamage) {
+                         return false;
+                     }
+-- 
+1.8.5.2 (Apple Git-48)
+

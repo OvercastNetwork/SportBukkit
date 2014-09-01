@@ -1,4 +1,4 @@
-From 17750effc418b52ca73629795cb0f4deeef4039f Mon Sep 17 00:00:00 2001
+From f758839b7f6e264ce324caaad53307e1ba74152d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -1276,6 +1276,68 @@ index 0000000..115fee6
 +        chunkmap.a = new byte[j];
 +        System.arraycopy(abyte, 0, chunkmap.a, 0, j);
 +        return chunkmap;
++    }
++
++    public void handle(PacketListener packetlistener) {
++        this.a((PacketPlayOutListener) packetlistener);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutOpenWindow.java b/src/main/java/net/minecraft/server/PacketPlayOutOpenWindow.java
+new file mode 100644
+index 0000000..a26bc77
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutOpenWindow.java
+@@ -0,0 +1,56 @@
++package net.minecraft.server;
++
++public class PacketPlayOutOpenWindow extends Packet {
++
++    private int a;
++    private int b;
++    private String c;
++    private int d;
++    private boolean e;
++    private int f;
++
++    public PacketPlayOutOpenWindow() {}
++
++    public PacketPlayOutOpenWindow(int i, int j, String s, int k, boolean flag) {
++        this.a = i;
++        this.b = j;
++        this.c = s;
++        this.d = k;
++        this.e = flag;
++    }
++
++    public PacketPlayOutOpenWindow(int i, int j, String s, int k, boolean flag, int l) {
++        this(i, j, s, k, flag);
++        this.f = l;
++    }
++
++    public void a(PacketPlayOutListener packetplayoutlistener) {
++        packetplayoutlistener.a(this);
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.readUnsignedByte();
++        this.b = packetdataserializer.readUnsignedByte();
++        this.c = packetdataserializer.c(32);
++        this.d = packetdataserializer.readUnsignedByte();
++        this.e = packetdataserializer.readBoolean();
++        if (this.b == 11) {
++            this.f = packetdataserializer.readInt();
++        }
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.writeByte(this.a);
++        packetdataserializer.writeByte(this.b);
++        packetdataserializer.a(this.c);
++        packetdataserializer.writeByte(this.d);
++        packetdataserializer.writeBoolean(this.e);
++        if (this.b == 11) {
++            packetdataserializer.writeInt(this.f);
++        }
 +    }
 +
 +    public void handle(PacketListener packetlistener) {

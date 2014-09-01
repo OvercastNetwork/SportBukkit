@@ -1,4 +1,4 @@
-From 76b51c83620b6df11aaae3493225df3eb69f1334 Mon Sep 17 00:00:00 2001
+From 87ac491e16ce0dce92ceb4cdfd95447d4737b567 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 21 Aug 2014 02:21:45 -0400
 Subject: [PATCH] Remove Overmapped and legacy methods

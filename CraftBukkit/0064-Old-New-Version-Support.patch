@@ -1,4 +1,4 @@
-From 076351664b71efedb308d010f249d0785edfa477 Mon Sep 17 00:00:00 2001
+From 8fbc82372ac21fb6ec11314c796f9a5e53ccbc3c Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 12 Apr 2014 15:11:15 +1000
 Subject: [PATCH] Old / New Version Support.
@@ -7,7 +7,7 @@ This adds support for newer / older Minecraft versions.
 At present it supports protocol versions 4 and 5 (1.7.2-1.7.8).
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 954a9c2..5a93af0 100644
+index 954a9c2..6fd52dc 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -23,6 +23,12 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -23,6 +23,15 @@ index 954a9c2..5a93af0 100644
          switch (ProtocolOrdinalWrapper.a[packethandshakinginsetprotocol.c().ordinal()]) {
          case 1:
              this.b.a(EnumProtocol.LOGIN);
+@@ -67,7 +73,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
+                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.7.10");
+                 this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
+                 this.b.close(chatcomponenttext);
+-            } else if (packethandshakinginsetprotocol.d() < 5) {
++            } else if (packethandshakinginsetprotocol.d() < 4) { // Spigot - allow 1.7.2
+                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.7.10");
+                 this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
+                 this.b.close(chatcomponenttext);
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
 index 8ea7a2b..17ec961 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java

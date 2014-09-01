@@ -1,11 +1,11 @@
-From cfcb5965b36a00461283df434dca845f9e44cab7 Mon Sep 17 00:00:00 2001
+From 31230799a72aa436781bf92b9b3a088fb6dc71fd Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 16 May 2013 20:20:34 -0500
 Subject: [PATCH] Add Ignorant Effects API
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index c630b38..8fa1dc6 100644
+index b05cfd8..86a1977 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -16,7 +16,7 @@ public class DataWatcher {
@@ -64,10 +64,10 @@ index c630b38..8fa1dc6 100644
  
          for (byte b0 = packetdataserializer.readByte(); b0 != 127; b0 = packetdataserializer.readByte()) {
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index be70b18..b4796a9 100644
+index 53b3e55..3f17a47 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -903,12 +903,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -899,12 +899,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
      protected void a(MobEffect mobeffect) {
          super.a(mobeffect);
@@ -89,7 +89,7 @@ index be70b18..b4796a9 100644
  
      protected void b(MobEffect mobeffect) {
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index c148c4d..f824ea1 100644
+index 0cf9ad5..f0fb729 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -1,5 +1,6 @@
@@ -137,8 +137,8 @@ index c148c4d..f824ea1 100644
 +        }
 +
 +        if (!flag && this.tracker instanceof EntityLiving) {
-+            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).bb();
-+            Set set = attributemapserver.b();
++            AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).getAttributeMap();
++            Set set = attributemapserver.getAttributes();
 +
 +            if (!set.isEmpty()) {
 +                this.broadcastIncludingSelf(new PacketPlayOutUpdateAttributes(this.tracker.getId(), set));
@@ -260,7 +260,7 @@ index a58dc60..cfb98ab 100644
          packetdataserializer.writeBoolean(this.b);
          packetdataserializer.writeShort(this.c);
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index ae38a5a..6b72660 100644
+index 7121e9c..e29a5ca 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -148,7 +148,10 @@ public abstract class PlayerList {
@@ -302,7 +302,7 @@ index 678aa91..cb84fef 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index a0e27bc..af3d0df 100644
+index bbf310b..6a7ccdb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -57,6 +57,7 @@ import org.bukkit.map.MapView;
@@ -321,9 +321,9 @@ index a0e27bc..af3d0df 100644
      private int hash = 0;
      private double health = 20;
      private boolean scaledHealth = false;
-@@ -1285,4 +1287,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1287,4 +1289,43 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          }
-         collection.add(new AttributeModifiable(getHandle().bb(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
+         collection.add(new AttributeModifiable(getHandle().getAttributeMap(), (new AttributeRanged("generic.maxHealth", scaledHealth ? healthScale : getMaxHealth(), 0.0D, Float.MAX_VALUE)).a("Max Health").a(true)));
      }
 +
 +    public Set<PotionEffectType> getIgnorantEffects() {
@@ -366,5 +366,5 @@ index a0e27bc..af3d0df 100644
 +    }
  }
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

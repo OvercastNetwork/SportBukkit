@@ -1,9 +1,57 @@
-From d4f1717bd5aa6741a2d575645f08196024fa57e8 Mon Sep 17 00:00:00 2001
+From e698507ea4782fea756ee0af639ea74d625562ec Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 21 Aug 2014 02:22:28 -0400
 Subject: [PATCH] Remove legacy methods
 
 
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 447eef6..0ddc9c4 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -91,19 +91,6 @@ public final class Bukkit {
+     }
+ 
+     /**
+-     * This method exists for legacy reasons to provide backwards
+-     * compatibility. It will not exist at runtime and should not be used
+-     * under any circumstances.
+-     *
+-     * @Deprecated
+-     * @see Server#_INVALID_getOnlinePlayers()
+-     */
+-    @Deprecated
+-    public static Player[] _INVALID_getOnlinePlayers() {
+-        return server._INVALID_getOnlinePlayers();
+-    }
+-
+-    /**
+      * @see Server#getOnlinePlayers()
+      */
+     public static Collection<? extends Player> getOnlinePlayers() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index b4f0c18..e99005f 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -85,19 +85,6 @@ public interface Server extends PluginMessageRecipient {
+     public String getBukkitVersion();
+ 
+     /**
+-     * Gets an array copy of all currently logged in players.
+-     * <p>
+-     * This method exists for legacy reasons to provide backwards
+-     * compatibility. It will not exist at runtime and should not be used
+-     * under any circumstances.
+-     *
+-     * @Deprecated superseded by {@link #getOnlinePlayers()}
+-     * @return an array of Players that are currently online
+-     */
+-    @Deprecated
+-    public Player[] _INVALID_getOnlinePlayers();
+-
+-    /**
+      * Gets a view of all currently logged in players. This {@linkplain
+      * Collections#unmodifiableCollection(Collection) view} is a reused
+      * object, making some operations like {@link Collection#size()}
 diff --git a/src/main/java/org/bukkit/entity/Damageable.java b/src/main/java/org/bukkit/entity/Damageable.java
 index 53877a8..0735b02 100644
 --- a/src/main/java/org/bukkit/entity/Damageable.java
@@ -201,10 +249,10 @@ index 90ce3b3..4ab2332 100644
       *
       * @param source the {@link ProjectileSource} that shot this projectile
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-index 6e722d2..c8a7244 100644
+index 2cc0799..c11d41b 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageEvent.java
-@@ -43,16 +43,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+@@ -147,16 +147,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
      }
  
      /**
@@ -218,10 +266,10 @@ index 6e722d2..c8a7244 100644
 -    }
 -
 -    /**
-      * Sets the amount of damage caused by the event
-      *
-      * @param damage The amount of damage caused by the event
-@@ -62,16 +52,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
+      * Sets the raw amount of damage caused by the event.
+      * <p>
+      * For compatibility this also recalculates the modifiers and scales
+@@ -194,16 +184,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
      }
  
      /**

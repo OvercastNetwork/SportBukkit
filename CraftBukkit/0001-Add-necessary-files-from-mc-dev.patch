@@ -1,4 +1,4 @@
-From 445107d7be490ad2bc88ae54521db0be59ad2b14 Mon Sep 17 00:00:00 2001
+From 17750effc418b52ca73629795cb0f4deeef4039f Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -328,7 +328,7 @@ index 0000000..da76b53
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
 new file mode 100644
-index 0000000..6d5090b
+index 0000000..8cc7d5e
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -0,0 +1,80 @@
@@ -387,10 +387,10 @@ index 0000000..6d5090b
 +    }
 +
 +    public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
-+        if (entityhuman.bD() != null && entityhuman.bD().getItem() == Items.FLINT_AND_STEEL) {
++        if (entityhuman.bF() != null && entityhuman.bF().getItem() == Items.FLINT_AND_STEEL) {
 +            this.a(world, i, j, k, 1, entityhuman);
 +            world.setAir(i, j, k);
-+            entityhuman.bD().damage(1, entityhuman);
++            entityhuman.bF().damage(1, entityhuman);
 +            return true;
 +        } else {
 +            return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
@@ -414,7 +414,7 @@ index 0000000..6d5090b
 +}
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
 new file mode 100644
-index 0000000..c630b38
+index 0000000..b05cfd8
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -0,0 +1,298 @@
@@ -462,7 +462,7 @@ index 0000000..c630b38
 +        }
 +    }
 +
-+    public void a(int i, int j) {
++    public void add(int i, int j) {
 +        WatchableObject watchableobject = new WatchableObject(j, i, null);
 +
 +        this.f.writeLock().lock();
@@ -525,7 +525,7 @@ index 0000000..c630b38
 +        }
 +    }
 +
-+    public void h(int i) {
++    public void update(int i) {
 +        WatchableObject.a(this.i(i), true);
 +        this.e = true;
 +    }
@@ -718,7 +718,7 @@ index 0000000..c630b38
 +}
 diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
 new file mode 100644
-index 0000000..5657270
+index 0000000..e6ccfec
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/GameProfileBanList.java
 @@ -0,0 +1,59 @@
@@ -750,7 +750,7 @@ index 0000000..5657270
 +
 +        GameProfileBanEntry gameprofilebanentry;
 +
-+        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) gameprofilebanentry.f()).getName()) {
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) gameprofilebanentry.getKey()).getName()) {
 +            gameprofilebanentry = (GameProfileBanEntry) iterator.next();
 +        }
 +
@@ -772,9 +772,9 @@ index 0000000..5657270
 +            }
 +
 +            gameprofilebanentry = (GameProfileBanEntry) iterator.next();
-+        } while (!s.equalsIgnoreCase(((GameProfile) gameprofilebanentry.f()).getName()));
++        } while (!s.equalsIgnoreCase(((GameProfile) gameprofilebanentry.getKey()).getName()));
 +
-+        return (GameProfile) gameprofilebanentry.f();
++        return (GameProfile) gameprofilebanentry.getKey();
 +    }
 +
 +    protected String a(Object object) {
@@ -783,7 +783,7 @@ index 0000000..5657270
 +}
 diff --git a/src/main/java/net/minecraft/server/ItemSkull.java b/src/main/java/net/minecraft/server/ItemSkull.java
 new file mode 100644
-index 0000000..f20c69e
+index 0000000..4a40068
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/ItemSkull.java
 @@ -0,0 +1,111 @@
@@ -848,7 +848,7 @@ index 0000000..f20c69e
 +                            NBTTagCompound nbttagcompound = itemstack.getTag();
 +
 +                            if (nbttagcompound.hasKeyOfType("SkullOwner", 10)) {
-+                                gameprofile = GameProfileSerializer.a(nbttagcompound.getCompound("SkullOwner"));
++                                gameprofile = GameProfileSerializer.deserialize(nbttagcompound.getCompound("SkullOwner"));
 +                            } else if (nbttagcompound.hasKeyOfType("SkullOwner", 8) && nbttagcompound.getString("SkullOwner").length() > 0) {
 +                                gameprofile = new GameProfile((UUID) null, nbttagcompound.getString("SkullOwner"));
 +                            }
@@ -887,7 +887,7 @@ index 0000000..f20c69e
 +    public String n(ItemStack itemstack) {
 +        if (itemstack.getData() == 3 && itemstack.hasTag()) {
 +            if (itemstack.getTag().hasKeyOfType("SkullOwner", 10)) {
-+                return LocaleI18n.get("item.skull.player.name", new Object[] { GameProfileSerializer.a(itemstack.getTag().getCompound("SkullOwner")).getName()});
++                return LocaleI18n.get("item.skull.player.name", new Object[] { GameProfileSerializer.deserialize(itemstack.getTag().getCompound("SkullOwner")).getName()});
 +            }
 +
 +            if (itemstack.getTag().hasKeyOfType("SkullOwner", 8)) {
@@ -898,181 +898,9 @@ index 0000000..f20c69e
 +        return super.n(itemstack);
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/NibbleArray.java b/src/main/java/net/minecraft/server/NibbleArray.java
-new file mode 100644
-index 0000000..5d75a54
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/NibbleArray.java
-@@ -0,0 +1,40 @@
-+package net.minecraft.server;
-+
-+public class NibbleArray {
-+
-+    public final byte[] a;
-+    private final int b;
-+    private final int c;
-+
-+    public NibbleArray(int i, int j) {
-+        this.a = new byte[i >> 1];
-+        this.b = j;
-+        this.c = j + 4;
-+    }
-+
-+    public NibbleArray(byte[] abyte, int i) {
-+        this.a = abyte;
-+        this.b = i;
-+        this.c = i + 4;
-+    }
-+
-+    public int a(int i, int j, int k) {
-+        int l = j << this.c | k << this.b | i;
-+        int i1 = l >> 1;
-+        int j1 = l & 1;
-+
-+        return j1 == 0 ? this.a[i1] & 15 : this.a[i1] >> 4 & 15;
-+    }
-+
-+    public void a(int i, int j, int k, int l) {
-+        int i1 = j << this.c | k << this.b | i;
-+        int j1 = i1 >> 1;
-+        int k1 = i1 & 1;
-+
-+        if (k1 == 0) {
-+            this.a[j1] = (byte) (this.a[j1] & 240 | l & 15);
-+        } else {
-+            this.a[j1] = (byte) (this.a[j1] & 15 | (l & 15) << 4);
-+        }
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/OldChunkLoader.java b/src/main/java/net/minecraft/server/OldChunkLoader.java
-new file mode 100644
-index 0000000..fcb9912
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/OldChunkLoader.java
-@@ -0,0 +1,120 @@
-+package net.minecraft.server;
-+
-+public class OldChunkLoader {
-+
-+    public static OldChunk a(NBTTagCompound nbttagcompound) {
-+        int i = nbttagcompound.getInt("xPos");
-+        int j = nbttagcompound.getInt("zPos");
-+        OldChunk oldchunk = new OldChunk(i, j);
-+
-+        oldchunk.g = nbttagcompound.getByteArray("Blocks");
-+        oldchunk.f = new OldNibbleArray(nbttagcompound.getByteArray("Data"), 7);
-+        oldchunk.e = new OldNibbleArray(nbttagcompound.getByteArray("SkyLight"), 7);
-+        oldchunk.d = new OldNibbleArray(nbttagcompound.getByteArray("BlockLight"), 7);
-+        oldchunk.c = nbttagcompound.getByteArray("HeightMap");
-+        oldchunk.b = nbttagcompound.getBoolean("TerrainPopulated");
-+        oldchunk.h = nbttagcompound.getList("Entities", 10);
-+        oldchunk.i = nbttagcompound.getList("TileEntities", 10);
-+        oldchunk.j = nbttagcompound.getList("TileTicks", 10);
-+
-+        try {
-+            oldchunk.a = nbttagcompound.getLong("LastUpdate");
-+        } catch (ClassCastException classcastexception) {
-+            oldchunk.a = (long) nbttagcompound.getInt("LastUpdate");
-+        }
-+
-+        return oldchunk;
-+    }
-+
-+    public static void a(OldChunk oldchunk, NBTTagCompound nbttagcompound, WorldChunkManager worldchunkmanager) {
-+        nbttagcompound.setInt("xPos", oldchunk.k);
-+        nbttagcompound.setInt("zPos", oldchunk.l);
-+        nbttagcompound.setLong("LastUpdate", oldchunk.a);
-+        int[] aint = new int[oldchunk.c.length];
-+
-+        for (int i = 0; i < oldchunk.c.length; ++i) {
-+            aint[i] = oldchunk.c[i];
-+        }
-+
-+        nbttagcompound.setIntArray("HeightMap", aint);
-+        nbttagcompound.setBoolean("TerrainPopulated", oldchunk.b);
-+        NBTTagList nbttaglist = new NBTTagList();
-+
-+        int j;
-+
-+        for (int k = 0; k < 8; ++k) {
-+            boolean flag = true;
-+
-+            for (j = 0; j < 16 && flag; ++j) {
-+                int l = 0;
-+
-+                while (l < 16 && flag) {
-+                    int i1 = 0;
-+
-+                    while (true) {
-+                        if (i1 < 16) {
-+                            int j1 = j << 11 | i1 << 7 | l + (k << 4);
-+                            byte b0 = oldchunk.g[j1];
-+
-+                            if (b0 == 0) {
-+                                ++i1;
-+                                continue;
-+                            }
-+
-+                            flag = false;
-+                        }
-+
-+                        ++l;
-+                        break;
-+                    }
-+                }
-+            }
-+
-+            if (!flag) {
-+                byte[] abyte = new byte[4096];
-+                NibbleArray nibblearray = new NibbleArray(abyte.length, 4);
-+                NibbleArray nibblearray1 = new NibbleArray(abyte.length, 4);
-+                NibbleArray nibblearray2 = new NibbleArray(abyte.length, 4);
-+
-+                for (int k1 = 0; k1 < 16; ++k1) {
-+                    for (int l1 = 0; l1 < 16; ++l1) {
-+                        for (int i2 = 0; i2 < 16; ++i2) {
-+                            int j2 = k1 << 11 | i2 << 7 | l1 + (k << 4);
-+                            byte b1 = oldchunk.g[j2];
-+
-+                            abyte[l1 << 8 | i2 << 4 | k1] = (byte) (b1 & 255);
-+                            nibblearray.a(k1, l1, i2, oldchunk.f.a(k1, l1 + (k << 4), i2));
-+                            nibblearray1.a(k1, l1, i2, oldchunk.e.a(k1, l1 + (k << 4), i2));
-+                            nibblearray2.a(k1, l1, i2, oldchunk.d.a(k1, l1 + (k << 4), i2));
-+                        }
-+                    }
-+                }
-+
-+                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-+
-+                nbttagcompound1.setByte("Y", (byte) (k & 255));
-+                nbttagcompound1.setByteArray("Blocks", abyte);
-+                nbttagcompound1.setByteArray("Data", nibblearray.a);
-+                nbttagcompound1.setByteArray("SkyLight", nibblearray1.a);
-+                nbttagcompound1.setByteArray("BlockLight", nibblearray2.a);
-+                nbttaglist.add(nbttagcompound1);
-+            }
-+        }
-+
-+        nbttagcompound.set("Sections", nbttaglist);
-+        byte[] abyte1 = new byte[256];
-+
-+        for (int k2 = 0; k2 < 16; ++k2) {
-+            for (j = 0; j < 16; ++j) {
-+                abyte1[j << 4 | k2] = (byte) (worldchunkmanager.getBiome(oldchunk.k << 4 | k2, oldchunk.l << 4 | j).id & 255);
-+            }
-+        }
-+
-+        nbttagcompound.setByteArray("Biomes", abyte1);
-+        nbttagcompound.set("Entities", oldchunk.h);
-+        nbttagcompound.set("TileEntities", oldchunk.i);
-+        if (oldchunk.j != null) {
-+            nbttagcompound.set("TileTicks", oldchunk.j);
-+        }
-+    }
-+}
 diff --git a/src/main/java/net/minecraft/server/OpList.java b/src/main/java/net/minecraft/server/OpList.java
 new file mode 100644
-index 0000000..d4d22d8
+index 0000000..e5bac23
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/OpList.java
 @@ -0,0 +1,55 @@
@@ -1100,7 +928,7 @@ index 0000000..d4d22d8
 +
 +        OpListEntry oplistentry;
 +
-+        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) oplistentry.f()).getName()) {
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) oplistentry.getKey()).getName()) {
 +            oplistentry = (OpListEntry) iterator.next();
 +        }
 +
@@ -1122,113 +950,13 @@ index 0000000..d4d22d8
 +            }
 +
 +            oplistentry = (OpListEntry) iterator.next();
-+        } while (!s.equalsIgnoreCase(((GameProfile) oplistentry.f()).getName()));
++        } while (!s.equalsIgnoreCase(((GameProfile) oplistentry.getKey()).getName()));
 +
-+        return (GameProfile) oplistentry.f();
++        return (GameProfile) oplistentry.getKey();
 +    }
 +
 +    protected String a(Object object) {
 +        return this.b((GameProfile) object);
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-new file mode 100644
-index 0000000..bcbabe1
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/PacketEncoder.java
-@@ -0,0 +1,45 @@
-+package net.minecraft.server;
-+
-+import java.io.IOException;
-+
-+import net.minecraft.util.com.google.common.collect.BiMap;
-+import net.minecraft.util.io.netty.buffer.ByteBuf;
-+import net.minecraft.util.io.netty.channel.ChannelHandlerContext;
-+import net.minecraft.util.io.netty.handler.codec.MessageToByteEncoder;
-+import org.apache.logging.log4j.LogManager;
-+import org.apache.logging.log4j.Logger;
-+import org.apache.logging.log4j.Marker;
-+import org.apache.logging.log4j.MarkerManager;
-+
-+public class PacketEncoder extends MessageToByteEncoder {
-+
-+    private static final Logger a = LogManager.getLogger();
-+    private static final Marker b = MarkerManager.getMarker("PACKET_SENT", NetworkManager.b);
-+    private final NetworkStatistics c;
-+
-+    public PacketEncoder(NetworkStatistics networkstatistics) {
-+        this.c = networkstatistics;
-+    }
-+
-+    protected void a(ChannelHandlerContext channelhandlercontext, Packet packet, ByteBuf bytebuf) {
-+        Integer integer = (Integer) ((BiMap) channelhandlercontext.channel().attr(NetworkManager.f).get()).inverse().get(packet.getClass());
-+
-+        if (a.isDebugEnabled()) {
-+            a.debug(b, "OUT: [{}:{}] {}[{}]", new Object[] { channelhandlercontext.channel().attr(NetworkManager.d).get(), integer, packet.getClass().getName(), packet.b()});
-+        }
-+
-+        if (integer == null) {
-+            throw new IOException("Can\'t serialize unregistered packet");
-+        } else {
-+            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
-+
-+            packetdataserializer.b(integer.intValue());
-+            packet.b(packetdataserializer);
-+            this.c.b(integer.intValue(), (long) packetdataserializer.readableBytes());
-+        }
-+    }
-+
-+    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) {
-+        this.a(channelhandlercontext, (Packet) object, bytebuf);
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
-new file mode 100644
-index 0000000..2dac506
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/PacketLoginOutSuccess.java
-@@ -0,0 +1,43 @@
-+package net.minecraft.server;
-+
-+import java.util.UUID;
-+
-+import net.minecraft.util.com.mojang.authlib.GameProfile;
-+
-+public class PacketLoginOutSuccess extends Packet {
-+
-+    private GameProfile a;
-+
-+    public PacketLoginOutSuccess() {}
-+
-+    public PacketLoginOutSuccess(GameProfile gameprofile) {
-+        this.a = gameprofile;
-+    }
-+
-+    public void a(PacketDataSerializer packetdataserializer) {
-+        String s = packetdataserializer.c(36);
-+        String s1 = packetdataserializer.c(16);
-+        UUID uuid = UUID.fromString(s);
-+
-+        this.a = new GameProfile(uuid, s1);
-+    }
-+
-+    public void b(PacketDataSerializer packetdataserializer) {
-+        UUID uuid = this.a.getId();
-+
-+        packetdataserializer.a(uuid == null ? "" : uuid.toString());
-+        packetdataserializer.a(this.a.getName());
-+    }
-+
-+    public void a(PacketLoginOutListener packetloginoutlistener) {
-+        packetloginoutlistener.a(this);
-+    }
-+
-+    public boolean a() {
-+        return true;
-+    }
-+
-+    public void handle(PacketListener packetlistener) {
-+        this.a((PacketLoginOutListener) packetlistener);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
@@ -1361,7 +1089,7 @@ index 0000000..a95877f
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 new file mode 100644
-index 0000000..0239d12
+index 0000000..115fee6
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 @@ -0,0 +1,189 @@
@@ -1379,17 +1107,17 @@ index 0000000..0239d12
 +    private int c;
 +    private int d;
 +    private byte[] e;
-+    private byte[] buffer;
-+    private boolean inflatedBuffer;
-+    private int size;
-+    private static byte[] buildBuffer = new byte[196864];
++    private byte[] f;
++    private boolean g;
++    private int h;
++    private static byte[] i = new byte[196864];
 +
 +    public PacketPlayOutMapChunk() {}
 +
 +    public PacketPlayOutMapChunk(Chunk chunk, boolean flag, int i) {
 +        this.a = chunk.locX;
 +        this.b = chunk.locZ;
-+        this.inflatedBuffer = flag;
++        this.g = flag;
 +        ChunkMap chunkmap = a(chunk, flag, i);
 +        Deflater deflater = new Deflater(-1);
 +
@@ -1397,11 +1125,11 @@ index 0000000..0239d12
 +        this.c = chunkmap.b;
 +
 +        try {
-+            this.buffer = chunkmap.a;
++            this.f = chunkmap.a;
 +            deflater.setInput(chunkmap.a, 0, chunkmap.a.length);
 +            deflater.finish();
 +            this.e = new byte[chunkmap.a.length];
-+            this.size = deflater.deflate(this.e);
++            this.h = deflater.deflate(this.e);
 +        } finally {
 +            deflater.end();
 +        }
@@ -1414,15 +1142,15 @@ index 0000000..0239d12
 +    public void a(PacketDataSerializer packetdataserializer) {
 +        this.a = packetdataserializer.readInt();
 +        this.b = packetdataserializer.readInt();
-+        this.inflatedBuffer = packetdataserializer.readBoolean();
++        this.g = packetdataserializer.readBoolean();
 +        this.c = packetdataserializer.readShort();
 +        this.d = packetdataserializer.readShort();
-+        this.size = packetdataserializer.readInt();
-+        if (buildBuffer.length < this.size) {
-+            buildBuffer = new byte[this.size];
++        this.h = packetdataserializer.readInt();
++        if (i.length < this.h) {
++            i = new byte[this.h];
 +        }
 +
-+        packetdataserializer.readBytes(buildBuffer, 0, this.size);
++        packetdataserializer.readBytes(i, 0, this.h);
 +        int i = 0;
 +
 +        int j;
@@ -1432,17 +1160,17 @@ index 0000000..0239d12
 +        }
 +
 +        j = 12288 * i;
-+        if (this.inflatedBuffer) {
++        if (this.g) {
 +            j += 256;
 +        }
 +
-+        this.buffer = new byte[j];
++        this.f = new byte[j];
 +        Inflater inflater = new Inflater();
 +
-+        inflater.setInput(buildBuffer, 0, this.size);
++        inflater.setInput(i, 0, this.h);
 +
 +        try {
-+            inflater.inflate(this.buffer);
++            inflater.inflate(this.f);
 +        } catch (DataFormatException dataformatexception) {
 +            throw new IOException("Bad compressed data format");
 +        } finally {
@@ -1453,11 +1181,11 @@ index 0000000..0239d12
 +    public void b(PacketDataSerializer packetdataserializer) {
 +        packetdataserializer.writeInt(this.a);
 +        packetdataserializer.writeInt(this.b);
-+        packetdataserializer.writeBoolean(this.inflatedBuffer);
++        packetdataserializer.writeBoolean(this.g);
 +        packetdataserializer.writeShort((short) (this.c & '\uffff'));
 +        packetdataserializer.writeShort((short) (this.d & '\uffff'));
-+        packetdataserializer.writeInt(this.size);
-+        packetdataserializer.writeBytes(this.e, 0, this.size);
++        packetdataserializer.writeInt(this.h);
++        packetdataserializer.writeBytes(this.e, 0, this.h);
 +    }
 +
 +    public void a(PacketPlayOutListener packetplayoutlistener) {
@@ -1465,15 +1193,15 @@ index 0000000..0239d12
 +    }
 +
 +    public String b() {
-+        return String.format("x=%d, z=%d, full=%b, sects=%d, add=%d, size=%d", new Object[] { Integer.valueOf(this.a), Integer.valueOf(this.b), Boolean.valueOf(this.inflatedBuffer), Integer.valueOf(this.c), Integer.valueOf(this.d), Integer.valueOf(this.size)});
++        return String.format("x=%d, z=%d, full=%b, sects=%d, add=%d, size=%d", new Object[] { Integer.valueOf(this.a), Integer.valueOf(this.b), Boolean.valueOf(this.g), Integer.valueOf(this.c), Integer.valueOf(this.d), Integer.valueOf(this.h)});
 +    }
 +
 +    public static ChunkMap a(Chunk chunk, boolean flag, int i) {
 +        int j = 0;
-+        ChunkSection[] achunksection = chunk.i();
++        ChunkSection[] achunksection = chunk.getSections();
 +        int k = 0;
 +        ChunkMap chunkmap = new ChunkMap();
-+        byte[] abyte = buildBuffer;
++        byte[] abyte = i;
 +
 +        if (flag) {
 +            chunk.q = true;
@@ -1598,7 +1326,7 @@ index 0000000..a58dc60
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 new file mode 100644
-index 0000000..35d3be1
+index 0000000..1556d34
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 @@ -0,0 +1,94 @@
@@ -1661,7 +1389,7 @@ index 0000000..35d3be1
 +            short short1 = packetdataserializer.readShort();
 +
 +            for (int i = 0; i < short1; ++i) {
-+                this.e.add(packetdataserializer.c(16));
++                this.e.add(packetdataserializer.c(40));
 +            }
 +        }
 +    }
@@ -2184,7 +1912,7 @@ index 0000000..678aa91
 +}
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
 new file mode 100644
-index 0000000..ea9a75d
+index 0000000..bb5a97d
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/WhiteList.java
 @@ -0,0 +1,59 @@
@@ -2216,7 +1944,7 @@ index 0000000..ea9a75d
 +
 +        WhiteListEntry whitelistentry;
 +
-+        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) whitelistentry.f()).getName()) {
++        for (Iterator iterator = this.e().values().iterator(); iterator.hasNext(); astring[i++] = ((GameProfile) whitelistentry.getKey()).getName()) {
 +            whitelistentry = (WhiteListEntry) iterator.next();
 +        }
 +
@@ -2238,9 +1966,9 @@ index 0000000..ea9a75d
 +            }
 +
 +            whitelistentry = (WhiteListEntry) iterator.next();
-+        } while (!s.equalsIgnoreCase(((GameProfile) whitelistentry.f()).getName()));
++        } while (!s.equalsIgnoreCase(((GameProfile) whitelistentry.getKey()).getName()));
 +
-+        return (GameProfile) whitelistentry.f();
++        return (GameProfile) whitelistentry.getKey();
 +    }
 +
 +    protected String a(Object object) {

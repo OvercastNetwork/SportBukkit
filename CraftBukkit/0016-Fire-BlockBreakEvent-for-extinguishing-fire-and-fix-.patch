@@ -1,4 +1,4 @@
-From 79b4015f83a3d456c5340422431026a7794482d8 Mon Sep 17 00:00:00 2001
+From 0d00d04202c26a3cbe44ce32a4f26fd4c5015944 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -6,7 +6,7 @@ Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 2db45ad..750eb82 100644
+index 7607155..11890ce 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
 @@ -105,6 +105,15 @@ public class PlayerInteractManager {
@@ -44,10 +44,10 @@ index 2db45ad..750eb82 100644
  
                  if (event.useItemInHand() == Event.Result.DENY) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 3b2d7f6..f648342 100644
+index 5a59951..8f9aabc 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1754,8 +1754,13 @@ public abstract class World implements IBlockAccess {
+@@ -1751,8 +1751,13 @@ public abstract class World implements IBlockAccess {
          }
  
          if (this.getType(i, j, k) == Blocks.FIRE) {
@@ -64,5 +64,5 @@ index 3b2d7f6..f648342 100644
          } else {
              return false;
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

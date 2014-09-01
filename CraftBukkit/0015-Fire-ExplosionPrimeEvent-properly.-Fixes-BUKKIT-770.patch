@@ -1,11 +1,11 @@
-From 8cb7d62e57d3547e0ea08c139b4af4f8bd0f41c6 Mon Sep 17 00:00:00 2001
+From 4efe12fb315944f5467f2fd3e8339138be85c828 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 6d5090b..cff5a10 100644
+index 8cc7d5e..f1cd88c 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -36,7 +36,7 @@ index 6d5090b..cff5a10 100644
          }
      }
  
-@@ -42,21 +52,35 @@ public class BlockTNT extends Block {
+@@ -42,20 +52,34 @@ public class BlockTNT extends Block {
      }
  
      public void a(World world, int i, int j, int k, int l, EntityLiving entityliving) {
@@ -63,23 +63,20 @@ index 6d5090b..cff5a10 100644
      }
  
      public boolean interact(World world, int i, int j, int k, EntityHuman entityhuman, int l, float f, float f1, float f2) {
--        if (entityhuman.bD() != null && entityhuman.bD().getItem() == Items.FLINT_AND_STEEL) {
+         if (entityhuman.bF() != null && entityhuman.bF().getItem() == Items.FLINT_AND_STEEL) {
 -            this.a(world, i, j, k, 1, entityhuman);
 -            world.setAir(i, j, k);
--            entityhuman.bD().damage(1, entityhuman);
-+        if (entityhuman.bE() != null && entityhuman.bE().getItem() == Items.FLINT_AND_STEEL) {
 +            // CraftBukkit start - don't remove block if TNT priming is cancelled
 +            this.a(world, i, j, k, 1, (EntityLiving) entityhuman);
 +            if (removeBlock) {
 +                world.setAir(i, j, k);
 +            }
 +            // CraftBukkit end
-+            entityhuman.bE().damage(1, entityhuman);
+             entityhuman.bF().damage(1, entityhuman);
              return true;
          } else {
-             return super.interact(world, i, j, k, entityhuman, l, f, f1, f2);
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index e5d72b7..bf54e38 100644
+index a8162c7..4a067b7 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -90,9 +90,20 @@ public class EntityCreeper extends EntityMonster {
@@ -128,7 +125,7 @@ index 326f7ea..b3ab7ee 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index a442cb1..a97f8b6 100644
+index 13cbc79..f557bc0 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 @@ -73,15 +73,10 @@ public class EntityTNTPrimed extends Entity {
@@ -151,5 +148,5 @@ index a442cb1..a97f8b6 100644
  
      protected void b(NBTTagCompound nbttagcompound) {
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

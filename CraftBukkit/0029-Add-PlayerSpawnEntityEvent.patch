@@ -1,11 +1,11 @@
-From 7f4e5a8f575b2c64fca8ec9f67da7e9cf4047034 Mon Sep 17 00:00:00 2001
+From 553f43cbd5c592619d3dd67d5485e926d037e833 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 26 May 2013 18:43:56 -0700
 Subject: [PATCH] Add PlayerSpawnEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemMonsterEgg.java b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-index 0adb4e4..26f4834 100644
+index 639ddf5..842ce2e 100644
 --- a/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 +++ b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 @@ -1,5 +1,11 @@
@@ -44,7 +44,7 @@ index 0adb4e4..26f4834 100644
 +                    entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
 +                    entityinsentient.aO = entityinsentient.yaw;
 +                    entityinsentient.aM = entityinsentient.yaw;
-+                    entityinsentient.a((GroupDataEntity) null);
++                    entityinsentient.prepare((GroupDataEntity) null);
 +                    world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
 +                    entityinsentient.r();
 +                }

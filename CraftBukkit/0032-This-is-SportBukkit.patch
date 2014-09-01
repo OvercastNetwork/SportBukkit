@@ -1,17 +1,17 @@
-From 1858f1dffa3c4af4cd0cfb90619d6d2221d064f1 Mon Sep 17 00:00:00 2001
+From a4375e1d9e5cca0d53ca8447dead0e02b4890aea Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 21 Jan 2013 12:47:55 -0600
 Subject: [PATCH] This is SportBukkit!
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1217003..c7d70f6 100644
+index e53916b..facf4c6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -191,7 +191,7 @@ import com.google.common.collect.MapMaker;
- import jline.console.ConsoleReader;
+@@ -193,7 +193,7 @@ import jline.console.ConsoleReader;
  
  public final class CraftServer implements Server {
+     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
 -    private final String serverName = "CraftBukkit";
 +    private final String serverName = "SportBukkit";
      private final String serverVersion;

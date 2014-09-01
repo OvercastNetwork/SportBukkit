@@ -1,11 +1,11 @@
-From 7c7391de67cdfec2b47a2e0e087cb0ed24c9bef2 Mon Sep 17 00:00:00 2001
+From 8453b62954899d97defb52f3a41903eb864ef4ec Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
-index 8ed492b..b9c8f61 100644
+index 5750760..3c904f8 100644
 --- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -147,10 +147,17 @@ public class EntityExperienceOrb extends Entity {
@@ -31,10 +31,10 @@ index 8ed492b..b9c8f61 100644
          }
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 522d6b0..e0655f4 100644
+index 9b10c41..4478e08 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -756,6 +756,13 @@ public class CraftEventFactory {
+@@ -866,6 +866,13 @@ public class CraftEventFactory {
          return event;
      }
  

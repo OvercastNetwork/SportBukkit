@@ -1,4 +1,4 @@
-From b1ad5e2c11a87ff38c5a79a66096592e642fcdfa Mon Sep 17 00:00:00 2001
+From a97e1701dd84cb02ebdc09054848599264de08f0 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 4 Apr 2013 21:36:54 -0500
 Subject: [PATCH] Fix invalid player death messages
@@ -6,21 +6,21 @@ Subject: [PATCH] Fix invalid player death messages
 This bug affects the /kill command and any plugin that sets a player's health to zero
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 8d98a70..5f1bc26 100644
+index 84673b4..53b3e55 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -367,7 +367,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -363,7 +363,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
          }
  
--        IChatBaseComponent chatmessage = this.aV().b();
-+        IChatBaseComponent chatmessage = damagesource == DamageSource.GENERIC ? damagesource.getLocalizedDeathMessage(this) : this.aV().b(); // CraftBukkit
+-        IChatBaseComponent chatmessage = this.aW().b();
++        IChatBaseComponent chatmessage = damagesource == DamageSource.GENERIC ? damagesource.getLocalizedDeathMessage(this) : this.aW().b(); // CraftBukkit
  
          String deathmessage = chatmessage.c();
-         org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage);
-@@ -408,7 +408,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
+@@ -404,7 +404,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
-         EntityLiving entityliving = this.aW();
+         EntityLiving entityliving = this.aX();
  
 -        if (entityliving != null) {
 +        // CraftBukkit - can't have a combat tracked killer with a generic damage source
@@ -29,5 +29,5 @@ index 8d98a70..5f1bc26 100644
              MonsterEggInfo monsteregginfo = (MonsterEggInfo) EntityTypes.eggInfo.get(Integer.valueOf(i));
  
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

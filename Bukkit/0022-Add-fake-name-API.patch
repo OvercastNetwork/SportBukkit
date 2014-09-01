@@ -1,14 +1,14 @@
-From 876e2ac8a461f0990eb5abcb07c7bf0378eb9bba Mon Sep 17 00:00:00 2001
+From 91466514b2d7622549a30eb1a27f0a5670e10528 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 23 Jan 2014 00:17:31 -0500
 Subject: [PATCH] Add fake name API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 9877c2e..e2022e4 100644
+index 6116ff4..447eef6 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -204,6 +204,27 @@ public final class Bukkit {
+@@ -218,6 +218,27 @@ public final class Bukkit {
      }
  
      /**
@@ -37,10 +37,10 @@ index 9877c2e..e2022e4 100644
       */
      public static PluginManager getPluginManager() {
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 3408a90..9cc6a30 100644
+index 1fffc38..b4f0c18 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -311,7 +311,22 @@ public interface Server extends PluginMessageRecipient {
+@@ -351,7 +351,22 @@ public interface Server extends PluginMessageRecipient {
      public Player getPlayer(UUID id);
  
      /**
@@ -93,10 +93,10 @@ index 148756b..52c5947 100644
 +    public String getName(CommandSender viewer);
  }
 diff --git a/src/main/java/org/bukkit/command/defaults/ListCommand.java b/src/main/java/org/bukkit/command/defaults/ListCommand.java
-index 80c6135..109c9b5 100644
+index eb8a6a9..1a9598c 100644
 --- a/src/main/java/org/bukkit/command/defaults/ListCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/ListCommand.java
-@@ -34,7 +34,7 @@ public class ListCommand extends VanillaCommand {
+@@ -35,7 +35,7 @@ public class ListCommand extends VanillaCommand {
                  online.append(", ");
              }
  
@@ -104,7 +104,7 @@ index 80c6135..109c9b5 100644
 +            online.append(player.getDisplayName(sender instanceof Player ? (Player) sender : null));
          }
  
-         sender.sendMessage("There are " + players.length + "/" + Bukkit.getMaxPlayers() + " players online:\n" + online.toString());
+         sender.sendMessage("There are " + players.size() + "/" + Bukkit.getMaxPlayers() + " players online:\n" + online.toString());
 diff --git a/src/main/java/org/bukkit/command/defaults/TellCommand.java b/src/main/java/org/bukkit/command/defaults/TellCommand.java
 index 287f49f..5f79ad6 100644
 --- a/src/main/java/org/bukkit/command/defaults/TellCommand.java
@@ -185,5 +185,5 @@ index c6aa0e4..d2e18f9 100644
       * color.
       * <p>
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

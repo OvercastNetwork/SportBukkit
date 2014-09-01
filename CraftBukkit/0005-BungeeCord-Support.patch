@@ -1,4 +1,4 @@
-From 3bd3f4d5c0df1f1a7eb609b4e580022aca796de8 Mon Sep 17 00:00:00 2001
+From cdd6742a4bfc85794df8d0aebc5cb7281ad79af0 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,7 +7,7 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 9cc9581..ed0f8ed 100644
+index 52bc69b..954a9c2 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -73,6 +73,25 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -93,19 +93,19 @@ index 16d4765..d3751d6 100644
          this.d = EnumProtocol.a(packetdataserializer.a());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 3be5174..9cbedf0 100644
+index a666131..5df795f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -228,6 +228,8 @@ public final class CraftServer implements Server {
-     private boolean overrideAllCommandBlockCommands = false;
+@@ -231,6 +231,8 @@ public final class CraftServer implements Server {
      private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
      private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
+     private final List<CraftPlayer> playerView;
 +    public boolean bungee = false;
 +    public static final com.google.gson.Gson gson = new com.google.gson.Gson();
  
      private final class BooleanWrapper {
          private boolean value = true;
-@@ -295,6 +297,7 @@ public final class CraftServer implements Server {
+@@ -304,6 +306,7 @@ public final class CraftServer implements Server {
          }
  
          saveCommandsConfig();
@@ -126,5 +126,5 @@ index 129ac34..5236ec0 100644
      monsters: 70
      animals: 15
 -- 
-1.8.5.1
+1.8.5.2 (Apple Git-48)
 

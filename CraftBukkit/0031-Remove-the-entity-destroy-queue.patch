@@ -1,11 +1,11 @@
-From b8d57906673ddfdff017ccfe3b6c1a37240bc967 Mon Sep 17 00:00:00 2001
+From 39badcf140859faf5a8f26dd8f75a491a6874b78 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:56:45 -0600
 Subject: [PATCH] Remove the entity destroy queue
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index eef04f6..b3aeb80 100644
+index 78dc3c4..bcf73e1 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -37,7 +37,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -33,7 +33,7 @@ index eef04f6..b3aeb80 100644
  
          if (!this.chunkCoordIntPairQueue.isEmpty()) {
              ArrayList arraylist = new ArrayList();
-@@ -912,7 +914,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -908,7 +910,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.lastSentExp = -1;
          this.bQ = -1.0F;
          this.bR = -1;
@@ -42,7 +42,7 @@ index eef04f6..b3aeb80 100644
      }
  
      protected void a(MobEffect mobeffect) {
-@@ -1036,6 +1038,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1032,6 +1034,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          return this.bO;
      }
  
@@ -50,17 +50,16 @@ index eef04f6..b3aeb80 100644
      public void d(Entity entity) {
          if (entity instanceof EntityHuman) {
              this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(new int[] { entity.getId()}));
-@@ -1043,6 +1046,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1039,6 +1042,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              this.removeQueue.add(Integer.valueOf(entity.getId()));
          }
      }
 +    */
-+
-     // CraftBukkit start - Add per-player time and weather.
-     public long timeOffset = 0;
-     public boolean relativeTime = true;
+ 
+     public long x() {
+         return this.bX;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index f824ea1..fed51e7 100644
+index 7dbbcc6..9aede8b 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -341,18 +341,12 @@ public class EntityTrackerEntry {

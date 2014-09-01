@@ -1,0 +1,90 @@
+From fe64f3b70201af7b429f9933d0373d96cdd05f2b Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 31 Jul 2014 20:19:24 -0500
+Subject: [PATCH] Fix unloaded chunk freezing
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index b312ec9..0074564 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -37,6 +37,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public double d;
+     public double e;
+     public final List chunkCoordIntPairQueue = new LinkedList();
++    public final List paddedChunkCoordIntPairQueue = new LinkedList(); // CraftBukkit
+     // public final List removeQueue = new LinkedList(); CraftBukkit - remove the removeQueue
+     private final ServerStatisticManager bO;
+     private float bP = Float.MIN_VALUE;
+@@ -209,6 +210,24 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         }
+         */
+ 
++        // CraftBukkit start
++        if (!paddedChunkCoordIntPairQueue.isEmpty()) {
++            // clean out any actual chunks
++            this.paddedChunkCoordIntPairQueue.removeAll(this.chunkCoordIntPairQueue);
++
++            ArrayList arraylist = new ArrayList();
++            Iterator iterator = this.paddedChunkCoordIntPairQueue.iterator();
++
++            while (iterator.hasNext()) {
++                ChunkCoordIntPair chunkcoordintpair = (ChunkCoordIntPair) iterator.next();
++                arraylist.add(new EmptyChunk(this.world, chunkcoordintpair.x, chunkcoordintpair.z));
++                iterator.remove();
++            }
++
++            this.playerConnection.sendPacket(new PacketPlayOutMapChunkBulk(arraylist));
++        }
++        // CraftBukkit end
++
+         if (!this.chunkCoordIntPairQueue.isEmpty()) {
+             ArrayList arraylist = new ArrayList();
+             Iterator iterator1 = this.chunkCoordIntPairQueue.iterator();
+diff --git a/src/main/java/net/minecraft/server/PlayerChunkMap.java b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+index ef20414..78e2688 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunkMap.java
++++ b/src/main/java/net/minecraft/server/PlayerChunkMap.java
+@@ -218,7 +218,7 @@ public class PlayerChunkMap {
+         if (d2 >= 64.0D) {
+             int k = (int) entityplayer.d >> 4;
+             int l = (int) entityplayer.e >> 4;
+-            int i1 = this.g;
++            int i1 = this.g + 1;
+             int j1 = i - k;
+             int k1 = j - l;
+             List<ChunkCoordIntPair> chunksToLoad = new LinkedList<ChunkCoordIntPair>(); // CraftBukkit
+@@ -226,11 +226,28 @@ public class PlayerChunkMap {
+             if (j1 != 0 || k1 != 0) {
+                 for (int l1 = i - i1; l1 <= i + i1; ++l1) {
+                     for (int i2 = j - i1; i2 <= j + i1; ++i2) {
+-                        if (!this.a(l1, i2, k, l, i1)) {
++                        // CraftBukkit start
++                        if (l1 < i - this.g ||
++                            l1 > i + this.g ||
++                            i2 < j - this.g ||
++                            i2 > j + this.g) {
++
++                            entityplayer.paddedChunkCoordIntPairQueue.add(new ChunkCoordIntPair(l1, i2));
++
++                            if (!this.a(l1 - j1, i2 - k1, i, j, i1)) {
++                                entityplayer.playerConnection.sendPacket(new PacketPlayOutMapChunk(
++                                    new EmptyChunk(this.world, l1 - j1, i2 - k1), true, 0));
++                            }
++
++                            continue;
++                        }
++                        // CraftBukkit end
++
++                        if (!this.a(l1, i2, k, l, i1 - 1)) { // CraftBukkit - subtract one from view distance
+                             chunksToLoad.add(new ChunkCoordIntPair(l1, i2)); // CraftBukkit
+                         }
+ 
+-                        if (!this.a(l1 - j1, i2 - k1, i, j, i1)) {
++                        if (!this.a(l1 - j1, i2 - k1, i, j, i1 - 1)) { // CraftBukkit - subtract one from view distance
+                             PlayerChunk playerchunk = this.a(l1 - j1, i2 - k1, false);
+ 
+                             if (playerchunk != null) {
+-- 
+1.8.5.2 (Apple Git-48)
+

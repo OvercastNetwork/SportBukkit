@@ -32,7 +32,7 @@ function applyPatches {
         echo "  Please review above details and finish the apply then"
         echo "  save the changes with rebuildPatches.sh"
         cd "$ORIG_PWD"
-        exit $?
+        exit 1
     else
         echo "  Patches applied cleanly to $target"
     fi

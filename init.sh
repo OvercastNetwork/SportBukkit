@@ -15,7 +15,7 @@ if [ -d build ]; then
     if [ -d build ]; then
         echo "Unable to remove build directory"
         cd "$ORIG_PWD"
-        exit $?
+        exit 1
     fi
 fi
 

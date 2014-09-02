@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if !(./applyPatches.sh); then
-    exit $?
+    exit 1
 else
     ./compile.sh
 fi

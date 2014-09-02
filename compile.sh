@@ -12,7 +12,7 @@ function compile {
     if !(MAVEN_OPTS=-Xmx512M mvn clean install); then
         echo "  $1 failed to compile"
         cd "$ORIG_PWD"
-        exit $?
+        exit 1
     else
         echo "  $1 compiled"
         echo "  JAR location: $target/target/"

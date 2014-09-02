@@ -12,7 +12,7 @@ function deploy {
     if !(MAVEN_OPTS=-Xmx512M mvn deploy); then
         echo "  $1 failed to deploy"
         cd "$ORIG_PWD"
-        exit $?
+        exit 1
     else
         echo "  $1 deployed"
     fi

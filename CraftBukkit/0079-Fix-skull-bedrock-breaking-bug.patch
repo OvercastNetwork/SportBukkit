@@ -1,4 +1,4 @@
-From 3453c6a02af1b3b15e029904f0fc63d047d41f16 Mon Sep 17 00:00:00 2001
+From 0a555fbb889265743e2de6b93274ed3784cc9d53 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 11 Aug 2014 10:58:32 -0500
 Subject: [PATCH] Fix skull bedrock breaking bug
@@ -21,5 +21,5 @@ index 4a40068..0de7aef 100644
                  int i1 = 0;
  
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

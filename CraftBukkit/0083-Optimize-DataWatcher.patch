@@ -1,4 +1,4 @@
-From 5e2104a0bbb3736e4873468f2b2c15548b10a0c9 Mon Sep 17 00:00:00 2001
+From 23780e9523d1ccd28d9a24de0a7d3e86f15ae4cc Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Fri, 13 Dec 2013 11:45:47 +1100
 Subject: [PATCH] Optimize DataWatcher
@@ -130,5 +130,5 @@ index 86a1977..ec4f11a 100644
      }
  }
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

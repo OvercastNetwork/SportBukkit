@@ -1,4 +1,4 @@
-From e7a53e087a672b989cd87d529e566b86b690e3e7 Mon Sep 17 00:00:00 2001
+From 4e87642097e4da39c86f89d0e1205a0f4d4079e4 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 1 Sep 2014 15:37:16 -0500
 Subject: [PATCH] Remove this shit
@@ -18,5 +18,5 @@ index 83f2dad..6f1f0d4 100644
              this.n.b();
              return false;
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

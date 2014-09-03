@@ -1,4 +1,4 @@
-From 9fbed69e1d030823fd5dc31a27825a442b4f7401 Mon Sep 17 00:00:00 2001
+From 3c29a86cfab81aeb415467a2ee22c201e71902d2 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <thinkofdeath@spigotmc.org>
 Date: Mon, 1 Sep 2014 16:47:48 +1000
 Subject: [PATCH] Snapshot imports
@@ -2764,5 +2764,5 @@ index 0000000..29f0c99
 +    }
 +}
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

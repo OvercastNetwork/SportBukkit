@@ -1,4 +1,4 @@
-From 25fb006af0c478a5f7e42b1beadfab44ae35d1d5 Mon Sep 17 00:00:00 2001
+From 83b4aab905b655686c1c48b82a441a4853df56b8 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 1 Aug 2014 12:51:06 -0500
 Subject: [PATCH] Simplify junk login messages
@@ -33,5 +33,5 @@ index 0e42005..db67554 100644
      }
  }
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

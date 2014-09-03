@@ -1,4 +1,4 @@
-From 2efc57050fec1d420a0cbfca71bba0d75a7fb832 Mon Sep 17 00:00:00 2001
+From 9b521f1cdbc54d7104bb6fd36ce49159225acc6f Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 1 Sep 2014 00:34:00 -0500
 Subject: [PATCH] Snapshot protocol
@@ -71,5 +71,5 @@ index c4cd0d7..fbe28f0 100644
 +    // XimeBukkit end
 +}
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

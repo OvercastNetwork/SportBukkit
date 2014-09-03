@@ -1,4 +1,4 @@
-From 87ac491e16ce0dce92ceb4cdfd95447d4737b567 Mon Sep 17 00:00:00 2001
+From 693b451f842d3f312ea8c676f577fd0943c105b4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 21 Aug 2014 02:21:45 -0400
 Subject: [PATCH] Remove Overmapped and legacy methods
@@ -257,7 +257,7 @@ index 806116a..d1bfb11 100644
          return getHandle().aZ();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
-index daf6bb42..6401fa7 100644
+index daf6bb4..6401fa7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecart.java
 @@ -58,14 +58,4 @@ public abstract class CraftMinecart extends CraftVehicle implements Minecart {
@@ -305,5 +305,5 @@ index 2f29f2f..629a191 100644
 -    }
  }
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

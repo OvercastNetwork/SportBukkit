@@ -1,4 +1,4 @@
-From de99abb9a775263c9071b21211ba025d8d33f205 Mon Sep 17 00:00:00 2001
+From a38da3b9b971eb3471fd86987441c1a0c8f53bb5 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <thinkofdeath@spigotmc.org>
 Date: Thu, 26 Jun 2014 14:29:11 +0100
 Subject: [PATCH] Fix explosions not moving invulnerable entities
@@ -21,5 +21,5 @@ index 56fa999..f2d7616 100644
                      double d11 = EnchantmentProtection.a(entity, d10);
  
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.4.msysgit.0
 

@@ -1,4 +1,4 @@
-From f758839b7f6e264ce324caaad53307e1ba74152d Mon Sep 17 00:00:00 2001
+From 9409fddd52310e2639a4f284cdc62f03034f08c3 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 18 Dec 2012 22:12:16 -0600
 Subject: [PATCH] Add necessary files from mc-dev
@@ -1812,6 +1812,122 @@ index 0000000..900ed68
 +        RegionFile regionfile = a(file1, i, j);
 +
 +        return regionfile.b(i & 31, j & 31);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/ScoreboardTeam.java b/src/main/java/net/minecraft/server/ScoreboardTeam.java
+new file mode 100644
+index 0000000..31ef831
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/ScoreboardTeam.java
+@@ -0,0 +1,110 @@
++package net.minecraft.server;
++
++import java.util.Collection;
++import java.util.HashSet;
++import java.util.Set;
++
++public class ScoreboardTeam extends ScoreboardTeamBase {
++
++    private final Scoreboard a;
++    private final String b;
++    private final Set c = new HashSet();
++    private String d;
++    private String e = "";
++    private String f = "";
++    private boolean g = true;
++    private boolean h = true;
++
++    public ScoreboardTeam(Scoreboard scoreboard, String s) {
++        this.a = scoreboard;
++        this.b = s;
++        this.d = s;
++    }
++
++    public String getName() {
++        return this.b;
++    }
++
++    public String getDisplayName() {
++        return this.d;
++    }
++
++    public void setDisplayName(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Name cannot be null");
++        } else {
++            this.d = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public Collection getPlayerNameSet() {
++        return this.c;
++    }
++
++    public String getPrefix() {
++        return this.e;
++    }
++
++    public void setPrefix(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Prefix cannot be null");
++        } else {
++            this.e = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public String getSuffix() {
++        return this.f;
++    }
++
++    public void setSuffix(String s) {
++        if (s == null) {
++            throw new IllegalArgumentException("Suffix cannot be null");
++        } else {
++            this.f = s;
++            this.a.handleTeamChanged(this);
++        }
++    }
++
++    public String getFormattedName(String s) {
++        return this.getPrefix() + s + this.getSuffix();
++    }
++
++    public static String getPlayerDisplayName(ScoreboardTeamBase scoreboardteambase, String s) {
++        return scoreboardteambase == null ? s : scoreboardteambase.getFormattedName(s);
++    }
++
++    public boolean allowFriendlyFire() {
++        return this.g;
++    }
++
++    public void setAllowFriendlyFire(boolean flag) {
++        this.g = flag;
++        this.a.handleTeamChanged(this);
++    }
++
++    public boolean canSeeFriendlyInvisibles() {
++        return this.h;
++    }
++
++    public void setCanSeeFriendlyInvisibles(boolean flag) {
++        this.h = flag;
++        this.a.handleTeamChanged(this);
++    }
++
++    public int packOptionData() {
++        int i = 0;
++
++        if (this.allowFriendlyFire()) {
++            i |= 1;
++        }
++
++        if (this.canSeeFriendlyInvisibles()) {
++            i |= 2;
++        }
++
++        return i;
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java

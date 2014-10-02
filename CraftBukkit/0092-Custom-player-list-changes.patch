@@ -1,4 +1,4 @@
-From 8e1dcf6afe21d73059280e28716fb922925d632c Mon Sep 17 00:00:00 2001
+From 8e6fba68047a8382241c683de329c55c16dc23bc Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 20 Sep 2014 23:24:06 -0400
 Subject: [PATCH] Custom player list changes
@@ -47,10 +47,10 @@ index 5600407..2ee8cad 100644
  
      public void a(PacketPlayOutListener packetplayoutlistener) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-index 4858f0e..9486772 100644
+index 4858f0e..5405c4b 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-@@ -6,23 +6,53 @@ import net.minecraft.util.com.mojang.authlib.properties.Property;
+@@ -6,23 +6,55 @@ import net.minecraft.util.com.mojang.authlib.properties.Property;
  import net.minecraft.util.com.mojang.authlib.properties.PropertyMap;
  import org.bukkit.craftbukkit.util.CraftChatMessage;
  
@@ -88,19 +88,21 @@ index 4858f0e..9486772 100644
 +            this.properties = properties;
 +        }
 +
-+        public Entry(UUID uuid, String displayName) {
++        public Entry(UUID uuid, String name) {
 +            this.uuid = uuid;
-+            this.displayName = displayName;
++            this.name = name;
 +        }
 +
-+        public Entry(UUID uuid, int gamemode, int ping) {
-+            this.uuid = uuid;
-+            this.gamemode = gamemode;
-+            this.ping = ping;
++        public static Entry withPing(UUID uuid, int ping) {
++            return new Entry(uuid, null, null, 0, ping, null);
 +        }
 +
-+        public Entry(UUID uuid) {
-+            this.uuid = uuid;
++        public static Entry withGamemode(UUID uuid, int gamemode) {
++            return new Entry(uuid, null, null, gamemode, 0, null);
++        }
++
++        public static Entry withDisplayName(UUID uuid, String displayName) {
++            return new Entry(uuid, null, displayName, 0, 0, null);
 +        }
 +    }
  
@@ -115,7 +117,7 @@ index 4858f0e..9486772 100644
  
      public PacketPlayOutPlayerInfo() {}
  
-@@ -37,18 +67,21 @@ public class PacketPlayOutPlayerInfo extends Packet {
+@@ -37,18 +69,21 @@ public class PacketPlayOutPlayerInfo extends Packet {
      // CraftBukkit start
      public PacketPlayOutPlayerInfo(boolean add, UUID uuid, String name, String displayName, int ping, Map<String, String> properties) {
          this.action = add ? 0 : 4;
@@ -144,7 +146,7 @@ index 4858f0e..9486772 100644
      }
      // CraftBukkit end
  
-@@ -76,12 +109,14 @@ public class PacketPlayOutPlayerInfo extends Packet {
+@@ -76,12 +111,14 @@ public class PacketPlayOutPlayerInfo extends Packet {
          PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo();
  
          packet.action = action;
@@ -165,7 +167,7 @@ index 4858f0e..9486772 100644
  
          return packet;
      }
-@@ -94,52 +129,59 @@ public class PacketPlayOutPlayerInfo extends Packet {
+@@ -94,52 +131,59 @@ public class PacketPlayOutPlayerInfo extends Packet {
          if ( packetdataserializer.version >= 20 )
          {
              packetdataserializer.b( action );
@@ -192,7 +194,8 @@ index 4858f0e..9486772 100644
 +                        packetdataserializer.a( entry.name );
 +                        packetdataserializer.b( entry.properties.size() );
 +                        for ( Property property : entry.properties.values() )
-+                        {
+                         {
+-                            packetdataserializer.a( property.getSignature() );
 +                            packetdataserializer.a( property.getName() );
 +                            packetdataserializer.a( property.getValue() );
 +                            packetdataserializer.writeBoolean( property.hasSignature() );
@@ -200,27 +203,6 @@ index 4858f0e..9486772 100644
 +                            {
 +                                packetdataserializer.a( property.getSignature() );
 +                            }
-+                        }
-+                        packetdataserializer.b( entry.gamemode );
-+                        packetdataserializer.b( entry.ping );
-+                        packetdataserializer.writeBoolean( entry.displayName != null );
-+                        if ( entry.displayName != null )
-+                        {
-+                            packetdataserializer.a(entry.displayName);
-+                        }
-+                        break;
-+                    case UPDATE_GAMEMODE:
-+                        packetdataserializer.b( entry.gamemode );
-+                        break;
-+                    case UPDATE_LATENCY:
-+                        packetdataserializer.b( entry.ping );
-+                        break;
-+                    case UPDATE_DISPLAY_NAME:
-+                        packetdataserializer.writeBoolean( entry.displayName != null );
-+                        if ( entry.displayName != null )
-                         {
--                            packetdataserializer.a( property.getSignature() );
-+                            packetdataserializer.a(entry.displayName);
                          }
 -                    }
 -                    packetdataserializer.b( gamemode );
@@ -246,6 +228,26 @@ index 4858f0e..9486772 100644
 -                    break;
 -                case REMOVE_PLAYER:
 -                    break;
++                        packetdataserializer.b( entry.gamemode );
++                        packetdataserializer.b( entry.ping );
++                        packetdataserializer.writeBoolean( entry.displayName != null );
++                        if ( entry.displayName != null )
++                        {
++                            packetdataserializer.a(entry.displayName);
++                        }
++                        break;
++                    case UPDATE_GAMEMODE:
++                        packetdataserializer.b( entry.gamemode );
++                        break;
++                    case UPDATE_LATENCY:
++                        packetdataserializer.b( entry.ping );
++                        break;
++                    case UPDATE_DISPLAY_NAME:
++                        packetdataserializer.writeBoolean( entry.displayName != null );
++                        if ( entry.displayName != null )
++                        {
++                            packetdataserializer.a(entry.displayName);
++                        }
 +                        break;
 +                    case REMOVE_PLAYER:
 +                        break;

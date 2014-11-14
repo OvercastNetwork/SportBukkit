@@ -1,4 +1,4 @@
-From 02b44262876f9ad68ead37c9e84e4d129db39f3d Mon Sep 17 00:00:00 2001
+From e4b7056fd7d04aef9b99d2f9e4edfc8dc63e91ab Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
@@ -25,7 +25,7 @@ index 11fbd73..62a666f 100644
  
          world.addEntity(entitysmallfireball);
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 183c0d6..a122b23 100644
+index 183c0d6..2e2c3a3 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -15,6 +15,8 @@ import org.bukkit.entity.Hanging;
@@ -45,40 +45,96 @@ index 183c0d6..a122b23 100644
      protected boolean inWater;
      public int noDamageTicks;
      private boolean justCreated;
-@@ -355,8 +358,8 @@ public abstract class Entity {
+@@ -349,24 +352,25 @@ public abstract class Entity {
+ 
+     protected void E() {
+         if (!this.fireProof) {
+-            this.damageEntity(DamageSource.LAVA, 4);
+-
+             // CraftBukkit start - Fallen in lava TODO: this event spams!
++            Vec3D lavaPos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D, 0.001D, 0.001D), Material.LAVA);
++            org.bukkit.block.Block lavaBlock = lavaPos == null ? null : this.world.getWorld().getBlockAt((int) lavaPos.a, (int) lavaPos.b, (int) lavaPos.c);
++            try {
++                CraftEventFactory.blockDamage = lavaBlock;
++                this.damageEntity(DamageSource.LAVA, 4);
++            } finally {
++                CraftEventFactory.blockDamage = null;
++            }
++
              if (this instanceof EntityLiving) {
-                 if (this.fireTicks <= 0) {
-                     // not on fire yet
+-                if (this.fireTicks <= 0) {
+-                    // not on fire yet
 -                    // TODO: shouldn't be sending null for the block.
 -                    org.bukkit.block.Block damager = null; // ((WorldServer) this.l).getWorld().getBlockAt(i, j, k);
-+                    Vec3D lavaPos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D, 0.001D, 0.001D), Material.LAVA);
-+                    org.bukkit.block.Block damager = this.world.getWorld().getBlockAt((int) lavaPos.a, (int) lavaPos.b, (int) lavaPos.c);
-                     org.bukkit.entity.Entity damagee = this.getBukkitEntity();
-                     EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(damager, damagee, 15);
-                     this.world.getServer().getPluginManager().callEvent(combustEvent);
-@@ -700,13 +703,19 @@ public abstract class Entity {
+-                    org.bukkit.entity.Entity damagee = this.getBukkitEntity();
+-                    EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(damager, damagee, 15);
+-                    this.world.getServer().getPluginManager().callEvent(combustEvent);
+-
+-                    if (!combustEvent.isCancelled()) {
+-                        this.setOnFire(combustEvent.getDuration());
+-                    }
+-                } else {
+-                    // This will be called every single tick the entity is in lava, so don't throw an event
+-                    this.setOnFire(15);
++                // Note that in order for cancelling or custom duration to work properly,
++                // this event must be fired every tick, thus we cannot avoid "spamming" it.
++                org.bukkit.entity.Entity damagee = this.getBukkitEntity();
++                EntityCombustEvent combustEvent = new org.bukkit.event.entity.EntityCombustByBlockEvent(lavaBlock, damagee, 15);
++                this.world.getServer().getPluginManager().callEvent(combustEvent);
++
++                if (!combustEvent.isCancelled()) {
++                    this.setOnFire(combustEvent.getDuration());
+                 }
+                 return;
+             }
+@@ -700,22 +704,34 @@ public abstract class Entity {
              // CraftBukkit end
              boolean flag2 = this.L();
  
 -            if (this.world.e(this.boundingBox.shrink(0.001D, 0.001D, 0.001D))) {
+-                this.burn(1);
+-                if (!flag2) {
+-                    ++this.fireTicks;
+-                    // CraftBukkit start - Not on fire yet
+-                    if (this.fireTicks <= 0) { // Only throw events on the first combust, otherwise it spams
+-                        EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), 8);
+-                        this.world.getServer().getPluginManager().callEvent(event);
 +            // CraftBukkit start - get the location of the fire block
 +            Vec3D firePos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D, 0.001D, 0.001D), Material.FIRE);
 +            if (firePos != null) {
-+            // CraftBukkit end
-                 this.burn(1);
-                 if (!flag2) {
-                     ++this.fireTicks;
-                     // CraftBukkit start - Not on fire yet
-                     if (this.fireTicks <= 0) { // Only throw events on the first combust, otherwise it spams
--                        EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), 8);
-+                        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(
-+                            this.bukkitEntity.getWorld().getBlockAt((int) firePos.a, (int) firePos.b, (int) firePos.c),
-+                            this.getBukkitEntity(), 8);
-+
-                         this.world.getServer().getPluginManager().callEvent(event);
++                org.bukkit.block.Block fireBlock = this.bukkitEntity.getWorld().getBlockAt((int) firePos.a, (int) firePos.b, (int) firePos.c);
++                try {
++                    CraftEventFactory.blockDamage = fireBlock;
++                    this.burn(1);
++                } finally {
++                    CraftEventFactory.blockDamage = null;
++                }
  
-                         if (!event.isCancelled()) {
-@@ -726,6 +735,15 @@ public abstract class Entity {
+-                        if (!event.isCancelled()) {
++                if (!flag2) {
++                    EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(fireBlock, this.getBukkitEntity(), 8);
++                    this.world.getServer().getPluginManager().callEvent(event);
++
++                    if (!event.isCancelled()) {
++                        // Note carefully how this works: when fireTicks is negative, the entity is
++                        // "heating up" but not on fire yet. When fireTicks reaches 0, the entity
++                        // "ignites" and fireTicks jumps to 160. It will then stay at that value as
++                        // long as the player remains in fire (because the ++ below will cancel out
++                        // the -- in the entity tick). For the event cancelling to work, it has to
++                        // be fired every tick, thus we cannot avoid "spamming" it.
++                        ++this.fireTicks;
++                        if (this.fireTicks == 0) {
+                             this.setOnFire(event.getDuration());
+                         }
+-                    } else {
+-                        // CraftBukkit end
+-                        this.setOnFire(8);
+                     }
++            // CraftBukkit end
+                 }
+             } else if (this.fireTicks <= 0) {
+                 this.fireTicks = -this.maxFireTicks;
+@@ -726,6 +742,15 @@ public abstract class Entity {
                  this.fireTicks = -this.maxFireTicks;
              }
  
@@ -143,6 +199,33 @@ index c561053..bbdf888 100644
      public boolean b(AxisAlignedBB axisalignedbb, Material material) {
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.floor(axisalignedbb.d + 1.0D);
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 0743c25..dd11d13 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -454,18 +454,16 @@ public class CraftEventFactory {
+                 event.getEntity().setLastDamageCause(event);
+             }
+             return event;
+-        } else if (source == DamageSource.LAVA) {
+-            EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
+-            if (!event.isCancelled()) {
+-                event.getEntity().setLastDamageCause(event);
+-            }
+-            return event;
+         } else if (blockDamage != null) {
+             DamageCause cause = null;
+             Block damager = blockDamage;
+             blockDamage = null;
+             if (source == DamageSource.CACTUS) {
+                 cause = DamageCause.CONTACT;
++            } else if (source == DamageSource.FIRE) {
++                cause = DamageCause.FIRE;
++            } else if (source == DamageSource.LAVA) {
++                cause = DamageCause.LAVA;
+             } else {
+                 throw new AssertionError(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex));
+             }
 -- 
 1.9.0
 

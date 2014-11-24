@@ -1,0 +1,59 @@
+From f2329cee0c7019434a1b52646d42aa7e5e2ede29 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 29 Oct 2014 19:08:55 -0400
+Subject: [PATCH] Expose the server CommandMap
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 0ddc9c4..7f6c0c0 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -12,6 +12,7 @@ import java.util.logging.Logger;
+ 
+ import org.bukkit.Warning.WarningState;
+ import org.bukkit.command.CommandException;
++import org.bukkit.command.CommandMap;
+ import org.bukkit.command.CommandSender;
+ import org.bukkit.command.ConsoleCommandSender;
+ import org.bukkit.command.PluginCommand;
+@@ -644,6 +645,13 @@ public final class Bukkit {
+     }
+ 
+     /**
++     * @see Server#getCommandMap()
++     */
++    public static CommandMap getCommandMap() {
++        return server.getCommandMap();
++    }
++
++    /**
+      * @see Server#getMonsterSpawnLimit()
+      */
+     public static int getMonsterSpawnLimit() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index e99005f..999a034 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -14,6 +14,7 @@ import java.util.logging.Logger;
+ 
+ import org.bukkit.Warning.WarningState;
+ import org.bukkit.command.CommandException;
++import org.bukkit.command.CommandMap;
+ import org.bukkit.command.CommandSender;
+ import org.bukkit.command.ConsoleCommandSender;
+ import org.bukkit.command.PluginCommand;
+@@ -724,6 +725,11 @@ public interface Server extends PluginMessageRecipient {
+     public HelpMap getHelpMap();
+ 
+     /**
++     * Gets the {@link CommandMap} containing all registered commands on this server.
++     */
++    public CommandMap getCommandMap();
++
++    /**
+      * Creates an empty inventory of the specified type. If the type is {@link
+      * InventoryType#CHEST}, the new inventory has a size of 27; otherwise the
+      * new inventory has the normal size for its type.
+-- 
+1.9.0
+

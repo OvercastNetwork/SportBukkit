@@ -1,0 +1,117 @@
+From d5314653ec5ce517d417f092956729ea29211bf0 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 9 Dec 2014 02:07:24 -0500
+Subject: [PATCH] Better handling of plugin startup errors
+
+
+diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+index d75380c..07dcf0a 100644
+--- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
++++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
+@@ -188,6 +188,19 @@ public class SimpleCommandMap implements CommandMap {
+         return true;
+     }
+ 
++    public synchronized void unregisterAll(List<Command> commands) {
++        if(commands.isEmpty()) return;
++
++        for(Iterator<Map.Entry<String, Command>> iterator = knownCommands.entrySet().iterator(); iterator.hasNext(); ) {
++            Map.Entry<String, Command> entry = iterator.next();
++
++            if(commands.contains(entry.getValue())) {
++                entry.getValue().unregister(this);
++                iterator.remove();
++            }
++        }
++    }
++
+     public synchronized void clearCommands() {
+         for (Map.Entry<String, Command> entry : knownCommands.entrySet()) {
+             entry.getValue().unregister(this);
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index d2fe422..bd3dd79 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -394,6 +394,18 @@ public final class SimplePluginManager implements PluginManager {
+ 
+     public void enablePlugin(final Plugin plugin) {
+         if (!plugin.isEnabled()) {
++            boolean dependenciesEnabled = true;
++            for(String dependency : plugin.getDescription().getDepend()) {
++                if(!this.isPluginEnabled(dependency)) {
++                    dependenciesEnabled = false;
++                    plugin.getLogger().warning(
++                        "Cannot enable " + plugin.getDescription().getFullName() +
++                        " because dependency " + dependency + " is not enabled"
++                    );
++                }
++            }
++            if(!dependenciesEnabled) return;
++
+             List<Command> pluginCommands = PluginCommandYamlParser.parse(plugin);
+ 
+             if (!pluginCommands.isEmpty()) {
+@@ -402,8 +414,9 @@ public final class SimplePluginManager implements PluginManager {
+ 
+             try {
+                 plugin.getPluginLoader().enablePlugin(plugin);
+-            } catch (Throwable ex) {
+-                server.getLogger().log(Level.SEVERE, "Error occurred (in the plugin loader) while enabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
++            } catch(RuntimeException e) {
++                commandMap.unregisterAll(pluginCommands);
++                throw e;
+             }
+ 
+             HandlerList.bakeAll();
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+index 19893f3..ea14ee7 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
+@@ -309,13 +309,19 @@ public abstract class JavaPlugin extends PluginBase {
+      * @param enabled true if enabled, otherwise false
+      */
+     protected final void setEnabled(final boolean enabled) {
+-        if (isEnabled != enabled) {
+-            isEnabled = enabled;
+-
+-            if (isEnabled) {
++        if(!isEnabled && enabled) {
++            isEnabled = true;
++            try {
+                 onEnable();
+-            } else {
++            } catch(RuntimeException e) {
++                isEnabled = false;
++                throw e;
++            }
++        } else if(isEnabled && !enabled) {
++            try {
+                 onDisable();
++            } finally {
++                isEnabled = false;
+             }
+         }
+     }
+diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+index 283de89..643272f 100644
+--- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
++++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
+@@ -320,14 +320,8 @@ public final class JavaPluginLoader implements PluginLoader {
+                 loaders.put(pluginName, (PluginClassLoader) jPlugin.getClassLoader());
+             }
+ 
+-            try {
+-                jPlugin.setEnabled(true);
+-            } catch (Throwable ex) {
+-                server.getLogger().log(Level.SEVERE, "Error occurred while enabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+-            }
++            jPlugin.setEnabled(true);
+ 
+-            // Perhaps abort here, rather than continue going, but as it stands,
+-            // an abort is not possible the way it's currently written
+             server.getPluginManager().callEvent(new PluginEnableEvent(plugin));
+         }
+     }
+-- 
+1.9.0
+

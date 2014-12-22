@@ -1,4 +1,4 @@
-From 8e6fba68047a8382241c683de329c55c16dc23bc Mon Sep 17 00:00:00 2001
+From d554b8c56f1a71fd31a5d8d9f07e4e8f761cafb9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 20 Sep 2014 23:24:06 -0400
 Subject: [PATCH] Custom player list changes
@@ -313,52 +313,6 @@ index 8246bfd..6baae0c 100644
                          }
                      }
                  }
-diff --git a/src/main/java/org/spigotmc/ProtocolInjector.java b/src/main/java/org/spigotmc/ProtocolInjector.java
-index 0e30463..da81ae8 100644
---- a/src/main/java/org/spigotmc/ProtocolInjector.java
-+++ b/src/main/java/org/spigotmc/ProtocolInjector.java
-@@ -18,6 +18,7 @@ public class ProtocolInjector
-         {
-             addPacket( EnumProtocol.LOGIN, true, 0x3, PacketLoginCompression.class );
- 
-+            addPacket( EnumProtocol.PLAY, true, 0x47, PacketPlayOutPlayerListHeaderFooter.class );
-             addPacket( EnumProtocol.PLAY, true, 0x48, PacketPlayResourcePackSend.class );
-             addPacket( EnumProtocol.PLAY, false, 0x19, PacketPlayResourcePackStatus.class );
-         } catch ( NoSuchFieldException e )
-@@ -126,4 +127,33 @@ public class ProtocolInjector
- 
-         }
-     }
-+
-+    public static class PacketPlayOutPlayerListHeaderFooter extends Packet {
-+
-+        public String header, footer;
-+
-+        public PacketPlayOutPlayerListHeaderFooter(String header, String footer) {
-+            this.header = header;
-+            this.footer = footer;
-+        }
-+
-+        @Override
-+        public void a(PacketDataSerializer packetdataserializer) throws IOException
-+        {
-+
-+        }
-+
-+        @Override
-+        public void b(PacketDataSerializer packetdataserializer) throws IOException
-+        {
-+            packetdataserializer.a( this.header );
-+            packetdataserializer.a( this.footer );
-+        }
-+
-+        @Override
-+        public void handle(PacketListener packetlistener)
-+        {
-+
-+        }
-+    }
- }
 -- 
-1.8.5.2 (Apple Git-48)
+1.8.5.1
 

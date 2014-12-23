@@ -1,4 +1,4 @@
-From 5ed5f358307e33a58a377509852e92762f6e89c0 Mon Sep 17 00:00:00 2001
+From 692f33e1f2894b2c7b980d3df575d46168b4bd5e Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <thinkofdeath@spigotmc.org>
 Date: Mon, 1 Sep 2014 16:47:48 +1000
 Subject: [PATCH] Snapshot protocol
@@ -3721,10 +3721,10 @@ index 0000000..ff93cbe
 +}
 diff --git a/src/main/java/org/spigotmc/ProtocolInjector.java b/src/main/java/org/spigotmc/ProtocolInjector.java
 new file mode 100644
-index 0000000..3e005f8
+index 0000000..33ecb65
 --- /dev/null
 +++ b/src/main/java/org/spigotmc/ProtocolInjector.java
-@@ -0,0 +1,253 @@
+@@ -0,0 +1,368 @@
 +package org.spigotmc;
 +
 +import net.minecraft.server.ChatSerializer;
@@ -3747,6 +3747,7 @@ index 0000000..3e005f8
 +        {
 +            addPacket( EnumProtocol.LOGIN, true, 0x3, PacketLoginCompression.class );
 +
++            addPacket( EnumProtocol.PLAY, true, 0x44, PacketBorder.class );
 +            addPacket( EnumProtocol.PLAY, true, 0x45, PacketTitle.class );
 +            addPacket( EnumProtocol.PLAY, true, 0x47, PacketTabHeader.class );
 +            addPacket( EnumProtocol.PLAY, true, 0x48, PacketPlayResourcePackSend.class );
@@ -3975,6 +3976,120 @@ index 0000000..3e005f8
 +            TIMES,
 +            CLEAR,
 +            RESET
++        }
++    }
++
++    public static class PacketBorder extends Packet {
++        private Action action;
++
++        private double oldRadius;
++        private double newRadius;
++        private long speed;
++
++        private double x;
++        private double z;
++
++        private int boundary;
++        private int warningTime;
++        private int warningBlocks;
++
++        public static PacketBorder setSize(int newRadius) {
++            return new PacketBorder(Action.SET_SIZE, 0, newRadius, 0, 0, 0, 0, 0, 0);
++        }
++
++        public static PacketBorder lerpSize(int oldRadius, int newRadius, long speed) {
++            return new PacketBorder(Action.LERP_SIZE, oldRadius, newRadius, speed, 0, 0, 0, 0, 0);
++        }
++
++        public static PacketBorder setCenter(double x, double z) {
++            return new PacketBorder(Action.SET_CENTER, 0, 0, 0, x, z, 0, 0, 0);
++        }
++
++        public static PacketBorder initialize(double oldRadius, double newRadius, long speed, double x, double z, int boundary, int warningTime, int warningBlocks) {
++            return new PacketBorder(Action.INITIALIZE, oldRadius, newRadius, speed, x, z, boundary, warningTime, warningBlocks);
++        }
++
++        public static PacketBorder setWarningTime(int warningTime) {
++            return new PacketBorder(Action.SET_WARNING_TIME, 0, 0, 0, 0, 0, 0, warningTime, 0);
++        }
++
++        public static PacketBorder setWarningBlocks(int warningBlocks) {
++            return new PacketBorder(Action.SET_WARNING_BLOCKS, 0, 0, 0, 0, 0, 0, 0, warningBlocks);
++        }
++
++        private PacketBorder(Action action, double oldRadius, double newRadius, long speed, double x, double z, int boundary, int warningTime, int warningBlocks) {
++            this.action = action;
++            this.oldRadius = oldRadius;
++            this.newRadius = newRadius;
++            this.speed = speed;
++            this.x = x;
++            this.z = z;
++            this.boundary = boundary;
++            this.warningTime = warningTime;
++            this.warningBlocks = warningBlocks;
++        }
++
++        @Override
++        public void a(PacketDataSerializer packetdataserializer) {}
++
++        @Override
++        public void b(PacketDataSerializer packetdataserializer) throws IOException {
++            packetdataserializer.b(this.action.ordinal());
++            switch(action) {
++                case SET_SIZE:
++                    packetdataserializer.writeDouble(this.newRadius);
++                    break;
++                case LERP_SIZE:
++                    packetdataserializer.writeDouble(this.oldRadius);
++                    packetdataserializer.writeDouble(this.newRadius);
++                    writeVarLong(packetdataserializer, this.speed);
++                    break;
++                case SET_CENTER:
++                    packetdataserializer.writeDouble(this.x);
++                    packetdataserializer.writeDouble(this.z);
++                    break;
++                case INITIALIZE:
++                    packetdataserializer.writeDouble(this.x);
++                    packetdataserializer.writeDouble(this.z);
++                    packetdataserializer.writeDouble(this.oldRadius);
++                    packetdataserializer.writeDouble(this.newRadius);
++                    writeVarLong(packetdataserializer, this.speed);
++                    packetdataserializer.b(this.boundary);
++                    packetdataserializer.b(this.warningTime);
++                    packetdataserializer.b(this.warningBlocks);
++                    break;
++                case SET_WARNING_TIME:
++                    packetdataserializer.b(this.warningTime);
++                    break;
++                case SET_WARNING_BLOCKS:
++                    packetdataserializer.b(this.warningBlocks);
++                    break;
++            }
++        }
++
++        @Override
++        public void handle(PacketListener packetlistener) {}
++
++
++        private void writeVarLong(PacketDataSerializer packetdataserializer, long value) {
++            while (true) {
++                if ((value & 0xFFFFFF80) == 0L) {
++                    packetdataserializer.writeByte((int) value);
++                    return;
++                }
++
++                packetdataserializer.writeByte((int) (value & 0x7F) | 0x80);
++                value >>>= 7;
++            }
++        }
++
++        private static enum Action {
++            SET_SIZE,
++            LERP_SIZE,
++            SET_CENTER,
++            INITIALIZE,
++            SET_WARNING_TIME,
++            SET_WARNING_BLOCKS
 +        }
 +    }
 +}

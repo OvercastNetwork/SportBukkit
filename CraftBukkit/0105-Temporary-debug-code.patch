@@ -1,0 +1,40 @@
+From 161d0884dbe442b898e2f145e35bbea4819dfaf3 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 31 Jan 2015 00:21:34 -0500
+Subject: [PATCH] Temporary debug code
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index 45c4e12..e43a371 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -7,6 +7,7 @@ import java.util.Iterator;
+ import java.util.List;
+ import java.util.Set;
+ 
++import net.minecraft.util.com.google.common.base.Joiner;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+@@ -438,7 +439,17 @@ public class EntityTrackerEntry {
+                             ItemStack itemstack = ((EntityLiving) this.tracker).getEquipment(i);
+ 
+                             if (itemstack != null) {
+-                                entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityEquipment(this.tracker.getId(), i, itemstack));
++                                try {
++                                    entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityEquipment(this.tracker.getId(), i, itemstack));
++                                }
++                                catch(OutOfMemoryError ex) {
++                                    throw new OutOfMemoryError(
++                                        ex.getMessage() +
++                                        " player=" + entityplayer +
++                                        " item=" + itemstack +
++                                        " item.tag.keys=[" + Joiner.on(",").join(itemstack.tag.c()) + "]"
++                                    );
++                                }
+                             }
+                         }
+                     }
+-- 
+1.9.0
+

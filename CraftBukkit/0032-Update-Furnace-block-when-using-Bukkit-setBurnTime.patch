@@ -1,0 +1,50 @@
+From 2f3de300a25c76f6b61053bb2076e18e1d6b3360 Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 18:04:19 +0200
+Subject: [PATCH] Update Furnace block when using Bukkit setBurnTime
+
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityFurnace.java b/src/main/java/net/minecraft/server/TileEntityFurnace.java
+index 61bda72..3063b91 100644
+--- a/src/main/java/net/minecraft/server/TileEntityFurnace.java
++++ b/src/main/java/net/minecraft/server/TileEntityFurnace.java
+@@ -26,6 +26,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
+     private int lastTick = MinecraftServer.currentTick;
+     private int maxStack = MAX_STACK;
+     public List<HumanEntity> transaction = new java.util.ArrayList<HumanEntity>();
++    private boolean burningBlock;
+ 
+     public ItemStack[] getContents() {
+         return this.items;
+@@ -134,6 +135,7 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
+         }
+ 
+         this.burnTime = nbttagcompound.getShort("BurnTime");
++        this.burningBlock = this.isBurning();
+         this.cookTime = nbttagcompound.getShort("CookTime");
+         this.cookTimeTotal = nbttagcompound.getShort("CookTimeTotal");
+         this.ticksForCurrentFuel = fuelTime(this.items[1]);
+@@ -176,7 +178,6 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
+     }
+ 
+     public void c() {
+-        boolean flag = this.isBurning();
+         boolean flag1 = false;
+  
+         // CraftBukkit start - Use wall time instead of ticks for cooking
+@@ -249,9 +250,10 @@ public class TileEntityFurnace extends TileEntityContainer implements IUpdatePla
+                 */
+             }
+ 
+-            if (flag != this.isBurning()) {
++            if (burningBlock != this.isBurning()) {
+                 flag1 = true;
+-                BlockFurnace.a(this.isBurning(), this.world, this.position);
++                burningBlock = this.isBurning();
++                BlockFurnace.a(burningBlock, this.world, this.position);
+             }
+         }
+ 
+-- 
+1.9.0
+

@@ -9,7 +9,7 @@ function deploy {
     echo "  $1 deploying..."
     cd $target
 
-    if !(MAVEN_OPTS=-Xmx512M mvn deploy); then
+    if !(MAVEN_OPTS="$MAVEN_OPTS -Xmx1G" mvn deploy); then
         echo "  $1 failed to deploy"
         cd "$ORIG_PWD"
         exit 1

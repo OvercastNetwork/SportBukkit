@@ -1,0 +1,23 @@
+From 5cd06dd854bbe393a40451f78e0129efbc7d9754 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 17 Apr 2014 19:56:31 -0500
+Subject: [PATCH] Make ticksFlown in EntityFireworks public
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
+index 8357157..85781d8 100644
+--- a/src/main/java/net/minecraft/server/EntityFireworks.java
++++ b/src/main/java/net/minecraft/server/EntityFireworks.java
+@@ -2,7 +2,8 @@ package net.minecraft.server;
+ 
+ public class EntityFireworks extends Entity {
+ 
+-    private int ticksFlown;
++    // CraftBukkit - private -> public
++    public int ticksFlown;
+     public int expectedLifespan;
+ 
+     public EntityFireworks(World world) {
+-- 
+1.9.0
+

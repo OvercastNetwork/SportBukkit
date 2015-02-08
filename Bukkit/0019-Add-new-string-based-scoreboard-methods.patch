@@ -1,0 +1,60 @@
+From 95a44e47a55bc9c953af3d9d3aefbc1b5d7d2211 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 17 Apr 2014 21:47:58 -0500
+Subject: [PATCH] Add new string based scoreboard methods
+
+
+diff --git a/src/main/java/org/bukkit/scoreboard/Scoreboard.java b/src/main/java/org/bukkit/scoreboard/Scoreboard.java
+index d244a7f..6dc0b00 100644
+--- a/src/main/java/org/bukkit/scoreboard/Scoreboard.java
++++ b/src/main/java/org/bukkit/scoreboard/Scoreboard.java
+@@ -106,6 +106,8 @@ public interface Scoreboard {
+      */
+     Team getPlayerTeam(OfflinePlayer player) throws IllegalArgumentException;
+ 
++    Team getPlayerTeam(String entry) throws IllegalArgumentException;
++
+     /**
+      * Gets a Team by name on this Scoreboard
+      *
+diff --git a/src/main/java/org/bukkit/scoreboard/Team.java b/src/main/java/org/bukkit/scoreboard/Team.java
+index e6d1442..e81cc54 100644
+--- a/src/main/java/org/bukkit/scoreboard/Team.java
++++ b/src/main/java/org/bukkit/scoreboard/Team.java
+@@ -134,6 +134,8 @@ public interface Team {
+      */
+     Set<OfflinePlayer> getPlayers() throws IllegalStateException;
+ 
++    Set<String> getEntries() throws IllegalStateException;
++
+     /**
+      * Gets the size of the team
+      *
+@@ -161,6 +163,8 @@ public interface Team {
+      */
+     void addPlayer(OfflinePlayer player) throws IllegalStateException, IllegalArgumentException;
+ 
++    void add(String entry) throws IllegalStateException, IllegalArgumentException;
++
+     /**
+      * Removes the player from this team.
+      *
+@@ -171,6 +175,8 @@ public interface Team {
+      */
+     boolean removePlayer(OfflinePlayer player) throws IllegalStateException, IllegalArgumentException;
+ 
++    boolean remove(String entry) throws IllegalStateException, IllegalArgumentException;
++
+     /**
+      * Unregisters this team from the Scoreboard
+      *
+@@ -187,4 +193,6 @@ public interface Team {
+      * @throws IllegalStateException if this team has been unregistered
+      */
+     boolean hasPlayer(OfflinePlayer player) throws IllegalArgumentException, IllegalStateException;
++
++    boolean has(String entry) throws IllegalArgumentException, IllegalStateException;
+ }
+-- 
+1.9.0
+

@@ -1,0 +1,22 @@
+From 6fbd6310e656113aa726b74bd6e9cf488238dd6b Mon Sep 17 00:00:00 2001
+From: md_5 <md_5@live.com.au>
+Date: Thu, 4 Jul 2013 10:11:46 +1000
+Subject: [PATCH] Colour Console Messages
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index fe25804..57fafb0 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1043,7 +1043,7 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+     }
+ 
+     public void sendMessage(IChatBaseComponent ichatbasecomponent) {
+-        MinecraftServer.LOGGER.info(ichatbasecomponent.c());
++        this.console.sendMessage(ichatbasecomponent.c()); // CraftBukkit - we want coloured and pretty messages too!
+     }
+ 
+     public boolean a(int i, String s) {
+-- 
+1.9.0
+

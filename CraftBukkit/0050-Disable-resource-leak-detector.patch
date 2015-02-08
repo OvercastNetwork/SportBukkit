@@ -1,0 +1,24 @@
+From 85751a1e5e282f4c744aad3fd5141bcf936ef81e Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 30 Apr 2014 17:37:27 -0500
+Subject: [PATCH] Disable resource leak detector
+
+
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 40f5b92..4e2c09e 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -128,6 +128,10 @@ public abstract class MinecraftServer implements ICommandListener, Runnable, IAs
+         this.d = proxy;
+         MinecraftServer.k = this;
+         // this.universe = file; // CraftBukkit
++
++        // CraftBukkit - disable netty's resource leak detection
++        io.netty.util.ResourceLeakDetector.setEnabled(false);
++
+         this.q = new ServerConnection(this);
+         this.Z = new UserCache(this, file1);
+         this.p = this.h();
+-- 
+1.9.0
+

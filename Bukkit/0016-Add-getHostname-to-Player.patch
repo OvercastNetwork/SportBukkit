@@ -1,0 +1,29 @@
+From 1be707960b2e0e7c42dc6ab4036b789766dc2179 Mon Sep 17 00:00:00 2001
+From: Marcos Vives Del Sol <socram8888@gmail.com>
+Date: Sun, 28 Jul 2013 21:56:56 +0200
+Subject: [PATCH] Add getHostname to Player
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 10d37c6..29dcb5c 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1069,4 +1069,14 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * @see Player#setHealthScaled(boolean)
+      */
+     public double getHealthScale();
+-}
++
++    /**
++     * Gets the hostname (an IP or a DNS domain) and port the client has used
++     * to connect to this server. This is generated client-side, and it may
++     * return a blank string if the client didn't send it, or an invalid
++     * hostname, as the server doesn't check it.
++     *
++     * @return The hostname and port
++     */
++    public String getHostname();
++ }
+-- 
+1.9.0
+

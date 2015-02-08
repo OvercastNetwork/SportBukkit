@@ -1,0 +1,43 @@
+From 12b0bcc1b1b51f0130cb7dd09114cd4516b2c7c8 Mon Sep 17 00:00:00 2001
+From: Isaac Moore <rmsy@me.com>
+Date: Tue, 2 Sep 2014 20:36:42 -0500
+Subject: [PATCH] Add PlayerLocaleChangeEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index b8a0b5a..af37f61 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -986,7 +986,13 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     }
+ 
+     public void a(PacketPlayInSettings packetplayinsettings) {
++        // SportBukkit start - add PlayerLocaleChangeEvent
++        String oldLocale = this.locale;
+         this.locale = packetplayinsettings.a();
++        if (!this.locale.equals(oldLocale)) {
++            CraftEventFactory.callPlayerLocaleChangeEvent(this, oldLocale, this.locale);
++        }
++        // SportBukkit end
+         this.bP = packetplayinsettings.c();
+         this.bQ = packetplayinsettings.d();
+         this.getDataWatcher().watch(10, Byte.valueOf((byte) packetplayinsettings.e()));
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 960b1dc..bcb66b6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -908,4 +908,11 @@ public class CraftEventFactory {
+         entityHuman.world.getServer().getPluginManager().callEvent(event);
+         return (Cancellable) event;
+     }
++
++    public static PlayerLocaleChangeEvent callPlayerLocaleChangeEvent(EntityHuman who, String oldLocale, String newLocale) {
++        Player player = (Player) who.getBukkitEntity();
++        PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(player, oldLocale, newLocale);
++        Bukkit.getPluginManager().callEvent(event);
++        return event;
++    }
+ }
+-- 
+1.9.0
+

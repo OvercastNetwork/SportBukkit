@@ -1,0 +1,66 @@
+From 29c34ea60b3cac5e996fbc49d3c49396863d390b Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 15 May 2013 20:09:16 -0500
+Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
+ cancelling interact events working with fire
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
+index b2431d9..9370a04 100644
+--- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
++++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
+@@ -108,6 +108,13 @@ public class PlayerInteractManager {
+         if (event.isCancelled()) {
+             // Let the client know the block still exists
+             ((EntityPlayer) this.player).playerConnection.sendPacket(new PacketPlayOutBlockChange(this.world, blockposition));
++
++            // Check to see if fire was doused, if so, update the fire instead of the block the fire is on
++            org.bukkit.block.Block block = this.world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()).getRelative(org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(enumdirection));
++            if (block == Blocks.FIRE) {
++                blockposition = new BlockPosition(block.getX(), block.getY(), block.getZ());
++            }
++
+             // Update any tile entity data for this block
+             TileEntity tileentity = this.world.getTileEntity(blockposition);
+             if (tileentity != null) {
+@@ -117,7 +124,7 @@ public class PlayerInteractManager {
+         }
+         // CraftBukkit end
+         if (this.isCreative()) {
+-            if (!this.world.douseFire((EntityHuman) null, blockposition, enumdirection)) {
++            if (!this.world.douseFire(this.player, blockposition, enumdirection)) { // CraftBukkit - add this.player
+                 this.breakBlock(blockposition);
+             }
+ 
+@@ -162,7 +169,7 @@ public class PlayerInteractManager {
+                 block.attack(this.world, blockposition, this.player);
+                 f = block.getDamage(this.player, this.player.world, blockposition);
+                 // Allow fire punching to be blocked
+-                this.world.douseFire((EntityHuman) null, blockposition, enumdirection);
++                this.world.douseFire(this.player, blockposition, enumdirection); // CraftBukkit - add this.player
+             }
+ 
+             if (event.useItemInHand() == Event.Result.DENY) {
+diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
+index f82420b..8135412 100644
+--- a/src/main/java/net/minecraft/server/World.java
++++ b/src/main/java/net/minecraft/server/World.java
+@@ -1662,8 +1662,13 @@ public abstract class World implements IBlockAccess {
+     public boolean douseFire(EntityHuman entityhuman, BlockPosition blockposition, EnumDirection enumdirection) {
+         blockposition = blockposition.shift(enumdirection);
+         if (this.getType(blockposition).getBlock() == Blocks.FIRE) {
+-            this.a(entityhuman, 1004, blockposition, 0);
+-            this.setAir(blockposition);
++            // CraftBukkit start
++            if (entityhuman instanceof EntityPlayer) {
++                if (((EntityPlayer) entityhuman).playerInteractManager.breakBlock(blockposition)) {
++                    this.triggerEffect(1004, blockposition, 0);
++                }
++            }
++            // CraftBukkit end
+             return true;
+         } else {
+             return false;
+-- 
+1.9.0
+

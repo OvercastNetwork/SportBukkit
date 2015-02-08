@@ -1,0 +1,53 @@
+From ae113f4bcb5b9e539041a30f082b6d3382294234 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Fri, 17 May 2013 20:44:04 -0500
+Subject: [PATCH] Add PlayerPickupExperienceEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
+index 1f7790d..c87b701 100644
+--- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
++++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
+@@ -158,10 +158,17 @@ public class EntityExperienceOrb extends Entity {
+         if (!this.world.isStatic) {
+             if (this.c == 0 && entityhuman.bn == 0) {
+                 entityhuman.bn = 2;
+-                this.world.makeSound(entityhuman, "random.orb", 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
+-                entityhuman.receive(this, 1);
+-                entityhuman.giveExp(CraftEventFactory.callPlayerExpChangeEvent(entityhuman, this.value).getAmount()); // CraftBukkit - this.value -> event.getAmount()
+-                this.die();
++
++                // CraftBukkit start
++                org.bukkit.event.player.PlayerPickupExperienceEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerPickupExperienceEvent((EntityPlayer) entityhuman, this);
++
++                if(!event.isCancelled()) {
++                    this.world.makeSound(entityhuman, "random.orb", 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
++                    entityhuman.receive(this, 1);
++                    entityhuman.giveExp(CraftEventFactory.callPlayerExpChangeEvent(entityhuman, this.value).getAmount()); // CraftBukkit - this.value -> event.getAmount()
++                    this.die();
++                }
++                // CraftBukkit end
+             }
+ 
+         }
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 60e2a4f..960b1dc 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -855,6 +855,13 @@ public class CraftEventFactory {
+         return event;
+     }
+ 
++    public static PlayerPickupExperienceEvent callPlayerPickupExperienceEvent(EntityPlayer player, net.minecraft.server.EntityExperienceOrb orb) {
++        World world = player.world;
++        PlayerPickupExperienceEvent event = new PlayerPickupExperienceEvent(player.getBukkitEntity(), new org.bukkit.craftbukkit.entity.CraftExperienceOrb(world.getServer(), orb));
++        world.getServer().getPluginManager().callEvent(event);
++        return event;
++    }
++
+     public static Cancellable handleStatisticsIncrease(EntityHuman entityHuman, net.minecraft.server.Statistic statistic, int current, int incrementation) {
+         Player player = ((EntityPlayer) entityHuman).getBukkitEntity();
+         Event event;
+-- 
+1.9.0
+

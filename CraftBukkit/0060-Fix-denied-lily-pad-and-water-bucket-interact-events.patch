@@ -1,0 +1,82 @@
+From 7f06257617dd8b96ded10e39ec4b5f49c644475c Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Wed, 9 Jul 2014 21:35:52 -0500
+Subject: [PATCH] Fix denied lily pad and water bucket interact events not
+ displaying the denied result to the client
+
+
+diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
+index 54659fd..6787029 100644
+--- a/src/main/java/net/minecraft/server/Item.java
++++ b/src/main/java/net/minecraft/server/Item.java
+@@ -205,7 +205,13 @@ public class Item {
+         return this.getMaxStackSize() == 1 && this.usesDurability();
+     }
+ 
++    // CraftBukkit start - make method public and static
+     protected MovingObjectPosition a(World world, EntityHuman entityhuman, boolean flag) {
++        return rayTrace(world, entityhuman, flag);
++    }
++
++    public static MovingObjectPosition rayTrace(World world, EntityHuman entityhuman, boolean flag) {
++        // CraftBukkit end
+         float f = entityhuman.lastPitch + (entityhuman.pitch - entityhuman.lastPitch);
+         float f1 = entityhuman.lastYaw + (entityhuman.yaw - entityhuman.lastYaw);
+         double d0 = entityhuman.lastX + (entityhuman.locX - entityhuman.lastX);
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index f25223c..8ab7cb6 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -659,12 +659,23 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+         BlockPosition blockposition = packetplayinblockplace.a();
+         EnumDirection enumdirection = EnumDirection.fromType1(packetplayinblockplace.getFace());
+ 
++        // CraftBukkit - water lilies and empty buckets fire interact events
++        // if the interact event is denied, we need to always make sure to update the player inventory
++        // we also need to update the block they attempted to click
++        boolean lily = false;
++        boolean special = false;
++        // CraftBukkit end
++
+         this.player.z();
+         if (packetplayinblockplace.getFace() == 255) {
+             if (itemstack == null) {
+                 return;
+             }
+ 
++            // CraftBukkit - we can assign these variables once we know the itemstack is not null
++            lily = itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY);
++            special = lily || itemstack.getItem() == Items.BUCKET;
++
+             // CraftBukkit start
+             int itemstackAmount = itemstack.count;
+             
+@@ -702,12 +713,24 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+ 
+             if (!cancelled) {
+                 this.player.playerInteractManager.useItem(this.player, this.player.world, itemstack);
++            } else if (special) {
++                MovingObjectPosition movingobjectposition1 = Item.rayTrace(this.player.world, this.player, true);
++
++                if (movingobjectposition1 != null) {
++                    flag = true;
++                    blockposition = movingobjectposition1.a();
++                }
++
++                // for lilies we need to update the block above the block we clicked
++                if (lily) {
++                    blockposition = blockposition.up(1);
++                }
+             }
+ 
+             // CraftBukkit - notch decrements the counter by 1 in the above method with food,
+             // snowballs and so forth, but he does it in a place that doesn't cause the
+             // inventory update packet to get sent
+-            always = (itemstack.count != itemstackAmount) || itemstack.getItem() == Item.getItemOf(Blocks.WATERLILY);
++            always = (itemstack.count != itemstackAmount) || special;
+             // CraftBukkit end
+         } else if (blockposition.getY() >= this.minecraftServer.getMaxBuildHeight() - 1 && (enumdirection == EnumDirection.UP || blockposition.getY() >= this.minecraftServer.getMaxBuildHeight())) {
+             ChatMessage chatmessage = new ChatMessage("build.tooHigh", new Object[] { Integer.valueOf(this.minecraftServer.getMaxBuildHeight())});
+-- 
+1.9.0
+

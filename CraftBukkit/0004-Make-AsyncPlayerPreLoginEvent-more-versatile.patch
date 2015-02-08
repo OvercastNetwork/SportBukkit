@@ -1,15 +1,15 @@
-From a0b70f9f3090ce497b012b39dbb7e4e5ea4670ab Mon Sep 17 00:00:00 2001
+From d6f47994189a31f223747b32d9a25c3b64937a3c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 8f982f1..c7bf4ba 100644
+index ba2b912..53447ae 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
-@@ -59,10 +59,19 @@ public class LoginListener implements PacketLoginInListener {
-         }
+@@ -60,10 +60,19 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+ 
      }
  
 +    // CraftBukkit - add method
@@ -19,7 +19,7 @@ index 8f982f1..c7bf4ba 100644
 +        this.i = new GameProfile(uuid, this.i.getName());
 +    }
 +
-     public void c() {
+     public void b() {
 +        /* CraftBukkit - moved to initUUID
          if (!this.i.isComplete()) {
              this.i = this.a(this.i);
@@ -27,53 +27,53 @@ index 8f982f1..c7bf4ba 100644
 +        */
  
          // CraftBukkit start - fire PlayerLoginEvent
-         EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, this.hostname);
-@@ -97,7 +106,8 @@ public class LoginListener implements PacketLoginInListener {
+         EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, hostname);
+@@ -98,7 +107,8 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
              this.g = EnumProtocolState.KEY;
-             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.K().getPublic(), this.e), new GenericFutureListener[0]);
+             this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.P().getPublic(), this.e));
          } else {
 -            this.g = EnumProtocolState.READY_TO_ACCEPT;
 +            // CraftBukkit - call async login event no matter what
 +            (new ThreadPlayerLookupUUID(this, "User Authenticator #" + b.incrementAndGet())).start();
          }
-     }
  
+     }
 diff --git a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
-index 6b91be7..0e42005 100644
+index bbceef0..dab63e7 100644
 --- a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
 +++ b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
-@@ -21,25 +21,45 @@ class ThreadPlayerLookupUUID extends Thread {
+@@ -20,25 +20,45 @@ class ThreadPlayerLookupUUID extends Thread {
          this.a = loginlistener;
      }
  
 +    // CraftBukkit - rework entire method
      public void run() {
-         GameProfile gameprofile = LoginListener.a(this.a);
+         GameProfile gameprofile = LoginListener.b(this.a);
 +        String errorMessage = null;
  
 -        try {
--            String s = (new BigInteger(MinecraftEncryption.a(LoginListener.b(this.a), LoginListener.c(this.a).K().getPublic(), LoginListener.d(this.a)))).toString(16);
+-            String s = (new BigInteger(MinecraftEncryption.a(LoginListener.c(this.a), LoginListener.a(this.a).P().getPublic(), LoginListener.d(this.a)))).toString(16);
 -
--            LoginListener.a(this.a, LoginListener.c(this.a).av().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
--            if (LoginListener.a(this.a) != null) {
+-            LoginListener.a(this.a, LoginListener.a(this.a).aB().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
+-            if (LoginListener.b(this.a) != null) {
 -                // CraftBukkit start - fire PlayerPreLoginEvent
-+        if(LoginListener.c(this.a).getOnlineMode()) {
++        if(LoginListener.a(this.a).getOnlineMode()) {
 +            try {
-+                String s = (new BigInteger(MinecraftEncryption.a(LoginListener.b(this.a), LoginListener.c(this.a).K().getPublic(), LoginListener.d(this.a)))).toString(16);
-+                LoginListener.a(this.a, LoginListener.c(this.a).av().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
-                 if (!this.a.networkManager.isConnected()) {
++                String s = (new BigInteger(MinecraftEncryption.a(LoginListener.c(this.a), LoginListener.a(this.a).P().getPublic(), LoginListener.d(this.a)))).toString(16);
++                LoginListener.a(this.a, LoginListener.a(this.a).aB().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s));
+                 if (!this.a.networkManager.g()) {
                      return;
                  }
-+                if (LoginListener.a(this.a) == null) {
++                if (LoginListener.b(this.a) == null) {
 +                    errorMessage = "Failed to verify username: invalid session";
-+                    LoginListener.e().error("Username \'" + LoginListener.a(this.a).getName() + "\' tried to join with an invalid session");
++                    LoginListener.e().error("Username \'" + LoginListener.b(this.a).getName() + "\' tried to join with an invalid session");
 +                }
 +            } catch (AuthenticationUnavailableException authenticationunavailableexception) {
 +                errorMessage = "Authentication servers are down. Please try again later, sorry!";
 +                LoginListener.e().error("Couldn\'t verify username because servers are unavailable");
 +            } catch (Exception exception) {
 +                errorMessage = "Failed to verify username: internal server error";
-+                LoginListener.c(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
++                LoginListener.a(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
 +            }
 +        } else {
 +            this.a.initUUID();
@@ -82,10 +82,10 @@ index 6b91be7..0e42005 100644
 +        try {
 +            // try and preserve diff file
 +            if(true) {
-                 String playerName = LoginListener.a(this.a).getName();
+                 String playerName = LoginListener.b(this.a).getName();
                  java.net.InetAddress address = ((java.net.InetSocketAddress) a.networkManager.getSocketAddress()).getAddress();
-                 java.util.UUID uniqueId = LoginListener.a(this.a).getId();
-                 final org.bukkit.craftbukkit.CraftServer server = LoginListener.c(this.a).server;
+                 java.util.UUID uniqueId = LoginListener.b(this.a).getId();
+                 final org.bukkit.craftbukkit.CraftServer server = LoginListener.a(this.a).server;
  
                  AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
 +                if (errorMessage != null) {
@@ -94,43 +94,43 @@ index 6b91be7..0e42005 100644
                  server.getPluginManager().callEvent(asyncEvent);
  
                  if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
-@@ -65,32 +85,14 @@ class ThreadPlayerLookupUUID extends Thread {
+@@ -64,33 +84,14 @@ class ThreadPlayerLookupUUID extends Thread {
                          return;
                      }
                  }
 -                // CraftBukkit end
--
--                LoginListener.e().info("UUID of player " + LoginListener.a(this.a).getName() + " is " + LoginListener.a(this.a).getId());
+-        
+-                LoginListener.e().info("UUID of player " + LoginListener.b(this.a).getName() + " is " + LoginListener.b(this.a).getId());
 -                LoginListener.a(this.a, EnumProtocolState.READY_TO_ACCEPT);
--            } else if (LoginListener.c(this.a).N()) {
+-            } else if (LoginListener.a(this.a).S()) {
 -                LoginListener.e().warn("Failed to verify username but will let them in anyway!");
 -                LoginListener.a(this.a, this.a.a(gameprofile));
 -                LoginListener.a(this.a, EnumProtocolState.READY_TO_ACCEPT);
 -            } else {
 -                this.a.disconnect("Failed to verify username!");
--                LoginListener.e().error("Username \'" + LoginListener.a(this.a).getName() + "\' tried to join with an invalid session");
-             }
+-                LoginListener.e().error("Username \'" + LoginListener.b(this.a).getName() + "\' tried to join with an invalid session");
+-            }
 -        } catch (AuthenticationUnavailableException authenticationunavailableexception) {
--            if (LoginListener.c(this.a).N()) {
+-            if (LoginListener.a(this.a).S()) {
 -                LoginListener.e().warn("Authentication servers are down but will let them in anyway!");
 -                LoginListener.a(this.a, this.a.a(gameprofile));
 -                LoginListener.a(this.a, EnumProtocolState.READY_TO_ACCEPT);
 -            } else {
 -                this.a.disconnect("Authentication servers are down. Please try again later, sorry!");
 -                LoginListener.e().error("Couldn\'t verify username because servers are unavailable");
--            }
+             }
 -            // CraftBukkit start - catch all exceptions
          } catch (Exception exception) {
              this.a.disconnect("Failed to verify username!");
-             LoginListener.c(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
+             LoginListener.a(this.a).server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + LoginListener.a(this.a).getName(), exception);
 -            // CraftBukkit end
 +            return;
          }
-+
-+        LoginListener.e().info("UUID of player " + LoginListener.a(this.a).getName() + " is " + LoginListener.a(this.a).getId());
+ 
++        LoginListener.e().info("UUID of player " + LoginListener.b(this.a).getName() + " is " + LoginListener.b(this.a).getId());
 +        LoginListener.a(this.a, EnumProtocolState.READY_TO_ACCEPT);
      }
  }
 -- 
-1.8.5.1
+1.9.0
 

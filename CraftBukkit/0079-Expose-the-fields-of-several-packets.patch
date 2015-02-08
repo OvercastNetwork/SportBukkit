@@ -1,0 +1,69 @@
+From 35df87b91a006c5b065051cc567cfdd2a48414a9 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 12 Feb 2015 04:28:58 -0500
+Subject: [PATCH] Expose the fields of several packets
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java
+index 8fc7414..0416375 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityTeleport.java
+@@ -2,13 +2,15 @@ package net.minecraft.server;
+ 
+ public class PacketPlayOutEntityTeleport implements Packet {
+ 
+-    private int a;
+-    private int b;
+-    private int c;
+-    private int d;
+-    private byte e;
+-    private byte f;
+-    private boolean g;
++    // CraftBukkit start - make public
++    public int a;
++    public int b;
++    public int c;
++    public int d;
++    public byte e;
++    public byte f;
++    public boolean g;
++    // CraftBukkit end
+ 
+     public PacketPlayOutEntityTeleport() {}
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+index 6f42969..910d518 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+@@ -5,16 +5,18 @@ import java.util.UUID;
+ 
+ public class PacketPlayOutNamedEntitySpawn implements Packet {
+ 
+-    private int a;
+-    private UUID b;
+-    private int c;
+-    private int d;
+-    private int e;
+-    private byte f;
+-    private byte g;
+-    private int h;
+-    private DataWatcher i;
+-    private List j;
++    // CraftBukkit start - make public
++    public int a;
++    public UUID b;
++    public int c;
++    public int d;
++    public int e;
++    public byte f;
++    public byte g;
++    public int h;
++    public DataWatcher i;
++    public List j;
++    // CraftBukkit end
+ 
+     public PacketPlayOutNamedEntitySpawn() {}
+ 
+-- 
+1.9.0
+

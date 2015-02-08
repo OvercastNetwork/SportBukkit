@@ -1,0 +1,37 @@
+From 01b93441ae1cfed2e48e86f3880b7ac08711f3ec Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Fri, 1 Aug 2014 12:51:06 -0500
+Subject: [PATCH] Simplify junk login messages
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index e7d9f96..c1b6803 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -175,8 +175,8 @@ public abstract class PlayerList {
+             }
+         }
+ 
+-        // CraftBukkit - Moved from above, added world
+-        PlayerList.h.info(entityplayer.getName() + "[" + s1 + "] logged in with entity id " + entityplayer.getId() + " at ([" + entityplayer.world.worldData.getName() + "] " + entityplayer.locX + ", " + entityplayer.locY + ", " + entityplayer.locZ + ")");
++        // CraftBukkit - Moved from above, added world, shortened decimals
++        PlayerList.h.info(entityplayer.getName() + "[" + s1 + "] logged in with entity id " + entityplayer.getId() + " at ([" + entityplayer.world.worldData.getName() + "] " + String.format("%.1f", entityplayer.locX) + ", " + String.format("%.1f", entityplayer.locY) + ", " + String.format("%.1f", entityplayer.locZ) + ")");
+     }
+ 
+     public void sendScoreboard(ScoreboardServer scoreboardserver, EntityPlayer entityplayer) {
+diff --git a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
+index dab63e7..9896e03 100644
+--- a/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
++++ b/src/main/java/net/minecraft/server/ThreadPlayerLookupUUID.java
+@@ -91,7 +91,7 @@ class ThreadPlayerLookupUUID extends Thread {
+             return;
+         }
+ 
+-        LoginListener.e().info("UUID of player " + LoginListener.b(this.a).getName() + " is " + LoginListener.b(this.a).getId());
++        // LoginListener.e().info("UUID of player " + LoginListener.b(this.a).getName() + " is " + LoginListener.b(this.a).getId()); CraftBukkit - remove debug
+         LoginListener.a(this.a, EnumProtocolState.READY_TO_ACCEPT);
+     }
+ }
+-- 
+1.9.0
+

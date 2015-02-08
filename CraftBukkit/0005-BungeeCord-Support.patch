@@ -1,4 +1,4 @@
-From cdd6742a4bfc85794df8d0aebc5cb7281ad79af0 Mon Sep 17 00:00:00 2001
+From 1cfd436aa7e253f4b275a4514068d3c8d040062b Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,10 +7,10 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 52bc69b..954a9c2 100644
+index f8bac48..a01e3aa 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
-@@ -73,6 +73,25 @@ public class HandshakeListener implements PacketHandshakingInListener {
+@@ -71,6 +71,25 @@ public class HandshakeListener implements PacketHandshakingInListener {
                  this.b.close(chatcomponenttext);
              } else {
                  this.b.a((PacketListener) (new LoginListener(this.a, this.b)));
@@ -19,15 +19,15 @@ index 52bc69b..954a9c2 100644
 +                    String[] split = packethandshakinginsetprotocol.b.split("\00");
 +                    if (split.length >= 3) {
 +                        packethandshakinginsetprotocol.b = split[0];
-+                        b.n = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) b.getSocketAddress()).getPort());
-+                        b.spoofedUUID = net.minecraft.util.com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
++                        b.j = new java.net.InetSocketAddress(split[1], ((java.net.InetSocketAddress) b.getSocketAddress()).getPort());
++                        b.spoofedUUID = com.mojang.util.UUIDTypeAdapter.fromString(split[2]);
 +
 +                        if(split.length == 4) {
-+                            b.spoofedProfile = this.a.server.gson.fromJson(split[3], net.minecraft.util.com.mojang.authlib.properties.Property[].class);
++                            b.spoofedProfile = this.a.server.gson.fromJson(split[3], com.mojang.authlib.properties.Property[].class);
 +                        }
 +                    } else {
 +                        chatcomponenttext = new ChatComponentText("If you wish to use IP forwarding, please enable it in your BungeeCord config as well!");
-+                        this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext), new GenericFutureListener[0]);
++                        this.b.handle(new PacketLoginOutDisconnect(chatcomponenttext));
 +                        this.b.close(chatcomponenttext);
 +                        return;
 +                    }
@@ -37,10 +37,10 @@ index 52bc69b..954a9c2 100644
              }
              break;
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index c7bf4ba..0f6682e 100644
+index 53447ae..a1ca379 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
-@@ -61,9 +61,20 @@ public class LoginListener implements PacketLoginInListener {
+@@ -62,9 +62,20 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
  
      // CraftBukkit - add method
      public void initUUID() {
@@ -55,57 +55,57 @@ index c7bf4ba..0f6682e 100644
          this.i = new GameProfile(uuid, this.i.getName());
 +
 +        if (networkManager.spoofedProfile != null) {
-+            for (net.minecraft.util.com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
++            for (com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
 +                this.i.getProperties().put(property.getName(), property);
 +            }
 +        }
      }
  
-     public void c() {
+     public void b() {
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index 1b080c7..8ea7a2b 100644
+index 33166a3..6180363 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -37,7 +37,11 @@ public class NetworkManager extends SimpleChannelInboundHandler {
-     private final Queue k = Queues.newConcurrentLinkedQueue();
-     private final Queue l = Queues.newConcurrentLinkedQueue();
-     private Channel m;
--    private SocketAddress n;
+@@ -31,7 +31,11 @@ public class NetworkManager extends SimpleChannelInboundHandler {
+     private final EnumProtocolDirection g;
+     private final Queue h = Queues.newConcurrentLinkedQueue();
+     private Channel i;
+-    private SocketAddress j;
 +    // CraftBukkit Start
-+    public SocketAddress n;
++    public SocketAddress j;
 +    public java.util.UUID spoofedUUID;
-+    public net.minecraft.util.com.mojang.authlib.properties.Property[] spoofedProfile;
++    public com.mojang.authlib.properties.Property[] spoofedProfile;
 +    // CraftBukkit End
-     private PacketListener o;
-     private EnumProtocol p;
-     private IChatBaseComponent q;
+     private PacketListener k;
+     private IChatBaseComponent l;
+     private boolean m;
 diff --git a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
-index 16d4765..d3751d6 100644
+index 97920b0..a6de986 100644
 --- a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
 +++ b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
-@@ -13,7 +13,7 @@ public class PacketHandshakingInSetProtocol extends Packet {
+@@ -11,7 +11,7 @@ public class PacketHandshakingInSetProtocol implements Packet {
  
-     public void a(PacketDataSerializer packetdataserializer) throws IOException { // CraftBukkit - added throws
-         this.a = packetdataserializer.a();
+     public void a(PacketDataSerializer packetdataserializer) {
+         this.a = packetdataserializer.e();
 -        this.b = packetdataserializer.c(255);
 +        this.b = packetdataserializer.c(Short.MAX_VALUE); // CraftBukkit - needed to read long/fake host
          this.c = packetdataserializer.readUnsignedShort();
-         this.d = EnumProtocol.a(packetdataserializer.a());
+         this.d = EnumProtocol.a(packetdataserializer.e());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a666131..5df795f 100644
+index 1f936b0..2104df3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -231,6 +231,8 @@ public final class CraftServer implements Server {
-     private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
+@@ -162,6 +162,8 @@ public final class CraftServer implements Server {
      private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
      private final List<CraftPlayer> playerView;
+     public int reloadCount;
 +    public boolean bungee = false;
 +    public static final com.google.gson.Gson gson = new com.google.gson.Gson();
  
      private final class BooleanWrapper {
          private boolean value = true;
-@@ -304,6 +306,7 @@ public final class CraftServer implements Server {
+@@ -235,6 +237,7 @@ public final class CraftServer implements Server {
          }
  
          saveCommandsConfig();
@@ -114,7 +114,7 @@ index a666131..5df795f 100644
          ((SimplePluginManager) pluginManager).useTimings(configuration.getBoolean("settings.plugin-profiling"));
          monsterSpawn = configuration.getInt("spawn-limits.monsters");
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index 129ac34..5236ec0 100644
+index a6c1178..78201d3 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
 @@ -25,6 +25,7 @@ settings:
@@ -126,5 +126,5 @@ index 129ac34..5236ec0 100644
      monsters: 70
      animals: 15
 -- 
-1.8.5.2 (Apple Git-48)
+1.9.0
 

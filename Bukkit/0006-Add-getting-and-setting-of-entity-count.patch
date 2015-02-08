@@ -1,14 +1,14 @@
-From f28e8211c94dfa737f0e21c96c360c9869928c76 Mon Sep 17 00:00:00 2001
+From b7c8909f9e0c9cac40d89b39f532238ec4c72a7d Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 1eaf92d..6116ff4 100644
+index 2c43d9e..433d624 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -706,6 +706,20 @@ public final class Bukkit {
+@@ -1047,6 +1047,20 @@ public final class Bukkit {
      }
  
      /**
@@ -26,11 +26,11 @@ index 1eaf92d..6116ff4 100644
 +    }
 +
 +    /**
-      * @see Server#getServerIcon()
-      */
-     public static CachedServerIcon getServerIcon() {
+      * Gets an instance of the server's default server-icon.
+      *
+      * @return the default server-icon; null values may be used by the
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e14e9f1..1fffc38 100644
+index ab6d047..ee707ac 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -855,6 +855,20 @@ public interface Server extends PluginMessageRecipient {
@@ -55,5 +55,5 @@ index e14e9f1..1fffc38 100644
       *
       * @return the default server-icon; null values may be used by the
 -- 
-1.8.5.2 (Apple Git-48)
+1.9.0
 

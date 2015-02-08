@@ -1,0 +1,133 @@
+From 29734075504829a02084f281a6002d685cedd559 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Thu, 17 Apr 2014 19:52:45 -0500
+Subject: [PATCH] Make a bunch of packet fields public
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
+index 8560c78..93d61ea 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
+@@ -2,9 +2,10 @@ package net.minecraft.server;
+ 
+ public class PacketPlayOutAttachEntity implements Packet {
+ 
+-    private int a;
+-    private int b;
+-    private int c;
++    // CraftBukkit - private -> public
++    public int a;
++    public int b;
++    public int c;
+ 
+     public PacketPlayOutAttachEntity() {}
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java
+index c04f007..d4284e0 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java
+@@ -2,8 +2,9 @@ package net.minecraft.server;
+ 
+ public class PacketPlayOutEntityHeadRotation implements Packet {
+ 
+-    private int a;
+-    private byte b;
++    // CraftBukkit - private -> public
++    public int a;
++    public byte b;
+ 
+     public PacketPlayOutEntityHeadRotation() {}
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
+index 176b3f1..1110e03 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntity.java
+@@ -2,17 +2,18 @@ package net.minecraft.server;
+ 
+ public class PacketPlayOutSpawnEntity implements Packet {
+ 
+-    private int a;
+-    private int b;
+-    private int c;
+-    private int d;
+-    private int e;
+-    private int f;
+-    private int g;
+-    private int h;
+-    private int i;
+-    private int j;
+-    private int k;
++    // CraftBukkit - private -> public
++    public int a;
++    public int b;
++    public int c;
++    public int d;
++    public int e;
++    public int f;
++    public int g;
++    public int h;
++    public int i;
++    public int j;
++    public int k;
+ 
+     public PacketPlayOutSpawnEntity() {}
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
+index c6b8a6d..80815f9 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
+@@ -4,19 +4,20 @@ import java.util.List;
+ 
+ public class PacketPlayOutSpawnEntityLiving implements Packet {
+ 
+-    private int a;
+-    private int b;
+-    private int c;
+-    private int d;
+-    private int e;
+-    private int f;
+-    private int g;
+-    private int h;
+-    private byte i;
+-    private byte j;
+-    private byte k;
+-    private DataWatcher l;
+-    private List m;
++    // CraftBukkit - private -> public
++    public int a;
++    public int b;
++    public int c;
++    public int d;
++    public int e;
++    public int f;
++    public int g;
++    public int h;
++    public byte i;
++    public byte j;
++    public byte k;
++    public DataWatcher l;
++    public List m;
+ 
+     public PacketPlayOutSpawnEntityLiving() {}
+ 
+@@ -64,7 +65,7 @@ public class PacketPlayOutSpawnEntityLiving implements Packet {
+         this.l = entityliving.getDataWatcher();
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) {
++    public void a(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - throws
+         this.a = packetdataserializer.e();
+         this.b = packetdataserializer.readByte() & 255;
+         this.c = packetdataserializer.readInt();
+@@ -79,7 +80,7 @@ public class PacketPlayOutSpawnEntityLiving implements Packet {
+         this.m = DataWatcher.b(packetdataserializer);
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) {
++    public void b(PacketDataSerializer packetdataserializer) throws java.io.IOException { // CraftBukkit - throws
+         packetdataserializer.b(this.a);
+         packetdataserializer.writeByte(this.b & 255);
+         packetdataserializer.writeInt(this.c);
+-- 
+1.9.0
+

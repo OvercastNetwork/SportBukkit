@@ -1,0 +1,37 @@
+From 1b9b56db9ecbc6d39b74eaa4f57e98bde33f8ec4 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 7 Sep 2014 21:17:24 -0400
+Subject: [PATCH] Keep players in the player list while respawning
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index c1b6803..e4d7f36 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -501,6 +501,7 @@ public abstract class PlayerList {
+         BlockPosition blockposition1;
+ 
+         // CraftBukkit start - fire PlayerRespawnEvent
++        this.players.add(entityplayer1); // Add player back to this list earlier than vanilla does
+         if (location == null) {
+             boolean isBedSpawn = false;
+             CraftWorld cworld = (CraftWorld) this.server.server.getWorld(entityplayer.spawnWorld);
+@@ -555,10 +556,13 @@ public abstract class PlayerList {
+         entityplayer1.playerConnection.sendPacket(new PacketPlayOutSpawnPosition(blockposition1));
+         entityplayer1.playerConnection.sendPacket(new PacketPlayOutExperience(entityplayer1.exp, entityplayer1.expTotal, entityplayer1.expLevel));
+         this.b(entityplayer1, worldserver);
+-        if (!entityplayer.playerConnection.isDisconnected()) {
++        // CraftBukkit start
++        // Don't re-add player to player list if disconnected
++        if (entityplayer.playerConnection.isDisconnected()) {
++            this.players.remove(entityplayer1);
++        } else {
+             worldserver.getPlayerChunkMap().addPlayer(entityplayer1);
+             worldserver.addEntity(entityplayer1);
+-            this.players.add(entityplayer1);
+             this.f.put(entityplayer1.getUniqueID(), entityplayer1);
+         }
+         // Added from changeDimension
+-- 
+1.9.0
+

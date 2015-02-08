@@ -1,0 +1,64 @@
+From e490de2d7d7077bea7d70ec3e6e32e24f650726c Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 10 Dec 2013 23:16:10 -0600
+Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
+
+
+diff --git a/pom.xml b/pom.xml
+index 853fab1..6fcb2df 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -3,20 +3,13 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+ 
+-    <parent>
+-        <groupId>org.sonatype.oss</groupId>
+-        <artifactId>oss-parent</artifactId>
+-        <version>9</version>
+-    </parent>
+-
+-    <groupId>org.bukkit</groupId>
+-    <artifactId>bukkit</artifactId>
++    <groupId>tc.oc</groupId>
++    <artifactId>sportbukkit-api</artifactId>
+     <version>1.8-R0.1-SNAPSHOT</version>
+     <packaging>jar</packaging>
+ 
+-    <name>Bukkit</name>
+-    <url>http://www.bukkit.org/</url>
+-    <description>A plugin API for Minecraft servers.</description>
++    <name>SportBukkit API</name>
++    <url>https://oc.tc</url>
+ 
+     <properties>
+         <maven.compiler.source>1.6</maven.compiler.source>
+@@ -24,15 +17,20 @@
+         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     </properties>
+ 
+-    <!-- just until we get deployment to central approved -->
++    <scm>
++        <developerConnection>scm:git:git@github.com:Bukkit/Bukkit.git</developerConnection>
++        <connection>scm:git:git://github.com/Bukkit/Bukkit.git</connection>
++        <url>https://github.com/Bukkit/Bukkit/tree/master/</url>
++    </scm>
++
+     <distributionManagement>
+         <repository>
+-            <id>spigotmc-releases</id>
+-            <url>https://hub.spigotmc.org/nexus/content/repositories/releases/</url>
++            <id>overcast-deployment</id>
++            <url>https://repo.oc.tc/content/repositories/releases</url>
+         </repository>
+         <snapshotRepository>
+-            <id>spigotmc-releases</id>
+-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
++            <id>overcast-deployment</id>
++            <url>https://repo.oc.tc/content/repositories/snapshots</url>
+         </snapshotRepository>
+     </distributionManagement>
+ 
+-- 
+1.9.0
+

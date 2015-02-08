@@ -1,6 +1,3 @@
 [submodule "base/Bukkit"]
 	path = base/Bukkit
-	url = https://github.com/Bukkit/Bukkit.git
-[submodule "base/CraftBukkit"]
-	path = base/CraftBukkit
-	url = https://github.com/OvercastNetwork/CraftBukkit.git
+	url = https://hub.spigotmc.org/stash/scm/spigot/bukkit.git

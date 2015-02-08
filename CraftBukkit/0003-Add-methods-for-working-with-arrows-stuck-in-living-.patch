@@ -1,26 +1,26 @@
-From e379588afae4c94f9e5cb93d40ced342e2f5a34d Mon Sep 17 00:00:00 2001
+From e8e95da435034b726defe4b1e888e5e5d66e09dc Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index add554e..e678bd8 100644
+index 1c1aab1..12c9b83 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -504,4 +504,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -460,4 +460,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
      public void _INVALID_setMaxHealth(int health) {
          setMaxHealth(health);
      }
 +
 +    public int getArrowsStuck() {
-+        return getHandle().aZ();
++        return getHandle().bu();
 +    }
 +
 +    public void setArrowsStuck(int arrows) {
-+        getHandle().p(arrows);
++        getHandle().o(arrows);
 +    }
  }
 -- 
-1.8.5.2 (Apple Git-48)
+1.9.0
 

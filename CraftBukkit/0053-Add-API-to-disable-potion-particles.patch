@@ -1,0 +1,76 @@
+From e4d1ff035fcdbba94e67b4f555e5a351789b9f19 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 9 May 2014 23:48:01 -0400
+Subject: [PATCH] Add API to disable potion particles
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index 08da89b..a0a01a2 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -18,6 +18,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
+ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+ import org.bukkit.event.entity.EntityRegainHealthEvent;
+ import org.bukkit.event.vehicle.VehicleExitEvent;
++import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+ // CraftBukkit end
+ 
+ public abstract class EntityLiving extends Entity {
+@@ -502,10 +503,17 @@ public abstract class EntityLiving extends Entity {
+             this.bi();
+             this.setInvisible(false);
+         } else {
+-            int i = PotionBrewer.a(this.effects.values());
++            // CraftBukkit start - optionally disable potion particles
++            if(((CraftLivingEntity) getBukkitEntity()).getPotionParticles()) {
++                int i = PotionBrewer.a(this.effects.values());
++
++                this.datawatcher.watch(8, Byte.valueOf((byte) (PotionBrewer.b(this.effects.values()) ? 1 : 0)));
++                this.datawatcher.watch(7, Integer.valueOf(i));
++            } else {
++                this.bi();
++            }
++            // CraftBukkit end
+ 
+-            this.datawatcher.watch(8, Byte.valueOf((byte) (PotionBrewer.b(this.effects.values()) ? 1 : 0)));
+-            this.datawatcher.watch(7, Integer.valueOf(i));
+             this.setInvisible(this.hasEffect(MobEffectList.INVISIBILITY.id));
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+index 12c9b83..ea2772c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
+@@ -64,6 +64,7 @@ import org.bukkit.util.Vector;
+ 
+ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+     private CraftEntityEquipment equipment;
++    private boolean potionParticles = true;
+ 
+     public CraftLivingEntity(final CraftServer server, final EntityLiving entity) {
+         super(server, entity);
+@@ -291,6 +292,21 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+         return effects;
+     }
+ 
++    @Override
++    public void setPotionParticles(boolean enabled) {
++        this.potionParticles = enabled;
++        if(enabled) {
++            this.getHandle().updateEffects = true;
++        } else {
++            this.getHandle().getDataWatcher().watch(7, (int) 0); // particle color
++            this.getHandle().getDataWatcher().watch(8, (byte) 0); // ambient flag
++        }
++    }
++
++    public boolean getPotionParticles() {
++        return this.potionParticles;
++    }
++
+     public <T extends Projectile> T launchProjectile(Class<? extends T> projectile) {
+         return launchProjectile(projectile, null);
+     }
+-- 
+1.9.0
+

@@ -1,0 +1,31 @@
+From a8629593d518bb56c752087ccc22bfc390bf28bb Mon Sep 17 00:00:00 2001
+From: YukonAppleGeek <yukonvinecki@gmail.com>
+Date: Tue, 13 May 2014 16:27:21 -0700
+Subject: [PATCH] Increase moved too quickly distance to 30
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 78bfb52..3f1ae69 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -372,7 +372,8 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+                 // CraftBukkit end
+                 double d17 = d14 * d14 + d15 * d15 + d16 * d16;
+ 
+-                if (d17 > 100.0D && this.checkMovement && (!this.minecraftServer.S() || !this.minecraftServer.R().equals(this.player.getName()))) { // CraftBukkit - Added this.checkMovement condition to solve this check being triggered by teleports
++                // CraftBukkit - Added this.checkMovement condition to solve this check being triggered by teleports. Also increases blocks moved per tick limit to 30.
++                if (d17 > 900.0D && this.checkMovement && (!this.minecraftServer.S() || !this.minecraftServer.R().equals(this.player.getName()))) {
+                     PlayerConnection.c.warn(this.player.getName() + " moved too quickly! " + d11 + "," + d12 + "," + d13 + " (" + d14 + ", " + d15 + ", " + d16 + ")");
+                     this.a(this.o, this.p, this.q, this.player.yaw, this.player.pitch);
+                     return;
+@@ -1187,7 +1188,6 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+         default:
+             throw new IllegalArgumentException("Invalid client command!");
+         }
+-
+     }
+ 
+     public void a(PacketPlayInUseEntity packetplayinuseentity) {
+-- 
+1.9.0
+

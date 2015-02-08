@@ -1,0 +1,35 @@
+From db6f4049d7b173c042cb22b3dcbdf48990941c3f Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 12 Feb 2015 22:15:03 -0500
+Subject: [PATCH] Player list header/footer API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 5517063..fced76d 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1224,4 +1224,20 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * @param components the components to send
+      */
+     public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components);
+- }
++
++    /**
++     * Set the text displayed in the player list header and footer for this player
++     *
++     * @param header content for the top of the player list
++     * @param footer content for the bottom of the player list
++     */
++    public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent[] header, net.md_5.bungee.api.chat.BaseComponent[] footer);
++
++    /**
++     * Set the text displayed in the player list header and footer for this player
++     *
++     * @param header content for the top of the player list
++     * @param footer content for the bottom of the player list
++     */
++    public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent header, net.md_5.bungee.api.chat.BaseComponent footer);
++}
+-- 
+1.9.0
+

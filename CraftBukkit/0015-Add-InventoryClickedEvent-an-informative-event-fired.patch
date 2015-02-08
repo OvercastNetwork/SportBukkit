@@ -1,0 +1,27 @@
+From 01b40354b074a58a1a7b19455dc2d73d784d5d8a Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Mon, 12 Nov 2012 20:53:11 -0600
+Subject: [PATCH] Add InventoryClickedEvent, an informative event fired after
+ every InventoryClickEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 2d8ad1c..56d3a91 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -1573,9 +1573,11 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+                                 case NOTHING:
+                                     break;
+                             }
+-                            return;
+                     }
+ 
++                    server.getPluginManager().callEvent(new org.bukkit.event.inventory.InventoryClickedEvent(inventory, type, packetplayinwindowclick.b(), packetplayinwindowclick.c() != 0, packetplayinwindowclick.f() == 1));
++                    if(event.getResult() == org.bukkit.event.Event.Result.DENY) return;
++
+                     if (event instanceof CraftItemEvent) {
+                         // Need to update the inventory on crafting to
+                         // correctly support custom recipes
+-- 
+1.9.0
+

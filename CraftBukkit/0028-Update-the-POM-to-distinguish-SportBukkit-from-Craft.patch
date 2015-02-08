@@ -1,0 +1,62 @@
+From 36de8eea0186b176aece9fbdefcab554088affaf Mon Sep 17 00:00:00 2001
+From: Steve Anton <anxuiz.nx@gmail.com>
+Date: Thu, 2 Aug 2012 17:00:13 -0700
+Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
+
+
+diff --git a/pom.xml b/pom.xml
+index fec390d..a32963d 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -1,29 +1,40 @@
+ <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+-  <groupId>org.bukkit</groupId>
+-  <artifactId>craftbukkit</artifactId>
++  <groupId>tc.oc</groupId>
++  <artifactId>sportbukkit</artifactId>
+   <packaging>jar</packaging>
+   <version>1.8-R0.1-SNAPSHOT</version>
+-  <name>CraftBukkit</name>
+-  <url>http://www.bukkit.org</url>
+-
++  <name>SportBukkit</name>
++  <url>https://oc.tc</url>
++  
+   <properties>
+     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     <api.version>unknown</api.version>
+     <junit.version>4.11</junit.version>
+     <minecraft.version>1.8</minecraft.version>
+     <minecraft_version>1_8_R1</minecraft_version>
+-    <buildtag.prefix>git-Bukkit-</buildtag.prefix>
++    <buildtag.prefix>git-SportBukkit-</buildtag.prefix>
+     <buildtag.suffix></buildtag.suffix>
+     <maven.compiler.source>1.6</maven.compiler.source>
+     <maven.compiler.target>1.6</maven.compiler.target>
+   </properties>
+ 
++  <distributionManagement>
++    <repository>
++      <id>overcast-deployment</id>
++      <url>https://repo.oc.tc/content/repositories/releases/</url>
++    </repository>
++    <snapshotRepository>
++      <id>overcast-deployment</id>
++      <url>https://repo.oc.tc/content/repositories/snapshots/</url>
++    </snapshotRepository>
++  </distributionManagement>
++
+   <dependencies>
+     <dependency>
+-      <groupId>org.bukkit</groupId>
+-      <artifactId>bukkit</artifactId>
++      <groupId>tc.oc</groupId>
++      <artifactId>sportbukkit-api</artifactId>
+       <version>${project.version}</version>
+       <type>jar</type>
+       <scope>compile</scope>
+-- 
+1.9.0
+

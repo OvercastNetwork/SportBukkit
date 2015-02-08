@@ -1,0 +1,58 @@
+From 946fdc6f586b172cdfbdcedd39e6e408f19bd303 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 13 Feb 2015 02:34:42 -0500
+Subject: [PATCH] Expose the player list packet
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+index c419536..39ffa08 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
+@@ -129,6 +129,15 @@ public class PacketPlayOutPlayerInfo implements Packet {
+ 
+                 packetdataserializer.b(playerinfodata.c().getId());
+                 packetdataserializer.b(playerinfodata.b());
++
++                // SportBukkit start
++                if (playerinfodata.displayName != null) {
++                    packetdataserializer.writeBoolean(true);
++                    packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(playerinfodata.displayName));
++                    break;
++                }
++                // SportBukkit end
++
+                 if (playerinfodata.d() == null) {
+                     packetdataserializer.writeBoolean(false);
+                 } else {
+@@ -149,6 +158,15 @@ public class PacketPlayOutPlayerInfo implements Packet {
+ 
+             case 4:
+                 packetdataserializer.a(playerinfodata.a().getId());
++
++                // SportBukkit start
++                if (playerinfodata.displayName != null) {
++                    packetdataserializer.writeBoolean(true);
++                    packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(playerinfodata.displayName));
++                    break;
++                }
++                // SportBukkit end
++
+                 if (playerinfodata.d() == null) {
+                     packetdataserializer.writeBoolean(false);
+                 } else {
+diff --git a/src/main/java/net/minecraft/server/PlayerInfoData.java b/src/main/java/net/minecraft/server/PlayerInfoData.java
+index fcdbae7..7eac503 100644
+--- a/src/main/java/net/minecraft/server/PlayerInfoData.java
++++ b/src/main/java/net/minecraft/server/PlayerInfoData.java
+@@ -4,6 +4,8 @@ import com.mojang.authlib.GameProfile;
+ 
+ public class PlayerInfoData {
+ 
++    public net.md_5.bungee.api.chat.BaseComponent[] displayName; // SportBukkit
++
+     private final int b;
+     private final EnumGamemode c;
+     private final GameProfile d;
+-- 
+1.9.0
+

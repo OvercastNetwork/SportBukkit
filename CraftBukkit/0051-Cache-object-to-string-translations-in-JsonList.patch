@@ -1,0 +1,102 @@
+From a749b4b9e17284094a342cb76e0548a2e0b9e85c Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Fri, 2 May 2014 20:48:11 -0500
+Subject: [PATCH] Cache object to string translations in JsonList
+
+With 1.7 the ban, white, and op lists all use JsonList. While this is nice, when checking if an object is in a JsonList the object is converted to a string. Since most of these objects contain UUIDs and UUID.toString() is a generally expensive call, we need to cache the string representation of the object.
+
+Without this change, player.isOp() and player.hasPermission() are far more expensive than they were in 1.6.
+
+diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
+index c1236a1..b778110 100644
+--- a/src/main/java/net/minecraft/server/GameProfileBanList.java
++++ b/src/main/java/net/minecraft/server/GameProfileBanList.java
+@@ -33,7 +33,7 @@ public class GameProfileBanList extends JsonList {
+     }
+ 
+     protected String b(GameProfile gameprofile) {
+-        return gameprofile.getId().toString();
++        return super.a(gameprofile.getId()); // CraftBukkit - use super method that uses cache
+     }
+ 
+     public GameProfile a(String s) {
+diff --git a/src/main/java/net/minecraft/server/JsonList.java b/src/main/java/net/minecraft/server/JsonList.java
+index 61c676a..8f49c08 100644
+--- a/src/main/java/net/minecraft/server/JsonList.java
++++ b/src/main/java/net/minecraft/server/JsonList.java
+@@ -20,6 +20,12 @@ import org.apache.commons.io.IOUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// CraftBukkit start
++import com.google.common.cache.LoadingCache;
++import com.google.common.cache.CacheBuilder;
++import com.google.common.cache.CacheLoader;
++// CraftBukkit end
++
+ public class JsonList {
+ 
+     protected static final Logger a = LogManager.getLogger();
+@@ -29,6 +35,16 @@ public class JsonList {
+     private boolean e = true;
+     private static final ParameterizedType f = new JsonListType();
+ 
++    // CraftBukkit - add cache of object -> string translations
++    LoadingCache<Object, String> pastTranslations = CacheBuilder.newBuilder()
++        .maximumSize(500)
++        .build(new CacheLoader<Object, String>() {
++                   public String load(Object obj) {
++                       return obj.toString();
++                   }
++               }
++        );
++
+     public JsonList(File file) {
+         this.c = file;
+         GsonBuilder gsonbuilder = (new GsonBuilder()).setPrettyPrinting();
+@@ -91,7 +107,15 @@ public class JsonList {
+     }
+ 
+     protected String a(Object object) {
+-        return object.toString();
++        // CraftBukkit start - use cache
++        String result = null;
++
++        try {
++            result = this.pastTranslations.get(object);
++        } catch (Exception e) {}
++
++        return result;
++        // CraftBukkit end
+     }
+ 
+     protected boolean d(Object object) {
+diff --git a/src/main/java/net/minecraft/server/OpList.java b/src/main/java/net/minecraft/server/OpList.java
+index 4fcf7fb..8f53c6d 100644
+--- a/src/main/java/net/minecraft/server/OpList.java
++++ b/src/main/java/net/minecraft/server/OpList.java
+@@ -29,7 +29,7 @@ public class OpList extends JsonList {
+     }
+ 
+     protected String b(GameProfile gameprofile) {
+-        return gameprofile.getId().toString();
++        return super.a(gameprofile.getId()); // CraftBukkit - use super method that uses cache
+     }
+ 
+     public GameProfile a(String s) {
+diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
+index c488f07..0dae465 100644
+--- a/src/main/java/net/minecraft/server/WhiteList.java
++++ b/src/main/java/net/minecraft/server/WhiteList.java
+@@ -33,7 +33,7 @@ public class WhiteList extends JsonList {
+     }
+ 
+     protected String b(GameProfile gameprofile) {
+-        return gameprofile.getId().toString();
++        return super.a(gameprofile.getId()); // CraftBukkit - use super method that uses cache
+     }
+ 
+     public GameProfile a(String s) {
+-- 
+1.9.0
+

@@ -1,0 +1,24 @@
+From 2da962244b64a36ffc44a9b568a9e0648a10dbe7 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 14 Feb 2015 08:18:40 -0500
+Subject: [PATCH] Add invis override API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index fced76d..81e6c0d 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -999,6 +999,10 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      */
+     public boolean canSee(Entity entity);
+ 
++    public boolean canSeeInvisibles();
++
++    public void showInvisibles(boolean see);
++
+     /**
+      * Checks to see if this player is currently standing on a block. This
+      * information may not be reliable, as it is a state provided by the
+-- 
+1.9.0
+

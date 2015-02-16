@@ -1,0 +1,59 @@
+From eba90fd6a3b358585cef5f2eb5b92de91920e91b Mon Sep 17 00:00:00 2001
+From: Yukon Vinecki <yukonvinecki@gmail.com>
+Date: Mon, 16 Feb 2015 12:40:04 -0800
+Subject: [PATCH 2614/2614] Allow OCN_DATA nbt tag
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index c9738c4..2670f1b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -195,12 +195,15 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     static final ItemMetaKey ATTRIBUTES_UUID_HIGH = new ItemMetaKey("UUIDMost");
+     @Specific(Specific.To.NBT)
+     static final ItemMetaKey ATTRIBUTES_UUID_LOW = new ItemMetaKey("UUIDLeast");
++    @Specific(Specific.To.NBT)
++    static final ItemMetaKey OCN_DATA = new ItemMetaKey("OCN_DATA");
+ 
+     private String displayName;
+     private List<String> lore;
+     private Map<Enchantment, Integer> enchantments;
+     private int repairCost;
+     private final NBTTagList attributes;
++    private NBTTagCompound ocnData;
+ 
+     CraftMetaItem(CraftMetaItem meta) {
+         if (meta == null) {
+@@ -220,6 +223,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+ 
+         this.repairCost = meta.repairCost;
+         this.attributes = meta.attributes;
++        this.ocnData = meta.ocnData;
+     }
+ 
+     CraftMetaItem(NBTTagCompound tag) {
+@@ -295,6 +299,10 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         } else {
+             attributes = null;
+         }
++
++        if (tag.hasKey(OCN_DATA.NBT)) {
++            ocnData = tag.getCompound("OCN_DATA");
++        }
+     }
+ 
+     static Map<Enchantment, Integer> buildEnchantments(NBTTagCompound tag, ItemMetaKey key) {
+@@ -370,6 +378,10 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         if (attributes != null) {
+             itemTag.set(ATTRIBUTES.NBT, attributes);
+         }
++
++        if (ocnData != null) {
++            itemTag.set(OCN_DATA.NBT, ocnData);
++        }
+     }
+ 
+     static NBTTagList createStringList(List<String> list) {
+-- 
+1.9.3
+

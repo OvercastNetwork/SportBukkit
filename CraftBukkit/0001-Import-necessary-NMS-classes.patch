@@ -1,4 +1,4 @@
-From a3f5ee54d9de78919eeb100db2b63d65dbf0b8ec Mon Sep 17 00:00:00 2001
+From 46cdd6c252d9721c39c2dfa783574fed8afdadcd Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 8 Feb 2015 19:04:27 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -1731,6 +1731,64 @@ index 0000000..4fcf7fb
 +
 +    protected String a(Object object) {
 +        return this.b((GameProfile) object);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+new file mode 100644
+index 0000000..837c5d5
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -0,0 +1,52 @@
++package net.minecraft.server;
++
++import io.netty.buffer.ByteBuf;
++import io.netty.channel.ChannelHandlerContext;
++import io.netty.handler.codec.MessageToByteEncoder;
++import java.io.IOException;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.apache.logging.log4j.Marker;
++import org.apache.logging.log4j.MarkerManager;
++
++public class PacketEncoder extends MessageToByteEncoder {
++
++    private static final Logger a = LogManager.getLogger();
++    private static final Marker b = MarkerManager.getMarker("PACKET_SENT", NetworkManager.b);
++    private final EnumProtocolDirection c;
++
++    public PacketEncoder(EnumProtocolDirection enumprotocoldirection) {
++        this.c = enumprotocoldirection;
++    }
++
++    protected void a(ChannelHandlerContext channelhandlercontext, Packet packet, ByteBuf bytebuf) throws IOException { // CraftBukkit - added throws
++        Integer integer = ((EnumProtocol) channelhandlercontext.channel().attr(NetworkManager.c).get()).a(this.c, packet);
++
++        if (PacketEncoder.a.isDebugEnabled()) {
++            PacketEncoder.a.debug(PacketEncoder.b, "OUT: [{}:{}] {}", new Object[] { channelhandlercontext.channel().attr(NetworkManager.c).get(), integer, packet.getClass().getName()});
++        }
++
++        if (integer == null) {
++            throw new IOException("Can\'t serialize unregistered packet");
++        } else {
++            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
++
++            packetdataserializer.b(integer.intValue());
++
++            try {
++                if (packet instanceof PacketPlayOutNamedEntitySpawn) {
++                    packet = packet;
++                }
++
++                packet.b(packetdataserializer);
++            } catch (Throwable throwable) {
++                PacketEncoder.a.error(throwable);
++            }
++
++        }
++    }
++
++    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws IOException { // CraftBukkit - added throws
++        this.a(channelhandlercontext, (Packet) object, bytebuf);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java

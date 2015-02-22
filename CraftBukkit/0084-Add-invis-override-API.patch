@@ -1,4 +1,4 @@
-From 8e64f7ebe64aed395570b3e883f7230133200165 Mon Sep 17 00:00:00 2001
+From 67e756de57cc3d05c3eda9ae03578da49d74629f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
@@ -22,10 +22,10 @@ index 6433ef7..d48d5c9 100644
      public PacketPlayOutEntityMetadata() {}
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 10ab97c..0ac7164 100644
+index 10ab97c..6866348 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -968,6 +968,26 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+@@ -968,6 +968,29 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
                  }
              }
  
@@ -33,19 +33,22 @@ index 10ab97c..0ac7164 100644
 +            // Override invisibility flag for players with canSeeInvisibles -> true
 +            if(this.getPlayer().canSeeInvisibles()) {
 +                PacketPlayOutEntityMetadata metadataPacket = (PacketPlayOutEntityMetadata) packet;
-+                for(int i = 0; i < metadataPacket.b.size(); i++) {
-+                    WatchableObject wo = (WatchableObject) metadataPacket.b.get(i);
-+                    if(wo.a() == 0 && wo.b() instanceof Byte) { // Flags at metadata index 0
-+                        byte entityFlags = (Byte) wo.b();
-+                        if((entityFlags & 0x20) != 0) { // Invisible flag
-+                            PacketPlayOutEntityMetadata replacementPacket = new PacketPlayOutEntityMetadata();
-+                            replacementPacket.a = metadataPacket.a;
-+                            replacementPacket.b = new ArrayList(metadataPacket.b);
-+                            replacementPacket.b.set(i, new WatchableObject(wo.c(), wo.a(), (byte) (entityFlags & ~0x20))); // Clear invisibility
++                Object entity = this.player.world.entitiesById.get(metadataPacket.a);
++                if(entity instanceof EntityLiving && !(entity instanceof EntityArmorStand)) { // Don't show non-living ents or armor stands
++                    for(int i = 0; i < metadataPacket.b.size(); i++) {
++                        WatchableObject wo = (WatchableObject) metadataPacket.b.get(i);
++                        if(wo.a() == 0 && wo.b() instanceof Byte) { // Flags at metadata index 0
++                            byte entityFlags = (Byte) wo.b();
++                            if((entityFlags & 0x20) != 0) { // Invisible flag
++                                PacketPlayOutEntityMetadata replacementPacket = new PacketPlayOutEntityMetadata();
++                                replacementPacket.a = metadataPacket.a;
++                                replacementPacket.b = new ArrayList(metadataPacket.b);
++                                replacementPacket.b.set(i, new WatchableObject(wo.c(), wo.a(), (byte) (entityFlags & ~0x20))); // Clear invisibility
 +
-+                            packet = replacementPacket;
++                                packet = replacementPacket;
++                            }
++                            break;
 +                        }
-+                        break;
 +                    }
 +                }
 +            }

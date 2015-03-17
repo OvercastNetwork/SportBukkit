@@ -1,0 +1,26 @@
+From e5592bba52209d88c6595df9123d636f9b8c1884 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 17 Mar 2015 03:02:27 -0400
+Subject: [PATCH] Relative teleport API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index e3db0bf..e4e9efc 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1309,4 +1309,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * Otherwise, it may be affected by ground friction before being sent.
+      */
+     public void updateVelocity();
++
++    /**
++     * Seamlessly move the player by the given offset and rotation angles.
++     * Because the relative calculation is applied by the client, you cannot
++     * know the player's absolute location immediately after teleporting.
++     */
++    public boolean teleportRelative(org.bukkit.util.Vector deltaPos, float deltaYaw, float deltaPitch, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause);
++    public boolean teleportRelative(org.bukkit.util.Vector deltaPos, float deltaYaw, float deltaPitch);
+ }
+-- 
+1.9.0
+

@@ -1,19 +1,21 @@
-From 08a1de71893401e70974afb96158bbba31c0d505 Mon Sep 17 00:00:00 2001
+From ade297867879829c95a2cf5619b84dc79e08ed7f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 20 Mar 2015 01:21:22 -0400
 Subject: [PATCH] Don't share mutable metadata across threads
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 20d4d64..7e3b740 100644
+index 20d4d64..f3b4319 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -196,6 +196,22 @@ public class DataWatcher {
+@@ -196,6 +196,24 @@ public class DataWatcher {
          return arraylist;
      }
  
 +    // SportBukkit start - Make deep copies of the WatchableObjects so they are not shared across threads
 +    public static void deepCopy(List<WatchableObject> watchableObjects) {
++        if(watchableObjects == null) return;
++
 +        for(int j = 0; j < watchableObjects.size(); j++) {
 +            WatchableObject original = watchableObjects.get(j);
 +            Object obj = original.b();

@@ -1,4 +1,4 @@
-From 8a1bffea86948dcd8389b3d53b0f31e4ce4745f9 Mon Sep 17 00:00:00 2001
+From a795313a2410753b02891259b049ebc937a4a635 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 8 Feb 2015 19:04:27 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -1836,6 +1836,39 @@ index 0000000..97920b0
 +
 +    public void a(PacketListener packetlistener) {
 +        this.a((PacketHandshakingInListener) packetlistener);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+new file mode 100644
+index 0000000..50f3adc
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+@@ -0,0 +1,27 @@
++package net.minecraft.server;
++
++public class PacketPlayInResourcePackStatus implements Packet {
++
++    private String a;
++    private EnumResourcePackStatus b;
++
++    public PacketPlayInResourcePackStatus() {}
++
++    public void a(PacketDataSerializer packetdataserializer) {
++        this.a = packetdataserializer.c(40);
++        this.b = (EnumResourcePackStatus) packetdataserializer.a(EnumResourcePackStatus.class);
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) {
++        packetdataserializer.a(this.a);
++        packetdataserializer.a((Enum) this.b);
++    }
++
++    public void a(PacketListenerPlayIn packetlistenerplayin) {
++        packetlistenerplayin.a(this);
++    }
++
++    public void a(PacketListener packetlistener) {
++        this.a((PacketListenerPlayIn) packetlistener);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java

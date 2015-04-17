@@ -1,0 +1,193 @@
+From 59aa5de6fbbb7f9f218ebab5a881b1d522eb0c04 Mon Sep 17 00:00:00 2001
+From: Yukon Vinecki <yukonvinecki@gmail.com>
+Date: Thu, 16 Apr 2015 21:30:36 -0700
+Subject: [PATCH] Apply NBTReadLimiter to more things
+
+---
+ .../net/minecraft/server/ChunkRegionLoader.java    |  7 +++-
+ .../minecraft/server/NBTCompressedStreamTools.java |  6 ++++
+ src/main/java/net/minecraft/server/NBTTagList.java |  1 +
+ .../net/minecraft/server/PacketDataSerializer.java | 37 +++++++++++++++-----
+ src/main/java/org/spigotmc/LimitStream.java        | 39 ++++++++++++++++++++++
+ 5 files changed, 80 insertions(+), 10 deletions(-)
+ create mode 100644 src/main/java/org/spigotmc/LimitStream.java
+
+diff --git a/src/main/java/net/minecraft/server/ChunkRegionLoader.java b/src/main/java/net/minecraft/server/ChunkRegionLoader.java
+index 9402f0f..3a2f0a1 100644
+--- a/src/main/java/net/minecraft/server/ChunkRegionLoader.java
++++ b/src/main/java/net/minecraft/server/ChunkRegionLoader.java
+@@ -4,6 +4,7 @@ import java.io.DataInputStream;
+ import java.io.DataOutput;
+ import java.io.DataOutputStream;
+ import java.io.File;
++import java.io.IOException;
+ import java.util.ArrayList;
+ import java.util.HashSet;
+ import java.util.Iterator;
+@@ -80,7 +81,11 @@ public class ChunkRegionLoader implements IChunkLoader, IAsyncChunkSaver {
+                 return null;
+             }
+ 
+-            nbttagcompound = NBTCompressedStreamTools.a(datainputstream);
++            try {
++                nbttagcompound = NBTCompressedStreamTools.a(datainputstream);
++            } catch (IOException e) {
++                e.printStackTrace();
++            }
+         }
+ 
+         return this.a(world, i, j, nbttagcompound);
+diff --git a/src/main/java/net/minecraft/server/NBTCompressedStreamTools.java b/src/main/java/net/minecraft/server/NBTCompressedStreamTools.java
+index 88a3b3b..39f4a75 100644
+--- a/src/main/java/net/minecraft/server/NBTCompressedStreamTools.java
++++ b/src/main/java/net/minecraft/server/NBTCompressedStreamTools.java
+@@ -72,6 +72,12 @@ public class NBTCompressedStreamTools {
+     }
+ 
+     public static NBTTagCompound a(DataInput datainput, NBTReadLimiter nbtreadlimiter) throws IOException {
++        // Spigot start
++        if ( datainput instanceof net.minecraft.util.io.netty.buffer.ByteBufInputStream )
++        {
++            datainput = new DataInputStream(new org.spigotmc.LimitStream((InputStream) datainput, nbtreadlimiter));
++        }
++        // Spigot end
+         NBTBase nbtbase = a(datainput, 0, nbtreadlimiter);
+ 
+         if (nbtbase instanceof NBTTagCompound) {
+diff --git a/src/main/java/net/minecraft/server/NBTTagList.java b/src/main/java/net/minecraft/server/NBTTagList.java
+index bdde30a..b14e351 100644
+--- a/src/main/java/net/minecraft/server/NBTTagList.java
++++ b/src/main/java/net/minecraft/server/NBTTagList.java
+@@ -41,6 +41,7 @@ public class NBTTagList extends NBTBase {
+ 
+             for (int k = 0; k < j; ++k) {
+                 NBTBase nbtbase = NBTBase.createTag(this.type);
++                nbtreadlimiter.a(8); // Spigot
+ 
+                 nbtbase.load(datainput, i + 1, nbtreadlimiter);
+                 this.list.add(nbtbase);
+diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+index 4e3e70e..9bce801 100644
+--- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
++++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+@@ -109,10 +109,14 @@ public class PacketDataSerializer extends ByteBuf {
+                 this.writeShort( -1 );
+             } else
+             {
+-                byte[] abyte = NBTCompressedStreamTools.a( nbttagcompound );
++                try {
++                    byte[] abyte = NBTCompressedStreamTools.a( nbttagcompound );
+ 
+-                this.writeShort( (short) abyte.length );
+-                this.writeBytes( abyte );
++                    this.writeShort( (short) abyte.length );
++                    this.writeBytes( abyte );
++                } catch (IOException e) {
++                    e.printStackTrace();
++                }
+             }
+         } else
+         {
+@@ -121,10 +125,14 @@ public class PacketDataSerializer extends ByteBuf {
+                 this.writeByte( 0 );
+             } else
+             {
+-                ByteBufOutputStream out = new ByteBufOutputStream( Unpooled.buffer() );
+-                NBTCompressedStreamTools.a( nbttagcompound, (java.io.DataOutput) new DataOutputStream( out ) );
+-                writeBytes( out.buffer() );
+-                out.buffer().release();
++                try {
++                    ByteBufOutputStream out = new ByteBufOutputStream( Unpooled.buffer() );
++                    NBTCompressedStreamTools.a( nbttagcompound, (java.io.DataOutput) new DataOutputStream( out ) );
++                    writeBytes( out.buffer() );
++                    out.buffer().release();
++                } catch (IOException e) {
++                    e.printStackTrace();
++                }
+             }
+         }
+     }
+@@ -142,7 +150,12 @@ public class PacketDataSerializer extends ByteBuf {
+                 byte[] abyte = new byte[ short1 ];
+ 
+                 this.readBytes( abyte );
+-                return NBTCompressedStreamTools.a( abyte, new NBTReadLimiter( 2097152L ) );
++                try {
++                    return NBTCompressedStreamTools.a( abyte, new NBTReadLimiter( 2097152L ) );
++                } catch (IOException e) {
++                    e.printStackTrace();
++                    return new NBTTagCompound();
++                }
+             }
+         } else {
+             int index = readerIndex();
+@@ -150,7 +163,12 @@ public class PacketDataSerializer extends ByteBuf {
+                 return null;
+             }
+             readerIndex(index);
+-            return NBTCompressedStreamTools.a( new DataInputStream( new ByteBufInputStream( a ) ) );
++            try {
++                return NBTCompressedStreamTools.a( new ByteBufInputStream( a ), new NBTReadLimiter( 2097152L ) ); // SportBukkit - fix NBTList exploit
++            } catch (IOException e) {
++                e.printStackTrace();
++                return new NBTTagCompound();
++            }
+         }
+     }
+     // Spigot end
+@@ -207,6 +225,7 @@ public class PacketDataSerializer extends ByteBuf {
+ 
+             itemstack = new ItemStack(Item.getById(short1), b0, short2);
+             itemstack.tag = this.b();
++
+             // CraftBukkit start
+             if (itemstack.tag != null) {
+ 
+diff --git a/src/main/java/org/spigotmc/LimitStream.java b/src/main/java/org/spigotmc/LimitStream.java
+new file mode 100644
+index 0000000..8c32e8b
+--- /dev/null
++++ b/src/main/java/org/spigotmc/LimitStream.java
+@@ -0,0 +1,39 @@
++package org.spigotmc;
++
++import java.io.FilterInputStream;
++import java.io.IOException;
++import java.io.InputStream;
++import net.minecraft.server.NBTReadLimiter;
++
++public class LimitStream extends FilterInputStream
++{
++
++    private final NBTReadLimiter limit;
++
++    public LimitStream(InputStream is, NBTReadLimiter limit)
++    {
++        super( is );
++        this.limit = limit;
++    }
++
++    @Override
++    public int read() throws IOException
++    {
++        limit.a( 8 );
++        return super.read();
++    }
++
++    @Override
++    public int read(byte[] b) throws IOException
++    {
++        limit.a( b.length * 8 );
++        return super.read( b );
++    }
++
++    @Override
++    public int read(byte[] b, int off, int len) throws IOException
++    {
++        limit.a( len * 8 );
++        return super.read( b, off, len );
++    }
++}
+-- 
+1.9.3
+

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if !(./applyPatches.sh); then
+if !(./prepare-build.sh); then
     exit 1
-else
-    ./compile.sh
 fi
+./compile.sh
+

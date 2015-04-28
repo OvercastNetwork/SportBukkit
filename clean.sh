@@ -1,12 +1,19 @@
 #!/bin/bash
 
+function clean {
+    if [ -d $1 ]; then
+        rm -rf $1
+        if [ -d $1 ]; then
+            echo "Unable to remove $1 directory"
+        fi
+    fi
+}
+
 pushd "$(dirname "$0")"
 
-if [ -d build ]; then
-    rm -rf build
-    if [ -d build ]; then
-        echo "Unable to remove build directory"
-    fi
-fi
+clean temp
+clean cache
+clean build
+clean work
 
 popd

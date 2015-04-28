@@ -8,10 +8,14 @@ Public build server: https://build.oc.tc/job/SportBukkit/
 How To
 ------
 
-Initalize the Bukkit and Craftbukkit modules: `./init.sh`
+Build everything from scratch: `./build.sh`
+*The SportBukkit binary will be located in build/CraftBukkit/target*
 
-Apply the patches: `./applyPatches.sh`
+Generate patched SportBukkit source code: `./prepare-build.sh`
+*Generated source will be in build/Bukkit and build/CraftBukkit*
 
-Compile SportBukkit: `./compile.sh`
+Compile SportBukkit from source: `./compile.sh`
 
-The SportBukkit binary will be located in build/CraftBukkit/target.
+Rebuild SportBukkit patches from source: `./rebuild-patches.sh`
+
+Remove all generated files, **including the SportBukkit source**: `./clean.sh`

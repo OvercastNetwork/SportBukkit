@@ -5,5 +5,12 @@
 *~
 *.swp
 
+# IntelliJ IDEA
+.idea
+*.iml
+
 # Miscellaneous
 build
+work
+cache
+temp

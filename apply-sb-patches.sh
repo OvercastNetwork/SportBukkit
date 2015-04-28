@@ -2,7 +2,8 @@
 
 ORIG_PWD="$(pwd)"
 cd "$(dirname "$0")"
-echo "  Rebuilding Forked projects.... "
+
+. util.sh
 
 function requireCleanWorkTree {
     # Update the index
@@ -33,15 +34,16 @@ function requireCleanWorkTree {
 }
 
 function applyPatches {
-    what=base/$1
-    target=build/$1
-    patches=$1
+    base=$1
+    what=$base/$2
+    target=build/$2
+    patches=$2
 
-    cd $what
+    pushd $what
     git branch -f upstream >/dev/null
-    cd ../../
-    if [ ! -d  $target ]; then
-        git clone $what $target -b upstream
+    popd
+    if [ ! -d $target ]; then
+        git clone $what $target
     fi
 
     cd $target
@@ -70,7 +72,11 @@ function applyPatches {
     cd ../..
 }
 
-applyPatches Bukkit
-applyPatches CraftBukkit
+log_info "Applying SportBukkit patches"
+
+applyPatches base Bukkit
+applyPatches work CraftBukkit
+
+log_info "Done. Now you should run ./compile.sh to proceed."
 
 cd "$ORIG_PWD"

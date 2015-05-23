@@ -1,0 +1,49 @@
+From 701cb304835e2ea72cb0600be39490f25432b06d Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 23 May 2015 00:56:27 -0400
+Subject: [PATCH] Add HideFlags to ItemMeta
+
+
+diff --git a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
+index 2cbc57e..1722b31 100644
+--- a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
++++ b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
+@@ -70,6 +70,16 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
+     void setLore(List<String> lore);
+ 
+     /**
++     * Does the item display the given tool-tip?
++     */
++    boolean getShowToolTip(ItemToolTip tip);
++
++    /**
++     * Set whether the item should display the given tool-tip when hovered over.
++     */
++    void setShowToolTip(ItemToolTip tip, boolean show);
++
++    /**
+      * Checks for the existence of any enchantments.
+      *
+      * @return true if an enchantment exists on this meta
+diff --git a/src/main/java/org/bukkit/inventory/meta/ItemToolTip.java b/src/main/java/org/bukkit/inventory/meta/ItemToolTip.java
+new file mode 100644
+index 0000000..df43bf4
+--- /dev/null
++++ b/src/main/java/org/bukkit/inventory/meta/ItemToolTip.java
+@@ -0,0 +1,13 @@
++package org.bukkit.inventory.meta;
++
++/**
++ * The fields in item tool-tips that can be individually toggled.
++ */
++public enum ItemToolTip {
++    ENCHANTMENTS,
++    ATTRIBUTES,
++    UNBREAKABLE,
++    CAN_DESTROY,
++    CAN_PLACE_ON,
++    OTHER
++}
+-- 
+1.9.0
+

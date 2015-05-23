@@ -1,0 +1,147 @@
+From fa67a1f65ce181d5604362299465780f09914390 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 23 May 2015 00:57:03 -0400
+Subject: [PATCH] Add HideFlags to ItemMeta
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index e9975b4..6a0c9ac 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -39,6 +39,7 @@ import org.bukkit.craftbukkit.attributes.CraftAttributeModifier;
+ import org.bukkit.craftbukkit.inventory.CraftMetaItem.ItemMetaKey.Specific;
+ import org.bukkit.enchantments.Enchantment;
+ import org.bukkit.inventory.meta.ItemMeta;
++import org.bukkit.inventory.meta.ItemToolTip;
+ import org.bukkit.inventory.meta.Repairable;
+ 
+ import com.google.common.base.Strings;
+@@ -192,6 +193,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     @Specific(Specific.To.NBT)
+     static final ItemMetaKey DISPLAY = new ItemMetaKey("display");
+     static final ItemMetaKey LORE = new ItemMetaKey("Lore", "lore");
++    @Specific(Specific.To.NBT)
++    static final ItemMetaKey HIDE_FLAGS = new ItemMetaKey("HideFlags");
+     static final ItemMetaKey ENCHANTMENTS = new ItemMetaKey("ench", "enchants");
+     @Specific(Specific.To.NBT)
+     static final ItemMetaKey ENCHANTMENTS_ID = new ItemMetaKey("id");
+@@ -226,6 +229,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     private boolean unbreakable;
+     private ImmutableMaterialSet canDestroy = ImmutableMaterialSet.of();
+     private ImmutableMaterialSet canPlaceOn = ImmutableMaterialSet.of();
++    private int hideFlags = 0;
+ 
+     private static final Set<String> HANDLED_TAGS = Sets.newHashSet();
+ 
+@@ -255,6 +259,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         this.unbreakable = meta.unbreakable;
+         this.canDestroy = meta.canDestroy;
+         this.canPlaceOn = meta.canPlaceOn;
++        this.hideFlags = meta.hideFlags;
+ 
+         this.unhandledTags.putAll(meta.unhandledTags);
+     }
+@@ -278,6 +283,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+             }
+         }
+ 
++        this.hideFlags = tag.getInt(HIDE_FLAGS.NBT);
++
+         this.enchantments = buildEnchantments(tag, ENCHANTMENTS);
+ 
+         this.attributeModifiers = buildAttributeModifiers(tag);
+@@ -340,7 +347,6 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         if(!tag.hasKey(ATTRIBUTES.NBT)) return null;
+ 
+         SetMultimap<String, AttributeModifier> attributeModifiers = HashMultimap.create();
+-
+         NBTTagList mods = tag.getList(ATTRIBUTES.NBT, 10);
+         for(int i = 0; i < mods.size(); i++) {
+             NBTTagCompound mod = mods.get(i);
+@@ -398,12 +404,15 @@ class CraftMetaItem implements ItemMeta, Repairable {
+             setDisplayTag(itemTag, LORE.NBT, createStringList(lore));
+         }
+ 
++        if(hideFlags != 0) {
++            itemTag.setInt(HIDE_FLAGS.NBT, hideFlags);
++        }
++
+         applyEnchantments(enchantments, itemTag, ENCHANTMENTS);
+ 
+         if (hasRepairCost()) {
+             itemTag.setInt(REPAIR.NBT, repairCost);
+         }
+-
+         copyAttributeModifiers(itemTag);
+ 
+         if(unbreakable) {
+@@ -413,7 +422,6 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         if(!canDestroy.isEmpty()) {
+             applyMaterialList(canDestroy, itemTag, CAN_DESTROY);
+         }
+-
+         if(!canPlaceOn.isEmpty()) {
+             applyMaterialList(canPlaceOn, itemTag, CAN_PLACE_ON);
+         }
+@@ -507,7 +515,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+ 
+     @Overridden
+     boolean isEmpty() {
+-        return !(hasDisplayName() || hasEnchants() || hasLore() || hasAttributeModifiers() || hasRepairCost() || unbreakable || !canDestroy.isEmpty() || !canPlaceOn.isEmpty() || !unhandledTags.isEmpty());
++        return !(hasDisplayName() || hasEnchants() || hasLore() || hideFlags != 0 || hasAttributeModifiers() || hasRepairCost() || unbreakable || !canDestroy.isEmpty() || !canPlaceOn.isEmpty() || !unhandledTags.isEmpty());
+     }
+ 
+     public String getDisplayName() {
+@@ -526,6 +534,33 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         return this.lore != null && !this.lore.isEmpty();
+     }
+ 
++    @Override
++    public boolean getShowToolTip(ItemToolTip tip) {
++        return (hideFlags & getToolTipMask(tip)) == 0;
++    }
++
++    @Override
++    public void setShowToolTip(ItemToolTip tip, boolean show) {
++        int mask = getToolTipMask(tip);
++        if(show) {
++            hideFlags &= ~mask;
++        } else {
++            hideFlags |= mask;
++        }
++    }
++
++    int getToolTipMask(ItemToolTip tip) {
++        switch(tip) {
++            case ENCHANTMENTS:  return 0x01;
++            case ATTRIBUTES:    return 0x02;
++            case UNBREAKABLE:   return 0x04;
++            case CAN_DESTROY:   return 0x08;
++            case CAN_PLACE_ON:  return 0x10;
++            case OTHER:         return 0x20;
++            default:            return 0;
++        }
++    }
++
+     public boolean hasRepairCost() {
+         return repairCost > 0;
+     }
+@@ -727,6 +762,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                 && this.unbreakable == that.unbreakable
+                 && this.canDestroy.equals(that.canDestroy)
+                 && this.canPlaceOn.equals(that.canPlaceOn)
++                && this.hideFlags == that.hideFlags
+                 && (this.unhandledTags.equals(that.unhandledTags));
+     }
+ 
+@@ -750,6 +786,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         int hash = 3;
+         hash = 61 * hash + (hasDisplayName() ? this.displayName.hashCode() : 0);
+         hash = 61 * hash + (hasLore() ? this.lore.hashCode() : 0);
++        hash = 61 * hash + hideFlags;
+         hash = 61 * hash + (hasEnchants() ? this.enchantments.hashCode() : 0);
+         hash = 61 * hash + (hasAttributeModifiers() ? this.attributeModifiers.hashCode() : 0);
+         hash = 61 * hash + (hasRepairCost() ? this.repairCost : 0);
+-- 
+1.9.0
+

@@ -1,4 +1,4 @@
-From 490bf9458011c38f73b4e2b13156593ea8ddbc73 Mon Sep 17 00:00:00 2001
+From 3c41e784183562a50e10fd5fce43227f2a909b8a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 28 May 2015 04:31:07 -0400
 Subject: [PATCH] Improve Permissible interface
@@ -94,7 +94,7 @@ index 5cd3cff..a7c0ef5 100644
 +    Collection<PermissionAttachmentInfo> getAttachments(Plugin plugin, Permission permission);
  }
 diff --git a/src/main/java/org/bukkit/permissions/PermissibleBase.java b/src/main/java/org/bukkit/permissions/PermissibleBase.java
-index 3b95061..6878142 100644
+index 3b95061..8061974 100644
 --- a/src/main/java/org/bukkit/permissions/PermissibleBase.java
 +++ b/src/main/java/org/bukkit/permissions/PermissibleBase.java
 @@ -1,12 +1,17 @@
@@ -228,7 +228,7 @@ index 3b95061..6878142 100644
 +    public Collection<PermissionAttachmentInfo> getAttachments(Plugin plugin) {
 +        ImmutableList.Builder<PermissionAttachmentInfo> builder = ImmutableList.builder();
 +        for(PermissionAttachmentInfo info : permissions.values()) {
-+            if(info.getAttachment().getPlugin() == plugin) {
++            if(info.getAttachment() != null && info.getAttachment().getPlugin() == plugin) {
 +                builder.add(info);
 +            }
 +        }
@@ -249,7 +249,7 @@ index 3b95061..6878142 100644
 +    public Collection<PermissionAttachmentInfo> getAttachments(Plugin plugin, String name) {
 +        ImmutableList.Builder<PermissionAttachmentInfo> builder = ImmutableList.builder();
 +        for(PermissionAttachmentInfo info : permissions.get(name.toLowerCase())) {
-+            if(info.getAttachment().getPlugin() == plugin) {
++            if(info.getAttachment() != null && info.getAttachment().getPlugin() == plugin) {
 +                builder.add(info);
 +            }
 +        }

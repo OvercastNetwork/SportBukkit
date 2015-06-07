@@ -1,47 +1,46 @@
-From bb502aeeeefed9f354e25ecefdbaee80d94a6e73 Mon Sep 17 00:00:00 2001
+From 25a028a84767914dd8b2e2a06495754e563aa782 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 7 Jun 2015 13:45:30 -0400
 Subject: [PATCH] Fix damage cooldown reducing explosion knockback
 
 
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index f885511..7fffe07 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -115,6 +115,7 @@ public abstract class Entity implements ICommandListener {
+     private final CommandObjectiveExecutor as;
+     public boolean valid; // CraftBukkit
+     public org.bukkit.projectiles.ProjectileSource projectileSource; // CraftBukkit - For projectiles only
++    public boolean forceExplosionKnockback; // SportBukkit
+ 
+     public int getId() {
+         return this.id;
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index e975a70..27d52a1 100644
+index e975a70..3399504 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -85,6 +85,7 @@ public abstract class EntityLiving extends Entity {
-     public int maxAirTicks = 300;
-     ArrayList<org.bukkit.inventory.ItemStack> drops = null;
-     // CraftBukkit end
-+    public boolean lastDamagePreventedByCooldown; // SportBukkit
- 
-     public void G() {
-         this.damageEntity(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
-@@ -669,6 +670,7 @@ public abstract class EntityLiving extends Entity {
-     }
- 
-     public boolean damageEntity(DamageSource damagesource, float f) {
-+        this.lastDamagePreventedByCooldown = false; // SportBukkit
-         if (this.isInvulnerable(damagesource)) {
-             return false;
-         } else if (this.world.isStatic) {
-@@ -691,6 +693,7 @@ public abstract class EntityLiving extends Entity {
+@@ -691,6 +691,7 @@ public abstract class EntityLiving extends Entity {
  
                  if ((float) this.noDamageTicks > (float) this.maxNoDamageTicks / 2.0F) {
                      if (f <= this.lastDamage) {
-+                        this.lastDamagePreventedByCooldown = true; // SportBukkit
++                        this.forceExplosionKnockback = true; // SportBukkit - for vanilla consistency, cooldown does not prevent explosion knockback
                          return false;
                      }
  
 diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
-index 279af54..86fb385 100644
+index 279af54..e8eba52 100644
 --- a/src/main/java/net/minecraft/server/Explosion.java
 +++ b/src/main/java/net/minecraft/server/Explosion.java
-@@ -131,7 +131,7 @@ public class Explosion {
+@@ -129,9 +129,10 @@ public class Explosion {
+                         
+                         // CraftBukkit start
                          CraftEventFactory.entityDamage = source;
++                        entity.forceExplosionKnockback = false;
                          boolean wasDamaged = entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 8.0D * (double) f3 + 1.0D)));
                          CraftEventFactory.entityDamage = null;
 -                        if (!wasDamaged && entity instanceof EntityLiving) {
-+                        if (!wasDamaged && entity instanceof EntityLiving && !((EntityLiving) entity).lastDamagePreventedByCooldown) {
++                        if (!wasDamaged && entity instanceof EntityLiving && !entity.forceExplosionKnockback) {
                              continue;
                          }
                          // CraftBukkit end

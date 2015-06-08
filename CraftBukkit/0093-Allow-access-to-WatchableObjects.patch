@@ -1,0 +1,26 @@
+From c33a3d55625a7ed1d0f1ea6352a07813e90e3b83 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 28 Feb 2015 04:34:10 -0500
+Subject: [PATCH] Allow access to WatchableObjects
+
+
+diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
+index b67983e..bcfe8fe 100644
+--- a/src/main/java/net/minecraft/server/DataWatcher.java
++++ b/src/main/java/net/minecraft/server/DataWatcher.java
+@@ -81,6 +81,12 @@ public class DataWatcher {
+         return (ItemStack) this.j(i).b();
+     }
+ 
++    // SportBukkit start
++    public DataWatcher.WatchableObject getWatchableObject(int index) {
++        return this.j(index); // Should be the method below this one
++    }
++    // SportBukkit end
++
+     private DataWatcher.WatchableObject j(int i) {
+         this.f.readLock().lock();
+ 
+-- 
+1.9.0
+

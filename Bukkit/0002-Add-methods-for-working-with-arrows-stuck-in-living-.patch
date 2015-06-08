@@ -1,14 +1,14 @@
-From 234311c25afbe2911ad928a22c910fc8c97e877a Mon Sep 17 00:00:00 2001
+From 32fe19a36fa32b1ae3caf093d9ce43dfd4506792 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:47:27 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index a0fefd8..b25ed61 100644
+index 48e2508..b4c7a04 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -350,4 +350,18 @@ public interface LivingEntity extends Entity, Damageable, ProjectileSource {
+@@ -392,4 +392,18 @@ public interface LivingEntity extends Entity, Damageable, ProjectileSource {
       * @return whether the operation was successful
       */
      public boolean setLeashHolder(Entity holder);

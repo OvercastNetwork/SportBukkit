@@ -1,11 +1,11 @@
-From d7f442b0ed793884a0bc7630d37ea3f0cd1c4b7e Mon Sep 17 00:00:00 2001
+From 144f09b8ce5a003844225f7c9559e79b6aee9f9e Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 21:57:34 +0200
 Subject: [PATCH] Add getHostname to Player
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index fedc6d3..407898e 100644
+index a724224..3080cca 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -63,6 +63,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -17,10 +17,10 @@ index fedc6d3..407898e 100644
  
      public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 77f747d..e7d9f96 100644
+index 18f08b2..8d64c02 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -379,6 +379,8 @@ public abstract class PlayerList {
+@@ -418,6 +418,8 @@ public abstract class PlayerList {
          SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));
@@ -30,7 +30,7 @@ index 77f747d..e7d9f96 100644
          PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
          String s;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index df3faec..90c2319 100644
+index 6dadcd8..7ad67a1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1373,4 +1373,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

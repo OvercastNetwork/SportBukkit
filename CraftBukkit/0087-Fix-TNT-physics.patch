@@ -1,0 +1,109 @@
+From 719194e1eef4935a63e19eb674232b3d641c5f7b Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 17 Feb 2015 08:28:39 -0500
+Subject: [PATCH] Fix TNT physics
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
+index 69db8bb..dcfd851 100644
+--- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
++++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
+@@ -70,6 +70,43 @@ public class EntityTNTPrimed extends Entity {
+ 
+     }
+ 
++    // SportBukkit start - Prevent TNT from being pushed in water by overriding the method that applies the motion
++    @Override
++    public boolean W() {
++        if(this.world.getServer().getWaterPushesTNT()) return super.W();
++
++        // Preserve velocity while calling the super method
++        double oldMotX = this.motX;
++        double oldMotY = this.motY;
++        double oldMotZ = this.motZ;
++
++        super.W();
++
++        this.motX = oldMotX;
++        this.motY = oldMotY;
++        this.motZ = oldMotZ;
++
++        if(this.inWater) {
++            // Send position and velocity updates to nearby players on every tick while the TNT is in water.
++            // This does pretty well at keeping their clients in sync with the server.
++            EntityTrackerEntry ete = (EntityTrackerEntry) ((WorldServer) this.getWorld()).getTracker().trackedEntities.get(this.getId());
++            if(ete != null) {
++                PacketPlayOutEntityVelocity velocityPacket = new PacketPlayOutEntityVelocity(this);
++                PacketPlayOutEntityTeleport positionPacket = new PacketPlayOutEntityTeleport(this);
++
++                for(EntityPlayer viewer : (java.util.Set<EntityPlayer>) ete.trackedPlayers) {
++                    if((viewer.locX - this.locX) * (viewer.locY - this.locY) * (viewer.locZ - this.locZ) < 16 * 16) {
++                        viewer.playerConnection.sendPacket(velocityPacket);
++                        viewer.playerConnection.sendPacket(positionPacket);
++                    }
++                }
++            }
++        }
++
++        return this.inWater;
++    }
++    // SportBukkit end
++
+     private void explode() {
+         // CraftBukkit start
+         // float f = 4.0F;
+@@ -77,7 +114,7 @@ public class EntityTNTPrimed extends Entity {
+         org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
+         org.bukkit.entity.Explosive explosive = (org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this);
+ 
+-        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 2.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
++        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
+         // CraftBukkit end
+     }
+ 
+@@ -94,6 +131,6 @@ public class EntityTNTPrimed extends Entity {
+     }
+ 
+     public float getHeadHeight() {
+-        return 0.0F;
++        return this.length / 16f; // SportBukkit
+     }
+ }
+diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
+index 08eca3d..34be58f 100644
+--- a/src/main/java/net/minecraft/server/Explosion.java
++++ b/src/main/java/net/minecraft/server/Explosion.java
+@@ -135,9 +135,14 @@ public class Explosion {
+                         // CraftBukkit end
+                         double d14 = EnchantmentProtection.a(entity, d13);
+ 
++                        /*
+                         entity.motX += d8 * d14;
+                         entity.motY += d9 * d14;
+                         entity.motZ += d10 * d14;
++                        */
++                        // This impulse method sets the dirty flag, so clients will get an immediate velocity update
++                        entity.g(d8 * d14, d9 * d14, d10 * d14);
++
+                         if (entity instanceof EntityHuman && !((EntityHuman) entity).abilities.isInvulnerable) {
+                             this.k.put((EntityHuman) entity, new Vec3D(d8 * d13, d9 * d13, d10 * d13));
+                         }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 5c89918..dc23ca2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -589,6 +589,11 @@ public final class CraftServer implements Server {
+     }
+ 
+     @Override
++    public boolean getWaterPushesTNT() {
++        return this.configuration.getBoolean("settings.water-pushes-tnt", true);
++    }
++
++    @Override
+     public int getTicksPerAnimalSpawns() {
+         return this.configuration.getInt("ticks-per.animal-spawns");
+     }
+-- 
+1.9.0
+

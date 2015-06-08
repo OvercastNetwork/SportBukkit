@@ -1,14 +1,14 @@
-From b7c8909f9e0c9cac40d89b39f532238ec4c72a7d Mon Sep 17 00:00:00 2001
+From b680b67b978177abc2f05a43be526dc63b298439 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 16 Jun 2013 16:57:59 -0500
 Subject: [PATCH] Add getting and setting of entity count
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 2c43d9e..433d624 100644
+index fd7d116..e6fdc1b 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -1047,6 +1047,20 @@ public final class Bukkit {
+@@ -1050,6 +1050,20 @@ public final class Bukkit {
      }
  
      /**
@@ -30,10 +30,10 @@ index 2c43d9e..433d624 100644
       *
       * @return the default server-icon; null values may be used by the
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index ab6d047..ee707ac 100644
+index ca6c42c..2405e57 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -855,6 +855,20 @@ public interface Server extends PluginMessageRecipient {
+@@ -858,6 +858,20 @@ public interface Server extends PluginMessageRecipient {
      ScoreboardManager getScoreboardManager();
  
      /**

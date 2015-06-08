@@ -1,14 +1,14 @@
-From ea2c55f66591738047eb461a152c67558be94e6a Mon Sep 17 00:00:00 2001
+From b83e090642dde8a2f75af0972c82945a9123cd9a Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 10 Nov 2013 12:26:30 -0800
 Subject: [PATCH] Add support for opening dropper inventory
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index edd9537..d4348c8 100644
+index 1709da6..6b57bf0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-@@ -219,10 +219,18 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+@@ -219,6 +219,13 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
                  openCustomInventory(inventory, player, "minecraft:hopper");
              }
              break;
@@ -21,14 +21,8 @@ index edd9537..d4348c8 100644
 +            break;
          case BEACON:
              if (craftinv.getInventory() instanceof TileEntityBeacon) {
-                 getHandle().openTileEntity((TileEntityBeacon) craftinv.getInventory());
--            } else {
-+            }
-+            else {
-                 openCustomInventory(inventory, player, "minecraft:beacon");
-             }
-             break;
-@@ -268,9 +276,9 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+                 getHandle().openContainer((TileEntityBeacon) craftinv.getInventory());
+@@ -268,9 +275,9 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
      }
  
      public InventoryView openWorkbench(Location location, boolean force) {

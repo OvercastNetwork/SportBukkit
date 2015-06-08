@@ -1,4 +1,4 @@
-From ab43a6d44ac1bf145719878cd9f7b401a02672a5 Mon Sep 17 00:00:00 2001
+From 8e0601bbe8eea68e554aca530454631660791d6d Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -249,7 +249,7 @@ index 2474a2d..2ac56e2 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index c763abe..c9de4b0 100644
+index 127ad9d..07b7896 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -13,6 +13,7 @@ import org.bukkit.block.Block;
@@ -260,7 +260,7 @@ index c763abe..c9de4b0 100644
  import org.bukkit.metadata.Metadatable;
  import org.bukkit.plugin.messaging.PluginMessageRecipient;
  import org.bukkit.util.Vector;
-@@ -729,6 +730,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -742,6 +743,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
       * Plays an effect to all players within a default radius around a given
       * location.
       *
@@ -277,7 +277,7 @@ index c763abe..c9de4b0 100644
       * @param location the {@link Location} around which players must be to
       *     hear the sound
       * @param effect the {@link Effect}
-@@ -772,6 +783,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -785,6 +796,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
      public <T> void playEffect(Location location, Effect effect, T data, int radius);
  
      /**
@@ -306,10 +306,10 @@ index c763abe..c9de4b0 100644
       * including valid biome data. Used for representing an ungenerated chunk,
       * or for fetching only biome data without loading a chunk.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 229a71a..d13da1d 100644
+index 1d0daaf..95b3c57 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -262,6 +262,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -260,6 +260,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       */
      public <T> void playEffect(Location loc, Effect effect, T data);
  

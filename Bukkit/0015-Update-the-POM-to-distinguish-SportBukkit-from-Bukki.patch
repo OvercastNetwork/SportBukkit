@@ -1,11 +1,11 @@
-From e490de2d7d7077bea7d70ec3e6e32e24f650726c Mon Sep 17 00:00:00 2001
+From 54ee45331974200fcb0d2dabd08fcdcf1adadd63 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Dec 2013 23:16:10 -0600
 Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
 
 
 diff --git a/pom.xml b/pom.xml
-index 853fab1..6fcb2df 100644
+index 6f1dc61..c786c92 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,20 +3,13 @@
@@ -22,7 +22,7 @@ index 853fab1..6fcb2df 100644
 -    <artifactId>bukkit</artifactId>
 +    <groupId>tc.oc</groupId>
 +    <artifactId>sportbukkit-api</artifactId>
-     <version>1.8-R0.1-SNAPSHOT</version>
+     <version>1.8.7-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Bukkit</name>
@@ -52,7 +52,7 @@ index 853fab1..6fcb2df 100644
 +            <url>https://repo.oc.tc/content/repositories/releases</url>
          </repository>
          <snapshotRepository>
--            <id>spigotmc-releases</id>
+-            <id>spigotmc-snapshots</id>
 -            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 +            <id>overcast-deployment</id>
 +            <url>https://repo.oc.tc/content/repositories/snapshots</url>

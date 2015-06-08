@@ -16,6 +16,7 @@ fi
 
 pushd work/CraftBukkit
 git checkout upstream
+git fetch origin upstream
 git reset --hard origin/upstream
 
 log_info "Applying CraftBukkit patches"

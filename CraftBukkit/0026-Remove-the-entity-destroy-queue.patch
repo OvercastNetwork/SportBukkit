@@ -1,0 +1,116 @@
+From 547105ddb08478e29b3e604aafd26d4258db7e6f Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Sun, 25 Nov 2012 13:56:45 -0600
+Subject: [PATCH] Remove the entity destroy queue
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 51f916e..a724224 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -34,7 +34,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public double d;
+     public double e;
+     public final List<ChunkCoordIntPair> chunkCoordIntPairQueue = Lists.newLinkedList();
+-    public final List<Integer> removeQueue = Lists.newLinkedList();
++    // public final List<Integer> removeQueue = Lists.newLinkedList(); SportBukkit - remove the removeQueue
+     private final ServerStatisticManager bK;
+     private float bL = Float.MIN_VALUE;
+     private float bM = -1.0E8F;
+@@ -201,6 +201,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+             this.activeContainer = this.defaultContainer;
+         }
+ 
++        /* CraftBukkit - remove the removeQueue
+         while (!this.removeQueue.isEmpty()) {
+             int i = Math.min(this.removeQueue.size(), Integer.MAX_VALUE);
+             int[] aint = new int[i];
+@@ -214,6 +215,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(aint));
+         }
++        */
+ 
+         if (!this.chunkCoordIntPairQueue.isEmpty()) {
+             ArrayList arraylist = Lists.newArrayList();
+@@ -898,7 +900,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.lastSentExp = -1;
+         this.bM = -1.0F;
+         this.bN = -1;
+-        this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue);
++        // this.removeQueue.addAll(((EntityPlayer) entityhuman).removeQueue); SportBukkit - remove the removeQueue
+     }
+ 
+     protected void a(MobEffect mobeffect) {
+@@ -1021,6 +1023,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         return this.bK;
+     }
+ 
++    /* CraftBukkit - remove destroy queue
+     public void d(Entity entity) {
+         if (entity instanceof EntityHuman) {
+             this.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(new int[] { entity.getId()}));
+@@ -1029,6 +1032,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         }
+ 
+     }
++    */
+ 
+     protected void B() {
+         if (this.isSpectator()) {
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index 5ef2be4..0c98b1b 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -291,19 +291,12 @@ public class EntityTrackerEntry {
+     }
+ 
+     public void a() {
+-        Iterator iterator = this.trackedPlayers.iterator();
+-
+-        while (iterator.hasNext()) {
+-            EntityPlayer entityplayer = (EntityPlayer) iterator.next();
+-
+-            entityplayer.d(this.tracker);
+-        }
+-
++        this.broadcast(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+     }
+ 
+     public void a(EntityPlayer entityplayer) {
+         if (this.trackedPlayers.contains(entityplayer)) {
+-            entityplayer.d(this.tracker);
++            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+             this.trackedPlayers.remove(entityplayer);
+         }
+ 
+@@ -321,7 +314,7 @@ public class EntityTrackerEntry {
+                         }
+                     }
+ 
+-                    entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId()));
++                    // entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId())); CraftBukkit - remove destroy queue
+                     // CraftBukkit end
+                     this.trackedPlayers.add(entityplayer);
+                     Packet packet = this.c();
+@@ -403,7 +396,7 @@ public class EntityTrackerEntry {
+                 }
+             } else if (this.trackedPlayers.contains(entityplayer)) {
+                 this.trackedPlayers.remove(entityplayer);
+-                entityplayer.d(this.tracker);
++                entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+             }
+ 
+         }
+@@ -542,7 +535,7 @@ public class EntityTrackerEntry {
+     public void clear(EntityPlayer entityplayer) {
+         if (this.trackedPlayers.contains(entityplayer)) {
+             this.trackedPlayers.remove(entityplayer);
+-            entityplayer.d(this.tracker);
++            entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityDestroy(this.tracker.getId())); // CraftBukkit - remove destroy queue
+         }
+ 
+     }
+-- 
+1.9.0
+

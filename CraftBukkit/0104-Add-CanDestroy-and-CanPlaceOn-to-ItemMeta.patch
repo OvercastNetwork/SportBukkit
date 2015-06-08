@@ -1,0 +1,213 @@
+From e76b0c9dd1deb5f8511e73e77f37667a4fb8f81c Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 22 May 2015 00:46:32 -0400
+Subject: [PATCH] Add CanDestroy and CanPlaceOn to ItemMeta
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index a076bc1..b155f0d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.ImmutableSet;
+ import com.google.common.collect.SetMultimap;
++import net.minecraft.server.Block;
+ import net.minecraft.server.GenericAttributes;
+ import net.minecraft.server.NBTBase;
+ import net.minecraft.server.NBTTagCompound;
+@@ -37,6 +38,7 @@ import org.bukkit.enchantments.Enchantment;
+ import org.bukkit.inventory.ItemFlag;
+ import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.inventory.meta.Repairable;
++import org.bukkit.util.ImmutableMaterialSet;
+ 
+ import com.google.common.base.Strings;
+ import com.google.common.collect.ImmutableList;
+@@ -220,6 +222,10 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     @Specific(Specific.To.NBT)
+     static final ItemMetaKey HIDEFLAGS = new ItemMetaKey("HideFlags", "ItemFlags");
+     static final ItemMetaKey UNBREAKABLE = new ItemMetaKey("Unbreakable", "unbreakable");
++    @Specific(Specific.To.NBT)
++    static final ItemMetaKey CAN_DESTROY = new ItemMetaKey("CanDestroy");
++    @Specific(Specific.To.NBT)
++    static final ItemMetaKey CAN_PLACE_ON = new ItemMetaKey("CanPlaceOn");
+ 
+     private String displayName;
+     private List<String> lore;
+@@ -228,6 +234,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     private int hideFlag;
+     private SetMultimap<String, AttributeModifier> attributeModifiers;
+     private boolean unbreakable;
++    private ImmutableMaterialSet canDestroy = ImmutableMaterialSet.of();
++    private ImmutableMaterialSet canPlaceOn = ImmutableMaterialSet.of();
+ 
+     private static final Set<String> HANDLED_TAGS = Sets.newHashSet();
+ 
+@@ -256,6 +264,9 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         this.repairCost = meta.repairCost;
+         this.hideFlag = meta.hideFlag;
+         this.unbreakable = meta.unbreakable;
++        this.canDestroy = meta.canDestroy;
++        this.canPlaceOn = meta.canPlaceOn;
++
+         this.unhandledTags.putAll(meta.unhandledTags);
+     }
+ 
+@@ -292,6 +303,9 @@ class CraftMetaItem implements ItemMeta, Repairable {
+ 
+         unbreakable = tag.getBoolean(UNBREAKABLE.NBT);
+ 
++        this.canDestroy = buildMaterialSet(tag, CAN_DESTROY);
++        this.canPlaceOn = buildMaterialSet(tag, CAN_PLACE_ON);
++
+         Set<String> keys = tag.c();
+         for (String key : keys) {
+             if (!getHandledTags().contains(key)) {
+@@ -300,6 +314,25 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         }
+     }
+ 
++    static ImmutableMaterialSet buildMaterialSet(NBTTagCompound tag, ItemMetaKey key) {
++        if(!tag.hasKey(key.NBT)) return ImmutableMaterialSet.of();
++
++        NBTTagList list = tag.getList(key.NBT, 8);
++        if(list.isEmpty()) return ImmutableMaterialSet.of();
++
++        ImmutableMaterialSet.Builder materials = ImmutableMaterialSet.builder();
++        for(int i = 0; i < list.size(); i++) {
++            Block block = Block.getByName(list.getString(i));
++            if(block != null) {
++                Material material = Material.getMaterial(Block.getId(block));
++                if(material != null) {
++                    materials.add(material);
++                }
++            }
++        }
++        return materials.build();
++    }
++
+     static Map<Enchantment, Integer> buildEnchantments(NBTTagCompound tag, ItemMetaKey key) {
+         if (!tag.hasKey(key.NBT)) {
+             return null;
+@@ -430,6 +463,14 @@ class CraftMetaItem implements ItemMeta, Repairable {
+             itemTag.setBoolean(UNBREAKABLE.NBT, true);
+         }
+ 
++        if(!canDestroy.isEmpty()) {
++            applyMaterialList(canDestroy, itemTag, CAN_DESTROY);
++        }
++
++        if(!canPlaceOn.isEmpty()) {
++            applyMaterialList(canPlaceOn, itemTag, CAN_PLACE_ON);
++        }
++
+         for (Map.Entry<String, NBTBase> e : unhandledTags.entrySet()) {
+             itemTag.set(e.getKey(), e.getValue());
+         }
+@@ -448,6 +489,19 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         return tagList;
+     }
+ 
++    static void applyMaterialList(Set<Material> materials, NBTTagCompound tag, ItemMetaKey key) {
++        if(materials.isEmpty()) return;
++
++        NBTTagList list = new NBTTagList();
++        for(Material material : materials) {
++            Block block = Block.getById(material.getId());
++            if(block != null) {
++                list.add(new NBTTagString(Block.REGISTRY.c(block).toString()));
++            }
++        }
++        if(!list.isEmpty()) tag.set(key.NBT, list);
++    }
++
+     static void applyEnchantments(Map<Enchantment, Integer> enchantments, NBTTagCompound tag, ItemMetaKey key) {
+         if (enchantments == null || enchantments.size() == 0) {
+             return;
+@@ -506,7 +560,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+ 
+     @Overridden
+     boolean isEmpty() {
+-        return !(hasDisplayName() || hasEnchants() || hasLore() || hasAttributeModifiers() || hasRepairCost() || unbreakable || !unhandledTags.isEmpty() || hideFlag != 0);
++        return !(hasDisplayName() || hasEnchants() || hasLore() || hasAttributeModifiers() || hasRepairCost() || unbreakable || !canDestroy.isEmpty() || !canPlaceOn.isEmpty() || !unhandledTags.isEmpty() || hideFlag != 0);
+     }
+ 
+     public String getDisplayName() {
+@@ -705,6 +759,36 @@ class CraftMetaItem implements ItemMeta, Repairable {
+     }
+ 
+     @Override
++    public ImmutableMaterialSet getCanDestroy() {
++        return canDestroy;
++    }
++
++    @Override
++    public void setCanDestroy(Collection<Material> materials) {
++        canDestroy = ImmutableMaterialSet.of(materials);
++    }
++
++    @Override
++    public void setCanDestroy(Material...materials) {
++        canDestroy = ImmutableMaterialSet.of(materials);
++    }
++
++    @Override
++    public ImmutableMaterialSet getCanPlaceOn() {
++        return canPlaceOn;
++    }
++
++    @Override
++    public void setCanPlaceOn(Collection<Material> materials) {
++        canPlaceOn = ImmutableMaterialSet.of(materials);
++    }
++
++    @Override
++    public void setCanPlaceOn(Material...materials) {
++        canPlaceOn = ImmutableMaterialSet.of(materials);
++    }
++
++    @Override
+     public final boolean equals(Object object) {
+         if (object == null) {
+             return false;
+@@ -731,6 +815,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                 && (this.hasAttributeModifiers() ? that.hasAttributeModifiers() && this.attributeModifiers.equals(that.attributeModifiers) : !that.hasAttributeModifiers())
+                 && (this.hasRepairCost() ? that.hasRepairCost() && this.repairCost == that.repairCost : !that.hasRepairCost())
+                 && this.unbreakable == that.unbreakable
++                && this.canDestroy.equals(that.canDestroy)
++                && this.canPlaceOn.equals(that.canPlaceOn)
+                 && (this.unhandledTags.equals(that.unhandledTags))
+                 && (this.hideFlag == that.hideFlag);
+     }
+@@ -759,6 +845,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+         hash = 61 * hash + (hasAttributeModifiers() ? this.attributeModifiers.hashCode() : 0);
+         hash = 61 * hash + (hasRepairCost() ? this.repairCost : 0);
+         hash = 61 * hash + (unbreakable ? 1 : 0);
++        hash = 61 * hash + canDestroy.hashCode();
++        hash = 61 * hash + canPlaceOn.hashCode();
+         hash = 61 * hash + unhandledTags.hashCode();
+         hash = 61 * hash + hideFlag;
+         return hash;
+@@ -779,6 +867,9 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                 clone.attributeModifiers = HashMultimap.create(this.attributeModifiers);
+             }
+             clone.hideFlag = this.hideFlag;
++            clone.canDestroy = this.canDestroy;
++            clone.canPlaceOn = this.canPlaceOn;
++
+             return clone;
+         } catch (CloneNotSupportedException e) {
+             throw new Error(e);
+@@ -908,6 +999,8 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                         ENCHANTMENTS.NBT,
+                         ATTRIBUTES.NBT,
+                         UNBREAKABLE.NBT,
++                        CAN_DESTROY.NBT,
++                        CAN_PLACE_ON.NBT,
+                         CraftMetaMap.MAP_SCALING.NBT,
+                         CraftMetaPotion.POTION_EFFECTS.NBT,
+                         CraftMetaSkull.SKULL_OWNER.NBT,
+-- 
+1.9.0
+

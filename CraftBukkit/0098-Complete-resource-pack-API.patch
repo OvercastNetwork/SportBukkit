@@ -1,0 +1,114 @@
+From cd1faca2aef84df00ea5997bf283159d486638db Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 4 Apr 2015 23:17:52 -0400
+Subject: [PATCH] Complete resource pack API
+
+
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+index c8e4b3b..b33e7f0 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
++++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+@@ -4,8 +4,10 @@ import java.io.IOException;
+ 
+ public class PacketPlayInResourcePackStatus implements Packet<PacketListenerPlayIn> {
+ 
+-    private String a;
+-    private PacketPlayInResourcePackStatus.EnumResourcePackStatus b;
++    // SportBukkit start - make public
++    public String a;
++    public PacketPlayInResourcePackStatus.EnumResourcePackStatus b;
++    // SportBukkit end
+ 
+     public PacketPlayInResourcePackStatus() {}
+ 
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 332e4e9..aa9bb9d 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -58,6 +58,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
+ import org.bukkit.event.player.PlayerToggleFlightEvent;
+ import org.bukkit.event.player.PlayerToggleSneakEvent;
+ import org.bukkit.event.player.PlayerToggleSprintEvent;
++import org.bukkit.event.player.PlayerResourcePackStatusEvent;
++import org.bukkit.ResourcePackStatus;
+ import org.bukkit.inventory.CraftingInventory;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.util.NumberConversions;
+@@ -853,7 +855,22 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+ 
+     }
+ 
+-    public void a(PacketPlayInResourcePackStatus packetplayinresourcepackstatus) {}
++    // SportBukkit start
++    public void a(PacketPlayInResourcePackStatus packetplayinresourcepackstatus) {
++        PlayerConnectionUtils.ensureMainThread(packetplayinresourcepackstatus, this, this.player.u());
++
++        ResourcePackStatus status;
++        switch(packetplayinresourcepackstatus.b) {
++            case ACCEPTED: status = ResourcePackStatus.ACCEPTED; break;
++            case DECLINED: status = ResourcePackStatus.DECLINED; break;
++            case SUCCESSFULLY_LOADED: status = ResourcePackStatus.LOADED; break;
++            default: status = ResourcePackStatus.FAILED; break;
++        }
++
++        this.getPlayer().setResourcePackStatus(status, packetplayinresourcepackstatus.a);
++        this.server.getPluginManager().callEvent(new PlayerResourcePackStatusEvent(this.getPlayer(), status, packetplayinresourcepackstatus.a));
++    }
++    // SportBukkit end
+ 
+     public void a(IChatBaseComponent ichatbasecomponent) {
+         // CraftBukkit start - Rarely it would send a disconnect line twice
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index d396940..7fa19c5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -83,6 +83,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private double healthScale = 20;
+     private Skin realSkin;
+     private boolean showInvisibles;
++    private ResourcePackStatus resourcePackStatus;
++    private String resourcePackHash;
+ 
+     private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
+     private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
+@@ -1392,9 +1394,36 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public void setResourcePack(String url) {
++        setResourcePack(url, "null");
++    }
++
++    @Override
++    public void setResourcePack(String url, String hash) {
+         Validate.notNull(url, "Resource pack URL cannot be null");
++        Validate.notNull(hash, "Hash cannot be null");
++        Validate.isTrue(hash.matches("^[0-9a-f]{40}$"), "Hash must be a 40 character SHA-1 digest with lowercase letters");
++
++        getHandle().setResourcePack(url, hash);
++    }
++
++    @Override
++    public ResourcePackStatus getResourcePackStatus() {
++        return resourcePackStatus;
++    }
++
++    @Override
++    public String getResourcePackHash() {
++        return resourcePackHash;
++    }
++
++    @Override
++    public boolean hasResourcePack() {
++        return this.resourcePackStatus == ResourcePackStatus.LOADED;
++    }
+ 
+-        getHandle().setResourcePack(url, "null");
++    public void setResourcePackStatus(ResourcePackStatus status, String hash) {
++        this.resourcePackStatus = status;
++        this.resourcePackHash = hash;
+     }
+ 
+     public void addChannel(String channel) {
+-- 
+1.9.0
+

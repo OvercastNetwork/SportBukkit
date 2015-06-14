@@ -1,0 +1,22 @@
+From 50046d7edb67c6a794841b0a5e86efcba105c19a Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 14 Jun 2015 12:56:06 -0400
+Subject: [PATCH] Fix NPE spawning ender pearl
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityProjectile.java b/src/main/java/net/minecraft/server/EntityProjectile.java
+index 72478be..c832b1a 100644
+--- a/src/main/java/net/minecraft/server/EntityProjectile.java
++++ b/src/main/java/net/minecraft/server/EntityProjectile.java
+@@ -26,7 +26,7 @@ public abstract class EntityProjectile extends Entity implements IProjectile {
+     public EntityProjectile(World world, EntityLiving entityliving) {
+         super(world);
+         this.shooter = entityliving;
+-        this.projectileSource = (org.bukkit.entity.LivingEntity) entityliving.getBukkitEntity(); // CraftBukkit
++        if(entityliving != null) this.projectileSource = (org.bukkit.entity.LivingEntity) entityliving.getBukkitEntity(); // CraftBukkit
+         this.setSize(0.25F, 0.25F);
+         this.setPositionRotation(entityliving.locX, entityliving.locY + (double) entityliving.getHeadHeight(), entityliving.locZ, entityliving.yaw, entityliving.pitch);
+         this.locX -= (double) (MathHelper.cos(this.yaw / 180.0F * 3.1415927F) * 0.16F);
+-- 
+1.9.0
+

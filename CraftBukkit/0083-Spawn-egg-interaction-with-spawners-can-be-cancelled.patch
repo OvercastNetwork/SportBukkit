@@ -1,11 +1,11 @@
-From 8fca11dcbe625c8499f07f18f9b0ef8ca0c6523c Mon Sep 17 00:00:00 2001
+From f44144000866b1ffa318b8a8161cfe38f902f555 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Feb 2015 01:37:47 -0500
 Subject: [PATCH] Spawn egg interaction with spawners can be cancelled
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockMobSpawner.java b/src/main/java/net/minecraft/server/BlockMobSpawner.java
-index 4bf4df8..1337b48 100644
+index 4bf4df8..9d62101 100644
 --- a/src/main/java/net/minecraft/server/BlockMobSpawner.java
 +++ b/src/main/java/net/minecraft/server/BlockMobSpawner.java
 @@ -44,4 +44,27 @@ public class BlockMobSpawner extends BlockContainer {
@@ -19,7 +19,7 @@ index 4bf4df8..1337b48 100644
 +        ItemStack itemstack = entityhuman.inventory.getItemInHand();
 +        TileEntity tileentity = world.getTileEntity(blockposition);
 +
-+        if(itemstack.getItem() instanceof ItemMonsterEgg && tileentity instanceof TileEntityMobSpawner) {
++        if(itemstack != null && itemstack.getItem() instanceof ItemMonsterEgg && tileentity instanceof TileEntityMobSpawner) {
 +            MobSpawnerAbstract mobspawnerabstract = ((TileEntityMobSpawner) tileentity).getSpawner();
 +
 +            mobspawnerabstract.setMobName(EntityTypes.b(itemstack.getData()));

@@ -1,4 +1,4 @@
-From cd1faca2aef84df00ea5997bf283159d486638db Mon Sep 17 00:00:00 2001
+From 6215b5b4bb0aa2def8ecf5771e725319de6b44b2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 4 Apr 2015 23:17:52 -0400
 Subject: [PATCH] Complete resource pack API
@@ -59,7 +59,7 @@ index 332e4e9..aa9bb9d 100644
      public void a(IChatBaseComponent ichatbasecomponent) {
          // CraftBukkit start - Rarely it would send a disconnect line twice
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d396940..7fa19c5 100644
+index 74cca6f..4d99e98 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -83,6 +83,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -71,7 +71,7 @@ index d396940..7fa19c5 100644
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -1392,9 +1394,36 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1395,9 +1397,36 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setResourcePack(String url) {

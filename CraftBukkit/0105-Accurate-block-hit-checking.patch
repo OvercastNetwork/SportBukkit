@@ -1,4 +1,4 @@
-From c6921e8067ef8853b0cd352d1921710a47d563e6 Mon Sep 17 00:00:00 2001
+From 2f74f9856dad75b2837203b23004bd43db4d9202 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:01:46 -0400
 Subject: [PATCH] Accurate block hit checking
@@ -89,7 +89,7 @@ index 22a8055..a0a58cb 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4cc4dba..44193f3 100644
+index 45f85d9..52e59b4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -68,6 +68,7 @@ import org.bukkit.metadata.MetadataValue;
@@ -100,7 +100,7 @@ index 4cc4dba..44193f3 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1833,4 +1834,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1836,4 +1837,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          BlockPosition pos = getHandle().playerInteractManager.f;
          return getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
      }

@@ -1,14 +1,14 @@
-From 3234138d5a407a657aa4ecb5e6a3586288e2190e Mon Sep 17 00:00:00 2001
+From 2ff414c26d5a2ce02f61fc452edd1702fc8b3d69 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Mar 2015 22:44:22 -0400
 Subject: [PATCH] Force update player velocity
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index a8773f8..222caa3 100644
+index 60900c1..f0a9404 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1672,7 +1672,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1675,7 +1675,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void sendMessage(BaseComponent component) {
@@ -17,7 +17,7 @@ index a8773f8..222caa3 100644
      }
  
      @Override
-@@ -1694,8 +1694,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1697,8 +1697,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
@@ -28,7 +28,7 @@ index a8773f8..222caa3 100644
      }
  
      @Override
-@@ -1710,7 +1710,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1713,7 +1713,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setSubtitle(BaseComponent subtitle) {
@@ -37,7 +37,7 @@ index a8773f8..222caa3 100644
      }
  
      @Override
-@@ -1746,4 +1746,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1749,4 +1749,20 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void resetTitle() {
          getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.RESET, (BaseComponent[]) null, 0, 0, 0));
      }

@@ -1,4 +1,4 @@
-From 63ddec65af2219f67be90eed185549c0904be3f9 Mon Sep 17 00:00:00 2001
+From 7f52821e353616ca8ef6f822893b48e1451d3542 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
@@ -56,7 +56,7 @@ index ae78991..e246636 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index a48069d..7deace5 100644
+index a48069d..269942f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -82,6 +82,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -67,7 +67,7 @@ index a48069d..7deace5 100644
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -1238,6 +1239,24 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1238,6 +1239,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -80,9 +80,12 @@ index a48069d..7deace5 100644
 +        if(show != this.showInvisibles) {
 +            this.showInvisibles = show;
 +            EntityTracker tracker = ((WorldServer) this.entity.world).tracker;
-+            for(Entity entity : ((List<Entity>) getHandle().world.entityList)) {
-+                if(entity.isInvisible() && ((EntityTrackerEntry) tracker.trackedEntities.get(entity.getId())).trackedPlayers.contains(getHandle())) {
-+                    getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true));
++            for(Entity entity : getHandle().world.entityList) {
++                if(entity.isInvisible()) {
++                    EntityTrackerEntry trackerEntry = tracker.trackedEntities.get(entity.getId());
++                    if(trackerEntry != null && trackerEntry.trackedPlayers.contains(getHandle())) {
++                        getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(entity.getId(), entity.getDataWatcher(), true));
++                    }
 +                }
 +            }
 +        }

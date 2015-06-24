@@ -1,11 +1,11 @@
-From ceed6901dfb1ddbaa141dab67dd3259686288206 Mon Sep 17 00:00:00 2001
+From b6cc34275f64ea4eaf52e46d14c1a259fce879f6 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 97c88ea..4e35015 100644
+index 97c88ea..c567fde 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -68,6 +68,12 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
@@ -33,7 +33,7 @@ index 97c88ea..4e35015 100644
  
          // CraftBukkit start - fire PlayerLoginEvent
          EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, hostname);
-@@ -133,7 +141,16 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+@@ -133,7 +141,15 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
              this.g = LoginListener.EnumProtocolState.KEY;
              this.networkManager.handle(new PacketLoginOutEncryptionBegin(this.j, this.server.Q().getPublic(), this.e));
          } else {
@@ -42,7 +42,6 @@ index 97c88ea..4e35015 100644
 +            new Thread("User Authenticator #" + LoginListener.b.incrementAndGet()) {
 +                public void run() {
 +                    LoginListener.this.i = LoginListener.this.a(LoginListener.this.i);
-+                    LoginListener.this.g = EnumProtocolState.READY_TO_ACCEPT;
 +                    LoginListener.c.info("UUID (offline) of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
 +                    callPreLoginEvent();
 +                }
@@ -51,7 +50,7 @@ index 97c88ea..4e35015 100644
          }
  
      }
-@@ -157,43 +174,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+@@ -157,49 +173,11 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
  
                          LoginListener.this.i = LoginListener.this.server.aD().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
                          if (LoginListener.this.i != null) {
@@ -94,22 +93,36 @@ index 97c88ea..4e35015 100644
 -                            // CraftBukkit end
 +                            if (!networkManager.g()) return; // SportBukkit - ensure player is still connected
                              LoginListener.c.info("UUID of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
-                             LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                          } else if (LoginListener.this.server.T()) {
-@@ -219,12 +200,60 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+                             LoginListener.c.warn("Failed to verify username but will let them in anyway!");
+                             LoginListener.this.i = LoginListener.this.a(gameprofile);
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                         } else {
+                             LoginListener.this.disconnect("Failed to verify username!");
+                             LoginListener.c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+@@ -208,7 +186,6 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
+                         if (LoginListener.this.server.T()) {
+                             LoginListener.c.warn("Authentication servers are down but will let them in anyway!");
+                             LoginListener.this.i = LoginListener.this.a(gameprofile);
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                         } else {
+                             LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
+                             LoginListener.c.error("Couldn\'t verify username because servers are unavailable");
+@@ -219,12 +196,64 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
                          server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
                          // CraftBukkit end
                      }
+-
 +                    callPreLoginEvent(); // SportBukkit
- 
                  }
              }).start();
          }
      }
  
 +    // SportBukkit start
-+    private String disconnectReason;
-+    private boolean preLoginEventFired;
++    private volatile String disconnectReason;
++    private volatile boolean preLoginEventFired;
 +
 +    void callPreLoginEvent() {
 +        String playerName = i.getName();
@@ -141,16 +154,21 @@ index 97c88ea..4e35015 100644
 +            try {
 +                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
 +                    disconnect(event.getKickMessage());
++                    return;
 +                }
 +            } catch(Exception e) {
 +                disconnect("Internal server error");
 +                server.getLogger().log(java.util.logging.Level.SEVERE, "Exception waiting for PlayerPreLoginEvent while verifying " + playerName, e);
++                return;
 +            }
 +        } else {
 +            if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
 +                disconnect(asyncEvent.getKickMessage());
++                return;
 +            }
 +        }
++
++        this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
 +    }
 +    // SportBukkit end
 +

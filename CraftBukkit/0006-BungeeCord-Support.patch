@@ -1,4 +1,4 @@
-From 7fdec06ee82f09b696ea60daf4a357bbfac210b4 Mon Sep 17 00:00:00 2001
+From 31ec52d914f9fcbd98e441017358c48c94c582ee Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -37,7 +37,7 @@ index 3b6a514..9197bd9 100644
              }
              break;
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 4e35015..b3aeb47 100644
+index c567fde..087bb5e 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -144,7 +144,7 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
@@ -46,12 +46,12 @@ index 4e35015..b3aeb47 100644
                  public void run() {
 -                    LoginListener.this.i = LoginListener.this.a(LoginListener.this.i);
 +                    LoginListener.this.i = LoginListener.this.completeOfflineProfile(LoginListener.this.i);
-                     LoginListener.this.g = EnumProtocolState.READY_TO_ACCEPT;
                      LoginListener.c.info("UUID (offline) of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
                      callPreLoginEvent();
+                 }
 @@ -252,6 +252,22 @@ public class LoginListener implements PacketLoginInListener, IUpdatePlayerListBo
-             }
-         }
+ 
+         this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
      }
 +
 +    public GameProfile completeOfflineProfile(GameProfile profile) {

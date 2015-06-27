@@ -1,4 +1,4 @@
-From 08ae5db3f439569769c3a316cab761700241f5cf Mon Sep 17 00:00:00 2001
+From c3d3da228773fdbc9af60fd825f216db95d972c7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 23 Jun 2015 17:18:20 -0400
 Subject: [PATCH] Bounds check slot numbers in packets
@@ -56,6 +56,20 @@ index aa9bb9d..a1f386c 100644
                                      break;
                                  // Modified cursor only
                                  case DROP_ALL_CURSOR:
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
+index ae47a0e..5c159eb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
+@@ -62,7 +62,8 @@ public class CraftInventoryView extends InventoryView {
+         if (slot == -999) {
+             return null;
+         }
+-        return CraftItemStack.asCraftMirror(container.getSlot(slot).getItem());
++        net.minecraft.server.Slot nmsSlot = container.getSlot(slot);
++        return nmsSlot == null ? null : CraftItemStack.asCraftMirror(nmsSlot.getItem());
+     }
+ 
+     public boolean isInTop(int rawSlot) {
 -- 
 1.9.0
 

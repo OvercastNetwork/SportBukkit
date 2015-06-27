@@ -1,0 +1,136 @@
+From cb4376cdd6ff8922f55737adc6d0619fe1e6ee63 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 26 Jun 2015 21:35:56 -0400
+Subject: [PATCH] Dispatch events to superclass listeners
+
+
+diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
+index e5638d5..906e159 100644
+--- a/src/main/java/org/bukkit/plugin/PluginManager.java
++++ b/src/main/java/org/bukkit/plugin/PluginManager.java
+@@ -5,6 +5,7 @@ import java.util.Set;
+ 
+ import org.bukkit.event.Event;
+ import org.bukkit.event.EventPriority;
++import org.bukkit.event.HandlerList;
+ import org.bukkit.event.Listener;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.permissions.Permission;
+@@ -136,6 +137,11 @@ public interface PluginManager {
+     public void registerEvent(Class<? extends Event> event, Listener listener, EventPriority priority, EventExecutor executor, Plugin plugin, boolean ignoreCancelled);
+ 
+     /**
++     * Get the {@link HandlerList} containing the listeners for the given {@link Event} type
++     */
++    HandlerList getHandlerList(Class<? extends Event> type);
++
++    /**
+      * Enables the specified plugin
+      * <p>
+      * Attempting to enable a plugin that is already enabled will have no
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 0a3d85b..77b2728 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -18,6 +18,9 @@ import java.util.logging.Level;
+ import java.util.regex.Matcher;
+ import java.util.regex.Pattern;
+ 
++import com.google.common.cache.CacheBuilder;
++import com.google.common.cache.CacheLoader;
++import com.google.common.cache.LoadingCache;
+ import org.apache.commons.lang.Validate;
+ import org.bukkit.Server;
+ import org.bukkit.command.Command;
+@@ -50,6 +53,13 @@ public final class SimplePluginManager implements PluginManager {
+     private final Map<Boolean, Map<Permissible, Boolean>> defSubs = new HashMap<Boolean, Map<Permissible, Boolean>>();
+     private boolean useTimings = false;
+ 
++    private final LoadingCache<Class<? extends Event>, HandlerList> eventHandlerLists = CacheBuilder.newBuilder().build(new CacheLoader<Class<? extends Event>, HandlerList>() {
++        @Override
++        public HandlerList load(Class<? extends Event> event) throws Exception {
++            return getEventListeners(event);
++        }
++    });
++
+     public SimplePluginManager(Server instance, SimpleCommandMap commandMap) {
+         server = instance;
+         this.commandMap = commandMap;
+@@ -501,7 +511,7 @@ public final class SimplePluginManager implements PluginManager {
+     }
+ 
+     private void fireEvent(Event event) {
+-        HandlerList handlers = event.getHandlers();
++        HandlerList handlers = getHandlerList(event.getClass());
+         RegisteredListener[] listeners = handlers.getRegisteredListeners();
+ 
+         for (RegisteredListener registration : listeners) {
+@@ -536,7 +546,7 @@ public final class SimplePluginManager implements PluginManager {
+         }
+ 
+         for (Map.Entry<Class<? extends Event>, Set<RegisteredListener>> entry : plugin.getPluginLoader().createRegisteredListeners(listener, plugin).entrySet()) {
+-            getEventListeners(getRegistrationClass(entry.getKey())).registerAll(entry.getValue());
++            getEventListeners(entry.getKey()).registerAll(entry.getValue());
+         }
+ 
+     }
+@@ -568,12 +578,16 @@ public final class SimplePluginManager implements PluginManager {
+         }
+ 
+         if (useTimings) {
+-            getEventListeners(event).register(new TimedRegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
++            getHandlerList(event).register(new TimedRegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
+         } else {
+-            getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
++            getHandlerList(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
+         }
+     }
+ 
++    public HandlerList getHandlerList(Class<? extends Event> type) {
++        return eventHandlerLists.getUnchecked(type);
++    }
++
+     private HandlerList getEventListeners(Class<? extends Event> type) {
+         try {
+             Method method = getRegistrationClass(type).getDeclaredMethod("getHandlerList");
+@@ -585,18 +599,26 @@ public final class SimplePluginManager implements PluginManager {
+     }
+ 
+     private Class<? extends Event> getRegistrationClass(Class<? extends Event> clazz) {
+-        try {
+-            clazz.getDeclaredMethod("getHandlerList");
+-            return clazz;
+-        } catch (NoSuchMethodException e) {
+-            if (clazz.getSuperclass() != null
+-                    && !clazz.getSuperclass().equals(Event.class)
+-                    && Event.class.isAssignableFrom(clazz.getSuperclass())) {
+-                return getRegistrationClass(clazz.getSuperclass().asSubclass(Event.class));
+-            } else {
+-                throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
+-            }
++        // Search for the *least derived* superclass of the given class that declares a getHandlerList method.
++        // That class's HandlerList will be used to register listeners for ALL of its subclasses. Methods of
++        // the same name in any subclasses will be ignored. This ensures that listeners for an event class will
++        // also receive events of any of its subclasses.
++        //
++        // CraftBukkit uses the most derived superclass instead, which means that an event with its own HandlerList
++        // is not dispatched to listeners of any superclass events that also have a HandlerList.
++        Class<? extends Event> registrationClass = null;
++        for(; Event.class.isAssignableFrom(clazz.getSuperclass()); clazz = clazz.getSuperclass().asSubclass(Event.class)) {
++            try {
++                clazz.getDeclaredMethod("getHandlerList");
++                registrationClass = clazz;
++            } catch (NoSuchMethodException ignored) { }
+         }
++
++        if(registrationClass == null) {
++            throw new IllegalPluginAccessException("Unable to find handler list for event " + clazz.getName() + ". Static getHandlerList method required!");
++        }
++
++        return registrationClass;
+     }
+ 
+     public Permission getPermission(String name) {
+-- 
+1.9.0
+

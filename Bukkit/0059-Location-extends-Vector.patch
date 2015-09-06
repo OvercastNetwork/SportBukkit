@@ -1,4 +1,4 @@
-From 616b456bbed152929f4906c63d497281017ae2c7 Mon Sep 17 00:00:00 2001
+From c2ba0a248c682b592a655ad4ea883a76eaf1361a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 14 Jul 2015 09:57:16 -0400
 Subject: [PATCH] Location extends Vector

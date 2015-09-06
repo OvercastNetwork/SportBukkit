@@ -1,4 +1,4 @@
-From 8dc06d4e2a9b386b82a3479af2c5bcf9ad01b080 Mon Sep 17 00:00:00 2001
+From 442593847385588bce059c0bf5c5eab869a26bd9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 10 Jul 2015 23:07:53 -0400
 Subject: [PATCH] Logging improvements

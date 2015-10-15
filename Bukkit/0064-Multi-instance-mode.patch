@@ -1,0 +1,283 @@
+From 296a1317e4c25ca0c0274d06ea298a25017f036c Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 15 Oct 2015 10:58:34 -0400
+Subject: [PATCH] Multi-instance mode
+
+
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index cf66c45..d65ea62 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -43,6 +43,7 @@ import com.google.common.collect.ImmutableList;
+ 
+ import org.bukkit.inventory.ItemFactory;
+ import org.bukkit.inventory.meta.ItemMeta;
++import tc.oc.multibukkit.api.Runtime;
+ 
+ /**
+  * Represents the Bukkit core, for version and Server singleton handling
+@@ -372,6 +373,40 @@ public final class Bukkit {
+     }
+ 
+     /**
++     * Is the server running in multi-instance mode?
++     *
++     * In this mode, no files are written to the server folder, only to a temporary
++     * folder that is deleted on shutdown. This allows multiple processes to be started
++     * from the same server files on disk. However, any changes to world or config data
++     * is lost when the server shuts down.
++     *
++     * Multi-instance mode is enabled by passing --multi-instance or -m on the command line.
++     * If multiple instances listen on the same network interface, they will need to use
++     * different ports, which could be accomplished using dynamic port allocation, or
++     * by specifying the port on the command line with the -p option.
++     */
++    public static boolean isMultiInstanceMode() {
++        return temporaryDataFolder != null;
++    }
++
++    /**
++     * Get the temporary data folder used when the server is in multi-instance mode.
++     * If multi-instance mode is not enabled, this returns null.
++     */
++    public static File getTemporaryDataFolder() {
++        return temporaryDataFolder;
++    }
++
++    public static void setTemporaryDataFolder(File folder) {
++        if(temporaryDataFolder != null) {
++            throw new IllegalStateException("Multiple calls to data folder init method");
++        }
++        temporaryDataFolder = folder;
++    }
++
++    private static File temporaryDataFolder;
++
++    /**
+      * Gets default ticks per animal spawns value.
+      * <p>
+      * <b>Example Usage:</b>
+@@ -631,6 +666,10 @@ public final class Bukkit {
+         return server.getLogger();
+     }
+ 
++    public static Logger getLogger(String name) {
++        return server.getLogger(name);
++    }
++
+     /**
+      * Gets a {@link PluginCommand} with the given name or alias.
+      *
+@@ -1253,4 +1292,8 @@ public final class Bukkit {
+     public static AttributeFactory getAttributeFactory() {
+         return server.getAttributeFactory();
+     }
++
++    public static Runtime getRuntime() {
++        return server.getRuntime();
++    }
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 695d0f4..fd5dfc6 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -44,6 +44,7 @@ import com.google.common.collect.ImmutableList;
+ 
+ import org.bukkit.inventory.ItemFactory;
+ import org.bukkit.inventory.meta.ItemMeta;
++import tc.oc.multibukkit.api.Runtime;
+ 
+ /**
+  * Represents a server implementation.
+@@ -535,6 +536,8 @@ public interface Server extends PluginMessageRecipient {
+      */
+     public Logger getLogger();
+ 
++    Logger getLogger(String name);
++
+     /**
+      * Gets a {@link PluginCommand} with the given name or alias.
+      *
+@@ -1044,4 +1047,6 @@ public interface Server extends PluginMessageRecipient {
+      * Get the {@link AttributeFactory} for this server
+      */
+     AttributeFactory getAttributeFactory();
++
++    Runtime getRuntime();
+ }
+diff --git a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+index 9cbe0ca..c70d9d4 100644
+--- a/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
++++ b/src/main/java/org/bukkit/configuration/file/FileConfiguration.java
+@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
+ import com.google.common.io.Files;
+ 
+ import org.apache.commons.lang.Validate;
++import org.bukkit.Bukkit;
+ import org.bukkit.configuration.InvalidConfigurationException;
+ 
+ import java.io.BufferedReader;
+@@ -98,6 +99,8 @@ public abstract class FileConfiguration extends MemoryConfiguration {
+     public void save(File file) throws IOException {
+         Validate.notNull(file, "File cannot be null");
+ 
++        if(Bukkit.isMultiInstanceMode()) return;
++
+         Files.createParentDirs(file);
+ 
+         String data = saveToString();
+diff --git a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+index 9cd15f4..83eb2e2 100644
+--- a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
++++ b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
+@@ -13,6 +13,7 @@ import java.util.logging.Logger;
+ import com.google.common.collect.HashMultimap;
+ import com.google.common.collect.SetMultimap;
+ import org.apache.commons.lang.Validate;
++import org.bukkit.Bukkit;
+ import org.bukkit.Color;
+ import org.bukkit.FireworkEffect;
+ import org.bukkit.Location;
+@@ -84,12 +85,12 @@ public class ConfigurationSerialization {
+             ConfigurationSerializable result = (ConfigurationSerializable) method.invoke(null, args);
+ 
+             if (result == null) {
+-                Logger.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method.toString() + "' of " + clazz + " for deserialization: method returned null");
++                Bukkit.getLogger(ConfigurationSerialization.class.getName()).log(Level.SEVERE, "Could not call method '" + method.toString() + "' of " + clazz + " for deserialization: method returned null");
+             } else {
+                 return result;
+             }
+         } catch (Throwable ex) {
+-            Logger.getLogger(ConfigurationSerialization.class.getName()).log(
++            Bukkit.getLogger(ConfigurationSerialization.class.getName()).log(
+                     Level.SEVERE,
+                     "Could not call method '" + method.toString() + "' of " + clazz + " for deserialization",
+                     ex instanceof InvocationTargetException ? ex.getCause() : ex);
+@@ -102,7 +103,7 @@ public class ConfigurationSerialization {
+         try {
+             return ctor.newInstance(args);
+         } catch (Throwable ex) {
+-            Logger.getLogger(ConfigurationSerialization.class.getName()).log(
++            Bukkit.getLogger(ConfigurationSerialization.class.getName()).log(
+                     Level.SEVERE,
+                     "Could not call constructor '" + ctor.toString() + "' of " + clazz + " for deserialization",
+                     ex instanceof InvocationTargetException ? ex.getCause() : ex);
+diff --git a/src/main/java/tc/oc/multibukkit/api/Application.java b/src/main/java/tc/oc/multibukkit/api/Application.java
+new file mode 100644
+index 0000000..d553e05
+--- /dev/null
++++ b/src/main/java/tc/oc/multibukkit/api/Application.java
+@@ -0,0 +1,5 @@
++package tc.oc.multibukkit.api;
++
++public interface Application {
++    void start(String[] args, Runtime runtime);
++}
+diff --git a/src/main/java/tc/oc/multibukkit/api/Runtime.java b/src/main/java/tc/oc/multibukkit/api/Runtime.java
+new file mode 100644
+index 0000000..82b0e2d
+--- /dev/null
++++ b/src/main/java/tc/oc/multibukkit/api/Runtime.java
+@@ -0,0 +1,29 @@
++package tc.oc.multibukkit.api;
++
++import java.io.InputStream;
++import java.io.PrintStream;
++import java.util.Properties;
++import java.util.logging.Logger;
++
++public interface Runtime {
++
++    boolean dedicated();
++
++    InputStream in();
++
++    PrintStream out();
++    void setOut(PrintStream out);
++
++    PrintStream err();
++    void setErr(PrintStream err);
++
++    Properties properties();
++
++    boolean hasConsole();
++
++    void exit(int status);
++
++    void addShutdownHook(Thread hook);
++
++    Logger getLogger(String name);
++}
+diff --git a/src/main/java/tc/oc/multibukkit/api/SystemRuntime.java b/src/main/java/tc/oc/multibukkit/api/SystemRuntime.java
+new file mode 100644
+index 0000000..2ae395b
+--- /dev/null
++++ b/src/main/java/tc/oc/multibukkit/api/SystemRuntime.java
+@@ -0,0 +1,64 @@
++package tc.oc.multibukkit.api;
++
++import java.io.InputStream;
++import java.io.PrintStream;
++import java.util.Properties;
++import java.util.logging.Logger;
++
++public class SystemRuntime implements Runtime {
++
++    @Override
++    public boolean dedicated() {
++        return true;
++    }
++
++    @Override
++    public InputStream in() {
++        return System.in;
++    }
++
++    @Override
++    public PrintStream out() {
++        return System.out;
++    }
++
++    @Override
++    public void setOut(PrintStream out) {
++        System.setOut(out);
++    }
++
++    @Override
++    public PrintStream err() {
++        return System.err;
++    }
++
++    @Override
++    public void setErr(PrintStream err) {
++        System.setErr(err);
++    }
++
++    @Override
++    public boolean hasConsole() {
++        return System.console() != null;
++    }
++
++    @Override
++    public Properties properties() {
++        return System.getProperties();
++    }
++
++    @Override
++    public void exit(int status) {
++        System.exit(status);
++    }
++
++    @Override
++    public void addShutdownHook(Thread hook) {
++        java.lang.Runtime.getRuntime().addShutdownHook(hook);
++    }
++
++    @Override
++    public Logger getLogger(String name) {
++        return Logger.getLogger(name);
++    }
++}
+-- 
+1.9.0
+

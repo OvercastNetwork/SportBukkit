@@ -1,0 +1,693 @@
+From 7c78821498d7ac0a20d8ae74c07219ae746418c0 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 15 Oct 2015 11:03:36 -0400
+Subject: [PATCH] Multi-instance mode
+
+
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index 756bdbb..0582a3a 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -1,10 +1,9 @@
+ package net.minecraft.server;
+ 
+ import com.google.common.collect.Lists;
+-import java.io.BufferedReader;
++
+ import java.io.File;
+ import java.io.IOException;
+-import java.io.InputStreamReader;
+ import java.net.InetAddress;
+ import java.net.Proxy;
+ import java.util.Collections;
+@@ -91,8 +90,16 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+             }
+         };
+ 
++        // SportBukkit start
++        if(options.has("multi-instance")) {
++            final File tempDataFolder = com.google.common.io.Files.createTempDir();
++            org.bukkit.Bukkit.setTemporaryDataFolder(tempDataFolder);
++            org.bukkit.craftbukkit.Main.out().println("Running in multi-instance mode, temporary data will be stored in " + tempDataFolder);
++        }
++        // SportBukkit end
++
+         // CraftBukkit start - TODO: handle command-line logging arguments
+-        java.util.logging.Logger global = java.util.logging.Logger.getLogger("");
++        java.util.logging.Logger global = org.bukkit.craftbukkit.Main.runtime().getLogger("");
+         global.setUseParentHandlers(false);
+         for (java.util.logging.Handler handler : global.getHandlers()) {
+             global.removeHandler(handler);
+@@ -106,10 +113,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+             }
+         }
+ 
+-        new Thread(new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(System.out, this.reader)).start();
++        consoleWriterThread = new org.bukkit.craftbukkit.util.TerminalConsoleWriterThread(org.bukkit.craftbukkit.Main.out(), this.reader);
++        consoleWriterThread.start();
+ 
+-        System.setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
+-        System.setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
++        org.bukkit.craftbukkit.Main.runtime().setOut(new PrintStream(new LoggerOutputStream(logger, Level.INFO), true));
++        org.bukkit.craftbukkit.Main.runtime().setErr(new PrintStream(new LoggerOutputStream(logger, Level.WARN), true));
+         // CraftBukkit end
+ 
+         thread.setDaemon(true);
+@@ -265,7 +273,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+                 }
+                 // CraftBukkit end
+ 
+-                if (this.aS() > 0L) {
++                if (this.aS() > 0L && org.bukkit.craftbukkit.Main.runtime().dedicated()) {
+                     Thread thread1 = new Thread(new ThreadWatchdog(this));
+ 
+                     thread1.setName("Server Watchdog");
+@@ -344,7 +352,18 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+     }
+ 
+     protected void z() {
+-        System.exit(0);
++        // SportBukkit start
++        final File tempDataFolder = org.bukkit.Bukkit.getTemporaryDataFolder();
++        if(tempDataFolder != null) {
++            try {
++                org.bukkit.craftbukkit.Main.out().println("Deleting temporary data folder " + tempDataFolder);
++                org.apache.commons.io.FileUtils.deleteDirectory(tempDataFolder);
++            } catch(IOException e) {
++                org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.SEVERE, "Failed to delete temporary data folder", e);
++            }
++        }
++        org.bukkit.craftbukkit.Main.exit(0);
++        // SportBukkit end
+     }
+ 
+     public void B() { // CraftBukkit - fix decompile error
+diff --git a/src/main/java/net/minecraft/server/JsonList.java b/src/main/java/net/minecraft/server/JsonList.java
+index 342be98..cba65cb 100644
+--- a/src/main/java/net/minecraft/server/JsonList.java
++++ b/src/main/java/net/minecraft/server/JsonList.java
+@@ -174,6 +174,8 @@ public class JsonList<K, V extends JsonListEntry<K>> {
+     }
+ 
+     public void save() throws IOException {
++        if(org.bukkit.Bukkit.isMultiInstanceMode()) return; // SportBukkit
++
+         Collection collection = this.d.values();
+         String s = this.b.toJson(collection);
+         BufferedWriter bufferedwriter = null;
+@@ -194,6 +196,14 @@ public class JsonList<K, V extends JsonListEntry<K>> {
+         try {
+             bufferedreader = Files.newReader(this.c, Charsets.UTF_8);
+             collection = (Collection) this.b.fromJson(bufferedreader, JsonList.f);
++        // SportBukkit start
++        } catch(FileNotFoundException ex) {
++            if(org.bukkit.Bukkit.isMultiInstanceMode()) {
++                // In MI mode, this is likely to happen a lot, so don't freak out as much
++                a.warn("List will be empty due to missing file: " + this.c.getName());
++                return;
++            }
++        // SportBukkit end
+         } finally {
+             IOUtils.closeQuietly(bufferedreader);
+         }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 69cd520..4a4485e 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -114,6 +114,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+     public org.bukkit.command.ConsoleCommandSender console;
+     public org.bukkit.command.RemoteConsoleCommandSender remoteConsole;
+     public ConsoleReader reader;
++    public org.bukkit.craftbukkit.util.TerminalConsoleWriterThread consoleWriterThread;
+     public static int currentTick = (int) (System.currentTimeMillis() / 50);
+     public final Thread primaryThread;
+     public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
+@@ -144,27 +145,27 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+         // CraftBukkit start
+         this.options = options;
+         // Try to see if we're actually running in a terminal, disable jline if not
+-        if (System.console() == null) {
+-            System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
++        if (!Main.hasConsole()) {
++            Main.properties().setProperty("jline.terminal", "jline.UnsupportedTerminal");
+             Main.useJline = false;
+         }
+ 
+         try {
+-            reader = new ConsoleReader(System.in, System.out);
++            reader = new ConsoleReader(Main.in(), Main.out());
+             reader.setExpandEvents(false); // Avoid parsing exceptions for uncommonly used event designators
+         } catch (Throwable e) {
+             try {
+                 // Try again with jline disabled for Windows users without C++ 2008 Redistributable
+-                System.setProperty("jline.terminal", "jline.UnsupportedTerminal");
+-                System.setProperty("user.language", "en");
++                Main.properties().setProperty("jline.terminal", "jline.UnsupportedTerminal");
++                Main.properties().setProperty("user.language", "en");
+                 Main.useJline = false;
+-                reader = new ConsoleReader(System.in, System.out);
++                reader = new ConsoleReader(Main.in(), Main.out());
+                 reader.setExpandEvents(false);
+             } catch (IOException ex) {
+                 LOGGER.warn((String) null, ex);
+             }
+         }
+-        Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
++        org.bukkit.craftbukkit.Main.addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
+ 
+         this.serverThread = primaryThread = new Thread(this, "Server thread"); // Moved from main
+     }
+@@ -264,7 +265,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+             worldsettings.setGeneratorSettings(s2);
+ 
+             if (j == 0) {
+-                IDataManager idatamanager = new ServerNBTManager(server.getWorldContainer(), s1, true);
++                IDataManager idatamanager = org.bukkit.craftbukkit.CraftServer.createWorldStorage(server.getWorldContainer(), s1, true); // SportBukkit
+                 WorldData worlddata = idatamanager.getWorldData();
+                 if (worlddata == null) {
+                     worlddata = new WorldData(worldsettings, s1);
+@@ -313,7 +314,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+                     }
+                 }
+ 
+-                IDataManager idatamanager = new ServerNBTManager(server.getWorldContainer(), name, true);
++                IDataManager idatamanager = org.bukkit.craftbukkit.CraftServer.createWorldStorage(server.getWorldContainer(), name, true); // SportBukkit
+                 // world =, b0 to dimension, s1 to name, added Environment and gen
+                 WorldData worlddata = idatamanager.getWorldData();
+                 if (worlddata == null) {
+@@ -493,6 +494,11 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+                 this.n.e();
+             }
+ 
++            // SportBukkit start
++            if(consoleWriterThread != null) {
++                consoleWriterThread.shutdown();
++            }
++            // SportBukkit end
+         }
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index a1f386c..0f4ddb0 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -1262,7 +1262,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+             }
+         } catch (org.bukkit.command.CommandException ex) {
+             player.sendMessage(org.bukkit.ChatColor.RED + "An internal error occurred while attempting to perform this command");
+-            java.util.logging.Logger.getLogger(PlayerConnection.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
++            org.bukkit.Bukkit.getLogger(PlayerConnection.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+             return;
+         }
+         // this.minecraftServer.getCommandHandler().a(this.player, s);
+diff --git a/src/main/java/net/minecraft/server/PropertyManager.java b/src/main/java/net/minecraft/server/PropertyManager.java
+index 856ae39..ca70ae0 100644
+--- a/src/main/java/net/minecraft/server/PropertyManager.java
++++ b/src/main/java/net/minecraft/server/PropertyManager.java
+@@ -71,6 +71,8 @@ public class PropertyManager {
+         FileOutputStream fileoutputstream = null;
+ 
+         try {
++            if(org.bukkit.Bukkit.isMultiInstanceMode()) return; // SportBukkit
++
+             // CraftBukkit start - Don't attempt writing to file if it's read only
+             if (this.file.exists() && !this.file.canWrite()) {
+                 return;
+diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
+index 26438ab..c5323e6 100644
+--- a/src/main/java/net/minecraft/server/ServerConnection.java
++++ b/src/main/java/net/minecraft/server/ServerConnection.java
+@@ -25,6 +25,8 @@ import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.List;
+ import java.util.concurrent.Callable;
++import java.util.concurrent.ExecutionException;
++
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
+@@ -124,6 +126,8 @@ public class ServerConnection {
+             futures.add(channelfuture.channel().close());
+         }
+ 
++        final ChannelFuture serverChannel = futures.get(0);
++
+         for(;;) {
+             for(Iterator<ChannelFuture> iter = futures.iterator(); iter.hasNext();) {
+                 if(iter.next().isDone()) iter.remove();
+@@ -138,9 +142,15 @@ public class ServerConnection {
+             try {
+                 Thread.sleep(50);
+             } catch(InterruptedException e) {
+-                e.printStackTrace();
++                // ignored
+             }
+         }
++
++        try {
++            serverChannel.channel().eventLoop().shutdownGracefully().get();
++        } catch(Exception e) {
++            serverChannel.channel().eventLoop().shutdown();
++        }
+         // CraftBukkit end
+     }
+ 
+diff --git a/src/main/java/net/minecraft/server/UserCache.java b/src/main/java/net/minecraft/server/UserCache.java
+index 4023dcd..427cda2 100644
+--- a/src/main/java/net/minecraft/server/UserCache.java
++++ b/src/main/java/net/minecraft/server/UserCache.java
+@@ -208,6 +208,8 @@ public class UserCache {
+     }
+ 
+     public void c() {
++        if(org.bukkit.Bukkit.isMultiInstanceMode()) return; // SportBukkit
++
+         String s = this.b.toJson(this.a(1000));
+         BufferedWriter bufferedwriter = null;
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 714a2f4..824346e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -126,13 +126,14 @@ import io.netty.buffer.Unpooled;
+ import io.netty.handler.codec.base64.Base64;
+ import jline.console.ConsoleReader;
+ import net.md_5.bungee.api.chat.BaseComponent;
++import tc.oc.multibukkit.api.Runtime;
+ 
+ public final class CraftServer implements Server {
+     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
+     private final String serverName = "SportBukkit";
+     private final String serverVersion;
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+-    private final Logger logger = Logger.getLogger("Minecraft");
++    private final Logger logger = org.bukkit.craftbukkit.Main.runtime().getLogger("Minecraft");
+     private final ServicesManager servicesManager = new SimpleServicesManager();
+     private final CraftScheduler scheduler = new CraftScheduler();
+     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
+@@ -284,7 +285,7 @@ public final class CraftServer implements Server {
+         try {
+             commandsConfiguration.save(getCommandsConfigFile());
+         } catch (IOException ex) {
+-            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getCommandsConfigFile(), ex);
++            org.bukkit.Bukkit.getLogger(CraftServer.class.getName()).log(Level.SEVERE, "Could not save " + getCommandsConfigFile(), ex);
+         }
+     }
+ 
+@@ -301,7 +302,7 @@ public final class CraftServer implements Server {
+                     plugin.getLogger().info(message);
+                     plugin.onLoad();
+                 } catch (RuntimeException ex) {
+-                    Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
++                    org.bukkit.Bukkit.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+                     if(this.getRequireAllPlugins()) throw ex;
+                 }
+             }
+@@ -360,7 +361,7 @@ public final class CraftServer implements Server {
+                 }
+             }
+         } catch (RuntimeException ex) {
+-            Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " loading " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
++            org.bukkit.Bukkit.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " loading " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
+             if(this.getRequireAllPlugins()) throw ex;
+         }
+     }
+@@ -846,8 +847,33 @@ public final class CraftServer implements Server {
+         return "CraftServer{" + "serverName=" + serverName + ",serverVersion=" + serverVersion + ",minecraftVersion=" + console.getVersion() + '}';
+     }
+ 
++    /**
++     * Create a world storage object thing from a world container folder and world name.
++     *
++     * In multi-instance mode, the world is copied from the container to the temporary data folder,
++     * and the ServerNBTManager is passed the temporary location.
++     *
++     * If multi-instance mode is not enabled, this delegates directly to the ServerNBTManager constructor.
++     */
++    public static ServerNBTManager createWorldStorage(File container, String worldName, boolean makePlayerDir) {
++        if(Bukkit.isMultiInstanceMode()) {
++            File worldDir = new File(container, worldName);
++            if(worldDir.isDirectory()) {
++                File tempWorldDir = new File(Bukkit.getTemporaryDataFolder(), worldName);
++                try {
++                    Bukkit.getLogger().info("Copying world '" + worldName + "' to temporary data folder");
++                    org.apache.commons.io.FileUtils.copyDirectory(worldDir, tempWorldDir);
++                } catch(IOException e) {
++                    Bukkit.getLogger().log(Level.SEVERE, "Failed to copy world from " + worldDir + " to " + tempWorldDir, e);
++                }
++            }
++            container = Bukkit.getTemporaryDataFolder();
++        }
++        return new ServerNBTManager(container, worldName, makePlayerDir);
++    }
++
+     public WorldCreator detectWorld(String worldName) {
+-        IDataManager sdm = new ServerNBTManager(getWorldContainer(), worldName, true);
++        IDataManager sdm = createWorldStorage(getWorldContainer(), worldName, true);
+         WorldData worldData = sdm.getWorldData();
+         if(worldData == null) return null;
+ 
+@@ -939,7 +965,7 @@ public final class CraftServer implements Server {
+         WorldSettings worldSettings = new WorldSettings(creator.seed(), WorldSettings.EnumGamemode.getById(getDefaultGameMode().getValue()), generateStructures, creator.hardcore(), type);
+         worldSettings.setGeneratorSettings(creator.generatorSettings());
+ 
+-        IDataManager sdm = new ServerNBTManager(getWorldContainer(), name, true);
++        IDataManager sdm = createWorldStorage(getWorldContainer(), name, true);
+         WorldData worlddata = sdm.getWorldData();
+         if (worlddata == null) {
+             worlddata = new WorldData(worldSettings, name);
+@@ -1102,6 +1128,11 @@ public final class CraftServer implements Server {
+         return logger;
+     }
+ 
++    @Override
++    public Logger getLogger(String name) {
++        return getRuntime().getLogger(name);
++    }
++
+     public ConsoleReader getReader() {
+         return console.reader;
+     }
+@@ -1778,4 +1809,9 @@ public final class CraftServer implements Server {
+     public AttributeFactory getAttributeFactory() {
+         return attributeFactory;
+     }
++
++    @Override
++    public Runtime getRuntime() {
++        return org.bukkit.craftbukkit.Main.runtime();
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 4e642b7..917eb4d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -2,21 +2,94 @@ package org.bukkit.craftbukkit;
+ 
+ import java.io.File;
+ import java.io.IOException;
++import java.io.InputStream;
++import java.io.PrintStream;
+ import java.text.SimpleDateFormat;
+ import java.util.Arrays;
+ import java.util.List;
++import java.util.Properties;
+ import java.util.logging.Level;
+ import java.util.logging.Logger;
+ import joptsimple.OptionParser;
+ import joptsimple.OptionSet;
+ import net.minecraft.server.MinecraftServer;
++import tc.oc.multibukkit.api.Application;
+ import org.fusesource.jansi.AnsiConsole;
++import tc.oc.multibukkit.api.Runtime;
++import tc.oc.multibukkit.api.SystemRuntime;
++
++public class Main implements Application {
++
++    public static volatile Main instance = null;
++
++    public static Main instance() {
++        if(instance == null) {
++            throw new IllegalStateException("No instance of " + Main.class.getName());
++        }
++        return instance;
++    }
++
++    public static Runtime runtime() {
++        return instance().runtime;
++    }
++
++    public static InputStream in() {
++        return runtime().in();
++    }
++
++    public static PrintStream out() {
++        return runtime().out();
++    }
++
++    public static PrintStream err() {
++        return runtime().err();
++    }
++
++    public static Properties properties() {
++        return runtime().properties();
++    }
++
++    public static boolean hasConsole() {
++        return runtime().hasConsole();
++    }
++
++    public static void addShutdownHook(Thread hook) {
++        runtime().addShutdownHook(hook);
++    }
++
++    public static void exit(int status) {
++        // Unlike System.exit(), this method will return normally if not running
++        // in a dedicated process, but this method is only called in one place,
++        // and nothing else happens after the call, so it doesn't seem to matter.
++        runtime().exit(status);
++    }
++
++    /**
++     * Dedicated process entry point
++     */
++    public static void main(String[] args) {
++        Main main = new Main();
++        main.start(args, new SystemRuntime());
++    }
++
++    private Runtime runtime;
++
++    @Override
++    public void start(String[] args, Runtime runtime) {
++        if(instance != null) {
++            throw new IllegalStateException("This ServerProcess has already been started");
++        }
++
++        this.runtime = runtime;
++        Main.instance = this;
++
++        doMain(args);
++    }
+ 
+-public class Main {
+     public static boolean useJline = true;
+     public static boolean useConsole = true;
+ 
+-    public static void main(String[] args) {
++    private void doMain(String[] args) {
+         // Todo: Installation script
+         OptionParser parser = new OptionParser() {
+             {
+@@ -114,6 +187,8 @@ public class Main {
+                 acceptsAll(asList("v", "version"), "Show the CraftBukkit Version");
+ 
+                 acceptsAll(asList("demo"), "Demo mode");
++
++                acceptsAll(asList("m", "multi-instance"), "Multi-instance mode (write data to temp dir only)"); // SportBukkit
+             }
+         };
+ 
+@@ -122,22 +197,22 @@ public class Main {
+         try {
+             options = parser.parse(args);
+         } catch (joptsimple.OptionException ex) {
+-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
++            runtime().getLogger(Main.class.getName()).log(Level.SEVERE, ex.getLocalizedMessage());
+         }
+ 
+         if ((options == null) || (options.has("?"))) {
+             try {
+-                parser.printHelpOn(System.out);
++                parser.printHelpOn(out());
+             } catch (IOException ex) {
+-                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
++                runtime().getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         } else if (options.has("v")) {
+-            System.out.println(CraftServer.class.getPackage().getImplementationVersion());
++            out().println(CraftServer.class.getPackage().getImplementationVersion());
+         } else {
+             // Do you love Java using + and ! as string based identifiers? I sure do!
+             String path = new File(".").getAbsolutePath();
+             if (path.contains("!") || path.contains("+")) {
+-                System.err.println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
++                err().println("Cannot run server in a directory with ! or + in the pathname. Please rename the affected folders and try again.");
+                 return;
+             }
+ 
+@@ -146,18 +221,19 @@ public class Main {
+                 String jline_UnsupportedTerminal = new String(new char[] {'j','l','i','n','e','.','U','n','s','u','p','p','o','r','t','e','d','T','e','r','m','i','n','a','l'});
+                 String jline_terminal = new String(new char[] {'j','l','i','n','e','.','t','e','r','m','i','n','a','l'});
+ 
+-                useJline = !(jline_UnsupportedTerminal).equals(System.getProperty(jline_terminal));
++                useJline = !(jline_UnsupportedTerminal).equals(properties().getProperty(jline_terminal));
+ 
+                 if (options.has("nojline")) {
+-                    System.setProperty("user.language", "en");
++                    properties().setProperty("user.language", "en");
+                     useJline = false;
+                 }
+ 
+                 if (useJline) {
+-                    AnsiConsole.systemInstall();
++                    instance().runtime.setOut(new PrintStream(AnsiConsole.wrapOutputStream(out())));
++                    instance().runtime.setErr(new PrintStream(AnsiConsole.wrapOutputStream(err())));
+                 } else {
+                     // This ensures the terminal literal will always match the jline implementation
+-                    System.setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
++                    properties().setProperty(jline.TerminalFactory.JLINE_TERMINAL, jline.UnsupportedTerminal.class.getName());
+                 }
+ 
+ 
+@@ -165,10 +241,10 @@ public class Main {
+                     useConsole = false;
+                 }
+ 
+-                System.out.println("Loading libraries, please wait...");
++                out().println("Loading libraries, please wait...");
+                 MinecraftServer.main(options);
+             } catch (Throwable t) {
+-                t.printStackTrace();
++                t.printStackTrace(out());
+             }
+         }
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java b/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java
+index 26a2fb8..db6288d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/ColouredConsoleSender.java
+@@ -57,7 +57,7 @@ public class ColouredConsoleSender extends CraftConsoleCommandSender {
+                         result = result.replaceAll("(?i)" + color.toString(), "");
+                     }
+                 }
+-                System.out.println(result + Ansi.ansi().reset().toString());
++                Bukkit.getRuntime().out().println(result + Ansi.ansi().reset().toString());
+             }
+         } else {
+             super.sendMessage(message);
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+index 9abcf92..e2858d1 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/CraftConsoleCommandSender.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.craftbukkit.command;
+ 
++import org.bukkit.Bukkit;
+ import org.bukkit.ChatColor;
+ import org.bukkit.command.ConsoleCommandSender;
+ import org.bukkit.conversations.Conversation;
+@@ -23,7 +24,7 @@ public class CraftConsoleCommandSender extends ServerCommandSender implements Co
+     }
+ 
+     public void sendRawMessage(String message) {
+-        System.out.println(ChatColor.stripColor(message));
++        Bukkit.getRuntime().out().println(ChatColor.stripColor(message));
+     }
+ 
+     public void sendMessage(String[] messages) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 3885ce6..7054028 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1459,7 +1459,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+                     stream.write(channel.getBytes("UTF8"));
+                     stream.write((byte) 0);
+                 } catch (IOException ex) {
+-                    Logger.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, "Could not send Plugin Channel REGISTER to " + getName(), ex);
++                    org.bukkit.Bukkit.getLogger(CraftPlayer.class.getName()).log(Level.SEVERE, "Could not send Plugin Channel REGISTER to " + getName(), ex);
+                 }
+             }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index 1dfe45d..14e197f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -413,7 +413,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                     }
+                 }
+             } catch (IOException ex) {
+-                Logger.getLogger(CraftMetaItem.class.getName()).log(Level.SEVERE, null, ex);
++                org.bukkit.Bukkit.getLogger(CraftMetaItem.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         }
+         unbreakable = SerializableMeta.getBoolean(map, UNBREAKABLE.BUKKIT);
+@@ -923,7 +923,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                 NBTCompressedStreamTools.a(internal, buf);
+                 builder.put("internal", Base64.encodeBase64String(buf.toByteArray()));
+             } catch (IOException ex) {
+-                Logger.getLogger(CraftMetaItem.class.getName()).log(Level.SEVERE, null, ex);
++                org.bukkit.Bukkit.getLogger(CraftMetaItem.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+index 589dba7..0ae0b21 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+@@ -113,7 +113,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
+         try {
+             nmsStack.setTag((NBTTagCompound) MojangsonParser.parse(arguments));
+         } catch (MojangsonParseException ex) {
+-            Logger.getLogger(CraftMagicNumbers.class.getName()).log(Level.SEVERE, null, ex);
++            org.bukkit.Bukkit.getLogger(CraftMagicNumbers.class.getName()).log(Level.SEVERE, null, ex);
+         }
+ 
+         stack.setItemMeta(CraftItemStack.getItemMeta(nmsStack));
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/TerminalConsoleWriterThread.java b/src/main/java/org/bukkit/craftbukkit/util/TerminalConsoleWriterThread.java
+index 772f730..4813877 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/TerminalConsoleWriterThread.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/TerminalConsoleWriterThread.java
+@@ -8,7 +8,7 @@ import jline.console.ConsoleReader;
+ import com.mojang.util.QueueLogAppender;
+ import org.bukkit.craftbukkit.Main;
+ 
+-public class TerminalConsoleWriterThread implements Runnable {
++public class TerminalConsoleWriterThread extends Thread {
+     final private ConsoleReader reader;
+     final private OutputStream output;
+ 
+@@ -24,7 +24,7 @@ public class TerminalConsoleWriterThread implements Runnable {
+         while (true) {
+             message = QueueLogAppender.getNextLogEvent("TerminalConsole");
+             if (message == null) {
+-                continue;
++                if(stopped) break; else continue;
+             }
+ 
+             try {
+@@ -45,8 +45,17 @@ public class TerminalConsoleWriterThread implements Runnable {
+                     output.flush();
+                 }
+             } catch (IOException ex) {
+-                Logger.getLogger(TerminalConsoleWriterThread.class.getName()).log(Level.SEVERE, null, ex);
++                org.bukkit.Bukkit.getLogger(TerminalConsoleWriterThread.class.getName()).log(Level.SEVERE, null, ex);
+             }
+         }
+     }
++
++    private volatile boolean stopped;
++    public void shutdown() {
++        stopped = true;
++        interrupt();
++        try {
++            join();
++        } catch(InterruptedException e) {}
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+index 3949c0a..3416dca 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
+@@ -20,7 +20,7 @@ public final class Versioning {
+ 
+                 result = properties.getProperty("version");
+             } catch (IOException ex) {
+-                Logger.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
++                org.bukkit.Bukkit.getLogger(Versioning.class.getName()).log(Level.SEVERE, "Could not get Bukkit version!", ex);
+             }
+         }
+ 
+-- 
+1.9.0
+

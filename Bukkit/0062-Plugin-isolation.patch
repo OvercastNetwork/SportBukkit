@@ -1,4 +1,4 @@
-From 7c1234ccd8cc1de27f5fb93354995b45f24bd23c Mon Sep 17 00:00:00 2001
+From 5d1bd0a57661843f1e424c64c33f7870281f3b62 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 29 May 2015 01:08:37 -0400
 Subject: [PATCH] Plugin isolation
@@ -389,7 +389,7 @@ index 900c562..6cb69ba 100644
              }
          }
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index 13f8633..471dcb9 100644
+index 13f8633..4e94cc8 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 @@ -4,11 +4,13 @@ import java.io.File;
@@ -498,24 +498,22 @@ index 13f8633..471dcb9 100644
 +     */
 +    @Override
 +    protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-+        synchronized(getClassLoadingLock(name)) {
-+            if(isolate) {
-+                // Local, dependencies, Bukkit
-+                try {
-+                    // Search local plugin, followed by dependencies
-+                    return loadDependencyClass(name, resolve);
-+                } catch(ClassNotFoundException e) {
-+                    // Search non-plugin classes (
-+                    return loadBukkitClass(name, resolve);
-+                }
-+            } else {
-+                // Bukkit, all plugins in loading order
-+                try {
-+                    return loadBukkitClass(name, resolve);
-+                } catch(ClassNotFoundException e) {
-+                    // Search all plugins in load order
-+                    return loadPluginClass(name, resolve);
-+                }
++        if(isolate) {
++            // Local, dependencies, Bukkit
++            try {
++                // Search local plugin, followed by dependencies
++                return loadDependencyClass(name, resolve);
++            } catch(ClassNotFoundException e) {
++                // Search non-plugin classes (
++                return loadBukkitClass(name, resolve);
++            }
++        } else {
++            // Bukkit, all plugins in loading order
++            try {
++                return loadBukkitClass(name, resolve);
++            } catch(ClassNotFoundException e) {
++                // Search all plugins in load order
++                return loadPluginClass(name, resolve);
 +            }
          }
 -        Class<?> result = classes.get(name);
@@ -552,10 +550,12 @@ index 13f8633..471dcb9 100644
 +     * Load a class from this plugin
 +     */
 +    Class<?> loadLocalClass(String name, boolean resolve) throws ClassNotFoundException {
-+        Class<?> cls = findLoadedClass(name);
-+        if(cls == null) cls = findClass(name);
-+        if(resolve) resolveClass(cls);
-+        return cls;
++        synchronized(getClassLoadingLock(name)) {
++            Class<?> cls = findLoadedClass(name);
++            if(cls == null) cls = findClass(name);
++            if(resolve) resolveClass(cls);
++            return cls;
++        }
 +    }
  
 -            classes.put(name, result);

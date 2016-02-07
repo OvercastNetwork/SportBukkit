@@ -1,0 +1,75 @@
+From 8282e8ae2ddc69f291ae6b7a714bbcb6f0107f8e Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 23 Jun 2015 17:18:20 -0400
+Subject: [PATCH] Bounds check slot numbers in packets
+
+
+diff --git a/src/main/java/net/minecraft/server/Container.java b/src/main/java/net/minecraft/server/Container.java
+index 9c53acd..781569e 100644
+--- a/src/main/java/net/minecraft/server/Container.java
++++ b/src/main/java/net/minecraft/server/Container.java
+@@ -21,7 +21,14 @@ import org.bukkit.inventory.InventoryView;
+ public abstract class Container {
+ 
+     public List<ItemStack> b = Lists.newArrayList();
+-    public List<Slot> c = Lists.newArrayList();
++    // SportBukkit start - A lot of code expects get() to return null rather than throwing ArrayIndexOutOfBoundsException
++    public List<Slot> c = new ArrayList<Slot>() {
++        @Override
++        public Slot get(int index) {
++            return index < size() ? super.get(index) : null;
++        }
++    };
++    // SportBukkit end
+     public int windowId;
+     private int dragType = -1;
+     private int g;
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index aa9bb9d..a1f386c 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -1614,7 +1614,7 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+                     if (packetplayinwindowclick.c() >= 0 && packetplayinwindowclick.c() < 9) {
+                         click = ClickType.NUMBER_KEY;
+                         Slot clickedSlot = this.player.activeContainer.getSlot(packetplayinwindowclick.b());
+-                        if (clickedSlot.isAllowed(player)) {
++                        if (clickedSlot != null && clickedSlot.isAllowed(player)) {
+                             ItemStack hotbar = this.player.inventory.getItem(packetplayinwindowclick.c());
+                             boolean canCleanSwap = hotbar == null || (clickedSlot.inventory == player.inventory && clickedSlot.isAllowed(hotbar)); // the slot will accept the hotbar item
+                             if (clickedSlot.hasItem()) {
+@@ -1757,12 +1757,16 @@ public class PlayerConnection implements PacketListenerPlayIn, IUpdatePlayerList
+                                 case PLACE_ONE:
+                                 case SWAP_WITH_CURSOR:
+                                     this.player.playerConnection.sendPacket(new PacketPlayOutSetSlot(-1, -1, this.player.inventory.getCarried()));
+-                                    this.player.playerConnection.sendPacket(new PacketPlayOutSetSlot(this.player.activeContainer.windowId, packetplayinwindowclick.b(), this.player.activeContainer.getSlot(packetplayinwindowclick.b()).getItem()));
++                                    if(packetplayinwindowclick.b() < this.player.activeContainer.c.size()) {
++                                        this.player.playerConnection.sendPacket(new PacketPlayOutSetSlot(this.player.activeContainer.windowId, packetplayinwindowclick.b(), this.player.activeContainer.getSlot(packetplayinwindowclick.b()).getItem()));
++                                    }
+                                     break;
+                                 // Modified clicked only
+                                 case DROP_ALL_SLOT:
+                                 case DROP_ONE_SLOT:
+-                                    this.player.playerConnection.sendPacket(new PacketPlayOutSetSlot(this.player.activeContainer.windowId, packetplayinwindowclick.b(), this.player.activeContainer.getSlot(packetplayinwindowclick.b()).getItem()));
++                                    if(packetplayinwindowclick.b() < this.player.activeContainer.c.size()) {
++                                        this.player.playerConnection.sendPacket(new PacketPlayOutSetSlot(this.player.activeContainer.windowId, packetplayinwindowclick.b(), this.player.activeContainer.getSlot(packetplayinwindowclick.b()).getItem()));
++                                    }
+                                     break;
+                                 // Modified cursor only
+                                 case DROP_ALL_CURSOR:
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
+index ae47a0e..5c159eb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryView.java
+@@ -62,7 +62,8 @@ public class CraftInventoryView extends InventoryView {
+         if (slot == -999) {
+             return null;
+         }
+-        return CraftItemStack.asCraftMirror(container.getSlot(slot).getItem());
++        net.minecraft.server.Slot nmsSlot = container.getSlot(slot);
++        return nmsSlot == null ? null : CraftItemStack.asCraftMirror(nmsSlot.getItem());
+     }
+ 
+     public boolean isInTop(int rawSlot) {
+-- 
+1.9.0
+

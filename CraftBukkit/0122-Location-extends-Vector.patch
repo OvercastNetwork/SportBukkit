@@ -1,0 +1,36 @@
+From 8ec99c8c0fa0f14c12d3fab73fb2f986ab3c0597 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 14 Jul 2015 09:57:51 -0400
+Subject: [PATCH] Location extends Vector
+
+
+diff --git a/deprecation-mappings.at b/deprecation-mappings.at
+index 5858b48..08a79de 100644
+--- a/deprecation-mappings.at
++++ b/deprecation-mappings.at
+@@ -26,6 +26,10 @@ public+synthetic org/bukkit/event/entity/EntityRegainHealthEvent/setAmount(I)V
+ public+synthetic org/bukkit/event/vehicle/VehicleDamageEvent/getDamage()I
+ public+synthetic org/bukkit/event/vehicle/VehicleDamageEvent/setDamage(I)V
+ 
++public+synthetic org/bukkit/Location/setX(D)V
++public+synthetic org/bukkit/Location/setY(D)V
++public+synthetic org/bukkit/Location/setZ(D)V
++
+ # CraftBukkit
+ public+synthetic org/bukkit/craftbukkit/v1_8_R3/CraftServer/getOnlinePlayers()[Lorg/bukkit/entity/Player;
+ 
+diff --git a/deprecation-mappings.csrg b/deprecation-mappings.csrg
+index 48bc504..69e1708 100644
+--- a/deprecation-mappings.csrg
++++ b/deprecation-mappings.csrg
+@@ -25,3 +25,7 @@ org/bukkit/event/entity/EntityRegainHealthEvent _INVALID_setAmount (I)V setAmoun
+ 
+ org/bukkit/event/vehicle/VehicleDamageEvent _INVALID_getDamage ()I getDamage
+ org/bukkit/event/vehicle/VehicleDamageEvent _INVALID_setDamage (I)V setDamage
++
++org/bukkit/Location _INVALID_setX (D)V setX
++org/bukkit/Location _INVALID_setY (D)V setY
++org/bukkit/Location _INVALID_setZ (D)V setZ
+-- 
+1.9.0
+

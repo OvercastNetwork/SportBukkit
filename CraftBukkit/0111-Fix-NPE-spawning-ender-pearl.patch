@@ -1,0 +1,22 @@
+From f7e81fd59ac260065b21e7cff63f3ec1b7606db0 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 14 Jun 2015 12:56:06 -0400
+Subject: [PATCH] Fix NPE spawning ender pearl
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 6b08642..aa8347e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -976,7 +976,7 @@ public class CraftWorld implements World {
+                 entity = new EntityThrownExpBottle(world);
+                 entity.setPositionRotation(x, y, z, 0, 0);
+             } else if (EnderPearl.class.isAssignableFrom(clazz)) {
+-                entity = new EntityEnderPearl(world, null);
++                entity = new EntityEnderPearl(world);
+                 entity.setPositionRotation(x, y, z, 0, 0);
+             } else if (ThrownPotion.class.isAssignableFrom(clazz)) {
+                 entity = new EntityPotion(world, x, y, z, CraftItemStack.asNMSCopy(new ItemStack(org.bukkit.Material.POTION, 1)));
+-- 
+1.9.0
+

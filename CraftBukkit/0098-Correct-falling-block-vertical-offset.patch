@@ -1,0 +1,22 @@
+From 299fac276057d5512a35500379cf30b224f2f509 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 14 Apr 2015 03:07:57 -0400
+Subject: [PATCH] Correct falling block vertical offset
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index 15a00d4..b2fd278 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -900,7 +900,7 @@ public class CraftWorld implements World {
+         Validate.isTrue(material.isBlock(), "Material must be a block");
+ 
+         double x = location.getBlockX() + 0.5;
+-        double y = location.getBlockY() + 0.5;
++        double y = location.getBlockY();
+         double z = location.getBlockZ() + 0.5;
+ 
+         EntityFallingBlock entity = new EntityFallingBlock(world, x, y, z, net.minecraft.server.Block.getById(material.getId()).fromLegacyData(data));
+-- 
+1.9.0
+

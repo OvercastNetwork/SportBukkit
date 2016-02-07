@@ -1,0 +1,21 @@
+From 17423b258ab06c338913a897678f5f27bc266eca Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 7 Jun 2015 22:51:07 -0400
+Subject: [PATCH] Fix HideFlags missing from NBT whitelist
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index b155f0d..1dfe45d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -997,6 +997,7 @@ class CraftMetaItem implements ItemMeta, Repairable {
+                         DISPLAY.NBT,
+                         REPAIR.NBT,
+                         ENCHANTMENTS.NBT,
++                        HIDEFLAGS.NBT,
+                         ATTRIBUTES.NBT,
+                         UNBREAKABLE.NBT,
+                         CAN_DESTROY.NBT,
+-- 
+1.9.0
+

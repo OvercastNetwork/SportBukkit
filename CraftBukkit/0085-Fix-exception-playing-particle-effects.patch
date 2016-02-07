@@ -1,0 +1,53 @@
+From 9b829e3e28f22f11bae64fc86e9ff4c23ba6db09 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 17 Feb 2015 03:50:47 -0500
+Subject: [PATCH] Fix exception playing particle effects
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
+index 7eca388..f3bd034 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
+@@ -62,4 +62,13 @@ public class CraftEffect {
+         }
+         return datavalue;
+     }
++
++    public static net.minecraft.server.EnumParticle getNMSParticle(Effect effect) {
++        String name = effect.getName();
++        if(name == null) return null;
++        for(net.minecraft.server.EnumParticle nms : net.minecraft.server.EnumParticle.values()) {
++            if(name.equals(nms.b())) return nms;
++        }
++        return null;
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+index bef1af9..4ee1239 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
+@@ -873,7 +873,7 @@ public class CraftWorld implements World {
+                 particleFullName.append('_').append(data);
+             }
+ 
+-            packet = new PacketPlayOutWorldParticles(EnumParticle.valueOf(effect.getName()), false, (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
++            packet = new PacketPlayOutWorldParticles(CraftEffect.getNMSParticle(effect), false, (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
+         }
+ 
+         int distance;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 3f1f2f4..9cbf5a7 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -629,7 +629,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+             if (effect.getData() != null && effect.getData().equals(MaterialData.class)) {
+                 particleFullName.append('_').append(data);
+             }
+-            packet = new PacketPlayOutWorldParticles(EnumParticle.valueOf(effect.getName()), false, (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
++            packet = new PacketPlayOutWorldParticles(CraftEffect.getNMSParticle(effect), false, (float)location.getX(), (float)location.getY(), (float)location.getZ(), offsetX, offsetY, offsetZ, particleCount, radius);
+         }
+ 
+         if (!location.getWorld().equals(getWorld())) {
+-- 
+1.9.0
+

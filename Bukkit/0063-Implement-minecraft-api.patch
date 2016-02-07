@@ -1,0 +1,231 @@
+From 2cdae0cf54b40e0c90e29ba6e0cd4242cfb314cb Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 4 Feb 2016 04:59:45 -0500
+Subject: [PATCH] Implement minecraft-api
+
+
+diff --git a/pom.xml b/pom.xml
+index e79e62b..a2d33d1 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -95,11 +95,9 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>net.md-5</groupId>
+-            <artifactId>bungeecord-chat</artifactId>
++            <groupId>tc.oc</groupId>
++            <artifactId>minecraft-api</artifactId>
+             <version>1.8-SNAPSHOT</version>
+-            <type>jar</type>
+-            <scope>compile</scope>
+         </dependency>
+ 
+         <!-- testing -->
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 695d0f4..3d60cfa 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -48,7 +48,7 @@ import org.bukkit.inventory.meta.ItemMeta;
+ /**
+  * Represents a server implementation.
+  */
+-public interface Server extends PluginMessageRecipient {
++public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.server.LocalServer {
+ 
+     /**
+      * Used for all administrative messages, such as an operator using a
+diff --git a/src/main/java/org/bukkit/command/CommandSender.java b/src/main/java/org/bukkit/command/CommandSender.java
+index 52c5947..a0fffb2 100644
+--- a/src/main/java/org/bukkit/command/CommandSender.java
++++ b/src/main/java/org/bukkit/command/CommandSender.java
+@@ -3,7 +3,7 @@ package org.bukkit.command;
+ import org.bukkit.Server;
+ import org.bukkit.permissions.Permissible;
+ 
+-public interface CommandSender extends Permissible {
++public interface CommandSender extends Permissible, tc.oc.minecraft.api.command.CommandSender {
+ 
+     /**
+      * Sends this sender a message
+diff --git a/src/main/java/org/bukkit/command/ConsoleCommandSender.java b/src/main/java/org/bukkit/command/ConsoleCommandSender.java
+index f309c2e..a460d33 100644
+--- a/src/main/java/org/bukkit/command/ConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/command/ConsoleCommandSender.java
+@@ -2,5 +2,5 @@ package org.bukkit.command;
+ 
+ import org.bukkit.conversations.Conversable;
+ 
+-public interface ConsoleCommandSender extends CommandSender, Conversable {
++public interface ConsoleCommandSender extends CommandSender, Conversable, tc.oc.minecraft.api.command.ConsoleCommandSender {
+ }
+diff --git a/src/main/java/org/bukkit/configuration/Configuration.java b/src/main/java/org/bukkit/configuration/Configuration.java
+index 52e3ac4..5d9636d 100644
+--- a/src/main/java/org/bukkit/configuration/Configuration.java
++++ b/src/main/java/org/bukkit/configuration/Configuration.java
+@@ -5,7 +5,7 @@ import java.util.Map;
+ /**
+  * Represents a source of configurable options and settings
+  */
+-public interface Configuration extends ConfigurationSection {
++public interface Configuration extends ConfigurationSection, tc.oc.minecraft.api.configuration.Configuration {
+     /**
+      * Sets the default value of the given path as provided.
+      * <p>
+diff --git a/src/main/java/org/bukkit/configuration/ConfigurationSection.java b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
+index 1bd7fb5..0113dee 100644
+--- a/src/main/java/org/bukkit/configuration/ConfigurationSection.java
++++ b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
+@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
+ /**
+  * Represents a section of a {@link Configuration}
+  */
+-public interface ConfigurationSection {
++public interface ConfigurationSection extends tc.oc.minecraft.api.configuration.ConfigurationSection {
+     /**
+      * Gets a set containing all keys in this section.
+      * <p>
+diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
+index f180bf5..c52b249 100644
+--- a/src/main/java/org/bukkit/configuration/MemorySection.java
++++ b/src/main/java/org/bukkit/configuration/MemorySection.java
+@@ -68,6 +68,11 @@ public class MemorySection implements ConfigurationSection {
+         this.fullPath = createPath(parent, path);
+     }
+ 
++    @Override
++    public java.util.Collection<String> getKeys() {
++        return getKeys(false);
++    }
++
+     public Set<String> getKeys(boolean deep) {
+         Set<String> result = new LinkedHashSet<String>();
+ 
+@@ -675,6 +680,11 @@ public class MemorySection implements ConfigurationSection {
+         return val instanceof Color;
+     }
+ 
++    @Override
++    public ConfigurationSection getSection(String path) {
++        return getConfigurationSection(path);
++    }
++
+     public ConfigurationSection getConfigurationSection(String path) {
+         Object val = get(path, null);
+         if (val != null) {
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index f09a389..2519937 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -26,7 +26,7 @@ import org.bukkit.util.RayBlockIntersection;
+ /**
+  * Represents a player, connected or not
+  */
+-public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient {
++public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, tc.oc.minecraft.api.entity.Player {
+ 
+     /**
+      * Set a fake name for this player when viewed by the given player.
+diff --git a/src/main/java/org/bukkit/event/Listener.java b/src/main/java/org/bukkit/event/Listener.java
+index ff083e6..2dbb6ad 100644
+--- a/src/main/java/org/bukkit/event/Listener.java
++++ b/src/main/java/org/bukkit/event/Listener.java
+@@ -3,4 +3,4 @@ package org.bukkit.event;
+ /**
+  * Simple interface for tagging all EventListeners
+  */
+-public interface Listener {}
++public interface Listener extends tc.oc.minecraft.api.event.Listener {}
+diff --git a/src/main/java/org/bukkit/permissions/Permissible.java b/src/main/java/org/bukkit/permissions/Permissible.java
+index a7c0ef5..bebbcb7 100644
+--- a/src/main/java/org/bukkit/permissions/Permissible.java
++++ b/src/main/java/org/bukkit/permissions/Permissible.java
+@@ -7,7 +7,7 @@ import org.bukkit.plugin.Plugin;
+ /**
+  * Represents an object that may be assigned permissions
+  */
+-public interface Permissible extends ServerOperator {
++public interface Permissible extends ServerOperator, tc.oc.minecraft.api.permissions.Permissible {
+ 
+     /**
+      * Checks if this object contains an override for the specified
+diff --git a/src/main/java/org/bukkit/plugin/Plugin.java b/src/main/java/org/bukkit/plugin/Plugin.java
+index 7bdc809..0d21654 100644
+--- a/src/main/java/org/bukkit/plugin/Plugin.java
++++ b/src/main/java/org/bukkit/plugin/Plugin.java
+@@ -16,7 +16,7 @@ import com.avaje.ebean.EbeanServer;
+  * <p>
+  * The use of {@link PluginBase} is recommended for actual Implementation
+  */
+-public interface Plugin extends TabExecutor {
++public interface Plugin extends TabExecutor, tc.oc.minecraft.api.plugin.Plugin, tc.oc.minecraft.api.configuration.Configurable {
+     /**
+      * Returns the folder that the plugin data's files are located in. The
+      * folder may not yet exist.
+diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+index c82928e..989776d 100644
+--- a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
++++ b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+@@ -174,7 +174,7 @@ import com.google.common.collect.ImmutableSet;
+  *      inferno.burningdeaths: true
+  *</pre></blockquote>
+  */
+-public final class PluginDescriptionFile {
++public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.PluginDescription {
+     private static final ThreadLocal<Yaml> YAML = new ThreadLocal<Yaml>() {
+         @Override
+         protected Yaml initialValue() {
+diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
+index e5638d5..d89b194 100644
+--- a/src/main/java/org/bukkit/plugin/PluginManager.java
++++ b/src/main/java/org/bukkit/plugin/PluginManager.java
+@@ -12,7 +12,7 @@ import org.bukkit.permissions.Permission;
+ /**
+  * Handles all plugin management from the Server
+  */
+-public interface PluginManager {
++public interface PluginManager extends tc.oc.minecraft.api.plugin.PluginManager {
+ 
+     /**
+      * Registers the specified plugin loader
+diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+index 6310292..986af85 100644
+--- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
++++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
+@@ -365,6 +365,11 @@ public final class SimplePluginManager implements PluginManager {
+         return plugins.toArray(new Plugin[0]);
+     }
+ 
++    @Override
++    public Collection<? extends Plugin> getAllPlugins() {
++        return java.util.Arrays.asList(getPlugins());
++    }
++
+     /**
+      * Checks if the given plugin is enabled or not
+      * <p>
+@@ -537,6 +542,21 @@ public final class SimplePluginManager implements PluginManager {
+         }
+     }
+ 
++    @Override
++    public void registerListener(tc.oc.minecraft.api.plugin.Plugin plugin, tc.oc.minecraft.api.event.Listener listener) {
++        registerEvents((Listener) listener, (Plugin) plugin);
++    }
++
++    @Override
++    public void unregisterListener(tc.oc.minecraft.api.event.Listener listener) {
++        HandlerList.unregisterAll((Listener) listener);
++    }
++
++    @Override
++    public void unregisterListeners(tc.oc.minecraft.api.plugin.Plugin plugin) {
++        HandlerList.unregisterAll((Plugin) plugin);
++    }
++
+     public void registerEvents(Listener listener, Plugin plugin) {
+         if (!plugin.isEnabled()) {
+             throw new IllegalPluginAccessException("Plugin attempted to register " + listener + " while not enabled");
+-- 
+1.9.0
+

@@ -1,0 +1,474 @@
+From d7f89485cb501951dd4b32053dec59a74f7b1c53 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 16 Mar 2016 22:09:17 -0400
+Subject: [PATCH] Knockback API
+
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index ff7e2bf..9a183bd 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -1205,6 +1205,18 @@ public abstract class Entity implements ICommandListener {
+         }
+     }
+ 
++    // SportBukkit start - add knockback method
++    public void applyKnockback(Entity attacker, Vec3D impulse) {
++        if(impulse != null) {
++            applyKnockback(attacker, impulse.x, impulse.y, impulse.z);
++        }
++    }
++    public void applyKnockback(Entity attacker, double x, double y, double z) {
++        applyImpulse(x, y, z);
++    }
++    // SportBukkit end
++
++    public void applyImpulse(double x, double y, double z) { this.g(x, y, z); } // SportBukkit - alias for following method
+     public void g(double d0, double d1, double d2) {
+         this.motX += d0;
+         this.motY += d1;
+diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
+index ad0359d..e185a14 100644
+--- a/src/main/java/net/minecraft/server/EntityArrow.java
++++ b/src/main/java/net/minecraft/server/EntityArrow.java
+@@ -275,7 +275,7 @@ public abstract class EntityArrow extends Entity implements IProjectile {
+                         float f1 = MathHelper.sqrt(this.motX * this.motX + this.motZ * this.motZ);
+ 
+                         if (f1 > 0.0F) {
+-                            entityliving.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1);
++                            entityliving.applyKnockback(this, this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1); // SportBukkit - call knockback method
+                         }
+                     }
+ 
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index 6cdbe01..2e8dea1 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -1043,6 +1043,8 @@ public abstract class EntityHuman extends EntityLiving {
+                             this.cH();
+                         }
+ 
++                        // SportBukkit start - disable this entire block
++                        /*
+                         if (entity instanceof EntityPlayer && entity.velocityChanged) {
+                             // CraftBukkit start - Add Velocity Event
+                             boolean cancelled = false;
+@@ -1067,6 +1069,8 @@ public abstract class EntityHuman extends EntityLiving {
+                             }
+                             // CraftBukkit end
+                         }
++                        */
++                        // SportBukkit end
+ 
+                         if (flag2) {
+                             this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.ENTITY_PLAYER_ATTACK_CRIT, this.bz(), 1.0F, 1.0F);
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index 7a32406..3438625 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -893,7 +893,7 @@ public abstract class EntityLiving extends Entity {
+                         }
+ 
+                         this.az = (float) (MathHelper.b(d1, d0) * 57.2957763671875D - (double) this.yaw);
+-                        this.a(entity, 0.4F, d0, d1);
++                        this.a(damagesource.i(), 0.4F, d0, d1); // SportBukkit - use direct damage source instead of owner
+                     } else {
+                         this.az = (float) ((int) (Math.random() * 2.0D) * 180);
+                     }
+@@ -1010,21 +1010,20 @@ public abstract class EntityLiving extends Entity {
+ 
+     public void a(Entity entity, float f, double d0, double d1) {
+         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+-            this.impulse = true;
+-            float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
+-
+-            this.motX /= 2.0D;
+-            this.motZ /= 2.0D;
+-            this.motX -= d0 / (double) f1 * (double) f;
+-            this.motZ -= d1 / (double) f1 * (double) f;
+-            if (this.onGround) {
+-                this.motY /= 2.0D;
+-                this.motY += (double) f;
+-                if (this.motY > 0.4000000059604645D) {
+-                    this.motY = 0.4000000059604645D;
+-                }
+-            }
+-
++            // SportBukkit start - apply knockback as an impulse
++            final double scale = 1 - getBukkitEntity().getKnockbackReduction();
++            if(scale == 0) return;
++
++            final double len = MathHelper.sqrt(d0 * d0 + d1 * d1);
++            final double dx = d0 / len, dz = d1 / len;
++
++            applyKnockback(
++                entity,
++                scale * (-0.5 * motX - f * dx),
++                !onGround ? 0 : scale * Math.min(0.4 - motY, -0.5 * motY + f),
++                scale * (-0.5 * motZ - f * dz)
++            );
++            // SportBukkit end
+         }
+     }
+ 
+@@ -2074,9 +2073,13 @@ public abstract class EntityLiving extends Entity {
+         return !this.dead;
+     }
+ 
++    // SportBukkit start - this is not needed
++    /*
+     protected void ao() {
+         this.velocityChanged = this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue();
+     }
++    */
++    // SportBukkit end
+ 
+     public float getHeadRotation() {
+         return this.aO;
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index d1dd97a..149d32d 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -20,8 +20,11 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.craftbukkit.inventory.CraftItemStack;
+ import org.bukkit.event.inventory.InventoryType;
+ import org.bukkit.craftbukkit.util.Skins;
++import org.bukkit.event.player.PlayerKnockbackEvent;
+ import org.bukkit.event.player.PlayerSkinPartsChangeEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
++import org.bukkit.event.player.PlayerVelocityEvent;
++import org.bukkit.util.Vector;
+ // CraftBukkit end
+ 
+ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +74,38 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public String hostname;
+     // CraftBukkit end
+ 
++    // SportBukkit start - velocity events/prediction
++    @Override
++    public void g(double x, double y, double z) {
++        final PlayerVelocityEvent event = new PlayerVelocityEvent(getBukkitEntity(), new Vector(x, y, z));
++        getBukkitEntity().getServer().getPluginManager().callEvent(event);
++        if(event.isCancelled()) return;
++
++        final Vector impulse = event.getImpulse();
++        if(!impulse.isZero()) {
++            applyImpulseNoEvent(impulse);
++        }
++    }
++
++    @Override
++    public void applyKnockback(Entity attacker, double x, double y, double z) {
++        final PlayerKnockbackEvent event = new PlayerKnockbackEvent(getBukkitEntity(), attacker.getBukkitEntity(), new Vector(x, y, z));
++        getBukkitEntity().getServer().getPluginManager().callEvent(event);
++        if(event.isCancelled()) return;
++
++        final Vector impulse = event.getImpulse();
++        if(!impulse.isZero()) {
++            applyImpulseNoEvent(impulse);
++        }
++    }
++
++    private void applyImpulseNoEvent(Vector impulse) {
++        playerConnection.applyImpulse(impulse);
++        velocityChanged = true;
++        super.g(impulse.getX(), impulse.getY(), impulse.getZ());
++    }
++    // SportBukkit end
++
+     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
+         super(worldserver, gameprofile);
+         playerinteractmanager.player = this;
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index 1737342..02fed6c 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -256,6 +256,8 @@ public class EntityTrackerEntry {
+ 
+         ++this.a;
+         if (this.tracker.velocityChanged) {
++            // SportBukkit start - send impulse to players, instead of absolute velocity
++            /*
+             // CraftBukkit start - Create PlayerVelocity event
+             boolean cancelled = false;
+ 
+@@ -277,6 +279,15 @@ public class EntityTrackerEntry {
+                 this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
+             }
+             // CraftBukkit end
++            */
++
++            if(this.tracker instanceof EntityPlayer) {
++                ((EntityPlayer) this.tracker).playerConnection.sendClientImpulse();
++            } else {
++                broadcast(new PacketPlayOutEntityVelocity(this.tracker));
++            }
++            // SportBukkit end
++
+             this.tracker.velocityChanged = false;
+         }
+ 
+diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
+index 2d8d862..0d6f128 100644
+--- a/src/main/java/net/minecraft/server/Explosion.java
++++ b/src/main/java/net/minecraft/server/Explosion.java
+@@ -141,9 +141,19 @@ public class Explosion {
+                             d14 = EnchantmentProtection.a((EntityLiving) entity, d13);
+                         }
+ 
++                        // SportBukkit start
++                        // For non-player entities, call the knockback method instead of directly mutating velocity.
++                        // Don't change player velocity at all, that happens later in WorldServer.createExplosion
++                        /*
+                         entity.motX += d8 * d14;
+                         entity.motY += d9 * d14;
+                         entity.motZ += d10 * d14;
++                        */
++                        if(!(entity instanceof EntityHuman)) {
++                            entity.applyKnockback(source, d8 * d14, d9 * d14, d10 * d14);
++                        }
++                        // SportBukkit end
++
+                         if (entity instanceof EntityHuman) {
+                             EntityHuman entityhuman = (EntityHuman) entity;
+ 
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 6104c71..8e83e2a 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -21,7 +21,9 @@ import org.apache.logging.log4j.Logger;
+ import java.util.HashSet;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
++import java.util.ArrayDeque;
+ import java.util.Arrays;
++import java.util.Deque;
+ 
+ import org.bukkit.Location;
+ import org.bukkit.craftbukkit.entity.CraftPlayer;
+@@ -61,6 +63,7 @@ import org.bukkit.inventory.CraftingInventory;
+ import org.bukkit.inventory.EquipmentSlot;
+ import org.bukkit.inventory.InventoryView;
+ import org.bukkit.util.NumberConversions;
++import org.bukkit.util.Vector;
+ // CraftBukkit end
+ 
+ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -139,6 +142,89 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+     private final static HashSet<Integer> invalidItems = new HashSet<Integer>(java.util.Arrays.asList(8, 9, 10, 11, 26, 34, 36, 43, 51, 52, 55, 59, 60, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 125, 127, 132, 140, 141, 142, 144)); // TODO: Check after every update.
+     // CraftBukkit end
+ 
++    // SportBukkit start - velocity prediction
++    private int ackedKeepAliveTime; // timestamp of last keep-alive packet the client has replied to
++
++    private static class ClientImpulse {
++        final int timestamp;
++        final Vector velocity;
++
++        private ClientImpulse(int timestamp, Vector velocity) {
++            this.timestamp = timestamp;
++            this.velocity = velocity;
++        }
++    }
++
++    private Vector unsentImpulse = new Vector();
++    private final Deque<ClientImpulse> sentImpulses = new ArrayDeque<ClientImpulse>();
++    private final Vector clientVelocity = new Vector();
++    private final Vector clientPosition = new Vector();
++
++    public void applyImpulse(Vector impulse) {
++        unsentImpulse.add(impulse);
++    }
++
++    /**
++     * Send any accumulated velocity changes to the client and reset the accumulator.
++     * Send a keepalive packet immediately before the impulse, and save the impulse
++     * and timestamp together in a queue.
++     */
++    public void sendClientImpulse() {
++        if(player.velocityChanged && !unsentImpulse.isZero()) {
++            final ClientImpulse clientImpulse = new ClientImpulse((int) createKeepAliveTimestamp(), unsentImpulse);
++            unsentImpulse = new Vector();
++
++            sendPacket(new PacketPlayOutKeepAlive(clientImpulse.timestamp));
++            sendPacket(new PacketPlayOutExplosion(
++                0, -9999, 0, 1,
++                Collections.<BlockPosition>emptyList(),
++                new Vec3D(
++                    clientImpulse.velocity.getX(),
++                    clientImpulse.velocity.getY(),
++                    clientImpulse.velocity.getZ()
++                )
++            ));
++            sentImpulses.addLast(clientImpulse);
++        }
++        player.velocityChanged = false;
++    }
++
++    /**
++     * Called when a position update is received from the client. If position is null,
++     * it is assumed that the client has not moved from their last position.
++     */
++    public void handleClientTick(Vector position) {
++        // Infer the client's velocity based on their last two known positions
++        if(position == null) {
++            clientVelocity.setZero();
++        } else {
++            clientVelocity.set(position).subtract(clientPosition);
++            clientPosition.set(position);
++        }
++
++        // Forget any impulses that have been acknowledged by the client,
++        // assuming the effect of those impulses is now reflected in the
++        // client's position.
++        for(Iterator<ClientImpulse> iterator = sentImpulses.iterator(); iterator.hasNext(); ) {
++            final ClientImpulse impulse = iterator.next();
++            if(ackedKeepAliveTime < impulse.timestamp) break;
++            iterator.remove();
++        }
++    }
++
++    /**
++     * Predict the velocity of the player, based on their reported movements,
++     * and any impulses that have been applied but not yet acknowledged.
++     */
++    public Vector predictedVelocity() {
++        final Vector velocity = clientVelocity.clone();
++        for(ClientImpulse impulse : sentImpulses) {
++            velocity.add(impulse.velocity);
++        }
++        return velocity;
++    }
++    // SportBukkit end
++
+     public void c() {
+         this.d();
+         this.player.k_();
+@@ -464,6 +550,15 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                     this.d();
+                 }
+ 
++                // SportBukkit start - velocity prediction
++                this.handleClientTick(
++                    packetplayinflying.hasPos ? new Vector(packetplayinflying.x,
++                                                           packetplayinflying.y,
++                                                           packetplayinflying.z)
++                                              : null
++                );
++                // SportBukkit end
++
+                 if (this.teleportPos != null) {
+                     if (this.e - this.A > 20) {
+                         this.A = this.e;
+@@ -2179,6 +2274,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+     }
+ 
+     public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
++        this.ackedKeepAliveTime = Math.max(this.ackedKeepAliveTime, packetplayinkeepalive.a()); // SportBukkit
+         if (packetplayinkeepalive.a() == this.f) {
+             int i = (int) (this.e() - this.g);
+ 
+@@ -2187,6 +2283,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+ 
+     }
+ 
++    public long createKeepAliveTimestamp() { return this.e(); } // SportBukkit - alias for following method
+     private long e() {
+         return System.nanoTime() / 1000000L;
+     }
+diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
+index 6f7b433..b1678f5 100644
+--- a/src/main/java/net/minecraft/server/WorldServer.java
++++ b/src/main/java/net/minecraft/server/WorldServer.java
+@@ -1175,7 +1175,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+             EntityHuman entityhuman = (EntityHuman) iterator.next();
+ 
+             if (entityhuman.e(d0, d1, d2) < 4096.0D) {
+-                ((EntityPlayer) entityhuman).playerConnection.sendPacket(new PacketPlayOutExplosion(d0, d1, d2, f, explosion.getBlocks(), (Vec3D) explosion.b().get(entityhuman)));
++                // SportBukkit start - call knockback method
++                ((EntityPlayer) entityhuman).playerConnection.sendPacket(new PacketPlayOutExplosion(d0, d1, d2, f, explosion.getBlocks(), null));
++                entityhuman.applyKnockback(entity, explosion.b().get(entityhuman));
++                // SportBukkit end
+             }
+         }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index 92ff875..eb854d0 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -44,6 +44,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     protected final CraftServer server;
+     protected Entity entity;
+     private EntityDamageEvent lastDamageEvent;
++    private float knockbackReduction;
+ 
+     public CraftEntity(final CraftServer server, final Entity entity) {
+         this.server = server;
+@@ -218,10 +219,25 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     }
+ 
+     public void setVelocity(Vector vel) {
+-        entity.motX = vel.getX();
+-        entity.motY = vel.getY();
+-        entity.motZ = vel.getZ();
+-        entity.velocityChanged = true;
++        applyImpulse(vel.clone().subtract(getVelocity()));
++    }
++
++    @Override
++    public void applyImpulse(Vector impulse) {
++        if(impulse.isZero()) return;
++        entity.applyImpulse(impulse.getX(),
++                            impulse.getY(),
++                            impulse.getZ());
++    }
++
++    @Override
++    public void setKnockbackReduction(float n) {
++        this.knockbackReduction = n;
++    }
++
++    @Override
++    public float getKnockbackReduction() {
++        return this.knockbackReduction;
+     }
+ 
+     public boolean isOnGround() {
+@@ -651,4 +667,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     public boolean isGlowing() {
+         return getHandle().glowing;
+     }
++
++    @Override
++    public Vector getPredictedVelocity() {
++        return getVelocity();
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c29f828..737ba13 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
+ import org.bukkit.plugin.messaging.StandardMessenger;
+ import org.bukkit.scoreboard.Scoreboard;
+ import org.bukkit.util.RayBlockIntersection;
++import org.bukkit.util.Vector;
+ 
+ @DelegateDeserialization(CraftOfflinePlayer.class)
+ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1884,6 +1885,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
++    public Vector getPredictedVelocity() {
++        return getHandle().playerConnection.predictedVelocity();
++    }
++
++    @Override
+     public boolean teleportRelative(org.bukkit.util.Vector deltaPos, float deltaYaw, float deltaPitch) {
+         return teleportRelative(deltaPos, deltaYaw, deltaPitch, PlayerTeleportEvent.TeleportCause.PLUGIN);
+     }
+-- 
+1.9.0
+

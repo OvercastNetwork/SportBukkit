@@ -1,0 +1,38 @@
+From 622255be5252a984bf6bc1b415964fd2dc7d7b33 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 19 Mar 2016 07:40:29 -0400
+Subject: [PATCH] Fix passenger desync
+
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index 9a183bd..306a5d3 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -2489,6 +2489,7 @@ public abstract class Entity implements ICommandListener {
+         return null;
+     }
+ 
++    public List<Entity> getPassengers() { return this.bu(); } // SportBukkit - alias for following method
+     public List<Entity> bu() {
+         return (List) (this.passengers.isEmpty() ? Collections.emptyList() : Lists.newArrayList(this.passengers));
+     }
+diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+index 02fed6c..10f9321 100644
+--- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
++++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
+@@ -448,6 +448,12 @@ public class EntityTrackerEntry {
+                         }
+                     }
+ 
++                    // SportBukkit start - inform new viewer of our passengers
++                    if(!this.tracker.getPassengers().isEmpty()) {
++                        entityplayer.playerConnection.sendPacket(new PacketPlayOutMount(this.tracker));
++                    }
++                    // SportBukkit end
++
+                     this.tracker.b(entityplayer);
+                     entityplayer.d(this.tracker);
+                 }
+-- 
+1.9.0
+

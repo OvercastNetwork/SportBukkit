@@ -1,0 +1,77 @@
+From d25e09e610e3824ccfa285c29ebc6f51017fb21b Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 19 Mar 2016 00:45:13 -0400
+Subject: [PATCH] Legacy potion support
+
+
+diff --git a/src/main/java/org/bukkit/potion/Potion.java b/src/main/java/org/bukkit/potion/Potion.java
+index d800f7f..ef99cc3 100644
+--- a/src/main/java/org/bukkit/potion/Potion.java
++++ b/src/main/java/org/bukkit/potion/Potion.java
+@@ -321,7 +321,7 @@ public class Potion {
+         }
+         ItemStack itemStack = new ItemStack(material, amount);
+         PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
+-        meta.setBasePotionData(new PotionData(type, level == 2, extended));
++        meta.setBasePotionData(new PotionData(type, extended, level == 2));
+         itemStack.setItemMeta(meta);
+         return itemStack;
+     }
+@@ -357,6 +357,7 @@ public class Potion {
+     private static final int SPLASH_BIT = 0x4000;
+     private static final int TIER_BIT = 0x20;
+     private static final int TIER_SHIFT = 5;
++    private static final int NAME_MASK = 0x10;
+ 
+     /**
+      *
+@@ -364,10 +365,22 @@ public class Potion {
+      * @return the produced potion
+      */
+     public static Potion fromDamage(int damage) {
++        final int level = ((damage & TIER_BIT) >> TIER_SHIFT) + 1;
++
+         PotionType type;
+         switch (damage & POTION_BIT) {
+             case 0:
+-                type = PotionType.WATER;
++                switch(damage & NAME_MASK) {
++                    default:
++                        type = damage == 0 ? PotionType.WATER : PotionType.MUNDANE;
++                        break;
++                    case 16:
++                        type = PotionType.AWKWARD;
++                        break;
++                    case 32:
++                        type = PotionType.THICK;
++                        break;
++                }
+                 break;
+             case 1:
+                 type = PotionType.REGEN;
+@@ -411,18 +424,13 @@ public class Potion {
+             default:
+                 type = PotionType.WATER;
+         }
+-        Potion potion;
+-        if (type == null || type == PotionType.WATER) {
+-            potion = new Potion(PotionType.WATER);
+-        } else {
+-            int level = (damage & TIER_BIT) >> TIER_SHIFT;
+-            level++;
+-            potion = new Potion(type, level);
+-        }
++
++        Potion potion = new Potion(type, type.isUpgradeable() ? level : 1);
++
+         if ((damage & SPLASH_BIT) > 0) {
+             potion = potion.splash();
+         }
+-        if ((damage & EXTENDED_BIT) > 0) {
++        if ((damage & EXTENDED_BIT) > 0 && type.isExtendable()) {
+             potion = potion.extend();
+         }
+         return potion;
+-- 
+1.9.0
+

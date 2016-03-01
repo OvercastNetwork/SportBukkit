@@ -1,0 +1,39 @@
+From 075892ad97b90dbdca04edef8010f6acfe4e694e Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 16 Mar 2016 21:20:38 -0400
+Subject: [PATCH] Misc Vector enhancements
+
+
+diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
+index 00e6879..b4063f5 100644
+--- a/src/main/java/org/bukkit/util/Vector.java
++++ b/src/main/java/org/bukkit/util/Vector.java
+@@ -573,6 +573,25 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+         return this;
+     }
+ 
++    public Vector set(double x, double y, double z) {
++        this.x = x;
++        this.y = y;
++        this.z = z;
++        return this;
++    }
++
++    public Vector set(Vector value) {
++        return set(value.getX(), value.getY(), value.getZ());
++    }
++
++    public Vector setZero() {
++        return set(0, 0, 0);
++    }
++
++    public boolean isZero() {
++        return x == 0 && y == 0 && z == 0;
++    }
++
+     /**
+      * Checks to see if two objects are equal.
+      * <p>
+-- 
+1.9.0
+

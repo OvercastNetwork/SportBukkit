@@ -1,15 +1,16 @@
-From 9f2af535bff1bbcdefaec6af8a4ce021bf928f39 Mon Sep 17 00:00:00 2001
+From 1d3f3d23eefbf19534b0b32ccfe5cc18be0092c6 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 26 May 2013 18:43:56 -0700
 Subject: [PATCH] Add PlayerSpawnEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemMonsterEgg.java b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-index 84f5da5..b145d6d 100644
+index 554d369..0a3e5b2 100644
 --- a/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 +++ b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-@@ -1,5 +1,11 @@
- package net.minecraft.server;
+@@ -2,6 +2,12 @@ package net.minecraft.server;
+ 
+ import java.util.UUID;
  
 +// CraftBukkit start
 +import org.bukkit.craftbukkit.entity.CraftEntity;
@@ -20,39 +21,37 @@ index 84f5da5..b145d6d 100644
  public class ItemMonsterEgg extends Item {
  
      public ItemMonsterEgg() {
-@@ -50,7 +56,31 @@ public class ItemMonsterEgg extends Item {
-                 d0 = 0.5D;
-             }
+@@ -53,6 +59,30 @@ public class ItemMonsterEgg extends Item {
  
--            Entity entity = a(world, itemstack.getData(), (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + d0, (double) blockposition.getZ() + 0.5D);
-+            // CraftBukkit start
-+            CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack);
-+            Entity entity = EntityTypes.a(itemstack.getData(), world);
-+
+             Entity entity = a(world, h(itemstack), (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + d0, (double) blockposition.getZ() + 0.5D);
+ 
++            // SportBukkit start - fire event
 +            if (entity != null) {
++                CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack);
 +                PlayerSpawnEntityEvent event = new PlayerSpawnEntityEvent((org.bukkit.entity.Player) entityhuman.getBukkitEntity(), entity.getBukkitEntity(), new org.bukkit.Location(world.getWorld(), (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + d0, (double) blockposition.getZ() + 0.5D, MathHelper.g(world.random.nextFloat() * 360.0F), 0.0F), craftItem.clone());
 +                world.getServer().getPluginManager().callEvent(event);
 +
 +                if (event.isCancelled()) {
 +                    event.getEntity().remove();
-+                    return false;
++                    return EnumInteractionResult.PASS;
 +                }
 +
 +                if (entity instanceof EntityLiving) {
 +                    EntityInsentient entityinsentient = (EntityInsentient) entity;
 +
 +                    entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
-+                    entityinsentient.aG = entityinsentient.yaw;
-+                    entityinsentient.aI = entityinsentient.yaw;
-+                    entityinsentient.prepare(world.E(new BlockPosition(entityinsentient)), (GroupDataEntity) null);
++                    entityinsentient.aK = entityinsentient.yaw;
++                    entityinsentient.aM = entityinsentient.yaw;
++                    entityinsentient.prepare(world.D(new BlockPosition(entityinsentient)), (GroupDataEntity) null);
 +                    world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
-+                    entityinsentient.x();
++                    entityinsentient.D();
 +                }
 +            }
-+            // CraftBukkit end
- 
++            // SportBukkit end
++
              if (entity != null) {
                  if (entity instanceof EntityLiving && itemstack.hasName()) {
+                     entity.setCustomName(itemstack.getName());
 -- 
 1.9.0
 

@@ -1,4 +1,4 @@
-From 9f09d59646f25c62bf571668511a00e0e649a4c0 Mon Sep 17 00:00:00 2001
+From 36dec63d6840f4cd94fb6aba5f85ae956d6c697d Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Mon, 8 Apr 2013 20:14:25 -0700
 Subject: [PATCH] Add BlockDispenseEntityEvent
@@ -6,12 +6,13 @@ Subject: [PATCH] Add BlockDispenseEntityEvent
 
 diff --git a/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java b/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java
 new file mode 100644
-index 0000000..ca172e0
+index 0000000..9d2227e
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/block/BlockDispenseEntityEvent.java
-@@ -0,0 +1,28 @@
+@@ -0,0 +1,49 @@
 +package org.bukkit.event.block;
 +
++import org.bukkit.Location;
 +import org.bukkit.block.Block;
 +import org.bukkit.entity.Entity;
 +import org.bukkit.event.Cancellable;
@@ -23,10 +24,16 @@ index 0000000..ca172e0
 + */
 +public class BlockDispenseEntityEvent extends BlockDispenseEvent implements Cancellable {
 +    private final Entity entity;
++    private Location location;
 +
-+    public BlockDispenseEntityEvent(final Block block, final ItemStack dispensed, final Vector velocity, final Entity entity) {
++    public BlockDispenseEntityEvent(final Block block, final ItemStack dispensed, final Entity entity) {
++        this(block, dispensed, entity, entity.getLocation(), entity.getVelocity());
++    }
++
++    public BlockDispenseEntityEvent(final Block block, final ItemStack dispensed, final Entity entity, final Location location, final Vector velocity) {
 +        super(block, dispensed, velocity);
 +        this.entity = entity;
++        this.location = location;
 +    }
 +
 +    /**
@@ -36,6 +43,20 @@ index 0000000..ca172e0
 +     */
 +    public Entity getEntity() {
 +        return entity;
++    }
++
++    /**
++     * Get the initial location of the dispensed entity
++     */
++    public Location getLocation() {
++        return location;
++    }
++
++    /**
++     * Set the initial location of the dispensed entity
++     */
++    public void setLocation(Location location) {
++        this.location = location;
 +    }
 +}
 -- 

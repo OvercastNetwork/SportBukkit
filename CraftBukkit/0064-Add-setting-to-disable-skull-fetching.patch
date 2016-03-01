@@ -1,0 +1,56 @@
+From 22207cf45d0d882b03fda676d1e0f95ce5483965 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 4 Feb 2015 03:39:46 -0500
+Subject: [PATCH] Add setting to disable skull fetching
+
+
+diff --git a/src/main/java/net/minecraft/server/TileEntitySkull.java b/src/main/java/net/minecraft/server/TileEntitySkull.java
+index 244a424..04d004c 100644
+--- a/src/main/java/net/minecraft/server/TileEntitySkull.java
++++ b/src/main/java/net/minecraft/server/TileEntitySkull.java
+@@ -110,7 +110,13 @@ public class TileEntitySkull extends TileEntity implements ITickable {
+                     Property property = (Property) Iterables.getFirst(gameprofile1.getProperties().get("textures"), (Object) null);
+ 
+                     if (property == null) {
+-                        gameprofile1 = TileEntitySkull.k.fillProfileProperties(gameprofile1, true);
++                        // CraftBukkit start - implement settings.fetch-skulls
++                        if(org.bukkit.Bukkit.getFetchSkulls()) {
++                            gameprofile1 = TileEntitySkull.k.fillProfileProperties(gameprofile1, true);
++                        } else {
++                            org.bukkit.Bukkit.getLogger().warning("Skull-fetching is disabled, so not fetching skin for \"" + gameprofile1.getName() + "\"");
++                        }
++                        // CraftBukkit end
+                     }
+ 
+                     return gameprofile1;
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index fd68d35..df34baa 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -571,6 +571,11 @@ public final class CraftServer implements Server {
+     }
+ 
+     @Override
++    public boolean getFetchSkulls() {
++        return this.configuration.getBoolean("settings.fetch-skulls", true);
++    }
++
++    @Override
+     public int getTicksPerAnimalSpawns() {
+         return this.configuration.getInt("ticks-per.animal-spawns");
+     }
+diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
+index 76a0b79..6867fe3 100644
+--- a/src/main/resources/configurations/bukkit.yml
++++ b/src/main/resources/configurations/bukkit.yml
+@@ -24,6 +24,7 @@ settings:
+     deprecated-verbose: default
+     shutdown-message: Server closed
+     bungeecord: false
++    fetch-skulls: true
+ spawn-limits:
+     monsters: 70
+     animals: 15
+-- 
+1.9.0
+

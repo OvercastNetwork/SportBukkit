@@ -1,0 +1,101 @@
+From f82a58b1e9df71a5c8a621b7a26b8035cd5cd610 Mon Sep 17 00:00:00 2001
+From: md_5 <git@md-5.net>
+Date: Sat, 13 Dec 2014 12:59:14 +1100
+Subject: [PATCH] BungeeCord Chat API
+
+
+diff --git a/pom.xml b/pom.xml
+index 8e6a120..a26a910 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -81,6 +81,14 @@
+             <version>1.15</version>
+             <scope>compile</scope>
+         </dependency>
++        <dependency>
++            <groupId>net.md-5</groupId>
++            <artifactId>bungeecord-chat</artifactId>
++            <version>1.8-SNAPSHOT</version>
++            <type>jar</type>
++            <scope>compile</scope>
++        </dependency>
++
+         <!-- testing -->
+         <dependency>
+             <groupId>junit</groupId>
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 07e4f45..bbe28c6 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -1199,4 +1199,22 @@ public final class Bukkit {
+     public static UnsafeValues getUnsafe() {
+         return server.getUnsafe();
+     }
++
++    /**
++     * Sends the component to the player
++     *
++     * @param component the components to send
++     */
++    public static void broadcast(net.md_5.bungee.api.chat.BaseComponent component) {
++        server.broadcast(component);
++    }
++
++    /**
++     * Sends an array of components as a single message to the player
++     *
++     * @param components the components to send
++     */
++    public static void broadcast(net.md_5.bungee.api.chat.BaseComponent... components) {
++        server.broadcast(components);
++    }
+ }
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index af90603..2bc7ccb 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -981,4 +981,18 @@ public interface Server extends PluginMessageRecipient {
+      */
+     @Deprecated
+     UnsafeValues getUnsafe();
++
++    /**
++     * Sends the component to the player
++     *
++     * @param component the components to send
++     */
++    public void broadcast(net.md_5.bungee.api.chat.BaseComponent component);
++
++    /**
++     * Sends an array of components as a single message to the player
++     *
++     * @param components the components to send
++     */
++    public void broadcast(net.md_5.bungee.api.chat.BaseComponent... components);
+ }
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index f5c2a62..9dca34b 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1421,4 +1421,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * effectively setting it to the default of "en_US".
+      */
+     public void setLocale(String locale);
++
++    /**
++     * Sends the component to the player
++     *
++     * @param component the components to send
++     */
++    public void sendMessage(net.md_5.bungee.api.chat.BaseComponent component);
++
++    /**
++     * Sends an array of components as a single message to the player
++     *
++     * @param components the components to send
++     */
++    public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components);
+  }
+-- 
+1.9.0
+

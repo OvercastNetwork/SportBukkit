@@ -1,0 +1,54 @@
+From a4251091cfd61de26ade2986ccf2aa64be87380c Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 20 Mar 2016 06:45:01 -0400
+Subject: [PATCH] Access items by EquipmentSlot
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
+index 0902386..9b3aa2c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
+@@ -11,6 +11,7 @@ import org.apache.commons.lang.Validate;
+ import org.bukkit.craftbukkit.entity.CraftPlayer;
+ import org.bukkit.entity.HumanEntity;
+ import org.bukkit.inventory.EntityEquipment;
++import org.bukkit.inventory.EquipmentSlot;
+ import org.bukkit.inventory.ItemStack;
+ 
+ public class CraftInventoryPlayer extends CraftInventory implements org.bukkit.inventory.PlayerInventory, EntityEquipment {
+@@ -62,6 +63,32 @@ public class CraftInventoryPlayer extends CraftInventory implements org.bukkit.i
+     }
+ 
+     @Override
++    public ItemStack getItem(EquipmentSlot slot) {
++        switch(slot) {
++            case HAND: return getItemInMainHand();
++            case OFF_HAND: return getItemInOffHand();
++            case HEAD: return getHelmet();
++            case CHEST: return getChestplate();
++            case LEGS: return getLeggings();
++            case FEET: return getBoots();
++        }
++        throw new UnsupportedOperationException(slot.name());
++    }
++
++    @Override
++    public void setItem(EquipmentSlot slot, ItemStack stack) {
++        switch(slot) {
++            case HAND: setItemInMainHand(stack);
++            case OFF_HAND: setItemInOffHand(stack);
++            case HEAD: setHelmet(stack);
++            case CHEST: setChestplate(stack);
++            case LEGS: setLeggings(stack);
++            case FEET: setBoots(stack);
++        }
++        throw new UnsupportedOperationException(slot.name());
++    }
++
++    @Override
+     public void setItem(int index, ItemStack item) {
+         super.setItem(index, item);
+         if (this.getHolder() == null) return;
+-- 
+1.9.0
+

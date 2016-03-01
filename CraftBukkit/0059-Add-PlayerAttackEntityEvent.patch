@@ -1,0 +1,34 @@
+From 1535f453b963f5a8b93d00527e5e95c21ff4fb4b Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 15 Nov 2014 16:17:49 -0500
+Subject: [PATCH] Add PlayerAttackEntityEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 7711448..015fe14 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -41,6 +41,7 @@ import org.bukkit.event.inventory.InventoryCreativeEvent;
+ import org.bukkit.event.inventory.InventoryType.SlotType;
+ import org.bukkit.event.player.AsyncPlayerChatEvent;
+ import org.bukkit.event.player.PlayerAnimationEvent;
++import org.bukkit.event.player.PlayerAttackEntityEvent;
+ import org.bukkit.event.player.PlayerChatEvent;
+ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+@@ -1553,6 +1554,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                         return;
+                     }
+ 
++                    // CraftBukkit start
++                    PlayerAttackEntityEvent event = new PlayerAttackEntityEvent(this.getPlayer(), entity.getBukkitEntity());
++                    this.server.getPluginManager().callEvent(event);
++                    if(event.isCancelled()) return;
++                    // CraftBukkit end
++
+                     this.player.attack(entity);
+ 
+                     // CraftBukkit start
+-- 
+1.9.0
+

@@ -1,0 +1,21 @@
+From 87978594e6872994fa9570480708c611c37b6f98 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 29 Oct 2014 19:09:49 -0400
+Subject: [PATCH] Expose the server CommandMap
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 60617be..cb49189 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1522,6 +1522,7 @@ public final class CraftServer implements Server {
+         return helpMap;
+     }
+ 
++    @Override
+     public SimpleCommandMap getCommandMap() {
+         return commandMap;
+     }
+-- 
+1.9.0
+

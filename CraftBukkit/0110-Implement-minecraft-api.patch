@@ -1,0 +1,122 @@
+From 316a9fe6bec131281e4d56f3d4206da2e2f2d8b1 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 4 Feb 2016 04:59:57 -0500
+Subject: [PATCH] Implement minecraft-api
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
+index be7f7d8..4a29535 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java
+@@ -3,6 +3,8 @@ package org.bukkit.craftbukkit.command;
+ 
+ import java.util.Collection;
+ import java.util.Set;
++
++import net.md_5.bungee.api.chat.BaseComponent;
+ import net.minecraft.server.ICommandListener;
+ 
+ import org.bukkit.Server;
+@@ -50,6 +52,16 @@ public class ProxiedNativeCommandSender implements ProxiedCommandSender {
+     }
+ 
+     @Override
++    public void sendMessage(BaseComponent... message) {
++        getCaller().sendMessage(message);
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++        getCaller().sendMessage(message);
++    }
++
++    @Override
+     public Server getServer() {
+         return getCallee().getServer();
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/command/ServerCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/ServerCommandSender.java
+index 716f7c8..6bae368 100644
+--- a/src/main/java/org/bukkit/craftbukkit/command/ServerCommandSender.java
++++ b/src/main/java/org/bukkit/craftbukkit/command/ServerCommandSender.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.craftbukkit.command;
+ 
++import net.md_5.bungee.api.chat.BaseComponent;
+ import org.bukkit.Bukkit;
+ import org.bukkit.Server;
+ import org.bukkit.command.CommandSender;
+@@ -134,4 +135,14 @@ public abstract class ServerCommandSender implements CommandSender {
+     public String getName(CommandSender viewer) {
+         return this.getName();
+     }
++
++    @Override
++    public void sendMessage(BaseComponent... message) {
++        sendMessage(BaseComponent.toLegacyText(message));
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++        sendMessage(BaseComponent.toLegacyText(message));
++    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index ff3d79a..92ff875 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -6,6 +6,7 @@ import java.util.List;
+ import java.util.Set;
+ import java.util.UUID;
+ 
++import net.md_5.bungee.api.chat.BaseComponent;
+ import net.minecraft.server.*;
+ 
+ import org.bukkit.EntityEffect;
+@@ -495,6 +496,14 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     }
+ 
+     @Override
++    public void sendMessage(BaseComponent... message) {
++    }
++
++    @Override
++    public void sendMessage(BaseComponent message) {
++    }
++
++    @Override
+     public String getName() {
+         return getHandle().getName();
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 3ac60a7..a04ad05 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1778,6 +1778,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
++    public java.util.Locale getCurrentLocale() {
++        return org.apache.commons.lang.LocaleUtils.toLocale(getLocale().replaceAll("_", "-"));
++    }
++
++    @Override
++    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent... message) {
++        if ( getHandle().playerConnection == null ) return;
++
++        PacketPlayOutChat packet = new PacketPlayOutChat(null, (byte) position.ordinal());
++        packet.components = message;
++        getHandle().playerConnection.sendPacket(packet);
++    }
++
++    @Override
++    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent message) {
++        sendMessage(position, new BaseComponent[] {message});
++    }
++
++    @Override
+     public void sendMessage(BaseComponent component) {
+       sendMessage( new BaseComponent[] { component } );
+     }
+-- 
+1.9.0
+

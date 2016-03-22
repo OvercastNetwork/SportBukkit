@@ -1,11 +1,11 @@
-From b730ded7eda5769ed16da6e45be9e936f4ef88a7 Mon Sep 17 00:00:00 2001
+From 357dd4b9329d9c50b179304d89ac564af2107466 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:58:08 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
-index e659ac5..8a2c5b5 100644
+index e659ac5..87288b3 100644
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
 @@ -16,6 +16,9 @@ import org.bukkit.craftbukkit.block.CraftBlockState;
@@ -18,7 +18,7 @@ index e659ac5..8a2c5b5 100644
  // CraftBukkit end
  
  public final class ItemStack {
-@@ -275,6 +278,28 @@ public final class ItemStack {
+@@ -275,6 +278,34 @@ public final class ItemStack {
              }
          }
  
@@ -32,15 +32,21 @@ index e659ac5..8a2c5b5 100644
 +            if(tag == null) {
 +                this.tag = new NBTTagCompound();
 +            }
-+            final Key key;
-+            if(potion.hasExtendedDuration()) {
-+                key = type.longKey();
-+            } else if(potion.getLevel() > 1) {
-+                key = type.strongKey();
-+            } else {
-+                key = type.baseKey();
++            // Custom effects used to replace the defaults, so recreate that behavior
++            // by only setting a potion type if there are no custom effects.
++            final List<MobEffect> customEffects = new java.util.ArrayList<MobEffect>();
++            PotionUtil.a(this.tag, customEffects);
++            if(customEffects.isEmpty()) {
++                final Key key;
++                if(potion.hasExtendedDuration()) {
++                    key = type.longKey();
++                } else if(potion.getLevel() > 1) {
++                    key = type.strongKey();
++                } else {
++                    key = type.baseKey();
++                }
++                tag.setString("Potion", key.toString());
 +            }
-+            tag.setString("Potion", key.toString());
 +        }
 +        // SportBukkit end
 +

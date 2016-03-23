@@ -1,4 +1,4 @@
-From 2f19190551e534e16d215354df490f1617094a89 Mon Sep 17 00:00:00 2001
+From 6ebbb1b60109f1b833a77b88859f15efb0f1e835 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:10:05 -0500
 Subject: [PATCH] Registration API

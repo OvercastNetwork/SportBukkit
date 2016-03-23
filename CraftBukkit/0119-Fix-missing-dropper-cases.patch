@@ -1,4 +1,4 @@
-From f74f131e429c191b85e185c783a9794593536825 Mon Sep 17 00:00:00 2001
+From b8571a21381560b5ecfcad89fafab2fb8c9fed07 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 8 Mar 2016 01:46:12 -0500
 Subject: [PATCH] Fix missing dropper cases

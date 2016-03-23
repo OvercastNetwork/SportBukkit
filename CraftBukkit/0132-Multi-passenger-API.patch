@@ -1,4 +1,4 @@
-From 36db2599d86e0a312e7482aa2af7b857114f8712 Mon Sep 17 00:00:00 2001
+From ec89ff2ca802cce6f15be197c7e7d5fd62b357f8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:42:17 -0400
 Subject: [PATCH] Multi-passenger API
@@ -17,7 +17,7 @@ index 306a5d3..4201383 100644
          for (int i = this.passengers.size() - 1; i >= 0; --i) {
              ((Entity) this.passengers.get(i)).stopRiding();
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index eb854d0..c5ccd5b 100644
+index cdf4935..eee4124 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -1,11 +1,17 @@
@@ -38,7 +38,7 @@ index eb854d0..c5ccd5b 100644
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.minecraft.server.*;
  
-@@ -362,6 +368,47 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -351,6 +357,47 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          return true;
      }
  
@@ -86,7 +86,7 @@ index eb854d0..c5ccd5b 100644
      public float getFallDistance() {
          return getHandle().fallDistance;
      }
-@@ -454,6 +501,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -443,6 +490,12 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          return getHandle().isPassenger();
      }
  

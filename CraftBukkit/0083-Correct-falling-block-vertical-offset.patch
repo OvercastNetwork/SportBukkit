@@ -1,14 +1,14 @@
-From e27681887558edf5640ae92fc4c749f029db93f3 Mon Sep 17 00:00:00 2001
+From 92b68fc521503914d6a64dd943370c11f69a3ca8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 14 Apr 2015 03:07:57 -0400
 Subject: [PATCH] Correct falling block vertical offset
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index c5ad4c1..8b058eb 100644
+index 4ee3801..a241c7c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -926,7 +926,7 @@ public class CraftWorld implements World {
+@@ -931,7 +931,7 @@ public class CraftWorld implements World {
          Validate.isTrue(material.isBlock(), "Material must be a block");
  
          double x = location.getBlockX() + 0.5;

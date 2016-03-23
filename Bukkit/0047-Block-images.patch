@@ -1,4 +1,4 @@
-From 8b2bfd9c82c53fa0152ac4588bbedf66cb3361ef Mon Sep 17 00:00:00 2001
+From 4b86f67a46ad59375cbd83f17036a02b73487cc3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 1 Jul 2015 12:40:49 -0400
 Subject: [PATCH] Block images
@@ -87,7 +87,7 @@ index 090dddc..bfc88a7 100644
      public ChunkGenerator.ChunkData createChunkData(World world);
  
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 48afc49..6d4eabe 100644
+index bd6d4d0..629372d 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -1,6 +1,10 @@
@@ -101,7 +101,7 @@ index 48afc49..6d4eabe 100644
  import org.bukkit.generator.ChunkGenerator;
  import java.util.Collection;
  import java.util.HashMap;
-@@ -1440,6 +1444,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -1442,6 +1446,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
       */
      public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
  

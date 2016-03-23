@@ -1,11 +1,11 @@
-From 06149ea9892ea2af20c78ee8524cc0b8c08867ad Mon Sep 17 00:00:00 2001
+From 8bdde97161a406c19ffabaa52e2c6e1dc0c81882 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 May 2015 14:30:20 -0400
 Subject: [PATCH] Block digging API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 09a3619..c324a66 100644
+index 99a93fa..d76f274 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
 @@ -13,9 +13,9 @@ public class PlayerInteractManager {
@@ -49,10 +49,10 @@ index b1ab482..5c2f41c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 4afef53..ab0a5e4 100644
+index 26b65b9..531bd9e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -269,6 +269,14 @@ public class CraftEventFactory {
+@@ -270,6 +270,14 @@ public class CraftEventFactory {
          return event;
      }
  

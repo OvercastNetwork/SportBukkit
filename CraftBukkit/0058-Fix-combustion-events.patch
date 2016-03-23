@@ -1,4 +1,4 @@
-From 29248cfac8bcab5d91e6a64367798abc855f10e5 Mon Sep 17 00:00:00 2001
+From 6c95481f894e33a75459eb8359e6ae6651215c3e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
@@ -196,10 +196,10 @@ index f5a08a5..b785584 100644
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.f(axisalignedbb.d);
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 9811b56..54b43c1 100644
+index 55bf873..f35f770 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -473,18 +473,16 @@ public class CraftEventFactory {
+@@ -483,18 +483,16 @@ public class CraftEventFactory {
                  event.getEntity().setLastDamageCause(event);
              }
              return event;
@@ -222,7 +222,7 @@ index 9811b56..54b43c1 100644
              } else {
                  throw new AssertionError(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex));
              }
-@@ -518,6 +516,8 @@ public class CraftEventFactory {
+@@ -528,6 +526,8 @@ public class CraftEventFactory {
          DamageCause cause = null;
          if (source == DamageSource.FIRE) {
              cause = DamageCause.FIRE;

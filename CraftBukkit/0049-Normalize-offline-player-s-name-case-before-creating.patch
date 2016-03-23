@@ -1,14 +1,14 @@
-From 1f15f894ac5858a0e69447081528e28c86a688cf Mon Sep 17 00:00:00 2001
+From a404a4c579ea3647534f7086d7db54410b67d643 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Thu, 5 Jun 2014 22:02:07 +0200
 Subject: [PATCH] Normalize offline player's name case before creating an UUID
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 74bf367..bea4e37 100644
+index 588b782..1e37e86 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1787,7 +1787,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -1786,7 +1786,7 @@ public abstract class EntityHuman extends EntityLiving {
      }
  
      public static UUID d(String s) {

@@ -1,11 +1,11 @@
-From 82ea2dcb0d87c213f1cfdb2671b51339023ea681 Mon Sep 17 00:00:00 2001
+From f6767585d65610b95f3e3e3238189602121f5ff7 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 2001717..4341cee 100644
+index 9d34e80..02b7526 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -25,7 +25,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
@@ -17,7 +17,7 @@ index 2001717..4341cee 100644
      public PlayerConnection playerConnection;
      public final MinecraftServer server;
      public final PlayerInteractManager playerInteractManager;
-@@ -1047,7 +1047,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1048,7 +1048,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      }
  
      public void a(PacketPlayInSettings packetplayinsettings) {
@@ -53,10 +53,10 @@ index d09b368..7afd7a2 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 786c282..9811b56 100644
+index 11b878f..55bf873 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -640,7 +640,7 @@ public class CraftEventFactory {
+@@ -650,7 +650,7 @@ public class CraftEventFactory {
          if (!event.isCancelled()) {
              state.update(true);
          }
@@ -65,10 +65,10 @@ index 786c282..9811b56 100644
          return !event.isCancelled();
      }
  
-@@ -1000,4 +1000,11 @@ public class CraftEventFactory {
-         entity.world.getServer().getPluginManager().callEvent(event);
-         return event;
-     }
+@@ -1016,4 +1016,11 @@ public class CraftEventFactory {
+ 		cloud.world.getServer().getPluginManager().callEvent(event);
+ 		return event;
+ 	}
 +
 +    public static PlayerLocaleChangeEvent callPlayerLocaleChangeEvent(EntityHuman who, String oldLocale, String newLocale) {
 +        Player player = (Player) who.getBukkitEntity();

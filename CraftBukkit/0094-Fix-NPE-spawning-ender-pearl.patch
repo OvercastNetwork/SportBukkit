@@ -1,14 +1,14 @@
-From 48b6cb178bd24f1d25f86fc2ffa6f616e68a0776 Mon Sep 17 00:00:00 2001
+From b82ff6ea4a80c9dd65ff7f51da2e0c8a42434a84 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 12:56:06 -0400
 Subject: [PATCH] Fix NPE spawning ender pearl
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 744a88d..fdb413e 100644
+index 0b3e0b6..0bffcbe 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1009,7 +1009,7 @@ public class CraftWorld implements World {
+@@ -1014,7 +1014,7 @@ public class CraftWorld implements World {
                  entity = new EntityThrownExpBottle(world);
                  entity.setPositionRotation(x, y, z, 0, 0);
              } else if (EnderPearl.class.isAssignableFrom(clazz)) {

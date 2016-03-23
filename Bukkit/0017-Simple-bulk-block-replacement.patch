@@ -1,11 +1,11 @@
-From ec13ffbd8dcb16a6ef48c5670bffaacd5cf44a30 Mon Sep 17 00:00:00 2001
+From 0e2a87ce2375d7e2c87e7ff51959042df349cf2f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 28 Sep 2014 05:47:53 -0400
 Subject: [PATCH] Simple bulk block replacement
 
 
 diff --git a/src/main/java/org/bukkit/Chunk.java b/src/main/java/org/bukkit/Chunk.java
-index 0510151..b7bc563 100644
+index f39aabc..6c4107d 100644
 --- a/src/main/java/org/bukkit/Chunk.java
 +++ b/src/main/java/org/bukkit/Chunk.java
 @@ -3,6 +3,7 @@ package org.bukkit;
@@ -16,7 +16,7 @@ index 0510151..b7bc563 100644
  
  /**
   * Represents a chunk of blocks
-@@ -121,4 +122,12 @@ public interface Chunk {
+@@ -123,4 +124,12 @@ public interface Chunk {
       * @return true if the chunk has unloaded successfully, otherwise false
       */
      boolean unload();

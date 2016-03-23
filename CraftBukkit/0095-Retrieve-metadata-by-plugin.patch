@@ -1,14 +1,14 @@
-From c2292b961469269926ab92ab61248a95a21f95b8 Mon Sep 17 00:00:00 2001
+From 30c09f98e24c90f215c16f97cca5b4b8a3267e31 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 19 Jun 2015 15:02:55 -0400
 Subject: [PATCH] Retrieve metadata by plugin
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index fdb413e..5b2f693 100644
+index 0bffcbe..846a045 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1351,6 +1351,11 @@ public class CraftWorld implements World {
+@@ -1356,6 +1356,11 @@ public class CraftWorld implements World {
          server.getWorldMetadata().setMetadata(this, metadataKey, newMetadataValue);
      }
  
@@ -54,10 +54,10 @@ index 8e15cce..a2e2951 100644
          requirePlaced();
          return chunk.getCraftWorld().getBlockMetadata().getMetadata(getBlock(), metadataKey);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index f3aa75f..ff3d79a 100644
+index 9973de1..6c78626 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -416,6 +416,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -405,6 +405,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          server.getEntityMetadata().setMetadata(this, metadataKey, newMetadataValue);
      }
  

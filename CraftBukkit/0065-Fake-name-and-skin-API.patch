@@ -1,11 +1,11 @@
-From b1b2eb1f0921924824bca96ef2ec05fc801064f2 Mon Sep 17 00:00:00 2001
+From 9bb58b6c5caf5a0a53f21b555edf55c72eaa351c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index bea4e37..834513d 100644
+index 1e37e86..701ca4a 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -26,7 +26,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -18,7 +18,7 @@ index bea4e37..834513d 100644
      public PlayerInventory inventory = new PlayerInventory(this);
      private InventoryEnderChest enderChest = new InventoryEnderChest();
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 4f4f40d..6b316cd 100644
+index 9b0590c..8d4c8e6 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -19,6 +19,8 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -30,7 +30,7 @@ index 4f4f40d..6b316cd 100644
  import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  // CraftBukkit end
  
-@@ -1057,8 +1059,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1058,8 +1060,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          // SportBukkit end
          this.cf = packetplayinsettings.c();
          this.cg = packetplayinsettings.d();
@@ -190,7 +190,7 @@ index 015fe14..ad03ddf 100644
              CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index ab3b7fc..c3730d4 100644
+index 5da18a7..52433f8 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -26,6 +26,7 @@ import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -357,7 +357,7 @@ index 1314c74..8f875ca 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 9bc11b1..d61301e 100644
+index 870ad1c..2e1e341 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -11,6 +11,7 @@ import org.bukkit.EntityEffect;
@@ -368,7 +368,7 @@ index 9bc11b1..d61301e 100644
  import org.bukkit.craftbukkit.CraftServer;
  import org.bukkit.craftbukkit.CraftWorld;
  import org.bukkit.event.entity.EntityDamageEvent;
-@@ -493,6 +494,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -482,6 +483,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
      }
  
      @Override
@@ -378,7 +378,7 @@ index 9bc11b1..d61301e 100644
 +
 +    @Override
      public boolean isPermissionSet(String name) {
-         return perm.isPermissionSet(name);
+         return getPermissibleBase().isPermissionSet(name);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftMinecartCommand.java
 index 813b080..f2c3022 100644

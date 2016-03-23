@@ -1,14 +1,22 @@
-From 0cb43a12d09bf6340fe0b98e78fc451a922ed628 Mon Sep 17 00:00:00 2001
+From 906bed1b97059ac9b3d8ac3f8d5dc3b7b5c1e061 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:45:13 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/org/bukkit/potion/Potion.java b/src/main/java/org/bukkit/potion/Potion.java
-index d800f7f..ef99cc3 100644
+index 28d24f6..ec3a5ab 100644
 --- a/src/main/java/org/bukkit/potion/Potion.java
 +++ b/src/main/java/org/bukkit/potion/Potion.java
-@@ -321,7 +321,7 @@ public class Potion {
+@@ -6,6 +6,7 @@ import org.apache.commons.lang.Validate;
+ import org.bukkit.Material;
+ import org.bukkit.entity.LivingEntity;
+ import org.bukkit.inventory.ItemStack;
++import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.inventory.meta.PotionMeta;
+ 
+ /**
+@@ -321,7 +322,7 @@ public class Potion {
          }
          ItemStack itemStack = new ItemStack(material, amount);
          PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
@@ -17,7 +25,7 @@ index d800f7f..ef99cc3 100644
          itemStack.setItemMeta(meta);
          return itemStack;
      }
-@@ -357,6 +357,7 @@ public class Potion {
+@@ -357,6 +358,7 @@ public class Potion {
      private static final int SPLASH_BIT = 0x4000;
      private static final int TIER_BIT = 0x20;
      private static final int TIER_SHIFT = 5;
@@ -25,7 +33,7 @@ index d800f7f..ef99cc3 100644
  
      /**
       *
-@@ -364,10 +365,22 @@ public class Potion {
+@@ -364,10 +366,22 @@ public class Potion {
       * @return the produced potion
       */
      public static Potion fromDamage(int damage) {
@@ -49,7 +57,7 @@ index d800f7f..ef99cc3 100644
                  break;
              case 1:
                  type = PotionType.REGEN;
-@@ -411,18 +424,13 @@ public class Potion {
+@@ -411,28 +425,29 @@ public class Potion {
              default:
                  type = PotionType.WATER;
          }
@@ -72,6 +80,25 @@ index d800f7f..ef99cc3 100644
              potion = potion.extend();
          }
          return potion;
+     }
+ 
++    @Deprecated
+     public static Potion fromItemStack(ItemStack item) {
+         Validate.notNull(item, "item cannot be null");
+-        if (item.getType() != Material.POTION)
+-            throw new IllegalArgumentException("item is not a potion");
+-        return fromDamage(item.getDurability());
++        if(item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION) {
++            throw new IllegalArgumentException("item cannot be converted to a legacy potion");
++        }
++
++        final PotionData potionData = ((PotionMeta) item.getItemMeta()).getBasePotionData();
++        final Potion potion = new Potion(potionData.getType(), potionData.isUpgraded() ? 2 : 1, potionData.isExtended());
++        if(item.getType() == Material.SPLASH_POTION) potion.splash();
++        return potion;
+     }
+ 
+     /**
 -- 
 1.9.0
 

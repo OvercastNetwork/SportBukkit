@@ -1,9 +1,27 @@
-From 3b5a7a3fa49daf46d9bf26af9082e6f771cc07de Mon Sep 17 00:00:00 2001
+From 79074278d1f89e56543c571be4b3d9c85f8764f0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 May 2015 06:31:14 -0400
 Subject: [PATCH] Item Attribute Modifier API
 
 
+diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
+index 1ed4aa9..7b842e6 100644
+--- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
++++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
+@@ -60,11 +60,11 @@ public class CraftAttributeInstance implements AttributeInstance {
+         return handle.getValue();
+     }
+ 
+-    private static net.minecraft.server.AttributeModifier convert(AttributeModifier bukkit) {
++    public static net.minecraft.server.AttributeModifier convert(AttributeModifier bukkit) {
+         return new net.minecraft.server.AttributeModifier(bukkit.getUniqueId(), bukkit.getName(), bukkit.getAmount(), bukkit.getOperation().ordinal());
+     }
+ 
+-    private static AttributeModifier convert(net.minecraft.server.AttributeModifier nms) {
++    public static AttributeModifier convert(net.minecraft.server.AttributeModifier nms) {
+         return new AttributeModifier(nms.a(), nms.b(), nms.d(), AttributeModifier.Operation.values()[nms.c()]);
+     }
+ }
 diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
 index 7c94acc..a385997 100644
 --- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
@@ -32,6 +50,119 @@ index 7c94acc..a385997 100644
 -
 -        return sb.toString();
 -    }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
+index 3bc313c..6843bf9 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
+@@ -1,16 +1,30 @@
+ package org.bukkit.craftbukkit.inventory;
+ 
++import java.util.ArrayList;
+ import java.util.Collection;
++import java.util.Collections;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
+ 
++import net.minecraft.server.AttributeModifier;
++import net.minecraft.server.EnumItemSlot;
++import net.minecraft.server.Item;
+ import org.apache.commons.lang.Validate;
+ import org.bukkit.Color;
+ import org.bukkit.Material;
++import org.bukkit.attribute.Attribute;
++import org.bukkit.attribute.ItemAttributeModifier;
+ import org.bukkit.configuration.serialization.ConfigurationSerialization;
++import org.bukkit.craftbukkit.CraftEquipmentSlot;
++import org.bukkit.craftbukkit.attribute.CraftAttributeInstance;
++import org.bukkit.craftbukkit.util.CraftMagicNumbers;
+ import org.bukkit.inventory.ItemFactory;
+ import org.bukkit.inventory.ItemStack;
+ import org.bukkit.inventory.meta.ItemMeta;
+ 
+ import com.google.common.collect.ImmutableSet;
++import org.bukkit.material.MaterialData;
+ 
+ public final class CraftItemFactory implements ItemFactory {
+     static final Color DEFAULT_LEATHER_COLOR = Color.fromRGB(0xA06540);
+@@ -171,4 +185,77 @@ public final class CraftItemFactory implements ItemFactory {
+     public Color getDefaultLeatherColor() {
+         return DEFAULT_LEATHER_COLOR;
+     }
++
++    @Override
++    public Collection<String> getModifiedAttributes(Material item) {
++        final Item nmsItem = CraftMagicNumbers.getItem(item);
++        if(nmsItem == null) return Collections.emptyList();
++
++        final List<String> attributes = new ArrayList<String>();
++        for(EnumItemSlot nmsSlot : EnumItemSlot.values()) {
++            attributes.addAll(nmsItem.a(nmsSlot).keySet());
++        }
++        return attributes;
++    }
++
++    @Override
++    public Map<String, List<ItemAttributeModifier>> getAttributeModifiers(Material item) {
++        final Item nmsItem = CraftMagicNumbers.getItem(item);
++        if(nmsItem == null) return Collections.emptyMap();
++
++        final Map<String, List<ItemAttributeModifier>> map = new HashMap<String, List<ItemAttributeModifier>>();
++        for(EnumItemSlot nmsSlot : EnumItemSlot.values()) {
++            for(Map.Entry<String, AttributeModifier> entry : nmsItem.a(nmsSlot).entries()) {
++                List<ItemAttributeModifier> list = map.get(entry.getKey());
++                if(list == null) {
++                    list = new ArrayList<ItemAttributeModifier>();
++                    map.put(entry.getKey(), list);
++                }
++                list.add(new ItemAttributeModifier(CraftEquipmentSlot.getSlot(nmsSlot),
++                                                   CraftAttributeInstance.convert(entry.getValue())));
++            }
++        }
++
++        return map;
++    }
++
++    @Override
++    public Collection<ItemAttributeModifier> getAttributeModifiers(Material item, String attribute) {
++        final Item nmsItem = CraftMagicNumbers.getItem(item);
++        if(nmsItem == null) return Collections.emptyList();
++
++        final List<ItemAttributeModifier> mods = new ArrayList<ItemAttributeModifier>();
++        for(EnumItemSlot nmsSlot : EnumItemSlot.values()) {
++            for(AttributeModifier nmsMod : nmsItem.a(nmsSlot).get(attribute)) {
++                mods.add(new ItemAttributeModifier(CraftEquipmentSlot.getSlot(nmsSlot),
++                                                   CraftAttributeInstance.convert(nmsMod)));
++            }
++        }
++        return mods;
++    }
++
++    @Override
++    public Collection<ItemAttributeModifier> getAttributeModifiers(Material item, Attribute attribute) {
++        return getAttributeModifiers(item, attribute.getName());
++    }
++
++    @Override
++    public Collection<String> getModifiedAttributes(MaterialData item) {
++        return getModifiedAttributes(item.getItemType());
++    }
++
++    @Override
++    public Map<String, List<ItemAttributeModifier>> getAttributeModifiers(MaterialData item) {
++        return getAttributeModifiers(item.getItemType());
++    }
++
++    @Override
++    public Collection<ItemAttributeModifier> getAttributeModifiers(MaterialData item, String attribute) {
++        return getAttributeModifiers(item.getItemType(), attribute);
++    }
++
++    @Override
++    public Collection<ItemAttributeModifier> getAttributeModifiers(MaterialData item, Attribute attribute) {
++        return getAttributeModifiers(item.getItemType(), attribute);
++    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 index a443340..5606454 100644

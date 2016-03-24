@@ -1,4 +1,4 @@
-From 46aa2655595ba5685b0eee6b1f12cc158c34bda1 Mon Sep 17 00:00:00 2001
+From 2a18010e5fdd6f74d535a31b351e0d86441896bd Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 May 2015 06:30:47 -0400
 Subject: [PATCH] Item Attribute Modifier API
@@ -181,6 +181,50 @@ index 0000000..71ae14e
 +        slotNames[EquipmentSlot.FEET.ordinal()] = "feet";
 +    }
 +}
+diff --git a/src/main/java/org/bukkit/inventory/ItemFactory.java b/src/main/java/org/bukkit/inventory/ItemFactory.java
+index 52a8d4d..ecfd18c 100644
+--- a/src/main/java/org/bukkit/inventory/ItemFactory.java
++++ b/src/main/java/org/bukkit/inventory/ItemFactory.java
+@@ -1,11 +1,18 @@
+ package org.bukkit.inventory;
+ 
++import java.util.Collection;
++import java.util.List;
++import java.util.Map;
++
+ import org.bukkit.Color;
+ import org.bukkit.Material;
+ import org.bukkit.Server;
++import org.bukkit.attribute.Attribute;
++import org.bukkit.attribute.ItemAttributeModifier;
+ import org.bukkit.inventory.meta.BookMeta;
+ import org.bukkit.inventory.meta.ItemMeta;
+ import org.bukkit.inventory.meta.SkullMeta;
++import org.bukkit.material.MaterialData;
+ 
+ /**
+  * An instance of the ItemFactory can be obtained with {@link
+@@ -121,4 +128,20 @@ public interface ItemFactory {
+      * @return the default color for leather armor
+      */
+     Color getDefaultLeatherColor();
++
++    Collection<String> getModifiedAttributes(MaterialData item);
++
++    Map<String, List<ItemAttributeModifier>> getAttributeModifiers(MaterialData item);
++
++    Collection<ItemAttributeModifier> getAttributeModifiers(MaterialData item, String attribute);
++
++    Collection<ItemAttributeModifier> getAttributeModifiers(MaterialData item, Attribute attribute);
++
++    Collection<String> getModifiedAttributes(Material item);
++
++    Map<String, List<ItemAttributeModifier>> getAttributeModifiers(Material item);
++
++    Collection<ItemAttributeModifier> getAttributeModifiers(Material item, String attribute);
++
++    Collection<ItemAttributeModifier> getAttributeModifiers(Material item, Attribute attribute);
+ }
 diff --git a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
 index 80a2c3b..ec471de 100644
 --- a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java

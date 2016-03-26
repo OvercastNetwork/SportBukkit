@@ -1,14 +1,14 @@
-From 91aa85a8df0a0a2242559f5a8a7dd838b50dec0a Mon Sep 17 00:00:00 2001
+From 12a653b9bfef81f1c2b5334f6db7fd0eea70f023 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Knockback API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index fc0de12..6789c30 100644
+index fc0de12..2bd8d64 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -52,6 +52,48 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -52,6 +52,47 @@ public interface Entity extends Metadatable, CommandSender, Physical {
      public Vector getVelocity();
  
      /**
@@ -18,11 +18,10 @@ index fc0de12..6789c30 100644
 +     * velocity is synced to players in visible range.
 +     *
 +     * If this entity is a player, the impulse is sent directly to them,
-+     * and will be applied by their client at the moment they received it.
-+     *
-+     * Players always receive their own velocity changes as impulses, never as
-+     * absolute values. This results in more accurate physics, from the player's
-+     * perspective, particularly with high-latency connections.
++     * and will be applied by their client at the moment they receive it.
++     * This results in more accurate physics, from the player's perspective,
++     * particularly with high-latency connections. However, their final
++     * velocity is more difficult to predict from the server.
 +     */
 +    void applyImpulse(Vector impulse);
 +

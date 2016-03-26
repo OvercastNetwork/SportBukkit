@@ -1,4 +1,4 @@
-From 8fe97735462634ad2063cf5aabe1de3d0a73c57d Mon Sep 17 00:00:00 2001
+From b9127144d2e8a1d2b7cc515b5167903ead3c6578 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -394,7 +394,7 @@ index 6f7b433..b1678f5 100644
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index bef68cb..cdf4935 100644
+index bef68cb..9bc14e2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -33,6 +33,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -405,17 +405,14 @@ index bef68cb..cdf4935 100644
  
      public CraftEntity(final CraftServer server, final Entity entity) {
          this.server = server;
-@@ -207,10 +208,25 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -210,9 +211,28 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         entity.motX = vel.getX();
+         entity.motY = vel.getY();
+         entity.motZ = vel.getZ();
++        entity.impulse = true;
+         entity.velocityChanged = true;
      }
  
-     public void setVelocity(Vector vel) {
--        entity.motX = vel.getX();
--        entity.motY = vel.getY();
--        entity.motZ = vel.getZ();
--        entity.velocityChanged = true;
-+        applyImpulse(vel.clone().subtract(getVelocity()));
-+    }
-+
 +    @Override
 +    public void applyImpulse(Vector impulse) {
 +        if(impulse.isZero()) return;
@@ -432,10 +429,12 @@ index bef68cb..cdf4935 100644
 +    @Override
 +    public float getKnockbackReduction() {
 +        return this.knockbackReduction;
-     }
- 
++    }
++
      public boolean isOnGround() {
-@@ -658,4 +674,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         if (entity instanceof EntityArrow) {
+             return ((EntityArrow) entity).isInGround();
+@@ -658,4 +678,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          }
          return perm;
      }
@@ -446,10 +445,18 @@ index bef68cb..cdf4935 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c29f828..737ba13 100644
+index a6dcdee..018924a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
+@@ -67,6 +67,7 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent;
+ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent;
+ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
++import org.bukkit.event.player.PlayerVelocityEvent;
+ import org.bukkit.inventory.InventoryView.Property;
+ import org.bukkit.map.MapCursor;
+ import org.bukkit.map.MapView;
+@@ -76,6 +77,7 @@ import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
  import org.bukkit.scoreboard.Scoreboard;
  import org.bukkit.util.RayBlockIntersection;
@@ -457,12 +464,23 @@ index c29f828..737ba13 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1884,6 +1885,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1884,6 +1886,22 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
 +    public Vector getPredictedVelocity() {
 +        return getHandle().playerConnection.predictedVelocity();
++    }
++
++    @Override
++    public void setVelocity(Vector vel) {
++        final PlayerVelocityEvent event = new PlayerVelocityEvent(this, vel.clone().subtract(getVelocity()));
++        if(event.isCancelled() || event.getImpulse().isZero()) return;
++
++        super.setVelocity(event.getVelocity());
++        getHandle().impulse = false;
++        getHandle().velocityChanged = false;
++        getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(getHandle()));
 +    }
 +
 +    @Override

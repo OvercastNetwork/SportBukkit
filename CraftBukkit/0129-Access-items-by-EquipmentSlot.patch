@@ -1,11 +1,11 @@
-From d83cd48850065c56fa3b518b44d578e040767ced Mon Sep 17 00:00:00 2001
+From d3d3cadbe210f466ce97f209b30c78ce4bf11776 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 20 Mar 2016 06:45:01 -0400
 Subject: [PATCH] Access items by EquipmentSlot
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
-index 0902386..9b3aa2c 100644
+index 0902386..4523ac0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
 @@ -11,6 +11,7 @@ import org.apache.commons.lang.Validate;
@@ -35,12 +35,12 @@ index 0902386..9b3aa2c 100644
 +    @Override
 +    public void setItem(EquipmentSlot slot, ItemStack stack) {
 +        switch(slot) {
-+            case HAND: setItemInMainHand(stack);
-+            case OFF_HAND: setItemInOffHand(stack);
-+            case HEAD: setHelmet(stack);
-+            case CHEST: setChestplate(stack);
-+            case LEGS: setLeggings(stack);
-+            case FEET: setBoots(stack);
++            case HAND: setItemInMainHand(stack); return;
++            case OFF_HAND: setItemInOffHand(stack); return;
++            case HEAD: setHelmet(stack); return;
++            case CHEST: setChestplate(stack); return;
++            case LEGS: setLeggings(stack); return;
++            case FEET: setBoots(stack); return;
 +        }
 +        throw new UnsupportedOperationException(slot.name());
 +    }

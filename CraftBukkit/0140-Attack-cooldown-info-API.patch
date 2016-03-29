@@ -1,0 +1,55 @@
+From 5017d2e3786752029cbb360fe73050022ddbe574 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 29 Mar 2016 02:13:07 -0400
+Subject: [PATCH] Attack cooldown info API
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index 20639b2..7d25411 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -962,7 +962,7 @@ public abstract class EntityHuman extends EntityLiving {
+ 
+                 f *= 0.2F + f2 * f2 * 0.8F;
+                 f1 *= f2;
+-                this.cZ();
++                // this.cZ();   SportBukkit - don't reset cooldown here, let the arm swing packet do it
+                 if (f > 0.0F || f1 > 0.0F) {
+                     boolean flag = f2 > 0.9F;
+                     boolean flag1 = false;
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index 19395ce..df5aed2 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -55,7 +55,7 @@ public abstract class EntityLiving extends Entity {
+     public int deathTicks;
+     public float aB;
+     public float aC;
+-    protected int aD;
++    protected int aD; public int ticksSinceLastAttack() { return aD; } // SportBukkit - add accessor
+     public float aE;
+     public float aF;
+     public float aG;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index 5ecce4b..40a1826 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -481,4 +481,15 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+     public int getExpToLevel() {
+         return getHandle().getExpToLevel();
+     }
++
++    @Override
++    public int getAttackCooldownTicks() {
++        return getHandle().ticksSinceLastAttack();
++    }
++
++    @Override
++    public float getAttackCooldownCoefficient() {
++        final float f = getHandle().o(0.5f);
++        return 0.2f + f * f * 0.8f;
++    }
+ }
+-- 
+1.9.0
+

@@ -1,4 +1,4 @@
-From 2fdb9145031f0f5e314c0e4a7619b0d3a88b2782 Mon Sep 17 00:00:00 2001
+From 9c322962d9fdb6bb82a5c258ac35a27a2edf538f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:10:05 -0500
 Subject: [PATCH] Registration API
@@ -59,7 +59,7 @@ index 0000000..6fe7b03
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 4f1ff5e..5a4bf8a 100644
+index 8aa1227..04ced31 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -28,6 +28,7 @@ import net.minecraft.server.*;
@@ -70,7 +70,7 @@ index 4f1ff5e..5a4bf8a 100644
  import org.bukkit.GameMode;
  import org.bukkit.OfflinePlayer;
  import org.bukkit.Server;
-@@ -130,7 +131,7 @@ import io.netty.handler.codec.base64.Base64;
+@@ -131,7 +132,7 @@ import io.netty.handler.codec.base64.Base64;
  import jline.console.ConsoleReader;
  import net.md_5.bungee.api.chat.BaseComponent;
  
@@ -79,7 +79,7 @@ index 4f1ff5e..5a4bf8a 100644
      private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
      private final String serverName = "SportBukkit";
      private final String serverVersion;
-@@ -1691,16 +1692,6 @@ public final class CraftServer implements Server {
+@@ -1692,16 +1693,6 @@ public final class CraftServer implements Server {
      }
  
      @Override

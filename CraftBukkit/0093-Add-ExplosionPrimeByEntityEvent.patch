@@ -1,11 +1,11 @@
-From 4822d8cb4e9d3d5c553759d10b964d08d49c633a Mon Sep 17 00:00:00 2001
+From 92ff2c3603499b65a3d4763fc6c4c7266763d004 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:52 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 100902f..a2c5586 100644
+index cb194ac..d2c23b1 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -2,6 +2,7 @@ package net.minecraft.server;
@@ -65,7 +65,7 @@ index 100902f..a2c5586 100644
                  if (isPrimed) {
                      world.setAir(blockposition);
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index fd49dff..bfb2e7e 100644
+index bc13133..4b295f6 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -100,7 +100,7 @@ index fd49dff..bfb2e7e 100644
  
                  if (event.isCancelled()) {
 @@ -188,6 +196,7 @@ public class EntityCreeper extends EntityMonster {
-             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bw, this.bz(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bx, this.bz(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
              entityhuman.a(enumhand);
              if (!this.world.isClientSide) {
 +                this.primer = entityhuman; // SportBukkit

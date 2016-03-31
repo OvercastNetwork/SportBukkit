@@ -1,4 +1,4 @@
-From ad9c82e22a4d5c6d92999239963aadaf493f2166 Mon Sep 17 00:00:00 2001
+From 5413424e278f66826199d6d738cfc8532da59609 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 12 Jul 2015 09:58:54 -0400
 Subject: [PATCH] Localize inventory titles
@@ -117,7 +117,7 @@ index 43be533..0532ec1 100644
          /**
           * A result slot in a furnace or crafting inventory.
 diff --git a/src/main/java/org/bukkit/inventory/Inventory.java b/src/main/java/org/bukkit/inventory/Inventory.java
-index 4df816a..75e477c 100644
+index bac683b..7166baa 100644
 --- a/src/main/java/org/bukkit/inventory/Inventory.java
 +++ b/src/main/java/org/bukkit/inventory/Inventory.java
 @@ -4,6 +4,7 @@ import java.util.HashMap;
@@ -155,7 +155,7 @@ index 4df816a..75e477c 100644
       * Returns the ItemStack found in the slot at the given index
       *
       * @param index The index of the Slot's ItemStack to return
-@@ -369,9 +382,10 @@ public interface Inventory extends Iterable<ItemStack>, Physical {
+@@ -377,9 +390,10 @@ public interface Inventory extends Iterable<ItemStack>, Physical {
      public List<HumanEntity> getViewers();
  
      /**

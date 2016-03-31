@@ -1,11 +1,11 @@
-From 96ada44e5d47b97bb1098f194ed2ceb3bb21fe9e Mon Sep 17 00:00:00 2001
+From f67fc9f8331c2f874cb63edf6541afc5b9586de9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 1 Jul 2015 12:42:37 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e247854..3504338 100644
+index 60d3d22..e6e7975 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -36,6 +36,7 @@ import org.bukkit.Warning.WarningState;
@@ -24,7 +24,7 @@ index e247854..3504338 100644
  import org.bukkit.craftbukkit.boss.CraftBossBar;
  import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
  import org.bukkit.craftbukkit.entity.CraftPlayer;
-@@ -1670,6 +1672,11 @@ public final class CraftServer implements Server {
+@@ -1673,6 +1675,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

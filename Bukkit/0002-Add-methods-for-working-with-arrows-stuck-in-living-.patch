@@ -1,17 +1,17 @@
-From 4bb5461c265c6c116d5113dd249d614a295d8b58 Mon Sep 17 00:00:00 2001
+From 3163c111642079fc1beb958481e0cebc29817a3f Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:47:27 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 3582d2f..09e2941 100644
+index 22de9f7..bcffd25 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
-@@ -381,4 +381,18 @@ public interface LivingEntity extends Attributable, Entity, Damageable, Projecti
+@@ -416,4 +416,18 @@ public interface LivingEntity extends Attributable, Entity, Damageable, Projecti
+      * @return collision status
       */
-     public void setGliding(boolean gliding);
- 
+     boolean isCollidable();
 +
 +    /**
 +     * Get the number of arrows stuck in this entity

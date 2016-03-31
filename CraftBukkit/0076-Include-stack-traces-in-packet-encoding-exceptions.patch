@@ -1,14 +1,14 @@
-From 452dab77ad5f20ecfaf8e5a4a710f2a57b0b7aad Mon Sep 17 00:00:00 2001
+From 29aab232ee1decfc820e2bc1313e91099d96e2a9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 Feb 2015 06:36:47 -0500
 Subject: [PATCH] Include stack traces in packet encoding exceptions
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index 04f7d52..150b782 100644
+index 03d1f91..78eb92c 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
 +++ b/src/main/java/net/minecraft/server/PacketEncoder.java
-@@ -36,7 +36,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
+@@ -38,7 +38,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
              try {
                  packet.b(packetdataserializer);
              } catch (Throwable throwable) {

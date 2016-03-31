@@ -1,4 +1,4 @@
-From 3fc32d4f5bbe3961da5a1530f2a02de264341a2a Mon Sep 17 00:00:00 2001
+From 901722c6946c6f83ac63cdec38a6380455764b76 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -18,7 +18,7 @@ index 737035b..63fec2a 100644
 -    }
  }
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index d67c4c0..d6f121b 100644
+index ebec984..0a43b53 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
 @@ -33,7 +33,7 @@ public class Item {
@@ -51,19 +51,6 @@ index e5f457b..61a5592 100644
 -    protected String a(Object object) {
 -        return this.c((GameProfile) object);
 -    }
- }
-diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index 3f90081..04f7d52 100644
---- a/src/main/java/net/minecraft/server/PacketEncoder.java
-+++ b/src/main/java/net/minecraft/server/PacketEncoder.java
-@@ -42,7 +42,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
-         }
-     }
- 
--    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws Exception {
-+    protected void encode(ChannelHandlerContext channelhandlercontext, Packet object, ByteBuf bytebuf) throws Exception {
-         this.a(channelhandlercontext, (Packet) object, bytebuf);
-     }
  }
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
 index 8e5c5b0..723fcfe 100644
@@ -103,20 +90,20 @@ index 37ad4cc..c62d3af 100644
                                      networkmanager.close(chatcomponenttext);
                                  }
 diff --git a/src/main/java/net/minecraft/server/SoundEffectType.java b/src/main/java/net/minecraft/server/SoundEffectType.java
-index 8288833..11782eb 100644
+index 91d617c..98a147b 100644
 --- a/src/main/java/net/minecraft/server/SoundEffectType.java
 +++ b/src/main/java/net/minecraft/server/SoundEffectType.java
 @@ -6,7 +6,7 @@ public class SoundEffectType {
-     public static final SoundEffectType b = new SoundEffectType(1.0F, 1.0F, SoundEffects.bZ, SoundEffects.cd, SoundEffects.cc, SoundEffects.cb, SoundEffects.ca);
-     public static final SoundEffectType c = new SoundEffectType(1.0F, 1.0F, SoundEffects.bU, SoundEffects.bY, SoundEffects.bX, SoundEffects.bW, SoundEffects.bV);
-     public static final SoundEffectType d = new SoundEffectType(1.0F, 1.0F, SoundEffects.fZ, SoundEffects.gh, SoundEffects.ge, SoundEffects.gd, SoundEffects.gc);
--    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.dn, SoundEffects.dt, SoundEffects.dq, SoundEffects.dp, SoundEffects.do);
-+    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.dn, SoundEffects.dt, SoundEffects.dq, SoundEffects.dp, SoundEffects.BLOCK_METAL_FALL);
-     public static final SoundEffectType f = new SoundEffectType(1.0F, 1.0F, SoundEffects.bP, SoundEffects.bT, SoundEffects.bS, SoundEffects.bR, SoundEffects.bQ);
+     public static final SoundEffectType b = new SoundEffectType(1.0F, 1.0F, SoundEffects.ca, SoundEffects.ce, SoundEffects.cd, SoundEffects.cc, SoundEffects.cb);
+     public static final SoundEffectType c = new SoundEffectType(1.0F, 1.0F, SoundEffects.bV, SoundEffects.bZ, SoundEffects.bY, SoundEffects.bX, SoundEffects.bW);
+     public static final SoundEffectType d = new SoundEffectType(1.0F, 1.0F, SoundEffects.ga, SoundEffects.gi, SoundEffects.gf, SoundEffects.ge, SoundEffects.gd);
+-    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.do, SoundEffects.du, SoundEffects.dr, SoundEffects.dq, SoundEffects.dp);
++    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.BLOCK_METAL_BREAK, SoundEffects.du, SoundEffects.dr, SoundEffects.dq, SoundEffects.dp);
+     public static final SoundEffectType f = new SoundEffectType(1.0F, 1.0F, SoundEffects.bQ, SoundEffects.bU, SoundEffects.bT, SoundEffects.bS, SoundEffects.bR);
      public static final SoundEffectType g = new SoundEffectType(1.0F, 1.0F, SoundEffects.ag, SoundEffects.ak, SoundEffects.aj, SoundEffects.ai, SoundEffects.ah);
-     public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.eG, SoundEffects.eK, SoundEffects.eJ, SoundEffects.eI, SoundEffects.eH);
+     public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.eH, SoundEffects.eL, SoundEffects.eK, SoundEffects.eJ, SoundEffects.eI);
 diff --git a/src/main/java/net/minecraft/server/SoundEffects.java b/src/main/java/net/minecraft/server/SoundEffects.java
-index 2ba91ac..740066f 100644
+index a74bb3c..b58fd79 100644
 --- a/src/main/java/net/minecraft/server/SoundEffects.java
 +++ b/src/main/java/net/minecraft/server/SoundEffects.java
 @@ -224,7 +224,7 @@ public class SoundEffects {
@@ -124,19 +111,19 @@ index 2ba91ac..740066f 100644
      public static final SoundEffect dm;
      public static final SoundEffect dn;
 -    public static final SoundEffect do;
-+    public static final SoundEffect BLOCK_METAL_FALL;
++    public static final SoundEffect BLOCK_METAL_BREAK;
      public static final SoundEffect dp;
      public static final SoundEffect dq;
-     public static final SoundEffect BLOCK_METAL_PRESSUREPLATE_CLICK_OFF;
-@@ -682,7 +682,7 @@ public class SoundEffects {
-             dl = a("entity.magmacube.jump");
-             dm = a("entity.magmacube.squish");
-             dn = a("block.metal.break");
--            do = a("block.metal.fall");
-+            BLOCK_METAL_FALL = a("block.metal.fall");
-             dp = a("block.metal.hit");
-             dq = a("block.metal.place");
-             BLOCK_METAL_PRESSUREPLATE_CLICK_OFF = a("block.metal_pressureplate.click_off");
+     public static final SoundEffect dr;
+@@ -683,7 +683,7 @@ public class SoundEffects {
+             dl = a("entity.magmacube.hurt");
+             dm = a("entity.magmacube.jump");
+             dn = a("entity.magmacube.squish");
+-            do = a("block.metal.break");
++            BLOCK_METAL_BREAK = a("block.metal.break");
+             dp = a("block.metal.fall");
+             dq = a("block.metal.hit");
+             dr = a("block.metal.place");
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
 index 85085d5..9b396cf 100644
 --- a/src/main/java/net/minecraft/server/WhiteList.java

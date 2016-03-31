@@ -1,11 +1,11 @@
-From 8b369be7201ecbda0d049d958e67d63489d96c23 Mon Sep 17 00:00:00 2001
+From aa2de7447a7690438cb3280d666608bdd467e257 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 25 Jan 2014 14:08:35 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5ae39cb..10b6a0e 100644
+index 9519b02..7b03ded 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -113,6 +113,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -39,7 +39,7 @@ index 5ae39cb..10b6a0e 100644
 -                long i = 0L;
 -
                  this.q.setMOTD(new ChatComponentText(this.motd));
-                 this.q.setServerInfo(new ServerPing.ServerData("1.9", 107));
+                 this.q.setServerInfo(new ServerPing.ServerData("1.9.2", 109));
                  this.a(this.q);
  
 +                // Spigot start

@@ -1,11 +1,11 @@
-From 583f69260b4a68982c40a542b50cf55237f6b6e5 Mon Sep 17 00:00:00 2001
+From 4244f9502f6824deb81920194e38a29c21027395 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
-index b0c9f78..0641c71 100644
+index 6bbdb6c..cb77888 100644
 --- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -158,6 +158,7 @@ public class EntityExperienceOrb extends Entity {
@@ -13,7 +13,7 @@ index b0c9f78..0641c71 100644
              if (this.c == 0 && entityhuman.by == 0) {
                  entityhuman.by = 2;
 +                if(org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerPickupExperienceEvent((EntityPlayer) entityhuman, this).isCancelled()) return; // SportBukkit - fire event
-                 this.world.a((EntityHuman) null, entityhuman.locX, entityhuman.locY, entityhuman.locZ, SoundEffects.bi, SoundCategory.PLAYERS, 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
+                 this.world.a((EntityHuman) null, entityhuman.locX, entityhuman.locY, entityhuman.locZ, SoundEffects.bj, SoundCategory.PLAYERS, 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
                  entityhuman.receive(this, 1);
                  ItemStack itemstack = EnchantmentManager.b(Enchantments.A, (EntityLiving) entityhuman);
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java

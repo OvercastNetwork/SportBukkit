@@ -1,14 +1,14 @@
-From 408dae2ccf0b10b262a74e42fded7d2acff8e4ab Mon Sep 17 00:00:00 2001
+From 6f731d1168ce3133db9bfca9a08b928101237260 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 21 Jun 2015 15:07:20 -0400
 Subject: [PATCH] Custom replacement for eaten items
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 8205ea1..c1065b5 100644
+index 83c1819..d2470be 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -2209,12 +2209,25 @@ public abstract class EntityLiving extends Entity {
+@@ -2217,12 +2217,25 @@ public abstract class EntityLiving extends Entity {
              ItemStack itemstack = (craftItem.equals(event.getItem())) ? this.bm.a(this.world, this) : CraftItemStack.asNMSCopy(event.getItem()).a(world, this);
              // CraftBukkit end
  

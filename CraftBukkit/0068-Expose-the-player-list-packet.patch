@@ -1,17 +1,17 @@
-From 3445828fd384a0510685e359aa78af829e62d7a9 Mon Sep 17 00:00:00 2001
+From 6c448f11d22a0aa2bfbbb9bad09fc2d88ccbcad7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 13 Feb 2015 02:34:42 -0500
 Subject: [PATCH] Expose the player list packet
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-index 07f7199..740070a 100644
+index 77dfe6a..43e8f87 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 @@ -143,6 +143,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
  
-                 packetdataserializer.b(packetplayoutplayerinfo_playerinfodata.c().getId());
-                 packetdataserializer.b(packetplayoutplayerinfo_playerinfodata.b());
+                 packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.c().getId());
+                 packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.b());
 +
 +                // SportBukkit start
 +                if (packetplayoutplayerinfo_playerinfodata.displayName != null) {

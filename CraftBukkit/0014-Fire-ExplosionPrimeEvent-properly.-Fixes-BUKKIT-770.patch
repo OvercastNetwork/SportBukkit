@@ -1,11 +1,11 @@
-From 4d39120002a84338b66c3ed165f7988d46423bb4 Mon Sep 17 00:00:00 2001
+From 60be97f8a8f24e5cc238cd47dcd37783ef59f019 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 54140f7..100902f 100644
+index d72b692..cb194ac 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -1,6 +1,7 @@
@@ -68,7 +68,7 @@ index 54140f7..100902f 100644
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), entityliving);
  
 -                world.addEntity(entitytntprimed);
--                world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gj, SoundCategory.BLOCKS, 1.0F, 1.0F);
+-                world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gk, SoundCategory.BLOCKS, 1.0F, 1.0F);
 +                // SportBukkit start - fire ExplosionPrimeEvent
 +                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                world.getServer().getPluginManager().callEvent(event);
@@ -76,7 +76,7 @@ index 54140f7..100902f 100644
 +                if(!event.isCancelled()) {
 +                    isPrimed = true;
 +                    world.addEntity(entitytntprimed);
-+                    world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gj, SoundCategory.BLOCKS, 1.0F, 1.0F);
++                    world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gk, SoundCategory.BLOCKS, 1.0F, 1.0F);
 +                }
 +                // SportBukkit end
              }
@@ -109,7 +109,7 @@ index 54140f7..100902f 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 3298b3d..fd49dff 100644
+index 7ade66e..bc13133 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -96,7 +96,16 @@ public class EntityCreeper extends EntityMonster {

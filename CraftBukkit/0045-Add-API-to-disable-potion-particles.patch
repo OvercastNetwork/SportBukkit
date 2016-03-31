@@ -1,11 +1,11 @@
-From 2408e39fac42e549d060786f328aa15b75145dd1 Mon Sep 17 00:00:00 2001
+From ee8689dde3cf698f6a654cca057e96073c0776e2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 544ab3f..8205ea1 100644
+index 50a73cd..83c1819 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -22,6 +22,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
@@ -17,7 +17,7 @@ index 544ab3f..8205ea1 100644
  // CraftBukkit end
  
  public abstract class EntityLiving extends Entity {
-@@ -565,10 +567,17 @@ public abstract class EntityLiving extends Entity {
+@@ -571,10 +573,17 @@ public abstract class EntityLiving extends Entity {
              this.bM();
              this.setInvisible(false);
          } else {
@@ -38,7 +38,7 @@ index 544ab3f..8205ea1 100644
              this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
          }
  
-@@ -817,7 +826,7 @@ public abstract class EntityLiving extends Entity {
+@@ -823,7 +832,7 @@ public abstract class EntityLiving extends Entity {
  
                  // CraftBukkit start
                  if(this instanceof EntityAnimal){
@@ -48,7 +48,7 @@ index 544ab3f..8205ea1 100644
                          ((EntityTameableAnimal)this).getGoalSit().setSitting(false);
                      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 6172627..b25551c 100644
+index 6ef55bd..9a9134d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -77,6 +77,7 @@ import org.bukkit.util.Vector;

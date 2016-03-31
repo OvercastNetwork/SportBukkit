@@ -1,14 +1,14 @@
-From 5017d2e3786752029cbb360fe73050022ddbe574 Mon Sep 17 00:00:00 2001
+From 76891a6608628133f7bb9711dfea3a6838ccf67a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:13:07 -0400
 Subject: [PATCH] Attack cooldown info API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 20639b2..7d25411 100644
+index 5aebb4f..5ea424b 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -962,7 +962,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -964,7 +964,7 @@ public abstract class EntityHuman extends EntityLiving {
  
                  f *= 0.2F + f2 * f2 * 0.8F;
                  f1 *= f2;
@@ -18,7 +18,7 @@ index 20639b2..7d25411 100644
                      boolean flag = f2 > 0.9F;
                      boolean flag1 = false;
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 19395ce..df5aed2 100644
+index d315287..52ffa1a 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -55,7 +55,7 @@ public abstract class EntityLiving extends Entity {

@@ -1,4 +1,4 @@
-From f45091c90fe599ed4cf9c43beba4b47a7a01c91e Mon Sep 17 00:00:00 2001
+From 26d3ac99d59219ad02a618e23442c868da39a3f4 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,10 +7,10 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 37c13c5..29b04ea 100644
+index 459fc78..047549f 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
-@@ -71,6 +71,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
+@@ -72,6 +72,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
                  this.b.close(chatcomponenttext);
              } else {
                  this.b.setPacketListener(new LoginListener(this.a, this.b));
@@ -93,20 +93,20 @@ index 5ed2c96..d76be47 100644
      private IChatBaseComponent n;
      private boolean o;
 diff --git a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
-index 86f1be7..43fe0dd 100644
+index 1cb9d60..295f43d 100644
 --- a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
 +++ b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
 @@ -13,7 +13,7 @@ public class PacketHandshakingInSetProtocol implements Packet<PacketHandshakingI
  
      public void a(PacketDataSerializer packetdataserializer) throws IOException {
          this.a = packetdataserializer.g();
--        this.hostname = packetdataserializer.c(255);
-+        this.hostname = packetdataserializer.c(Short.MAX_VALUE); // SportBukkit - Make extra room for BungeeCord spoofed info
+-        this.hostname = packetdataserializer.e(255);
++        this.hostname = packetdataserializer.e(Short.MAX_VALUE); // SportBukkit - Make extra room for BungeeCord spoofed info
          this.port = packetdataserializer.readUnsignedShort();
          this.d = EnumProtocol.a(packetdataserializer.g());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6e0415f..da88f45 100644
+index 1a524a3..dba3f3b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -167,6 +167,8 @@ public final class CraftServer implements Server {

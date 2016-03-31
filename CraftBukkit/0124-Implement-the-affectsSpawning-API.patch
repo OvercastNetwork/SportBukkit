@@ -1,11 +1,11 @@
-From 06a5520c2e39be297a798bfa5d97710544fee594 Mon Sep 17 00:00:00 2001
+From 99baaa1204297c70d4825db2cdd98e6105d4b043 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] Implement the affectsSpawning API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index e63d432..8417627 100644
+index 36be818..190fedc 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -1,6 +1,7 @@
@@ -50,7 +50,7 @@ index 0382fe4..0ded2c0 100644
              if (entityhuman != null) {
                  double d0 = entityhuman.locX - this.locX;
 diff --git a/src/main/java/net/minecraft/server/EntitySilverfish.java b/src/main/java/net/minecraft/server/EntitySilverfish.java
-index 17ec0ab..51b4176 100644
+index 28db04e..9a5ec1e 100644
 --- a/src/main/java/net/minecraft/server/EntitySilverfish.java
 +++ b/src/main/java/net/minecraft/server/EntitySilverfish.java
 @@ -86,7 +86,7 @@ public class EntitySilverfish extends EntityMonster {
@@ -63,7 +63,7 @@ index 17ec0ab..51b4176 100644
              return entityhuman == null;
          } else {
 diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
-index ba992bc..01c10ff 100644
+index bbe140f..e56cb6c 100644
 --- a/src/main/java/net/minecraft/server/EntityZombie.java
 +++ b/src/main/java/net/minecraft/server/EntityZombie.java
 @@ -196,7 +196,7 @@ public class EntityZombie extends EntityMonster {
@@ -111,7 +111,7 @@ index b3cb8bb..e9bcdd9 100644
                                                          biomebase_biomemeta = worldserver.a(enumcreaturetype, (BlockPosition) blockposition_mutableblockposition);
                                                          if (biomebase_biomemeta == null) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index bad329a..5dd7eea 100644
+index f402a6b..f038517 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -122,7 +122,7 @@ index bad329a..5dd7eea 100644
  import com.google.common.collect.Lists;
  import java.util.ArrayList;
  import java.util.Calendar;
-@@ -2595,14 +2596,29 @@ public abstract class World implements IBlockAccess {
+@@ -2602,14 +2603,29 @@ public abstract class World implements IBlockAccess {
      }
  
      public EntityHuman findNearbyPlayer(Entity entity, double d0) {
@@ -154,7 +154,7 @@ index bad329a..5dd7eea 100644
          double d4 = -1.0D;
          EntityHuman entityhuman = null;
  
-@@ -2614,6 +2630,8 @@ public abstract class World implements IBlockAccess {
+@@ -2621,6 +2637,8 @@ public abstract class World implements IBlockAccess {
              }
              // CraftBukkit end
  
@@ -163,7 +163,7 @@ index bad329a..5dd7eea 100644
              if ((IEntitySelector.d.apply(entityhuman1) || !flag) && (IEntitySelector.e.apply(entityhuman1) || flag)) {
                  double d5 = entityhuman1.e(d0, d1, d2);
  
-@@ -2628,9 +2646,17 @@ public abstract class World implements IBlockAccess {
+@@ -2635,9 +2653,17 @@ public abstract class World implements IBlockAccess {
      }
  
      public boolean isPlayerNearby(double d0, double d1, double d2, double d3) {

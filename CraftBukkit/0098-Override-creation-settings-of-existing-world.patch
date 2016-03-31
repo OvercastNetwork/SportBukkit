@@ -1,11 +1,11 @@
-From 56a4b9be2b4d7db870175190b30198971bd0e940 Mon Sep 17 00:00:00 2001
+From e11f6df55c0030a429991c18f7693dad65d75229 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 28 Jun 2015 03:39:14 -0400
 Subject: [PATCH] Override creation settings of existing world
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b3f3a88..e247854 100644
+index 7456b3b..60d3d22 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -830,6 +830,25 @@ public final class CraftServer implements Server {
@@ -34,7 +34,7 @@ index b3f3a88..e247854 100644
      public World createWorld(String name, World.Environment environment) {
          return WorldCreator.name(name).environment(environment).createWorld();
      }
-@@ -900,14 +919,16 @@ public final class CraftServer implements Server {
+@@ -900,15 +919,16 @@ public final class CraftServer implements Server {
                  }
              }
          } while(used);
@@ -45,8 +45,9 @@ index b3f3a88..e247854 100644
  
          IDataManager sdm = new ServerNBTManager(getWorldContainer(), name, true, getHandle().getServer().getDataConverterManager());
          WorldData worlddata = sdm.getWorldData();
+-        WorldSettings worldSettings = null;
          if (worlddata == null) {
--            WorldSettings worldSettings = new WorldSettings(creator.seed(), WorldSettings.EnumGamemode.getById(getDefaultGameMode().getValue()), generateStructures, hardcore, type);
+-            worldSettings = new WorldSettings(creator.seed(), WorldSettings.EnumGamemode.getById(getDefaultGameMode().getValue()), generateStructures, hardcore, type);
 -            worldSettings.setGeneratorSettings(creator.generatorSettings());
              worlddata = new WorldData(worldSettings, name);
 +        } else {

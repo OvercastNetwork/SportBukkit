@@ -1,11 +1,11 @@
-From 2b37125ca1e52ac6273933dcfdc0de3e0ffe3ec3 Mon Sep 17 00:00:00 2001
+From ce10cdecfbb4eb2db8ee2e6f253f6b451f76a454 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 02:50:33 -0400
 Subject: [PATCH] Fix desync from cancelled vehicle event
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 4201383..99a9307 100644
+index 285200e..2f66814 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1657,6 +1657,24 @@ public abstract class Entity implements ICommandListener {
@@ -40,7 +40,7 @@ index 4201383..99a9307 100644
 +            // CraftBukkit start
 +            CraftEntity craft = (CraftEntity) getBukkitEntity().getVehicle();
 +            Entity orig = craft == null ? null : craft.getHandle();
-+            if (this.as.getBukkitEntity() instanceof Vehicle && getBukkitEntity() instanceof LivingEntity) {
++            if (this.as.getBukkitEntity() instanceof Vehicle && getBukkitEntity() instanceof LivingEntity && world.isChunkLoaded((int) locX >> 4, (int) locZ >> 4, false)) { // Boolean not used
 +                VehicleExitEvent event = new VehicleExitEvent(
 +                        (Vehicle) this.as.getBukkitEntity(),
 +                        (LivingEntity) getBukkitEntity()
@@ -65,7 +65,7 @@ index 4201383..99a9307 100644
 -
 -            CraftEntity craft = (CraftEntity) entity.getBukkitEntity().getVehicle();
 -            Entity orig = craft == null ? null : craft.getHandle();
--            if (getBukkitEntity() instanceof Vehicle && entity.getBukkitEntity() instanceof LivingEntity) {
+-            if (getBukkitEntity() instanceof Vehicle && entity.getBukkitEntity() instanceof LivingEntity && entity.world.isChunkLoaded((int) entity.locX >> 4, (int) entity.locZ >> 4, false)) { // Boolean not used
 -                VehicleEnterEvent event = new VehicleEnterEvent(
 -                        (Vehicle) getBukkitEntity(),
 -                         entity.getBukkitEntity()

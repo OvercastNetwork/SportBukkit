@@ -1,11 +1,11 @@
-From 6c95481f894e33a75459eb8359e6ae6651215c3e Mon Sep 17 00:00:00 2001
+From a546152b1abcb00daa708eccf7ed451005ffe6f0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
-index 1d39a88..439ff9e 100644
+index 1c01824..be68aa0 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java
 +++ b/src/main/java/net/minecraft/server/DispenserRegistry.java
 @@ -230,7 +230,7 @@ public class DispenserRegistry {
@@ -26,7 +26,7 @@ index 1d39a88..439ff9e 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index ac10af5..678a7be 100644
+index e297a65..2d6a056 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,8 @@ import org.bukkit.block.BlockFace;
@@ -153,10 +153,10 @@ index ac10af5..678a7be 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index f5a08a5..b785584 100644
+index 1576c7f..b2ececd 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1719,6 +1719,38 @@ public abstract class World implements IBlockAccess {
+@@ -1726,6 +1726,38 @@ public abstract class World implements IBlockAccess {
          return false;
      }
  

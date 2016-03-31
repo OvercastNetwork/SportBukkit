@@ -1,11 +1,11 @@
-From 8dc9a49430f2afd8c419ee2e73cabbb7430b3627 Mon Sep 17 00:00:00 2001
+From dca7999eb2651283b462514cb52c4457787e2db9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Mar 2015 04:29:17 -0400
 Subject: [PATCH] Relative teleport API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index d3f7bad..fc1d12f 100644
+index bc824c1..c0f1d1f 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -670,6 +670,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -58,10 +58,10 @@ index d3f7bad..fc1d12f 100644
  
          this.justTeleported = true;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d226bf1..00fedfc 100644
+index 92fec72..a1ae216 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1812,4 +1812,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1811,4 +1811,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void hideTitle() {
          getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.CLEAR, (BaseComponent[]) null, 0, 0, 0));
      }

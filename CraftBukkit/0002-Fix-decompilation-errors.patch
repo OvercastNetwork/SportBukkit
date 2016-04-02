@@ -1,4 +1,4 @@
-From 901722c6946c6f83ac63cdec38a6380455764b76 Mon Sep 17 00:00:00 2001
+From bf81202d2864e76c5d23a280e016773573f697e5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -52,6 +52,28 @@ index e5f457b..61a5592 100644
 -        return this.c((GameProfile) object);
 -    }
  }
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
+index 2b23a5d..35f6c5c 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
++++ b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
+@@ -16,7 +16,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
+         this.action = PacketPlayInUseEntity.EnumEntityUseAction.ATTACK;
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++    public void a(PacketDataSerializer packetdataserializer) { // SportBukkit - remove throws
+         this.a = packetdataserializer.g();
+         this.action = (PacketPlayInUseEntity.EnumEntityUseAction) packetdataserializer.a(PacketPlayInUseEntity.EnumEntityUseAction.class);
+         if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
+@@ -29,7 +29,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
+ 
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++    public void b(PacketDataSerializer packetdataserializer) { // SportBukkit - remove throws
+         packetdataserializer.d(this.a);
+         packetdataserializer.a((Enum) this.action);
+         if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
 index 8e5c5b0..723fcfe 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java

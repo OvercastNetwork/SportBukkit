@@ -1,4 +1,4 @@
-From c1364fdf8c99bfdb77f52f3999a508b1c244ff28 Mon Sep 17 00:00:00 2001
+From 27f0436c613b5c60e7677586cce201c1bd86bfec Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 05:09:16 -0400
 Subject: [PATCH] Add PlayerUseUnknownEntityEvent
@@ -31,7 +31,7 @@ index 35f6c5c..9e6613a 100644
  
      public PacketPlayInUseEntity(Entity entity) {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index f7c0791..103120b 100644
+index 1dc2da2..b42d02f 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -46,6 +46,7 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -42,7 +42,7 @@ index f7c0791..103120b 100644
  import org.bukkit.event.player.PlayerChatEvent;
  import org.bukkit.event.player.PlayerCommandPreprocessEvent;
  import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-@@ -1754,7 +1755,16 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1761,7 +1762,16 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                  }
              }
          }

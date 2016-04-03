@@ -1,4 +1,4 @@
-From d3468fd60ca2ddcb51a3fee340cd94990ef70f72 Mon Sep 17 00:00:00 2001
+From 0d753b2227375e2906bdd52923715a2455c3a88a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -234,7 +234,7 @@ index 69720e8..3e02add 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index bd25271..f7c0791 100644
+index bd25271..1dc2da2 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -21,7 +21,9 @@ import org.apache.logging.log4j.Logger;
@@ -255,7 +255,7 @@ index bd25271..f7c0791 100644
  // CraftBukkit end
  
  public class PlayerConnection implements PacketListenerPlayIn, ITickable {
-@@ -139,6 +142,89 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -139,6 +142,95 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      private final static HashSet<Integer> invalidItems = new HashSet<Integer>(java.util.Arrays.asList(8, 9, 10, 11, 26, 34, 36, 43, 51, 52, 55, 59, 60, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 125, 127, 132, 140, 141, 142, 144)); // TODO: Check after every update.
      // CraftBukkit end
  
@@ -310,13 +310,19 @@ index bd25271..f7c0791 100644
 +     * Called when a position update is received from the client. If position is null,
 +     * it is assumed that the client has not moved from their last position.
 +     */
-+    public void handleClientTick(Vector position) {
++    public void handleClientTick(Vector position, boolean jump) {
 +        // Infer the client's velocity based on their last two known positions
 +        if(position == null) {
 +            clientVelocity.setZero();
 +        } else {
 +            clientVelocity.set(position).subtract(clientPosition);
 +            clientPosition.set(position);
++
++            if(jump) {
++                // Client moves just under double normal distance in the
++                // first tick after jumping (reason unknown.. bug?)
++                clientVelocity.multiply(0.6);
++            }
 +        }
 +
 +        // Forget any impulses that have been acknowledged by the client,
@@ -345,7 +351,7 @@ index bd25271..f7c0791 100644
      public void c() {
          this.d();
          this.player.k_();
-@@ -464,6 +550,15 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -464,6 +556,16 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                      this.d();
                  }
  
@@ -354,14 +360,15 @@ index bd25271..f7c0791 100644
 +                    packetplayinflying.hasPos ? new Vector(packetplayinflying.x,
 +                                                           packetplayinflying.y,
 +                                                           packetplayinflying.z)
-+                                              : null
++                                              : null,
++                    this.player.onGround && !packetplayinflying.a()
 +                );
 +                // SportBukkit end
 +
                  if (this.teleportPos != null) {
                      if (this.e - this.A > 20) {
                          this.A = this.e;
-@@ -2179,6 +2274,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2179,6 +2281,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
@@ -369,7 +376,7 @@ index bd25271..f7c0791 100644
          if (packetplayinkeepalive.a() == this.f) {
              int i = (int) (this.e() - this.g);
  
-@@ -2187,6 +2283,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2187,6 +2290,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
      }
  

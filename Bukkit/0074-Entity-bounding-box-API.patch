@@ -1,11 +1,11 @@
-From fda9a9c7125dd609d89fb32edbab3b390079a6e3 Mon Sep 17 00:00:00 2001
+From de35a2d9c554ceaac046bb9b45b844724265136c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:00:35 -0400
 Subject: [PATCH] Entity bounding box API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index a3ae7a4..43f5f50 100644
+index d0be6b4..22d7fbb 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -7,6 +7,7 @@ import org.bukkit.World;
@@ -16,7 +16,7 @@ index a3ae7a4..43f5f50 100644
  import org.bukkit.util.Vector;
  
  import java.util.List;
-@@ -443,4 +444,6 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -444,4 +445,6 @@ public interface Entity extends Metadatable, CommandSender, Physical {
       * @return whether the entity is
       */
      public boolean isInvulnerable();

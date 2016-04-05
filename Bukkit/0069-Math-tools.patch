@@ -1,4 +1,4 @@
-From 858ef6697cac737875655edf121f3395125caef8 Mon Sep 17 00:00:00 2001
+From 5df6674ca95d84923b7a41a039bf3125cf3d76ca Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Math tools
@@ -571,7 +571,7 @@ index 0000000..1fb2ad0
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
-index 00e6879..ac68abd 100644
+index 00e6879..2864442 100644
 --- a/src/main/java/org/bukkit/util/Vector.java
 +++ b/src/main/java/org/bukkit/util/Vector.java
 @@ -3,6 +3,8 @@ package org.bukkit.util;
@@ -608,10 +608,17 @@ index 00e6879..ac68abd 100644
      /**
       * Returns whether this vector is within a sphere.
       *
-@@ -573,6 +586,25 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -573,13 +586,25 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
          return this;
      }
  
+-    /**
+-     * Checks to see if two objects are equal.
+-     * <p>
+-     * Only two Vectors can ever return true. This method uses a fuzzy match
+-     * to account for floating point errors. The epsilon can be retrieved
+-     * with epsilon.
+-     */
 +    public Vector set(double x, double y, double z) {
 +        this.x = x;
 +        this.y = y;
@@ -631,10 +638,20 @@ index 00e6879..ac68abd 100644
 +        return x == 0 && y == 0 && z == 0;
 +    }
 +
+     @Override
+     public boolean equals(Object obj) {
+         if (!(obj instanceof Vector)) {
+@@ -587,8 +612,7 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+         }
+ 
+         Vector other = (Vector) obj;
+-
+-        return Math.abs(x - other.x) < epsilon && Math.abs(y - other.y) < epsilon && Math.abs(z - other.z) < epsilon && (this.getClass().equals(obj.getClass()));
++        return x == other.getX() && y == other.getY() && z == other.getZ();
+     }
+ 
      /**
-      * Checks to see if two objects are equal.
-      * <p>
-@@ -727,4 +759,125 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -727,4 +751,125 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
  
          return new Vector(x, y, z);
      }

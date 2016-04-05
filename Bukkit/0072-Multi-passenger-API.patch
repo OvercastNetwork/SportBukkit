@@ -1,14 +1,14 @@
-From 325fbb7d62e34f5f344c5294607c2f1ec18ce484 Mon Sep 17 00:00:00 2001
+From db40e084c6ca56d3f82e8ad4f0e96f80731d625b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:41:04 -0400
 Subject: [PATCH] Multi-passenger API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 2bd8d64..47f19a4 100644
+index dab77ad..d0be6b4 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -245,6 +245,28 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -246,6 +246,28 @@ public interface Entity extends Metadatable, CommandSender, Physical {
      public abstract boolean eject();
  
      /**
@@ -37,7 +37,7 @@ index 2bd8d64..47f19a4 100644
       * Returns the distance this entity has fallen
       *
       * @return The distance.
-@@ -324,6 +346,12 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -325,6 +347,12 @@ public interface Entity extends Metadatable, CommandSender, Physical {
      public boolean isInsideVehicle();
  
      /**

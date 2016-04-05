@@ -1,11 +1,11 @@
-From 396183571925d54711c996f815f2cfc38d954b88 Mon Sep 17 00:00:00 2001
+From 7fda5dfaef7787cceaf9d7af44715e9386a98327 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 04:31:29 -0400
 Subject: [PATCH] Natural regeneration API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 06d8f66..20639b2 100644
+index 7a6898f..5aebb4f 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -66,6 +66,11 @@ public abstract class EntityHuman extends EntityLiving {
@@ -43,10 +43,10 @@ index 6974045..4383a57 100644
              if (this.foodTickTimer >= 80) {
                  entityhuman.heal(1.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED); // CraftBukkit - added RegainReason
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 018924a..ec89ed8 100644
+index 5d61bff..da522b4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1146,6 +1146,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1145,6 +1145,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

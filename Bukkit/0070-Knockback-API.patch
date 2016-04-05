@@ -1,14 +1,14 @@
-From 12a653b9bfef81f1c2b5334f6db7fd0eea70f023 Mon Sep 17 00:00:00 2001
+From 1e52f11a1a07f256110cdabe08071d30d95744b5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Knockback API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index fc0de12..2bd8d64 100644
+index c9954fd..dab77ad 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -52,6 +52,47 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -52,6 +52,48 @@ public interface Entity extends Metadatable, CommandSender, Physical {
      public Vector getVelocity();
  
      /**
@@ -24,6 +24,7 @@ index fc0de12..2bd8d64 100644
 +     * velocity is more difficult to predict from the server.
 +     */
 +    void applyImpulse(Vector impulse);
++    void applyImpulse(Vector impulse, boolean relative);
 +
 +    /**
 +     * Set the knockback reduction for this entity.
@@ -57,7 +58,7 @@ index fc0de12..2bd8d64 100644
       * state updated by the server and is not recalculated unless the entity
       * moves.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3fe5807..0bddf35 100644
+index 3fe5807..21cdf3a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -24,6 +24,7 @@ import org.bukkit.map.MapView;
@@ -68,9 +69,22 @@ index 3fe5807..0bddf35 100644
  
  /**
   * Represents a player, connected or not
+@@ -1589,4 +1590,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * @return Information about the targeted block, or null if no blocks were found
+      */
+     RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids);
++
++    Vector getClientVelocity();
++
++    Vector getUnackedImpulse();
++
++    boolean hasUnackedVelocity();
++
++
+ }
 diff --git a/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java b/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java
 new file mode 100644
-index 0000000..138cbc5
+index 0000000..863be40
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java
 @@ -0,0 +1,26 @@
@@ -87,8 +101,8 @@ index 0000000..138cbc5
 +
 +    private final Entity damager;
 +
-+    public PlayerKnockbackEvent(Player player, Entity damager, Vector velocity) {
-+        super(player, velocity);
++    public PlayerKnockbackEvent(Player player, Entity damager, Vector after) {
++        super(player, after);
 +        this.damager = damager;
 +    }
 +
@@ -101,10 +115,10 @@ index 0000000..138cbc5
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-index 69d2fce..d41a90a 100644
+index 69d2fce..473bb19 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-@@ -6,16 +6,16 @@ import org.bukkit.event.HandlerList;
+@@ -6,20 +6,22 @@ import org.bukkit.event.HandlerList;
  import org.bukkit.util.Vector;
  
  /**
@@ -115,17 +129,24 @@ index 69d2fce..d41a90a 100644
      private static final HandlerList handlers = new HandlerList();
      private boolean cancel = false;
 -    private Vector velocity;
-+    private Vector impulse;
++    private final Vector before;
++    private Vector after;
  
 -    public PlayerVelocityEvent(final Player player, final Vector velocity) {
-+    public PlayerVelocityEvent(final Player player, final Vector impulse) {
++    public PlayerVelocityEvent(final Player player, Vector after) {
          super(player);
 -        this.velocity = velocity;
-+        this.impulse = impulse;
++        this.before = player.getVelocity();
++        this.after = after;
      }
  
      public boolean isCancelled() {
-@@ -27,21 +27,32 @@ public class PlayerVelocityEvent extends PlayerEvent implements Cancellable {
+-        return cancel;
++        return cancel || before.equals(after);
+     }
+ 
+     public void setCancelled(boolean cancel) {
+@@ -27,21 +29,32 @@ public class PlayerVelocityEvent extends PlayerEvent implements Cancellable {
      }
  
      /**
@@ -136,7 +157,7 @@ index 69d2fce..d41a90a 100644
       */
      public Vector getVelocity() {
 -        return velocity;
-+        return getPlayer().getVelocity().add(impulse);
++        return after.clone();
      }
  
      /**
@@ -148,21 +169,21 @@ index 69d2fce..d41a90a 100644
       */
      public void setVelocity(Vector velocity) {
 -        this.velocity = velocity;
-+        this.impulse = velocity.clone().subtract(getPlayer().getVelocity());
++        this.after = velocity.clone();
 +    }
 +
 +    /**
 +     * The impulse that will be applied to the player
 +     */
 +    public Vector getImpulse() {
-+        return impulse.clone();
++        return getVelocity().subtract(before);
 +    }
 +
 +    /**
 +     * Change the impulse that will be applied to the player
 +     */
 +    public void setImpulse(Vector impulse) {
-+        this.impulse = impulse.clone();
++        this.after = before.clone().add(impulse);
      }
  
      @Override

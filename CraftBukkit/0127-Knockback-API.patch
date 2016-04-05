@@ -1,34 +1,56 @@
-From 0d753b2227375e2906bdd52923715a2455c3a88a Mon Sep 17 00:00:00 2001
+From 99b63882bc5635e84d80542d964bf8b2818a7dac Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 0d3d55b..c556286 100644
+index 0d3d55b..bece5c3 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1205,6 +1205,18 @@ public abstract class Entity implements ICommandListener {
+@@ -1205,13 +1205,36 @@ public abstract class Entity implements ICommandListener {
          }
      }
  
-+    // SportBukkit start - add knockback method
-+    public void applyKnockback(Entity attacker, Vec3D impulse) {
+-    public void g(double d0, double d1, double d2) {
+-        this.motX += d0;
+-        this.motY += d1;
+-        this.motZ += d2;
++    // SportBukkit start - velocity API
++    public void applyKnockback(Entity attacker, Vec3D impulse, boolean relative) {
 +        if(impulse != null) {
-+            applyKnockback(attacker, impulse.x, impulse.y, impulse.z);
++            applyKnockback(attacker, impulse.x, impulse.y, impulse.z, relative);
 +        }
 +    }
-+    public void applyKnockback(Entity attacker, double x, double y, double z) {
-+        applyImpulse(x, y, z);
++
++    public void applyKnockback(Entity attacker, double x, double y, double z, boolean relative) {
++        this.applyImpulse(x, y, z, relative);
++    }
++
++    public void applyImpulse(double x, double y, double z, boolean relative) {
++        setVelocity(this.motX + x, this.motY + y, this.motZ + z);
++    }
++
++    public void setVelocity(double x, double y, double z) {
++        if(x == this.motX && y == this.motY && z == this.motZ) return;
++
++        this.motX = x;
++        this.motY = y;
++        this.motZ = z;
++        this.velocityChanged = true;
+         this.impulse = true;
+     }
+ 
++    public void g(double d0, double d1, double d2) {
++        applyImpulse(d0, d1, d2, true);
 +    }
 +    // SportBukkit end
 +
-+    public void applyImpulse(double x, double y, double z) { this.g(x, y, z); } // SportBukkit - alias for following method
-     public void g(double d0, double d1, double d2) {
-         this.motX += d0;
-         this.motY += d1;
+     protected void ao() {
+         this.velocityChanged = true;
+     }
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index 83a42a0..de26290 100644
+index 83a42a0..eceb2cf 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -275,7 +275,7 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -36,7 +58,7 @@ index 83a42a0..de26290 100644
  
                          if (f1 > 0.0F) {
 -                            entityliving.g(this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1);
-+                            entityliving.applyKnockback(this, this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1); // SportBukkit - call knockback method
++                            entityliving.applyKnockback(this, this.motX * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, 0.1D, this.motZ * (double) this.knockbackStrength * 0.6000000238418579D / (double) f1, false); // SportBukkit - call knockback method
                          }
                      }
  
@@ -63,7 +85,7 @@ index 92766a0..7a6898f 100644
                          if (flag2) {
                              this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.ENTITY_PLAYER_ATTACK_CRIT, this.bz(), 1.0F, 1.0F);
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 7b9bfc1..6db5a57 100644
+index 7b9bfc1..a58c90d 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -899,7 +899,7 @@ public abstract class EntityLiving extends Entity {
@@ -75,7 +97,7 @@ index 7b9bfc1..6db5a57 100644
                      } else {
                          this.az = (float) ((int) (Math.random() * 2.0D) * 180);
                      }
-@@ -1016,21 +1016,20 @@ public abstract class EntityLiving extends Entity {
+@@ -1016,21 +1016,21 @@ public abstract class EntityLiving extends Entity {
  
      public void a(Entity entity, float f, double d0, double d1) {
          if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
@@ -105,13 +127,14 @@ index 7b9bfc1..6db5a57 100644
 +                entity,
 +                scale * (-0.5 * motX - f * dx),
 +                !onGround ? 0 : scale * Math.min(0.4 - motY, -0.5 * motY + f),
-+                scale * (-0.5 * motZ - f * dz)
++                scale * (-0.5 * motZ - f * dz),
++                false
 +            );
 +            // SportBukkit end
          }
      }
  
-@@ -2082,9 +2081,13 @@ public abstract class EntityLiving extends Entity {
+@@ -2082,9 +2082,13 @@ public abstract class EntityLiving extends Entity {
          return !this.dead && this.collides; // CraftBukkit
      }
  
@@ -126,10 +149,21 @@ index 7b9bfc1..6db5a57 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..06416f4 100644
+index 335f831..59797d9 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -20,8 +20,11 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
+@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
+ import com.google.common.collect.Sets;
+ import com.mojang.authlib.GameProfile;
+ import io.netty.buffer.Unpooled;
++
++import java.util.ArrayDeque;
+ import java.util.Collection;
++import java.util.Deque;
+ import java.util.HashSet;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -20,8 +23,11 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
  import org.bukkit.event.inventory.InventoryType;
  import org.bukkit.craftbukkit.util.Skins;
@@ -141,39 +175,153 @@ index 335f831..06416f4 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +74,38 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +77,152 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
 +    // SportBukkit start - velocity events/prediction
++    private static class ClientImpulse {
++        final long timestamp;
++        final Vector velocity;
++
++        private ClientImpulse(long timestamp, Vector velocity) {
++            this.timestamp = timestamp;
++            this.velocity = velocity;
++        }
++    }
++
++    private Vector unsentImpulse = new Vector();
++    private final Deque<ClientImpulse> sentImpulses = new ArrayDeque<ClientImpulse>();
++    private long clientVelocityTimestamp;
++    private final Vector clientVelocity = new Vector();
++    private final Vector clientPosition = new Vector();
++
 +    @Override
-+    public void g(double x, double y, double z) {
++    public void applyKnockback(Entity attacker, double x, double y, double z, boolean relative) {
++        final PlayerKnockbackEvent event = new PlayerKnockbackEvent(getBukkitEntity(), attacker.getBukkitEntity(), new Vector(motX + x, motY + y, motZ + z));
++        getBukkitEntity().getServer().getPluginManager().callEvent(event);
++        if(event.isCancelled()) return;
++
++        applyImpulseNoEvent(event.getImpulse(), relative);
++    }
++
++    @Override
++    public void applyImpulse(double x, double y, double z, boolean relative) {
++        final PlayerVelocityEvent event = new PlayerVelocityEvent(getBukkitEntity(), new Vector(motX + x, motY + y, motZ + z));
++        getBukkitEntity().getServer().getPluginManager().callEvent(event);
++        if(event.isCancelled()) return;
++
++        applyImpulseNoEvent(event.getImpulse(), relative);
++    }
++
++    @Override
++    public void setVelocity(double x, double y, double z) {
 +        final PlayerVelocityEvent event = new PlayerVelocityEvent(getBukkitEntity(), new Vector(x, y, z));
 +        getBukkitEntity().getServer().getPluginManager().callEvent(event);
 +        if(event.isCancelled()) return;
 +
-+        final Vector impulse = event.getImpulse();
-+        if(!impulse.isZero()) {
-+            applyImpulseNoEvent(impulse);
++        setVelocityNoEvent(event.getVelocity());
++    }
++
++    private void applyImpulseNoEvent(Vector impulse, boolean relative) {
++        this.motX += impulse.getX();
++        this.motY += impulse.getY();
++        this.motZ += impulse.getZ();
++
++        if(relative) {
++            unsentImpulse.add(impulse);
++        } else {
++            clientVelocity.add(impulse);
++            sendAbsoluteVelocity();
 +        }
 +    }
 +
-+    @Override
-+    public void applyKnockback(Entity attacker, double x, double y, double z) {
-+        final PlayerKnockbackEvent event = new PlayerKnockbackEvent(getBukkitEntity(), attacker.getBukkitEntity(), new Vector(x, y, z));
-+        getBukkitEntity().getServer().getPluginManager().callEvent(event);
-+        if(event.isCancelled()) return;
++    private void setVelocityNoEvent(Vector velocity) {
++        this.motX = velocity.getX();
++        this.motY = velocity.getY();
++        this.motZ = velocity.getZ();
 +
-+        final Vector impulse = event.getImpulse();
-+        if(!impulse.isZero()) {
-+            applyImpulseNoEvent(impulse);
++        clientVelocity.set(velocity);
++        sendAbsoluteVelocity();
++    }
++
++    /**
++     * Send the current predicted client velocity back to the client as an absolute
++     * velocity. Set the client velocity timestamp and clear any sent impulses.
++     */
++    private void sendAbsoluteVelocity() {
++        sentImpulses.clear();
++        clientVelocityTimestamp = playerConnection.sendAbsoluteVelocity(clientVelocity);
++    }
++
++    /**
++     * Send any accumulated velocity changes to the client as an impulse, and reset
++     * the accumulator. Send a keepalive packet immediately before the impulse, and
++     * save the impulse and timestamp together in a queue.
++     */
++    public void sendAccumulatedImpulse() {
++        if(!unsentImpulse.isZero()) {
++            sentImpulses.addLast(new ClientImpulse(playerConnection.sendRelativeVelocity(unsentImpulse), unsentImpulse));
++            unsentImpulse = new Vector();
 +        }
 +    }
 +
-+    private void applyImpulseNoEvent(Vector impulse) {
-+        playerConnection.applyImpulse(impulse);
-+        velocityChanged = true;
-+        super.g(impulse.getX(), impulse.getY(), impulse.getZ());
++    public Vector getClientVelocity() {
++        return clientVelocity;
++    }
++
++    public Vector getUnackedImpulse() {
++        final Vector velocity = new Vector();
++        for(ClientImpulse impulse : sentImpulses) {
++            velocity.add(impulse.velocity);
++        }
++        return velocity;
++    }
++
++    public boolean hasUnackedVelocity() {
++        return playerConnection.lastAckTimestamp() < clientVelocityTimestamp;
++    }
++
++    /**
++     * Predict the velocity of the player, based on their reported movements,
++     * and any impulses that have been applied but not yet acknowledged.
++     */
++    public Vector getPredictedVelocity() {
++        return getUnackedImpulse().add(clientVelocity);
++    }
++
++    /**
++     * Called when a position update is received from the client. If position is null,
++     * it is assumed that the client has not moved from their last position.
++     */
++    public void handleClientTick(Vector position, boolean onGround) {
++        final long timestamp = playerConnection.lastAckTimestamp();
++
++        if(timestamp >= clientVelocityTimestamp) {
++            // If the last sent absolute velocity has been acknowledged by the client,
++            // then infer the client's velocity based on their last two known positions.
++            if(position == null) {
++                clientVelocity.zero();
++            } else {
++                clientVelocity.set(position).subtract(clientPosition);
++                clientPosition.set(position);
++
++                if(!this.playerConnection.clientOnGround && onGround && clientVelocity.getY() > 0) {
++                    // Client moves just under double normal distance in the
++                    // first tick after jumping (reason unknown.. bug?)
++                    clientVelocity.multiply(new Vector(0.5, 1, 0.5));
++                }
++            }
++        }
++
++        // Forget any impulses that have been acknowledged by the client,
++        // assuming the effect of those impulses is now reflected in the
++        // client's position.
++        for(Iterator<ClientImpulse> iterator = sentImpulses.iterator(); iterator.hasNext(); ) {
++            final ClientImpulse impulse = iterator.next();
++            if(timestamp < impulse.timestamp) break;
++            iterator.remove();
++        }
 +    }
 +    // SportBukkit end
 +
@@ -181,7 +329,7 @@ index 335f831..06416f4 100644
          super(worldserver, gameprofile);
          playerinteractmanager.player = this;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 1737342..02fed6c 100644
+index 1737342..4cf4ff4 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -256,6 +256,8 @@ public class EntityTrackerEntry {
@@ -200,7 +348,7 @@ index 1737342..02fed6c 100644
 +            */
 +
 +            if(this.tracker instanceof EntityPlayer) {
-+                ((EntityPlayer) this.tracker).playerConnection.sendClientImpulse();
++                ((EntityPlayer) this.tracker).sendAccumulatedImpulse();
 +            } else {
 +                broadcast(new PacketPlayOutEntityVelocity(this.tracker));
 +            }
@@ -210,7 +358,7 @@ index 1737342..02fed6c 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
-index 69720e8..3e02add 100644
+index 69720e8..a10c0b2 100644
 --- a/src/main/java/net/minecraft/server/Explosion.java
 +++ b/src/main/java/net/minecraft/server/Explosion.java
 @@ -141,9 +141,19 @@ public class Explosion {
@@ -226,7 +374,7 @@ index 69720e8..3e02add 100644
                          entity.motZ += d10 * d14;
 +                        */
 +                        if(!(entity instanceof EntityHuman)) {
-+                            entity.applyKnockback(source, d8 * d14, d9 * d14, d10 * d14);
++                            entity.applyKnockback(source, d8 * d14, d9 * d14, d10 * d14, true);
 +                        }
 +                        // SportBukkit end
 +
@@ -234,20 +382,10 @@ index 69720e8..3e02add 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index bd25271..1dc2da2 100644
+index bd25271..36c1621 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -21,7 +21,9 @@ import org.apache.logging.log4j.Logger;
- import java.util.HashSet;
- import java.util.concurrent.ExecutionException;
- import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-+import java.util.ArrayDeque;
- import java.util.Arrays;
-+import java.util.Deque;
- 
- import org.bukkit.Location;
- import org.bukkit.craftbukkit.entity.CraftPlayer;
-@@ -61,6 +63,7 @@ import org.bukkit.inventory.CraftingInventory;
+@@ -61,6 +61,7 @@ import org.bukkit.inventory.CraftingInventory;
  import org.bukkit.inventory.EquipmentSlot;
  import org.bukkit.inventory.InventoryView;
  import org.bukkit.util.NumberConversions;
@@ -255,120 +393,70 @@ index bd25271..1dc2da2 100644
  // CraftBukkit end
  
  public class PlayerConnection implements PacketListenerPlayIn, ITickable {
-@@ -139,6 +142,95 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -139,6 +140,45 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      private final static HashSet<Integer> invalidItems = new HashSet<Integer>(java.util.Arrays.asList(8, 9, 10, 11, 26, 34, 36, 43, 51, 52, 55, 59, 60, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 125, 127, 132, 140, 141, 142, 144)); // TODO: Check after every update.
      // CraftBukkit end
  
 +    // SportBukkit start - velocity prediction
-+    private int ackedKeepAliveTime; // timestamp of last keep-alive packet the client has replied to
-+
-+    private static class ClientImpulse {
-+        final int timestamp;
-+        final Vector velocity;
-+
-+        private ClientImpulse(int timestamp, Vector velocity) {
-+            this.timestamp = timestamp;
-+            this.velocity = velocity;
-+        }
-+    }
-+
-+    private Vector unsentImpulse = new Vector();
-+    private final Deque<ClientImpulse> sentImpulses = new ArrayDeque<ClientImpulse>();
-+    private final Vector clientVelocity = new Vector();
-+    private final Vector clientPosition = new Vector();
-+
-+    public void applyImpulse(Vector impulse) {
-+        unsentImpulse.add(impulse);
-+    }
++    private int ackedKeepAliveTime;
 +
 +    /**
-+     * Send any accumulated velocity changes to the client and reset the accumulator.
-+     * Send a keepalive packet immediately before the impulse, and save the impulse
-+     * and timestamp together in a queue.
++     * @return the timestamp of last keep-alive packet the client has replied to
 +     */
-+    public void sendClientImpulse() {
-+        if(player.velocityChanged && !unsentImpulse.isZero()) {
-+            final ClientImpulse clientImpulse = new ClientImpulse((int) createKeepAliveTimestamp(), unsentImpulse);
-+            unsentImpulse = new Vector();
-+
-+            sendPacket(new PacketPlayOutKeepAlive(clientImpulse.timestamp));
-+            sendPacket(new PacketPlayOutExplosion(
-+                0, -9999, 0, 1,
-+                Collections.<BlockPosition>emptyList(),
-+                new Vec3D(
-+                    clientImpulse.velocity.getX(),
-+                    clientImpulse.velocity.getY(),
-+                    clientImpulse.velocity.getZ()
-+                )
-+            ));
-+            sentImpulses.addLast(clientImpulse);
-+        }
-+        player.velocityChanged = false;
++    public long lastAckTimestamp() {
++        return ackedKeepAliveTime;
 +    }
 +
-+    /**
-+     * Called when a position update is received from the client. If position is null,
-+     * it is assumed that the client has not moved from their last position.
-+     */
-+    public void handleClientTick(Vector position, boolean jump) {
-+        // Infer the client's velocity based on their last two known positions
-+        if(position == null) {
-+            clientVelocity.setZero();
-+        } else {
-+            clientVelocity.set(position).subtract(clientPosition);
-+            clientPosition.set(position);
-+
-+            if(jump) {
-+                // Client moves just under double normal distance in the
-+                // first tick after jumping (reason unknown.. bug?)
-+                clientVelocity.multiply(0.6);
-+            }
-+        }
-+
-+        // Forget any impulses that have been acknowledged by the client,
-+        // assuming the effect of those impulses is now reflected in the
-+        // client's position.
-+        for(Iterator<ClientImpulse> iterator = sentImpulses.iterator(); iterator.hasNext(); ) {
-+            final ClientImpulse impulse = iterator.next();
-+            if(ackedKeepAliveTime < impulse.timestamp) break;
-+            iterator.remove();
-+        }
++    public long sendPacketWithTimestamp(Packet<?> packet) {
++        final long timestamp = createKeepAliveTimestamp();
++        sendPacket(new PacketPlayOutKeepAlive((int) timestamp));
++        sendPacket(packet);
++        return timestamp;
 +    }
 +
-+    /**
-+     * Predict the velocity of the player, based on their reported movements,
-+     * and any impulses that have been applied but not yet acknowledged.
-+     */
-+    public Vector predictedVelocity() {
-+        final Vector velocity = clientVelocity.clone();
-+        for(ClientImpulse impulse : sentImpulses) {
-+            velocity.add(impulse.velocity);
-+        }
-+        return velocity;
++    public long sendRelativeVelocity(Vector impulse) {
++        return sendPacketWithTimestamp(new PacketPlayOutExplosion(
++            0, -9999, 0, 1,
++            Collections.<BlockPosition>emptyList(),
++            new Vec3D(
++                impulse.getX(),
++                impulse.getY(),
++                impulse.getZ()
++            )
++        ));
++    }
++
++    public long sendAbsoluteVelocity(Vector velocity) {
++        return sendPacketWithTimestamp(new PacketPlayOutEntityVelocity(
++            player.getId(),
++            velocity.getX(),
++            velocity.getY(),
++            velocity.getZ()
++        ));
 +    }
 +    // SportBukkit end
 +
      public void c() {
          this.d();
          this.player.k_();
-@@ -464,6 +556,16 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -464,6 +504,16 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                      this.d();
                  }
  
 +                // SportBukkit start - velocity prediction
-+                this.handleClientTick(
++                this.player.handleClientTick(
 +                    packetplayinflying.hasPos ? new Vector(packetplayinflying.x,
 +                                                           packetplayinflying.y,
 +                                                           packetplayinflying.z)
 +                                              : null,
-+                    this.player.onGround && !packetplayinflying.a()
++                    packetplayinflying.a()
 +                );
 +                // SportBukkit end
 +
                  if (this.teleportPos != null) {
                      if (this.e - this.A > 20) {
                          this.A = this.e;
-@@ -2179,6 +2281,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2179,6 +2229,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
@@ -376,7 +464,7 @@ index bd25271..1dc2da2 100644
          if (packetplayinkeepalive.a() == this.f) {
              int i = (int) (this.e() - this.g);
  
-@@ -2187,6 +2290,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2187,6 +2238,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
      }
  
@@ -385,7 +473,7 @@ index bd25271..1dc2da2 100644
          return System.nanoTime() / 1000000L;
      }
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index 6fa82ee..759aba1 100644
+index 6fa82ee..ec88465 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
 @@ -1176,7 +1176,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
@@ -395,13 +483,13 @@ index 6fa82ee..759aba1 100644
 -                ((EntityPlayer) entityhuman).playerConnection.sendPacket(new PacketPlayOutExplosion(d0, d1, d2, f, explosion.getBlocks(), (Vec3D) explosion.b().get(entityhuman)));
 +                // SportBukkit start - call knockback method
 +                ((EntityPlayer) entityhuman).playerConnection.sendPacket(new PacketPlayOutExplosion(d0, d1, d2, f, explosion.getBlocks(), null));
-+                entityhuman.applyKnockback(entity, explosion.b().get(entityhuman));
++                entityhuman.applyKnockback(entity, explosion.b().get(entityhuman), true);
 +                // SportBukkit end
              }
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index b14f11b..66890fe 100644
+index b14f11b..6439720 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -33,6 +33,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -412,20 +500,28 @@ index b14f11b..66890fe 100644
  
      public CraftEntity(final CraftServer server, final Entity entity) {
          this.server = server;
-@@ -210,9 +211,28 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
-         entity.motX = vel.getX();
-         entity.motY = vel.getY();
-         entity.motZ = vel.getZ();
-+        entity.impulse = true;
-         entity.velocityChanged = true;
+@@ -207,10 +208,30 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
      }
  
+     public void setVelocity(Vector vel) {
+-        entity.motX = vel.getX();
+-        entity.motY = vel.getY();
+-        entity.motZ = vel.getZ();
+-        entity.velocityChanged = true;
++        getHandle().setVelocity(vel.getX(), vel.getY(), vel.getZ());
++    }
++
 +    @Override
 +    public void applyImpulse(Vector impulse) {
-+        if(impulse.isZero()) return;
-+        entity.applyImpulse(impulse.getX(),
-+                            impulse.getY(),
-+                            impulse.getZ());
++        applyImpulse(impulse, true);
++    }
++
++    @Override
++    public void applyImpulse(Vector impulse, boolean relative) {
++        getHandle().applyImpulse(impulse.getX(),
++                                 impulse.getY(),
++                                 impulse.getZ(),
++                                 relative);
 +    }
 +
 +    @Override
@@ -436,12 +532,10 @@ index b14f11b..66890fe 100644
 +    @Override
 +    public float getKnockbackReduction() {
 +        return this.knockbackReduction;
-+    }
-+
+     }
+ 
      public boolean isOnGround() {
-         if (entity instanceof EntityArrow) {
-             return ((EntityArrow) entity).isInGround();
-@@ -668,4 +688,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -668,4 +689,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          }
          return perm;
      }
@@ -452,18 +546,10 @@ index b14f11b..66890fe 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c7f88f5..609f6e8 100644
+index c7f88f5..5d61bff 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -67,6 +67,7 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent;
- import org.bukkit.event.player.PlayerResourcePackStatusEvent;
- import org.bukkit.event.player.PlayerTeleportEvent;
- import org.bukkit.event.player.PlayerUnregisterChannelEvent;
-+import org.bukkit.event.player.PlayerVelocityEvent;
- import org.bukkit.inventory.InventoryView.Property;
- import org.bukkit.map.MapCursor;
- import org.bukkit.map.MapView;
-@@ -76,6 +77,7 @@ import org.bukkit.plugin.Plugin;
+@@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
  import org.bukkit.scoreboard.Scoreboard;
  import org.bukkit.util.RayBlockIntersection;
@@ -471,23 +557,27 @@ index c7f88f5..609f6e8 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1883,6 +1885,22 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1883,6 +1884,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
 +    public Vector getPredictedVelocity() {
-+        return getHandle().playerConnection.predictedVelocity();
++        return getHandle().getPredictedVelocity();
 +    }
 +
 +    @Override
-+    public void setVelocity(Vector vel) {
-+        final PlayerVelocityEvent event = new PlayerVelocityEvent(this, vel.clone().subtract(getVelocity()));
-+        if(event.isCancelled() || event.getImpulse().isZero()) return;
++    public Vector getClientVelocity() {
++        return getHandle().getClientVelocity();
++    }
 +
-+        super.setVelocity(event.getVelocity());
-+        getHandle().impulse = false;
-+        getHandle().velocityChanged = false;
-+        getHandle().playerConnection.sendPacket(new PacketPlayOutEntityVelocity(getHandle()));
++    @Override
++    public Vector getUnackedImpulse() {
++        return getHandle().getUnackedImpulse();
++    }
++
++    @Override
++    public boolean hasUnackedVelocity() {
++        return getHandle().hasUnackedVelocity();
 +    }
 +
 +    @Override

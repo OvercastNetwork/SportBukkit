@@ -1,4 +1,4 @@
-From 1e52f11a1a07f256110cdabe08071d30d95744b5 Mon Sep 17 00:00:00 2001
+From 4a8b158226ee288c1902f02b1302d86cb525ad1a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Knockback API
@@ -84,7 +84,7 @@ index 3fe5807..21cdf3a 100644
  }
 diff --git a/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java b/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java
 new file mode 100644
-index 0000000..863be40
+index 0000000..7411633
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/player/PlayerKnockbackEvent.java
 @@ -0,0 +1,26 @@
@@ -101,8 +101,8 @@ index 0000000..863be40
 +
 +    private final Entity damager;
 +
-+    public PlayerKnockbackEvent(Player player, Entity damager, Vector after) {
-+        super(player, after);
++    public PlayerKnockbackEvent(Player player, Entity damager, Vector velocity, boolean impulse) {
++        super(player, velocity, impulse);
 +        this.damager = damager;
 +    }
 +
@@ -115,10 +115,10 @@ index 0000000..863be40
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-index 69d2fce..473bb19 100644
+index 69d2fce..e761fa2 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-@@ -6,20 +6,22 @@ import org.bukkit.event.HandlerList;
+@@ -6,16 +6,18 @@ import org.bukkit.event.HandlerList;
  import org.bukkit.util.Vector;
  
  /**
@@ -129,61 +129,42 @@ index 69d2fce..473bb19 100644
      private static final HandlerList handlers = new HandlerList();
      private boolean cancel = false;
 -    private Vector velocity;
-+    private final Vector before;
-+    private Vector after;
++    private final Vector velocity;
++    private final boolean impulse;
  
 -    public PlayerVelocityEvent(final Player player, final Vector velocity) {
-+    public PlayerVelocityEvent(final Player player, Vector after) {
++    public PlayerVelocityEvent(final Player player, Vector velocity, boolean impulse) {
          super(player);
--        this.velocity = velocity;
-+        this.before = player.getVelocity();
-+        this.after = after;
+         this.velocity = velocity;
++        this.impulse = impulse;
      }
  
      public boolean isCancelled() {
--        return cancel;
-+        return cancel || before.equals(after);
+@@ -26,22 +28,16 @@ public class PlayerVelocityEvent extends PlayerEvent implements Cancellable {
+         this.cancel = cancel;
      }
  
-     public void setCancelled(boolean cancel) {
-@@ -27,21 +29,32 @@ public class PlayerVelocityEvent extends PlayerEvent implements Cancellable {
-     }
- 
-     /**
+-    /**
 -     * Gets the velocity vector that will be sent to the player
 -     *
 -     * @return Vector the player will get
-+     * The absolute velocity of the player after applying the impulse
-      */
+-     */
++    public boolean isImpulse() {
++        return impulse;
++    }
++
      public Vector getVelocity() {
--        return velocity;
-+        return after.clone();
+         return velocity;
      }
  
-     /**
+-    /**
 -     * Sets the velocity vector that will be sent to the player
 -     *
 -     * @param velocity The velocity vector that will be sent to the player
-+     * Change the impulse that will be applied to the player by specifying
-+     * the player's desired absolute velocity after applying it.
-      */
+-     */
      public void setVelocity(Vector velocity) {
 -        this.velocity = velocity;
-+        this.after = velocity.clone();
-+    }
-+
-+    /**
-+     * The impulse that will be applied to the player
-+     */
-+    public Vector getImpulse() {
-+        return getVelocity().subtract(before);
-+    }
-+
-+    /**
-+     * Change the impulse that will be applied to the player
-+     */
-+    public void setImpulse(Vector impulse) {
-+        this.after = before.clone().add(impulse);
++        velocity.set(velocity);
      }
  
      @Override

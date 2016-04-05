@@ -1,4 +1,4 @@
-From 99b63882bc5635e84d80542d964bf8b2818a7dac Mon Sep 17 00:00:00 2001
+From b5a634c347763cebea2946865f052ac5b3a3d328 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -149,7 +149,7 @@ index 7b9bfc1..a58c90d 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..59797d9 100644
+index 335f831..1ba8b54 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
@@ -175,7 +175,7 @@ index 335f831..59797d9 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +77,152 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +77,155 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
@@ -304,7 +304,6 @@ index 335f831..59797d9 100644
 +                clientVelocity.zero();
 +            } else {
 +                clientVelocity.set(position).subtract(clientPosition);
-+                clientPosition.set(position);
 +
 +                if(!this.playerConnection.clientOnGround && onGround && clientVelocity.getY() > 0) {
 +                    // Client moves just under double normal distance in the
@@ -312,6 +311,10 @@ index 335f831..59797d9 100644
 +                    clientVelocity.multiply(new Vector(0.5, 1, 0.5));
 +                }
 +            }
++        }
++
++        if(position != null) {
++            clientPosition.set(position);
 +        }
 +
 +        // Forget any impulses that have been acknowledged by the client,

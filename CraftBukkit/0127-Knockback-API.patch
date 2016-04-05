@@ -1,4 +1,4 @@
-From de49cefc287aa6d0464a7fe951d4092b4f60b8e2 Mon Sep 17 00:00:00 2001
+From 28cb2eb4ca9d434fc5bea4a88f85d27a18c848f1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -149,7 +149,7 @@ index 7b9bfc1..a58c90d 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..649768d 100644
+index 335f831..5987cc5 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
@@ -175,7 +175,7 @@ index 335f831..649768d 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +77,155 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +77,157 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
@@ -230,6 +230,7 @@ index 335f831..649768d 100644
 +
 +        if(relative) {
 +            unsentImpulse.add(impulse);
++            velocityChanged = true;
 +        } else {
 +            clientVelocity.add(impulse);
 +            sendAbsoluteVelocity();
@@ -260,9 +261,10 @@ index 335f831..649768d 100644
 +     * save the impulse and timestamp together in a queue.
 +     */
 +    public void sendAccumulatedImpulse() {
-+        if(!unsentImpulse.isZero()) {
++        if(velocityChanged && !unsentImpulse.isZero()) {
 +            sentImpulses.addLast(new ClientImpulse(playerConnection.sendRelativeVelocity(unsentImpulse), unsentImpulse));
 +            unsentImpulse = new Vector();
++            velocityChanged = false;
 +        }
 +    }
 +

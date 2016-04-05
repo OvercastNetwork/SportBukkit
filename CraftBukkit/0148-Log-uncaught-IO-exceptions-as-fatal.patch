@@ -1,0 +1,27 @@
+From 3984a81daeef47431af722d8840af79ec5855525 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 5 Apr 2016 10:38:52 -0400
+Subject: [PATCH] Log uncaught IO exceptions as fatal
+
+
+diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
+index d76be47..77e50ed 100644
+--- a/src/main/java/net/minecraft/server/NetworkManager.java
++++ b/src/main/java/net/minecraft/server/NetworkManager.java
+@@ -106,11 +106,12 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
+ 
+         if (throwable instanceof TimeoutException) {
+             chatmessage = new ChatMessage("disconnect.timeout", new Object[0]);
++            NetworkManager.g.debug(throwable);
+         } else {
+             chatmessage = new ChatMessage("disconnect.genericReason", new Object[] { "Internal Exception: " + throwable});
++            NetworkManager.g.fatal(throwable);
+         }
+ 
+-        NetworkManager.g.debug(throwable);
+         this.close(chatmessage);
+     }
+ 
+-- 
+1.9.0
+

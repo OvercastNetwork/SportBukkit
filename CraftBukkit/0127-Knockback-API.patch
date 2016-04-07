@@ -1,4 +1,4 @@
-From 2d8bf31cf61f43ff7354812dbefa70c32b7dfc39 Mon Sep 17 00:00:00 2001
+From 4d527b3afd8c16454eec6e9ce16b1de6c762cbae Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -63,29 +63,34 @@ index 83a42a0..eceb2cf 100644
                      }
  
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 92766a0..7a6898f 100644
+index 92766a0..296c778 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1045,6 +1045,8 @@ public abstract class EntityHuman extends EntityLiving {
-                             this.cH();
-                         }
+@@ -1047,6 +1047,8 @@ public abstract class EntityHuman extends EntityLiving {
  
-+                        // SportBukkit start - disable this entire block
-+                        /*
                          if (entity instanceof EntityPlayer && entity.velocityChanged) {
                              // CraftBukkit start - Add Velocity Event
++                            ((EntityPlayer) entity).sendVelocity();
++                            /*
                              boolean cancelled = false;
-@@ -1069,6 +1071,8 @@ public abstract class EntityHuman extends EntityLiving {
+                             Player player = (Player) entity.getBukkitEntity();
+                             org.bukkit.util.Vector velocity = new Vector( d1, d2, d3 );
+@@ -1063,10 +1065,13 @@ public abstract class EntityHuman extends EntityLiving {
+                             if (!cancelled) {
+                             ((EntityPlayer) entity).playerConnection.sendPacket(new PacketPlayOutEntityVelocity(entity));
+                             entity.velocityChanged = false;
++                            */
+                             entity.motX = d1;
+                             entity.motY = d2;
+                             entity.motZ = d3;
++                            /*
                              }
++                            */
                              // CraftBukkit end
                          }
-+                        */
-+                        // SportBukkit end
  
-                         if (flag2) {
-                             this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.ENTITY_PLAYER_ATTACK_CRIT, this.bz(), 1.0F, 1.0F);
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 7b9bfc1..7278a96 100644
+index 7b9bfc1..4baefe8 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -899,7 +899,7 @@ public abstract class EntityLiving extends Entity {
@@ -124,9 +129,9 @@ index 7b9bfc1..7278a96 100644
 +            final double len = MathHelper.sqrt(d0 * d0 + d1 * d1);
 +
 +            final double
-+                dx = (motX / 2 - d0 * f / len) - motX,
++                dx = -motX / 2 - d0 * f / len,
 +                dy = Math.min(0.4, motY / 2 + f) - motY,
-+                dz = (motZ / 2 - d1 * f / len) - motZ;
++                dz = -motZ / 2 - d1 * f / len;
 +
 +            applyKnockback(
 +                entity,
@@ -154,7 +159,7 @@ index 7b9bfc1..7278a96 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..ffc27d0 100644
+index 335f831..bc8b1e4 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
@@ -184,7 +189,7 @@ index 335f831..ffc27d0 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +78,161 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +78,167 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
@@ -237,13 +242,12 @@ index 335f831..ffc27d0 100644
 +        this.motX += impulse.getX();
 +        this.motY += impulse.getY();
 +        this.motZ += impulse.getZ();
++        clientVelocity.add(impulse);
 +
 +        if(client) {
 +            unsentImpulse.add(impulse);
-+            velocityChanged = true;
 +        } else {
-+            clientVelocity.set(motX, motY, motZ);
-+            sendAbsoluteVelocity();
++            velocityChanged = true;
 +        }
 +    }
 +
@@ -251,19 +255,27 @@ index 335f831..ffc27d0 100644
 +        this.motX = velocity.getX();
 +        this.motY = velocity.getY();
 +        this.motZ = velocity.getZ();
++        clientVelocity.set(motX, motY, motZ);
++        unsentImpulse.zero();
 +
-+        clientVelocity.set(velocity);
++        velocityChanged = true;
++    }
++
++    public void sendVelocity() {
 +        sendAbsoluteVelocity();
++        sendAccumulatedImpulse();
 +    }
 +
 +    /**
 +     * Send the current predicted client velocity back to the client as an absolute
 +     * velocity. Set the client velocity timestamp and clear any sent impulses.
 +     */
-+    private void sendAbsoluteVelocity() {
-+        sentImpulses.clear();
-+        clientVelocityTimestamp = playerConnection.sendAbsoluteVelocity(clientVelocity);
-+        clientVelocityUnacked = true;
++    public void sendAbsoluteVelocity() {
++        if(velocityChanged) {
++            clientVelocityTimestamp = playerConnection.sendAbsoluteVelocity(clientVelocity);
++            clientVelocityUnacked = true;
++            velocityChanged = false;
++        }
 +    }
 +
 +    /**
@@ -272,7 +284,7 @@ index 335f831..ffc27d0 100644
 +     * save the impulse and timestamp together in a queue.
 +     */
 +    public void sendAccumulatedImpulse() {
-+        if(velocityChanged && !unsentImpulse.isZero()) {
++        if(!unsentImpulse.isZero()) {
 +            final int timestamp = playerConnection.sendRelativeVelocity(unsentImpulse);
 +            Vector impulse = sentImpulses.get(timestamp);
 +            if(impulse != null) {
@@ -281,7 +293,6 @@ index 335f831..ffc27d0 100644
 +                sentImpulses.put(timestamp, unsentImpulse);
 +            }
 +            unsentImpulse = new Vector();
-+            velocityChanged = false;
 +        }
 +    }
 +
@@ -347,7 +358,7 @@ index 335f831..ffc27d0 100644
          super(worldserver, gameprofile);
          playerinteractmanager.player = this;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 1737342..4cf4ff4 100644
+index 1737342..9b4425d 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -256,6 +256,8 @@ public class EntityTrackerEntry {
@@ -366,7 +377,7 @@ index 1737342..4cf4ff4 100644
 +            */
 +
 +            if(this.tracker instanceof EntityPlayer) {
-+                ((EntityPlayer) this.tracker).sendAccumulatedImpulse();
++                ((EntityPlayer) this.tracker).sendVelocity();
 +            } else {
 +                broadcast(new PacketPlayOutEntityVelocity(this.tracker));
 +            }

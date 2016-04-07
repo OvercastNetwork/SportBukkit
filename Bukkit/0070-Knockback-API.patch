@@ -1,9 +1,43 @@
-From 4a8b158226ee288c1902f02b1302d86cb525ad1a Mon Sep 17 00:00:00 2001
+From 774898c25dda4f58591fc064408fdff5f9bf06f9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Knockback API
 
 
+diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
+index 4623612..b3544d0 100644
+--- a/src/main/java/org/bukkit/Bukkit.java
++++ b/src/main/java/org/bukkit/Bukkit.java
+@@ -391,6 +391,13 @@ public final class Bukkit {
+     }
+ 
+     /**
++     * @see Server#getVerticalKnockbackOffGround()
++     */
++    public static boolean getVerticalKnockbackOffGround() {
++        return server.getVerticalKnockbackOffGround();
++    }
++
++    /**
+      * Should plugins be able to access classes from other plugins that are not explicit dependencies?
+      */
+     public static boolean getIsolatePlugins() {
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index bdfe2dc..272fe4d 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -304,6 +304,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+     public boolean getWaterPushesTNT();
+ 
+     /**
++     * Do entities receive vertical knockback when they are already in the air?
++     */
++    public boolean getVerticalKnockbackOffGround();
++
++    /**
+      * Should plugins be able to access classes from other plugins that are not explicit dependencies?
+      */
+     public boolean getIsolatePlugins();
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
 index c9954fd..dab77ad 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java

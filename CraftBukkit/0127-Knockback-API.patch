@@ -1,4 +1,4 @@
-From 8093efff86ad52cf1d250ef83236eea51e3ff22a Mon Sep 17 00:00:00 2001
+From 309fdd8b805b3a0b0c9f1564720c6ede997fe193 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -353,34 +353,33 @@ index bbde68a..0a30eea 100644
          super(worldserver, gameprofile);
          playerinteractmanager.player = this;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 1737342..9b4425d 100644
+index 1737342..3613681 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-@@ -256,6 +256,8 @@ public class EntityTrackerEntry {
- 
-         ++this.a;
-         if (this.tracker.velocityChanged) {
-+            // SportBukkit start - send impulse to players, instead of absolute velocity
-+            /*
-             // CraftBukkit start - Create PlayerVelocity event
-             boolean cancelled = false;
- 
-@@ -277,6 +279,15 @@ public class EntityTrackerEntry {
-                 this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
-             }
-             // CraftBukkit end
-+            */
-+
-+            if(this.tracker instanceof EntityPlayer) {
-+                ((EntityPlayer) this.tracker).sendVelocity();
-+            } else {
-+                broadcast(new PacketPlayOutEntityVelocity(this.tracker));
-+            }
-+            // SportBukkit end
-+
-             this.tracker.velocityChanged = false;
+@@ -255,6 +255,8 @@ public class EntityTrackerEntry {
          }
  
+         ++this.a;
++        // SportBukkit start - velocity API
++        /*
+         if (this.tracker.velocityChanged) {
+             // CraftBukkit start - Create PlayerVelocity event
+             boolean cancelled = false;
+@@ -279,7 +281,13 @@ public class EntityTrackerEntry {
+             // CraftBukkit end
+             this.tracker.velocityChanged = false;
+         }
+-
++        */
++        if(this.tracker instanceof EntityPlayer) {
++            ((EntityPlayer) this.tracker).sendVelocity();
++        } else {
++            broadcast(new PacketPlayOutEntityVelocity(this.tracker));
++        }
++        // SportBukkit end
+     }
+ 
+     private void d() {
 diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
 index 69720e8..a10c0b2 100644
 --- a/src/main/java/net/minecraft/server/Explosion.java

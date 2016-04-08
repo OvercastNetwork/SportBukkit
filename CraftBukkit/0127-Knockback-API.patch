@@ -1,4 +1,4 @@
-From 309fdd8b805b3a0b0c9f1564720c6ede997fe193 Mon Sep 17 00:00:00 2001
+From ca7dc84ed73922580d3402ba3e654660715111a3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -353,7 +353,7 @@ index bbde68a..0a30eea 100644
          super(worldserver, gameprofile);
          playerinteractmanager.player = this;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 1737342..3613681 100644
+index 1737342..8aa343d 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -255,6 +255,8 @@ public class EntityTrackerEntry {
@@ -365,7 +365,7 @@ index 1737342..3613681 100644
          if (this.tracker.velocityChanged) {
              // CraftBukkit start - Create PlayerVelocity event
              boolean cancelled = false;
-@@ -279,7 +281,13 @@ public class EntityTrackerEntry {
+@@ -279,7 +281,14 @@ public class EntityTrackerEntry {
              // CraftBukkit end
              this.tracker.velocityChanged = false;
          }
@@ -375,6 +375,7 @@ index 1737342..3613681 100644
 +            ((EntityPlayer) this.tracker).sendVelocity();
 +        } else {
 +            broadcast(new PacketPlayOutEntityVelocity(this.tracker));
++            this.tracker.velocityChanged = false;
 +        }
 +        // SportBukkit end
      }

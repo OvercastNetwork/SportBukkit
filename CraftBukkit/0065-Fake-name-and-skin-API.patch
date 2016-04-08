@@ -1,11 +1,11 @@
-From 4488d845c9826d193d77b39688997778d2a7651c Mon Sep 17 00:00:00 2001
+From df636b72fde64e1526ad74eec345f40f02c219db Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index cc3b3c2..ced1da8 100644
+index 9e22a0a..6322dc8 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -26,7 +26,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -18,7 +18,7 @@ index cc3b3c2..ced1da8 100644
      public PlayerInventory inventory = new PlayerInventory(this);
      private InventoryEnderChest enderChest = new InventoryEnderChest();
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 9b0590c..8d4c8e6 100644
+index de26157..1b48d36 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -19,6 +19,8 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -30,7 +30,7 @@ index 9b0590c..8d4c8e6 100644
  import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  // CraftBukkit end
  
-@@ -1058,8 +1060,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1061,8 +1063,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          // SportBukkit end
          this.cf = packetplayinsettings.c();
          this.cg = packetplayinsettings.d();
@@ -106,7 +106,7 @@ index f86bf8d..ec536e2 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 4543367..8da438b 100644
+index be126f3..6f1bdfe 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -21,6 +21,8 @@ import org.apache.logging.log4j.Logger;
@@ -190,7 +190,7 @@ index 4543367..8da438b 100644
              CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 5da18a7..52433f8 100644
+index 113692f..26bc539 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -26,6 +26,7 @@ import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;

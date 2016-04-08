@@ -1,11 +1,11 @@
-From 2dcbdabe62316d31c2777d426aa6552914e01884 Mon Sep 17 00:00:00 2001
+From c6cef15b06ad32fc54bce40a3d0b099e98eae3a6 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
 
 
 diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
-index fe29e1c..e2cd128 100644
+index ba7dc49..d9cb0ca 100644
 --- a/src/main/java/org/bukkit/Effect.java
 +++ b/src/main/java/org/bukkit/Effect.java
 @@ -5,6 +5,7 @@ import java.util.Map;
@@ -16,12 +16,11 @@ index fe29e1c..e2cd128 100644
  import org.bukkit.potion.Potion;
  
  /**
-@@ -79,23 +80,174 @@ public enum Effect {
-     /**
-      * The flames seen on a mobspawner; a visual effect.
+@@ -196,23 +197,173 @@ public enum Effect {
+      * The sound of an enderdragon growling
       */
--    MOBSPAWNER_FLAMES(2004, Type.VISUAL);
-+    MOBSPAWNER_FLAMES(2004, Type.VISUAL),
+     ENDERDRAGON_GROWL(3001, Type.SOUND),
+-    ;
 +    /**
 +     * The spark that comes off a fireworks
 +     */
@@ -193,7 +192,7 @@ index fe29e1c..e2cd128 100644
      /**
       * Gets the ID for this effect.
       *
-@@ -115,8 +267,17 @@ public enum Effect {
+@@ -232,8 +383,17 @@ public enum Effect {
      }
  
      /**
@@ -213,7 +212,7 @@ index fe29e1c..e2cd128 100644
       */
      public Class<?> getData() {
          return this.data;
-@@ -136,12 +297,32 @@ public enum Effect {
+@@ -253,12 +413,32 @@ public enum Effect {
  
      static {
          for (Effect effect : values()) {

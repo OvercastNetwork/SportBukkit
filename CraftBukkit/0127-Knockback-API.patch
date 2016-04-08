@@ -1,4 +1,4 @@
-From 8fde0302329b19f7ccda9c4e545bf32974072bd4 Mon Sep 17 00:00:00 2001
+From 8093efff86ad52cf1d250ef83236eea51e3ff22a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -63,10 +63,10 @@ index 83a42a0..eceb2cf 100644
                      }
  
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 92766a0..296c778 100644
+index d6df82f..3321f84 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1047,6 +1047,8 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -1050,6 +1050,8 @@ public abstract class EntityHuman extends EntityLiving {
  
                          if (entity instanceof EntityPlayer && entity.velocityChanged) {
                              // CraftBukkit start - Add Velocity Event
@@ -75,7 +75,7 @@ index 92766a0..296c778 100644
                              boolean cancelled = false;
                              Player player = (Player) entity.getBukkitEntity();
                              org.bukkit.util.Vector velocity = new Vector( d1, d2, d3 );
-@@ -1063,10 +1065,13 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -1066,10 +1068,13 @@ public abstract class EntityHuman extends EntityLiving {
                              if (!cancelled) {
                              ((EntityPlayer) entity).playerConnection.sendPacket(new PacketPlayOutEntityVelocity(entity));
                              entity.velocityChanged = false;
@@ -90,10 +90,10 @@ index 92766a0..296c778 100644
                          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 7b9bfc1..4baefe8 100644
+index 6b21151..219f6a2 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -899,7 +899,7 @@ public abstract class EntityLiving extends Entity {
+@@ -901,7 +901,7 @@ public abstract class EntityLiving extends Entity {
                          }
  
                          this.az = (float) (MathHelper.b(d1, d0) * 57.2957763671875D - (double) this.yaw);
@@ -102,7 +102,7 @@ index 7b9bfc1..4baefe8 100644
                      } else {
                          this.az = (float) ((int) (Math.random() * 2.0D) * 180);
                      }
-@@ -1016,21 +1016,26 @@ public abstract class EntityLiving extends Entity {
+@@ -1018,21 +1018,26 @@ public abstract class EntityLiving extends Entity {
  
      public void a(Entity entity, float f, double d0, double d1) {
          if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
@@ -144,7 +144,7 @@ index 7b9bfc1..4baefe8 100644
          }
      }
  
-@@ -2082,9 +2087,13 @@ public abstract class EntityLiving extends Entity {
+@@ -2084,9 +2089,13 @@ public abstract class EntityLiving extends Entity {
          return !this.dead && this.collides; // CraftBukkit
      }
  
@@ -159,7 +159,7 @@ index 7b9bfc1..4baefe8 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..cef83a5 100644
+index bbde68a..0a30eea 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
@@ -406,7 +406,7 @@ index 69720e8..a10c0b2 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index bd25271..cd833e5 100644
+index 475b580..c9b2bf3 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -61,6 +61,7 @@ import org.bukkit.inventory.CraftingInventory;

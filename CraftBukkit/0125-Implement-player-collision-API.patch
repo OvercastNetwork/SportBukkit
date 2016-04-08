@@ -1,4 +1,4 @@
-From 521ef5a575a2e61e4c72cc47c3d67c7638640f1b Mon Sep 17 00:00:00 2001
+From e83cd82cccd8e5bd953476253c89a3bf34ace3e4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
@@ -39,7 +39,7 @@ index 3b1ae8f..83e290b 100644
  
      public AxisAlignedBB af() {
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 190fedc..92766a0 100644
+index 5cd0db6..d6df82f 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -391,7 +391,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -52,10 +52,10 @@ index 190fedc..92766a0 100644
  
                  if (!entity.dead) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index ffdb01d..7b9bfc1 100644
+index 3150726..6b21151 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1990,7 +1990,7 @@ public abstract class EntityLiving extends Entity {
+@@ -1992,7 +1992,7 @@ public abstract class EntityLiving extends Entity {
      protected void cn() {
          List list = this.world.a((Entity) this, this.getBoundingBox(), IEntitySelector.a(this));
  
@@ -65,7 +65,7 @@ index ffdb01d..7b9bfc1 100644
                  Entity entity = (Entity) list.get(i);
                  // TODO better check now?
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index d6b5bd5..335f831 100644
+index e3558f8..bbde68a 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -61,6 +61,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {

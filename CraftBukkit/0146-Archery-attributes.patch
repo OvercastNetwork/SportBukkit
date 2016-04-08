@@ -1,11 +1,11 @@
-From 7441886fcf34643ad441c23ba444f9c4dc844df7 Mon Sep 17 00:00:00 2001
+From 1ad2e4898e65b0399235ce50aeab22e42593ff2c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 21:57:42 -0400
 Subject: [PATCH] Archery attributes
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index cb6a509..1066e4d 100644
+index 6f95c23..42f23d9 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -71,13 +71,23 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -37,10 +37,10 @@ index cb6a509..1066e4d 100644
  
      public void shoot(double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 52ffa1a..0dd6194 100644
+index 5cc96ba..bc001e9 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -33,6 +33,11 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
+@@ -35,6 +35,11 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
  
  public abstract class EntityLiving extends Entity {
  
@@ -52,7 +52,7 @@ index 52ffa1a..0dd6194 100644
      private static final UUID a = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
      private static final AttributeModifier b = (new AttributeModifier(EntityLiving.a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
      protected static final DataWatcherObject<Byte> as = DataWatcher.a(EntityLiving.class, DataWatcherRegistry.a);
-@@ -143,6 +148,10 @@ public abstract class EntityLiving extends Entity {
+@@ -145,6 +150,10 @@ public abstract class EntityLiving extends Entity {
          this.getAttributeMap().b(GenericAttributes.MOVEMENT_SPEED);
          this.getAttributeMap().b(GenericAttributes.g);
          this.getAttributeMap().b(GenericAttributes.h);

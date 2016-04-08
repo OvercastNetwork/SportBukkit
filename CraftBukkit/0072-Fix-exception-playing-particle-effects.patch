@@ -1,14 +1,14 @@
-From ca87bf05d9b0393cdfadc3bb43a468296061ebe4 Mon Sep 17 00:00:00 2001
+From 720454bd6fa0c15f463292acef9bcb0c3fa1696c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 03:50:47 -0500
 Subject: [PATCH] Fix exception playing particle effects
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
-index 7eca388..f3bd034 100644
+index 582d7bf..845245c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
-@@ -62,4 +62,13 @@ public class CraftEffect {
+@@ -65,4 +65,13 @@ public class CraftEffect {
          }
          return datavalue;
      }
@@ -23,10 +23,10 @@ index 7eca388..f3bd034 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index e37510e..c0d7f44 100644
+index 5dc8e37..b96dd3f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -904,7 +904,7 @@ public class CraftWorld implements World {
+@@ -908,7 +908,7 @@ public class CraftWorld implements World {
                  particleFullName.append('_').append(data);
              }
  
@@ -36,7 +36,7 @@ index e37510e..c0d7f44 100644
  
          int distance;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index dd3cb38..b81bb74 100644
+index 2594b05..d2a57b5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -621,7 +621,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

@@ -1,23 +1,23 @@
-From ee8689dde3cf698f6a654cca057e96073c0776e2 Mon Sep 17 00:00:00 2001
+From 13abe3d2963c63bba48090e09baec24332303ace Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 50a73cd..83c1819 100644
+index 12060c4..e9ff132 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -22,6 +22,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
- import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+@@ -23,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
  import org.bukkit.event.entity.EntityRegainHealthEvent;
+ import org.bukkit.event.entity.EntityTeleportEvent;
  import org.bukkit.event.player.PlayerItemConsumeEvent;
 +import org.bukkit.event.vehicle.VehicleExitEvent;
 +import org.bukkit.craftbukkit.entity.CraftLivingEntity;
  // CraftBukkit end
  
  public abstract class EntityLiving extends Entity {
-@@ -571,10 +573,17 @@ public abstract class EntityLiving extends Entity {
+@@ -572,10 +574,17 @@ public abstract class EntityLiving extends Entity {
              this.bM();
              this.setInvisible(false);
          } else {
@@ -38,7 +38,7 @@ index 50a73cd..83c1819 100644
              this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
          }
  
-@@ -823,7 +832,7 @@ public abstract class EntityLiving extends Entity {
+@@ -824,7 +833,7 @@ public abstract class EntityLiving extends Entity {
  
                  // CraftBukkit start
                  if(this instanceof EntityAnimal){

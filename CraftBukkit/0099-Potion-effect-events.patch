@@ -1,23 +1,24 @@
-From ab291ada8d112a892207d4f38c1a6db2dcbf8976 Mon Sep 17 00:00:00 2001
+From 50f1f4f8c46bac973eceab98e4090c3d09e4fa1a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 29 Jun 2015 04:47:28 -0400
 Subject: [PATCH] Potion effect events
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index d2470be..ffdb01d 100644
+index 07d8d60..3150726 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -16,11 +16,16 @@ import com.google.common.collect.Lists;
+@@ -17,11 +17,17 @@ import org.bukkit.Location;
  import org.bukkit.craftbukkit.attribute.CraftAttributeMap;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
 +import org.bukkit.craftbukkit.potion.CraftPotionUtils;
- import org.bukkit.entity.LivingEntity;
++import org.bukkit.entity.LivingEntity;
  import org.bukkit.entity.Player;
  import org.bukkit.event.entity.EntityDamageEvent;
  import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
  import org.bukkit.event.entity.EntityRegainHealthEvent;
+ import org.bukkit.event.entity.EntityTeleportEvent;
 +import org.bukkit.event.entity.PotionEffectAddEvent;
 +import org.bukkit.event.entity.PotionEffectExpireEvent;
 +import org.bukkit.event.entity.PotionEffectExtendEvent;
@@ -25,7 +26,7 @@ index d2470be..ffdb01d 100644
  import org.bukkit.event.player.PlayerItemConsumeEvent;
  import org.bukkit.event.vehicle.VehicleExitEvent;
  import org.bukkit.craftbukkit.entity.CraftLivingEntity;
-@@ -500,38 +505,35 @@ public abstract class EntityLiving extends Entity {
+@@ -501,38 +507,35 @@ public abstract class EntityLiving extends Entity {
  
      }
  
@@ -79,7 +80,7 @@ index d2470be..ffdb01d 100644
  
          if (this.updateEffects) {
              if (!this.world.isClientSide) {
-@@ -613,11 +615,14 @@ public abstract class EntityLiving extends Entity {
+@@ -614,11 +617,14 @@ public abstract class EntityLiving extends Entity {
  
      public void removeAllEffects() {
          if (!this.world.isClientSide) {
@@ -97,7 +98,7 @@ index d2470be..ffdb01d 100644
              }
  
          }
-@@ -636,19 +641,26 @@ public abstract class EntityLiving extends Entity {
+@@ -637,19 +643,26 @@ public abstract class EntityLiving extends Entity {
      }
  
      public void addEffect(MobEffect mobeffect) {
@@ -130,7 +131,7 @@ index d2470be..ffdb01d 100644
                  mobeffect1.a(mobeffect);
                  this.a(mobeffect1, true);
              }
-@@ -673,12 +685,6 @@ public abstract class EntityLiving extends Entity {
+@@ -674,12 +687,6 @@ public abstract class EntityLiving extends Entity {
      }
  
      public MobEffect c(MobEffectList mobeffectlist) {
@@ -143,7 +144,7 @@ index d2470be..ffdb01d 100644
          return (MobEffect) this.effects.remove(mobeffectlist);
      }
  
-@@ -686,6 +692,16 @@ public abstract class EntityLiving extends Entity {
+@@ -687,6 +694,16 @@ public abstract class EntityLiving extends Entity {
          MobEffect mobeffect = this.c(mobeffectlist);
  
          if (mobeffect != null) {

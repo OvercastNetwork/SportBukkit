@@ -1,4 +1,4 @@
-From 4d527b3afd8c16454eec6e9ce16b1de6c762cbae Mon Sep 17 00:00:00 2001
+From 8fde0302329b19f7ccda9c4e545bf32974072bd4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -159,7 +159,7 @@ index 7b9bfc1..4baefe8 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 335f831..bc8b1e4 100644
+index 335f831..cef83a5 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
@@ -189,7 +189,7 @@ index 335f831..bc8b1e4 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +78,167 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +78,162 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
@@ -206,7 +206,7 @@ index 335f831..bc8b1e4 100644
 +
 +    private Vector unsentImpulse = new Vector();
 +    private final Map<Integer, Vector> sentImpulses = new HashMap<Integer, Vector>();
-+    private boolean clientVelocityUnacked;
++    private boolean velocityUnacked;
 +    private long clientVelocityTimestamp;
 +    private final Vector clientVelocity = new Vector();
 +    private final Vector clientPosition = new Vector();
@@ -242,12 +242,11 @@ index 335f831..bc8b1e4 100644
 +        this.motX += impulse.getX();
 +        this.motY += impulse.getY();
 +        this.motZ += impulse.getZ();
-+        clientVelocity.add(impulse);
 +
 +        if(client) {
 +            unsentImpulse.add(impulse);
 +        } else {
-+            velocityChanged = true;
++            serverVelocityChanged();
 +        }
 +    }
 +
@@ -255,10 +254,14 @@ index 335f831..bc8b1e4 100644
 +        this.motX = velocity.getX();
 +        this.motY = velocity.getY();
 +        this.motZ = velocity.getZ();
-+        clientVelocity.set(motX, motY, motZ);
-+        unsentImpulse.zero();
++        serverVelocityChanged();
++    }
 +
++    private void serverVelocityChanged() {
 +        velocityChanged = true;
++        velocityUnacked = true;
++        unsentImpulse.zero();
++        clientVelocity.set(motX, motY, motZ);
 +    }
 +
 +    public void sendVelocity() {
@@ -266,23 +269,15 @@ index 335f831..bc8b1e4 100644
 +        sendAccumulatedImpulse();
 +    }
 +
-+    /**
-+     * Send the current predicted client velocity back to the client as an absolute
-+     * velocity. Set the client velocity timestamp and clear any sent impulses.
-+     */
 +    public void sendAbsoluteVelocity() {
 +        if(velocityChanged) {
-+            clientVelocityTimestamp = playerConnection.sendAbsoluteVelocity(clientVelocity);
-+            clientVelocityUnacked = true;
 +            velocityChanged = false;
++            velocityUnacked = true;
++            clientVelocity.set(motX, motY, motZ);
++            clientVelocityTimestamp = playerConnection.sendAbsoluteVelocity(clientVelocity);
 +        }
 +    }
 +
-+    /**
-+     * Send any accumulated velocity changes to the client as an impulse, and reset
-+     * the accumulator. Send a keepalive packet immediately before the impulse, and
-+     * save the impulse and timestamp together in a queue.
-+     */
 +    public void sendAccumulatedImpulse() {
 +        if(!unsentImpulse.isZero()) {
 +            final int timestamp = playerConnection.sendRelativeVelocity(unsentImpulse);
@@ -309,7 +304,7 @@ index 335f831..bc8b1e4 100644
 +    }
 +
 +    public boolean hasUnackedVelocity() {
-+        return clientVelocityUnacked;
++        return velocityUnacked;
 +    }
 +
 +    /**
@@ -322,7 +317,7 @@ index 335f831..bc8b1e4 100644
 +
 +    public void handleKeepAlive(int timestamp) {
 +        if(clientVelocityTimestamp == timestamp) {
-+            clientVelocityUnacked = false;
++            velocityUnacked = false;
 +        }
 +        sentImpulses.remove(timestamp);
 +    }
@@ -332,7 +327,7 @@ index 335f831..bc8b1e4 100644
 +     * it is assumed that the client has not moved from their last position.
 +     */
 +    public void handleClientTick(Vector position, boolean onGround) {
-+        if(!clientVelocityUnacked) {
++        if(!velocityUnacked) {
 +            // If the last sent absolute velocity has been acknowledged by the client,
 +            // then infer the client's velocity based on their last two known positions.
 +            if(position == null) {

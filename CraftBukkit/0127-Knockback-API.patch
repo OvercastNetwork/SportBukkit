@@ -1,4 +1,4 @@
-From 6e8b181f11b965c417087c8a751877848c16496c Mon Sep 17 00:00:00 2001
+From 5a33fd0e4cd5013610dfbae4d9b1cd09f9f61e24 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Knockback API
@@ -577,7 +577,7 @@ index b14f11b..6294caf 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 5a8455c..256974e 100644
+index db2fe46..e7b67b0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
@@ -588,7 +588,7 @@ index 5a8455c..256974e 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1883,6 +1884,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1887,6 +1888,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

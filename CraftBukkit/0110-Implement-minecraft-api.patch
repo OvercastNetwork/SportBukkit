@@ -1,4 +1,4 @@
-From c8d5577bb3c595f37e4b4d2b24a32b01491b3181 Mon Sep 17 00:00:00 2001
+From ea00bc2f8522135ddc303abab65153446abeac31 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -110,7 +110,7 @@ index 3404016..b14f11b 100644
          return getHandle().getName();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4f1b5f2..b2680f7 100644
+index 4f1b5f2..8914c0e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1777,6 +1777,25 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -118,7 +118,7 @@ index 4f1b5f2..b2680f7 100644
  
      @Override
 +    public java.util.Locale getCurrentLocale() {
-+        return org.apache.commons.lang.LocaleUtils.toLocale(getLocale().replaceAll("_", "-"));
++        return org.apache.commons.lang.LocaleUtils.toLocale(getLocale());
 +    }
 +
 +    @Override
@@ -150,5 +150,5 @@ index 4f1b5f2..b2680f7 100644
 +    }
  }
 -- 
-1.9.0
+2.7.2
 

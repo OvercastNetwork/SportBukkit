@@ -1,4 +1,4 @@
-From 2c6b48013ef4a15c8602ddf95af17242df2d3a21 Mon Sep 17 00:00:00 2001
+From 2fc85712aba6e30bda309890cf3ca2a82c5a357e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
@@ -181,7 +181,7 @@ index 6b21151..0285259 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index bbde68a..e927298 100644
+index a719648..07479dc 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
@@ -211,8 +211,8 @@ index bbde68a..e927298 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +78,153 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
-     public String hostname;
+@@ -72,6 +79,153 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public int protocolVersion;
      // CraftBukkit end
  
 +    // SportBukkit start - velocity events/prediction
@@ -590,7 +590,7 @@ index b14f11b..6294caf 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index db2fe46..e7b67b0 100644
+index d1f2ee6..4168f11 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;

@@ -1,9 +1,33 @@
-From b3f84f67190c8fb469eee843a4fe2f6ce8194b39 Mon Sep 17 00:00:00 2001
+From 146b4c4d246388594894213446d07ab8edb08c97 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
 
 
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index e3558f8..0e81724 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -67,6 +67,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     public double maxHealthCache;
+     public boolean joining = true;
+     public String hostname;
++    public int protocolVersion;
+     // CraftBukkit end
+ 
+     public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
+diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
+index 26bc539..4f22f8e 100644
+--- a/src/main/java/net/minecraft/server/PlayerList.java
++++ b/src/main/java/net/minecraft/server/PlayerList.java
+@@ -472,6 +472,7 @@ public abstract class PlayerList {
+ 
+         EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));
+         entity.hostname = hostname;
++        entity.protocolVersion = loginlistener.networkManager.channel.pipeline().get(PacketEncoder.class).version;
+ 
+         Player player = entity.getBukkitEntity();
+         PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index 4008da1..cac7f51 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
@@ -110,7 +134,7 @@ index 3404016..b14f11b 100644
          return getHandle().getName();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4f1b5f2..623d9f7 100644
+index 4f1b5f2..0367466 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1777,6 +1777,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -150,7 +174,7 @@ index 4f1b5f2..623d9f7 100644
 +
 +    @Override
 +    public int getProtocolVersion() {
-+        return 107;
++        return getHandle().protocolVersion;
 +    }
  }
 -- 

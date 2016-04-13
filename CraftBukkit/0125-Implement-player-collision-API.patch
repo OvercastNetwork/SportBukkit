@@ -1,4 +1,4 @@
-From e83cd82cccd8e5bd953476253c89a3bf34ace3e4 Mon Sep 17 00:00:00 2001
+From b1f0904132b29596e5b308828a7eb2207e53a5ce Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
@@ -65,7 +65,7 @@ index 3150726..6b21151 100644
                  Entity entity = (Entity) list.get(i);
                  // TODO better check now?
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index e3558f8..bbde68a 100644
+index 0e81724..a719648 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -61,6 +61,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -77,7 +77,7 @@ index e3558f8..bbde68a 100644
      public int newLevel = 0;
      public int newTotalExp = 0;
      public boolean keepLevel = false;
-@@ -180,6 +182,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -181,6 +183,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.playerConnection.sendPacket(new PacketPlayOutCombatEvent(this.getCombatTracker(), PacketPlayOutCombatEvent.EnumCombatEventType.ENTER_COMBAT));
      }
  
@@ -97,7 +97,7 @@ index e3558f8..bbde68a 100644
          super.exitCombat();
          this.playerConnection.sendPacket(new PacketPlayOutCombatEvent(this.getCombatTracker(), PacketPlayOutCombatEvent.EnumCombatEventType.END_COMBAT));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d82aa16..4fb9846 100644
+index 04023a1..f8d6d21 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1507,6 +1507,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

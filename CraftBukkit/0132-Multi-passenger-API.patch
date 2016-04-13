@@ -1,14 +1,14 @@
-From d0e973bc52b2deaed7234e2546259115b60581a1 Mon Sep 17 00:00:00 2001
+From 69bdd125243c4bda62eb7849364733875fc1a0d6 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:42:17 -0400
 Subject: [PATCH] Multi-passenger API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 336be94..301e185 100644
+index a8c7bb4..f03ef18 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1682,6 +1682,7 @@ public abstract class Entity implements ICommandListener {
+@@ -1687,6 +1687,7 @@ public abstract class Entity implements ICommandListener {
          return this.j <= 0;
      }
  
@@ -17,7 +17,7 @@ index 336be94..301e185 100644
          for (int i = this.passengers.size() - 1; i >= 0; --i) {
              ((Entity) this.passengers.get(i)).stopRiding();
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 6439720..63c414f 100644
+index 6294caf..5416979 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -1,11 +1,17 @@

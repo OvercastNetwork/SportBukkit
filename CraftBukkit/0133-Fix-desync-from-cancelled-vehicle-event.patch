@@ -1,14 +1,14 @@
-From f720e3939324f0987e99fc4a39d1d03c57176bda Mon Sep 17 00:00:00 2001
+From febe785c46d2a5f160ddefd3aec7937d8c1a4bb4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 02:50:33 -0400
 Subject: [PATCH] Fix desync from cancelled vehicle event
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 301e185..4256d27 100644
+index f03ef18..de83610 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1668,6 +1668,24 @@ public abstract class Entity implements ICommandListener {
+@@ -1673,6 +1673,24 @@ public abstract class Entity implements ICommandListener {
          if (!flag && (!this.n(entity) || !entity.q(this))) {
              return false;
          } else {
@@ -33,7 +33,7 @@ index 301e185..4256d27 100644
              if (this.isPassenger()) {
                  this.stopRiding();
              }
-@@ -1692,6 +1710,22 @@ public abstract class Entity implements ICommandListener {
+@@ -1697,6 +1715,22 @@ public abstract class Entity implements ICommandListener {
  
      public void stopRiding() {
          if (this.as != null) {
@@ -56,7 +56,7 @@ index 301e185..4256d27 100644
              Entity entity = this.as;
  
              this.as = null;
-@@ -1704,24 +1738,6 @@ public abstract class Entity implements ICommandListener {
+@@ -1709,24 +1743,6 @@ public abstract class Entity implements ICommandListener {
          if (entity.by() != this) {
              throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
          } else {
@@ -81,7 +81,7 @@ index 301e185..4256d27 100644
              if (!this.world.isClientSide && entity instanceof EntityHuman && !(this.bt() instanceof EntityHuman)) {
                  this.passengers.add(0, entity);
              } else {
-@@ -1735,22 +1751,6 @@ public abstract class Entity implements ICommandListener {
+@@ -1740,22 +1756,6 @@ public abstract class Entity implements ICommandListener {
          if (entity.by() == this) {
              throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
          } else {

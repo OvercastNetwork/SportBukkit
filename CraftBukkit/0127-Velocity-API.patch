@@ -1,14 +1,14 @@
-From 5a33fd0e4cd5013610dfbae4d9b1cd09f9f61e24 Mon Sep 17 00:00:00 2001
+From 2c6b48013ef4a15c8602ddf95af17242df2d3a21 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
-Subject: [PATCH] Knockback API
+Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 0d3d55b..7a49cf8 100644
+index 0d3d55b..9b1c3e9 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1205,13 +1205,36 @@ public abstract class Entity implements ICommandListener {
+@@ -1205,13 +1205,41 @@ public abstract class Entity implements ICommandListener {
          }
      }
  
@@ -17,6 +17,10 @@ index 0d3d55b..7a49cf8 100644
 -        this.motY += d1;
 -        this.motZ += d2;
 +    // SportBukkit start - velocity API
++    public double knockbackScale() {
++        return 1D - getBukkitEntity().getKnockbackReduction();
++    }
++
 +    public void applyKnockback(Entity attacker, Vec3D impulse, boolean client) {
 +        if(impulse != null) {
 +            applyKnockback(attacker, impulse.x, impulse.y, impulse.z, client);
@@ -24,7 +28,8 @@ index 0d3d55b..7a49cf8 100644
 +    }
 +
 +    public void applyKnockback(Entity attacker, double x, double y, double z, boolean client) {
-+        this.applyImpulse(x, y, z, client);
++        final double d = knockbackScale();
++        applyImpulse(d * x, d * y, d * z, client);
 +    }
 +
 +    public void applyImpulse(double x, double y, double z, boolean client) {
@@ -63,9 +68,22 @@ index 83a42a0..eceb2cf 100644
                      }
  
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index d6df82f..3321f84 100644
+index d6df82f..f74f5e1 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -1017,10 +1017,10 @@ public abstract class EntityHuman extends EntityLiving {
+ 
+                     if (flag5) {
+                         if (i > 0) {
+-                            if (entity instanceof EntityLiving) {
++                            if (entity instanceof EntityLiving && !getBukkitEntity().getServer().getLegacyKnockback()) { // SportBukkit - top method halves previous velocity, and legacy code never called it
+                                 ((EntityLiving) entity).a(this, (float) i * 0.5F, (double) MathHelper.sin(this.yaw * 0.017453292F), (double) (-MathHelper.cos(this.yaw * 0.017453292F)));
+                             } else {
+-                                entity.g((double) (-MathHelper.sin(this.yaw * 0.017453292F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.yaw * 0.017453292F) * (float) i * 0.5F));
++                                entity.applyKnockback(this, (double) (-MathHelper.sin(this.yaw * 0.017453292F) * (float) i * 0.5F), 0.1D, (double) (MathHelper.cos(this.yaw * 0.017453292F) * (float) i * 0.5F), false); // SportBukkit - use knockback method
+                             }
+ 
+                             this.motX *= 0.6D;
 @@ -1050,6 +1050,8 @@ public abstract class EntityHuman extends EntityLiving {
  
                          if (entity instanceof EntityPlayer && entity.velocityChanged) {
@@ -90,7 +108,7 @@ index d6df82f..3321f84 100644
                          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 6b21151..219f6a2 100644
+index 6b21151..0285259 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -901,7 +901,7 @@ public abstract class EntityLiving extends Entity {
@@ -102,13 +120,24 @@ index 6b21151..219f6a2 100644
                      } else {
                          this.az = (float) ((int) (Math.random() * 2.0D) * 180);
                      }
-@@ -1018,21 +1018,26 @@ public abstract class EntityLiving extends Entity {
+@@ -1016,25 +1016,29 @@ public abstract class EntityLiving extends Entity {
  
-     public void a(Entity entity, float f, double d0, double d1) {
-         if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
+     protected void dropEquipment(boolean flag, int i) {}
+ 
+-    public void a(Entity entity, float f, double d0, double d1) {
+-        if (this.random.nextDouble() >= this.getAttributeInstance(GenericAttributes.c).getValue()) {
 -            this.impulse = true;
 -            float f1 = MathHelper.sqrt(d0 * d0 + d1 * d1);
--
++    // SportBukkit - velocity API
++    @Override
++    public double knockbackScale() {
++        if(random.nextDouble() >= getAttributeMap().a("generic.knockbackResistance").getValue()) {
++            return super.knockbackScale();
++        } else {
++            return 0;
++        }
++    }
+ 
 -            this.motX /= 2.0D;
 -            this.motZ /= 2.0D;
 -            this.motX -= d0 / (double) f1 * (double) f;
@@ -120,31 +149,24 @@ index 6b21151..219f6a2 100644
 -                    this.motY = 0.4000000059604645D;
 -                }
 -            }
--
-+            // SportBukkit start
-+            final double scale = 1 - getBukkitEntity().getKnockbackReduction();
-+            if(scale == 0) return;
-+
-+            final boolean vertical = onGround || getBukkitEntity().getServer().getVerticalKnockbackOffGround();
-+            final double len = MathHelper.sqrt(d0 * d0 + d1 * d1);
-+
-+            final double
-+                dx = -motX / 2 - d0 * f / len,
-+                dy = Math.min(0.4, motY / 2 + f) - motY,
-+                dz = -motZ / 2 - d1 * f / len;
-+
-+            applyKnockback(
-+                entity,
-+                scale * dx,
-+                (vertical ? scale * dy : 0),
-+                scale * dz,
-+                false
-+            );
-+            // SportBukkit end
-         }
-     }
++    public void a(Entity entity, float magnitude, double fromX, double fromZ) {
++        final boolean vertical = onGround || getBukkitEntity().getServer().getLegacyKnockback();
++        final double len = MathHelper.sqrt(fromX * fromX + fromZ * fromZ);
  
-@@ -2084,9 +2089,13 @@ public abstract class EntityLiving extends Entity {
+-        }
++        applyKnockback(
++            entity,
++            -motX / 2 - fromX * magnitude / len,
++            (vertical ? Math.min(0.4, motY / 2 + magnitude) - motY : 0),
++            -motZ / 2 - fromZ * magnitude / len,
++            false
++        );
+     }
++    // SportBukkit end
+ 
+     protected SoundEffect bR() {
+         return SoundEffects.bG;
+@@ -2084,9 +2088,13 @@ public abstract class EntityLiving extends Entity {
          return !this.dead && this.collides; // CraftBukkit
      }
  
@@ -159,7 +181,7 @@ index 6b21151..219f6a2 100644
      public float getHeadRotation() {
          return this.aO;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index bbde68a..0a30eea 100644
+index bbde68a..e927298 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,14 @@ import com.google.common.collect.Lists;
@@ -189,21 +211,11 @@ index bbde68a..0a30eea 100644
  // CraftBukkit end
  
  public class EntityPlayer extends EntityHuman implements ICrafting {
-@@ -71,6 +78,162 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -71,6 +78,153 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public String hostname;
      // CraftBukkit end
  
 +    // SportBukkit start - velocity events/prediction
-+    private static class ClientImpulse {
-+        final long timestamp;
-+        final Vector velocity;
-+
-+        private ClientImpulse(long timestamp, Vector velocity) {
-+            this.timestamp = timestamp;
-+            this.velocity = velocity;
-+        }
-+    }
-+
 +    private Vector unsentImpulse = new Vector();
 +    private final Map<Integer, Vector> sentImpulses = new HashMap<Integer, Vector>();
 +    private boolean velocityUnacked;
@@ -213,9 +225,10 @@ index bbde68a..0a30eea 100644
 +
 +    @Override
 +    public void applyKnockback(Entity attacker, double x, double y, double z, boolean client) {
-+        final PlayerKnockbackEvent event = new PlayerKnockbackEvent(getBukkitEntity(), attacker.getBukkitEntity(), new Vector(x, y, z), true);
++        final double d = knockbackScale();
++        final PlayerKnockbackEvent event = new PlayerKnockbackEvent(getBukkitEntity(), attacker.getBukkitEntity(), new Vector(d * x, d * y, d * z), true);
 +        getBukkitEntity().getServer().getPluginManager().callEvent(event);
-+        if(event.isCancelled()) return;
++        if(event.isCancelled() || event.getVelocity().isZero()) return;
 +
 +        applyImpulseNoEvent(event.getVelocity(), client);
 +    }
@@ -224,7 +237,7 @@ index bbde68a..0a30eea 100644
 +    public void applyImpulse(double x, double y, double z, boolean client) {
 +        final PlayerVelocityEvent event = new PlayerVelocityEvent(getBukkitEntity(), new Vector(x, y, z), true);
 +        getBukkitEntity().getServer().getPluginManager().callEvent(event);
-+        if(event.isCancelled()) return;
++        if(event.isCancelled() || event.getVelocity().isZero()) return;
 +
 +        applyImpulseNoEvent(event.getVelocity(), client);
 +    }
@@ -504,15 +517,15 @@ index 6fa82ee..ec88465 100644
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 04ced31..e265af3 100644
+index 04ced31..e8c7dd3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -624,6 +624,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override
-+    public boolean getVerticalKnockbackOffGround() {
-+        return this.configuration.getBoolean("settings.vertical-knockback-off-ground", false);
++    public boolean getLegacyKnockback() {
++        return this.configuration.getBoolean("settings.legacy-knockback", false);
 +    }
 +
 +    @Override

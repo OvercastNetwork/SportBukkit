@@ -1,4 +1,4 @@
-From 5df6674ca95d84923b7a41a039bf3125cf3d76ca Mon Sep 17 00:00:00 2001
+From 91ec8a542577d89146a9695533770f5154d4d613 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Math tools
@@ -317,7 +317,7 @@ index 0000000..4bb4209
 +}
 diff --git a/src/main/java/org/bukkit/util/ImmutableVector.java b/src/main/java/org/bukkit/util/ImmutableVector.java
 new file mode 100644
-index 0000000..aaaad24
+index 0000000..5939cff
 --- /dev/null
 +++ b/src/main/java/org/bukkit/util/ImmutableVector.java
 @@ -0,0 +1,172 @@
@@ -454,9 +454,9 @@ index 0000000..aaaad24
 +
 +    @Override
 +    public ImmutableVector getMidpoint(Vector v) {
-+        return of(x + v.getX() / 2,
-+                  y + v.getY() / 2,
-+                  z + v.getZ() / 2);
++        return of((x + v.getX()) / 2,
++                  (y + v.getY()) / 2,
++                  (z + v.getZ()) / 2);
 +    }
 +
 +    private UnsupportedOperationException ex() {

@@ -1,4 +1,4 @@
-From 69ba06c5a4f41ecb06fde5d3bd820b5d92e0101d Mon Sep 17 00:00:00 2001
+From 1530ea9a552117be99a7dd359447d90cc4d8bc72 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 31 Mar 2016 09:08:25 -0400
 Subject: [PATCH] Silence unnecessary exception setting scoreboard of
@@ -6,7 +6,7 @@ Subject: [PATCH] Silence unnecessary exception setting scoreboard of
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index da522b4..4914adf 100644
+index 4a69b3e..8669aea 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1623,7 +1623,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

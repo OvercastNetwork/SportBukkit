@@ -1,14 +1,14 @@
-From 512ef8e38f1d20599f560702da19cf9fdd2f4c2c Mon Sep 17 00:00:00 2001
+From 36429bc59824166f1e4f54a4bb4836d736da0a9e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:13:07 -0400
 Subject: [PATCH] Attack cooldown info API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 77f69df..f506604 100644
+index b02cc27..7ecc216 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -964,7 +964,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -966,7 +966,7 @@ public abstract class EntityHuman extends EntityLiving {
  
                  f *= 0.2F + f2 * f2 * 0.8F;
                  f1 *= f2;
@@ -18,7 +18,7 @@ index 77f69df..f506604 100644
                      boolean flag = f2 > 0.9F;
                      boolean flag1 = false;
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 676938f..5cc96ba 100644
+index 4faee76..19d16ed 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -57,7 +57,7 @@ public abstract class EntityLiving extends Entity {
@@ -31,7 +31,7 @@ index 676938f..5cc96ba 100644
      public float aF;
      public float aG;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index 5ecce4b..40a1826 100644
+index 5ecce4b..fcd6e8d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 @@ -481,4 +481,15 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
@@ -41,7 +41,7 @@ index 5ecce4b..40a1826 100644
 +
 +    @Override
 +    public int getAttackCooldownTicks() {
-+        return getHandle().ticksSinceLastAttack();
++        return Math.max(getHandle().ticksSinceLastAttack(), getHandle().clientTicksSinceLastAttack);
 +    }
 +
 +    @Override

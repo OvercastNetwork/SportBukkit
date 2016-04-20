@@ -1,4 +1,4 @@
-From 1ad2e4898e65b0399235ce50aeab22e42593ff2c Mon Sep 17 00:00:00 2001
+From d21c9de5f7499db604359850ba4d3a641d5d6457 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 21:57:42 -0400
 Subject: [PATCH] Archery attributes
@@ -37,7 +37,7 @@ index 6f95c23..42f23d9 100644
  
      public void shoot(double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 5cc96ba..bc001e9 100644
+index 19d16ed..81c04c9 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -35,6 +35,11 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;

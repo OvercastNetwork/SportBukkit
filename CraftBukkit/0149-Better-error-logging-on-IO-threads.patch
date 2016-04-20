@@ -1,4 +1,4 @@
-From bd88c58055ab9de35c0aa36d4cf30517d2aab03c Mon Sep 17 00:00:00 2001
+From 9e7d728aa51d03ba600c8fd12528d00fb9d7ee10 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 5 Apr 2016 10:38:52 -0400
 Subject: [PATCH] Better error logging on IO threads

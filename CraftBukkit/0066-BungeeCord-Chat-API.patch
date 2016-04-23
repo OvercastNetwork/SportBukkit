@@ -1,4 +1,4 @@
-From e52768fd61be1cad99ddb7dabab0971e9317d52b Mon Sep 17 00:00:00 2001
+From 430e2038be3d8b5eae4644f3dcea5472d0112a8b Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 13:06:05 +1100
 Subject: [PATCH] BungeeCord Chat API
@@ -55,7 +55,7 @@ index c5147b6..c0e1199 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index ec58778..dcf684a 100644
+index 0b14ae1..2c0be02 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -126,6 +126,7 @@ import io.netty.buffer.ByteBufOutputStream;
@@ -66,7 +66,7 @@ index ec58778..dcf684a 100644
  
  public final class CraftServer implements Server {
      private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
-@@ -1724,4 +1725,18 @@ public final class CraftServer implements Server {
+@@ -1733,4 +1734,18 @@ public final class CraftServer implements Server {
      public UnsafeValues getUnsafe() {
          return CraftMagicNumbers.INSTANCE;
      }

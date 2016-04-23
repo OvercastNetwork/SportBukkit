@@ -1,4 +1,4 @@
-From 2fc85712aba6e30bda309890cf3ca2a82c5a357e Mon Sep 17 00:00:00 2001
+From 086d0f24a31deccbb44febcf9767228fe9b2ebe9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
@@ -517,10 +517,10 @@ index 6fa82ee..ec88465 100644
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 04ced31..e8c7dd3 100644
+index 2aeda0f..4aac041 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -624,6 +624,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -633,6 +633,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override

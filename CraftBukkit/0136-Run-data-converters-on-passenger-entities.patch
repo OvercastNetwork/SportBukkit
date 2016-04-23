@@ -1,14 +1,14 @@
-From 18bb6a374e1ca2dbdfe4a5ecac2fdbf6b58e67df Mon Sep 17 00:00:00 2001
+From 87e3194b2530c74c85b0bb9d15fb53797bb61536 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Mar 2016 19:53:00 -0400
 Subject: [PATCH] Run data converters on passenger entities
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3d14d4a..db0e9bd 100644
+index 7b4b49d..777b039 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -135,6 +135,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -138,6 +138,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          this.b = this.i();
          // this.convertable = new WorldLoaderServer(file); // CraftBukkit - moved to DedicatedServer.init
          this.dataConverterManager = dataconvertermanager;

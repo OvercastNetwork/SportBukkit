@@ -1,4 +1,4 @@
-From df636b72fde64e1526ad74eec345f40f02c219db Mon Sep 17 00:00:00 2001
+From cde0654ebdc8e10e649964987a5ecbf34398ed04 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
@@ -232,10 +232,10 @@ index 113692f..26bc539 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f8c702f..ec58778 100644
+index b04c214..0b14ae1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -393,7 +393,7 @@ public final class CraftServer implements Server {
+@@ -402,7 +402,7 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -244,7 +244,7 @@ index f8c702f..ec58778 100644
          Validate.notNull(name, "Name cannot be null");
  
          Player found = getPlayerExact(name);
-@@ -405,8 +405,8 @@ public final class CraftServer implements Server {
+@@ -414,8 +414,8 @@ public final class CraftServer implements Server {
          String lowerName = name.toLowerCase();
          int delta = Integer.MAX_VALUE;
          for (Player player : getOnlinePlayers()) {
@@ -255,7 +255,7 @@ index f8c702f..ec58778 100644
                  if (curDelta < delta) {
                      found = player;
                      delta = curDelta;
-@@ -419,11 +419,18 @@ public final class CraftServer implements Server {
+@@ -428,11 +428,18 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -277,7 +277,7 @@ index f8c702f..ec58778 100644
      }
  
      @Override
-@@ -448,13 +455,13 @@ public final class CraftServer implements Server {
+@@ -457,13 +464,13 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -293,7 +293,7 @@ index f8c702f..ec58778 100644
  
              if (partialName.equalsIgnoreCase(iterPlayerName)) {
                  // Exact match
-@@ -472,6 +479,21 @@ public final class CraftServer implements Server {
+@@ -481,6 +488,21 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -315,7 +315,7 @@ index f8c702f..ec58778 100644
      public int getMaxPlayers() {
          return playerList.getMaxPlayers();
      }
-@@ -1601,8 +1623,8 @@ public final class CraftServer implements Server {
+@@ -1610,8 +1632,8 @@ public final class CraftServer implements Server {
          PlayerChatTabCompleteEvent event = new PlayerChatTabCompleteEvent(player, message, completions);
          String token = event.getLastToken();
          for (Player p : getOnlinePlayers()) {

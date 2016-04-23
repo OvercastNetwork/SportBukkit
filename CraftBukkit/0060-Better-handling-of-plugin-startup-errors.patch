@@ -1,36 +1,99 @@
-From 27711f183eb1519c32796b98ade6f4dc9ed4b810 Mon Sep 17 00:00:00 2001
+From 8c3d53b81b06f433154d046f748cfd313337c896 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 9 Dec 2014 02:08:38 -0500
 Subject: [PATCH] Better handling of plugin startup errors
 
 
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index 52ba6b8..2cab91d 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -354,7 +354,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+     }
+ 
+     protected void B() {
+-        System.exit(0);
++        System.exit(abnormalTermination ? 1 : 0);
+     }
+ 
+     public void D() { // CraftBukkit - fix decompile error
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index ffd02fb..751dda3 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -119,6 +119,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+     private static final int SAMPLE_INTERVAL = 100;
+     public final double[] recentTps = new double[ 3 ];
+     // Spigot end
++    // SportBukkit start
++    protected boolean abnormalTermination;
++    // Sportbukkit end
+ 
+     public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
+         this.e = proxy;
+@@ -558,8 +561,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+             } else {
+                 // CraftBukkit - if init fails, stop the server
+                 // this.a((CrashReport) null);
++                this.abnormalTermination = true; // SportBukkit
+             }
+         } catch (Throwable throwable) {
++            this.abnormalTermination = true; // SportBukkit
+             MinecraftServer.LOGGER.error("Encountered an unexpected exception", throwable);
+             CrashReport crashreport = null;
+ 
+@@ -891,6 +896,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+             // CraftBukkit end
+         } catch (Exception exception) {
+             MinecraftServer.LOGGER.fatal("Failed to start the minecraft server", exception);
++            System.exit(1); // Sportbukkit
+         }
+ 
+     }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index df48d11..60617be 100644
+index 82f0c4b..726d5ec 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -299,8 +299,9 @@ public final class CraftServer implements Server {
+@@ -287,6 +287,12 @@ public final class CraftServer implements Server {
+         }
+     }
+ 
++    private void pluginFailedToLoad(Plugin plugin) {
++        if(getRequireAllPlugins()) {
++            throw new RuntimeException("Required plugin " + plugin.getDescription().getFullName() + " failed to load (server will shutdown)");
++        }
++    }
++
+     public void loadPlugins() {
+         pluginManager.registerInterface(JavaPluginLoader.class);
+ 
+@@ -299,8 +305,9 @@ public final class CraftServer implements Server {
                      String message = String.format("Loading %s", plugin.getDescription().getFullName());
                      plugin.getLogger().info(message);
                      plugin.onLoad();
 -                } catch (Throwable ex) {
 +                } catch (RuntimeException ex) {
                      Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " initializing " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
-+                    if(this.getRequireAllPlugins()) throw ex;
++                    pluginFailedToLoad(plugin);
                  }
              }
          } else {
-@@ -357,8 +358,9 @@ public final class CraftServer implements Server {
+@@ -357,9 +364,13 @@ public final class CraftServer implements Server {
                      getLogger().log(Level.WARNING, "Plugin " + plugin.getDescription().getFullName() + " tried to register permission '" + perm.getName() + "' but it's already registered", ex);
                  }
              }
 -        } catch (Throwable ex) {
 +        } catch (RuntimeException ex) {
              Logger.getLogger(CraftServer.class.getName()).log(Level.SEVERE, ex.getMessage() + " loading " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
-+            if(this.getRequireAllPlugins()) throw ex;
          }
++
++        if(!plugin.isEnabled()) {
++            pluginFailedToLoad(plugin);
++        }
      }
  
-@@ -529,6 +531,10 @@ public final class CraftServer implements Server {
+     @Override
+@@ -529,6 +540,10 @@ public final class CraftServer implements Server {
          return this.configuration.getBoolean("settings.query-plugins");
      }
  
@@ -41,6 +104,18 @@ index df48d11..60617be 100644
      @Override
      public boolean hasWhitelist() {
          return this.getConfigBoolean("white-list", false);
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 4e642b7..93be236 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -169,6 +169,7 @@ public class Main {
+                 MinecraftServer.main(options);
+             } catch (Throwable t) {
+                 t.printStackTrace();
++                System.exit(1); // SportBukkit
+             }
+         }
+     }
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
 index 51831e9..76a0b79 100644
 --- a/src/main/resources/configurations/bukkit.yml

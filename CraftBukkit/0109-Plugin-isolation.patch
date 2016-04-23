@@ -1,14 +1,14 @@
-From f52a7e1c4349ef39e9af131571f912ed6514afcc Mon Sep 17 00:00:00 2001
+From 5d2e1d2fb3f3d0ab7de18c5dbc4720cc877faccc Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 8 Sep 2015 15:49:30 -0400
 Subject: [PATCH] Plugin isolation
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 110a634..1687dae 100644
+index 4097e19..672112b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -622,6 +622,11 @@ public final class CraftServer implements Server {
+@@ -631,6 +631,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

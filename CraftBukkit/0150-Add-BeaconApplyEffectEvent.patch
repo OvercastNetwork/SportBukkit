@@ -1,0 +1,75 @@
+From 81c5d7b5cb87c11784f8a9f7b56feb2360df3d69 Mon Sep 17 00:00:00 2001
+From: Electroid <electroidfilms@gmail.com>
+Date: Sat, 23 Apr 2016 19:22:12 -0700
+Subject: [PATCH] Add BeaconApplyEffectEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/TileEntityBeacon.java b/src/main/java/net/minecraft/server/TileEntityBeacon.java
+index ed5b374..dcd1b5a 100644
+--- a/src/main/java/net/minecraft/server/TileEntityBeacon.java
++++ b/src/main/java/net/minecraft/server/TileEntityBeacon.java
+@@ -11,6 +11,11 @@ import java.util.Set;
+ // CraftBukkit start
+ import org.bukkit.craftbukkit.entity.CraftHumanEntity;
+ import org.bukkit.entity.HumanEntity;
++import org.bukkit.Bukkit;
++import org.bukkit.craftbukkit.potion.CraftPotionUtils;
++import org.bukkit.event.block.BeaconApplyEffectEvent;
++import org.bukkit.potion.PotionEffect;
++import com.google.common.base.Function;
+ // CraftBukkit end
+ 
+ public class TileEntityBeacon extends TileEntityContainer implements ITickable, IWorldInventory {
+@@ -80,28 +85,36 @@ public class TileEntityBeacon extends TileEntityContainer implements ITickable,
+             int k = this.position.getY();
+             int l = this.position.getZ();
+             AxisAlignedBB axisalignedbb = (new AxisAlignedBB((double) j, (double) k, (double) l, (double) (j + 1), (double) (k + 1), (double) (l + 1))).g(d0).a(0.0D, (double) this.world.getHeight(), 0.0D);
+-            List list = this.world.a(EntityHuman.class, axisalignedbb);
+-            Iterator iterator = list.iterator();
+ 
+-            EntityHuman entityhuman;
+-
+-            while (iterator.hasNext()) {
+-                entityhuman = (EntityHuman) iterator.next();
+-                entityhuman.addEffect(new MobEffect(this.l, i, b0, true, true));
++            // SportBukkit - start
++            List<EntityHuman> entities = this.world.a(EntityHuman.class, axisalignedbb);
++            List<MobEffect> effects = Lists.newArrayList(new MobEffect(this.l, i, b0, true, true));
++            if(this.k >= 4 && this.l != this.m && this.m != null) {
++                effects.add(new MobEffect(this.m, i, 0, true, true));
+             }
+ 
+-            if (this.k >= 4 && this.l != this.m && this.m != null) {
+-                iterator = list.iterator();
+-
+-                while (iterator.hasNext()) {
+-                    entityhuman = (EntityHuman) iterator.next();
+-                    entityhuman.addEffect(new MobEffect(this.m, i, 0, true, true));
++            // Process the event and apply the potion effects to the entities, if allowed
++            BeaconApplyEffectEvent event = event(entities, effects);
++            if(!(event.isCancelled() || event.entities().isEmpty() || event.potions().isEmpty())) {
++                for(HumanEntity human : event.entities()) {
++                    human.addPotionEffects(event.potions());
+                 }
+             }
++            // SportBukkit - end
+         }
+ 
+     }
+ 
++    private BeaconApplyEffectEvent event(List<EntityHuman> entities, List<MobEffect> potions) {
++        BeaconApplyEffectEvent event = new BeaconApplyEffectEvent(
++                getLocation().getBlock(),
++                Lists.transform(entities, new Function<EntityHuman, HumanEntity>() { public HumanEntity apply(EntityHuman nms) { return nms.getBukkitEntity(); } }),
++                Lists.transform(potions, new Function<MobEffect, PotionEffect>() { public PotionEffect apply(MobEffect nms) { return CraftPotionUtils.toBukkit(nms); } })
++        );
++        Bukkit.getPluginManager().callEvent(event);
++        return event;
++    }
++
+     private void F() {
+         int i = this.k;
+         int j = this.position.getX();
+-- 
+2.3.8 (Apple Git-58)
+

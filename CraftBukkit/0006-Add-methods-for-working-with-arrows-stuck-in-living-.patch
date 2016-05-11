@@ -1,19 +1,19 @@
-From 139843224663396e2d194466b3eae7883e68ef7b Mon Sep 17 00:00:00 2001
+From 1e3b51ed54a1a5cd680e0688d489530e9d04f425 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 1a0b927..8544eb8 100644
+index 3348ace..2252212 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1265,10 +1265,12 @@ public abstract class EntityLiving extends Entity {
+@@ -1270,10 +1270,12 @@ public abstract class EntityLiving extends Entity {
          return (float) this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
      }
  
-+    public int getArrowsStuck() { return bX(); } // SportBukkit - alias for next method
-     public final int bX() {
++    public int getArrowsStuck() { return bY(); } // SportBukkit - alias for next method
+     public final int bY() {
          return ((Integer) this.datawatcher.get(EntityLiving.h)).intValue();
      }
  
@@ -22,7 +22,7 @@ index 1a0b927..8544eb8 100644
          this.datawatcher.set(EntityLiving.h, Integer.valueOf(i));
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 8aa8686..6ef55bd 100644
+index e662e4a..aad4ce6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -550,4 +550,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {

@@ -1,14 +1,14 @@
-From 8194e8a42bfd3e827e564b9c507acf0b7f31cec0 Mon Sep 17 00:00:00 2001
+From 316efd088c72509442facca2b5889484dcfc6e5e Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 9 Jul 2013 17:06:59 -0500
 Subject: [PATCH] Fix invalid positions kicking players
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 159e081..8e6219f 100644
+index 02e9336..5c36475 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -583,6 +583,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -582,6 +582,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                          double delta = Math.pow(this.lastPosX - to.getX(), 2) + Math.pow(this.lastPosY - to.getY(), 2) + Math.pow(this.lastPosZ - to.getZ(), 2);
                          float deltaAngle = Math.abs(this.lastYaw - to.getYaw()) + Math.abs(this.lastPitch - to.getPitch());
  
@@ -21,7 +21,7 @@ index 159e081..8e6219f 100644
                          if ((delta > 1f / 256 || deltaAngle > 10f) && !this.player.dead) {
                              this.lastPosX = to.getX();
                              this.lastPosY = to.getY();
-@@ -703,6 +709,19 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -702,6 +708,19 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
          if (Float.isNaN(f1)) {
              f1 = 0;
          }

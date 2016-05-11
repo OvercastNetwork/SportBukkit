@@ -1,34 +1,24 @@
-From 3af588251faf80f417837c167223b38f36fcc1af Mon Sep 17 00:00:00 2001
+From 8af9764fe7aebbcbc77d802d08b231478821f941 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 678a7be..7e630a7 100644
+index d534789..e416e46 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -115,11 +115,13 @@ public abstract class Entity implements ICommandListener {
+@@ -115,7 +115,7 @@ public abstract class Entity implements ICommandListener {
      protected boolean justCreated;
      protected boolean fireProof;
      protected DataWatcher datawatcher;
--    private static final DataWatcherObject<Byte> ax = DataWatcher.a(Entity.class, DataWatcherRegistry.a);
--    private static final DataWatcherObject<Integer> ay = DataWatcher.a(Entity.class, DataWatcherRegistry.b);
--    private static final DataWatcherObject<String> az = DataWatcher.a(Entity.class, DataWatcherRegistry.d);
--    private static final DataWatcherObject<Boolean> aA = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
--    private static final DataWatcherObject<Boolean> aB = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
-+    // SportBukkit start - make metadata keys public
-+    public static final DataWatcherObject<Byte> ax = DataWatcher.a(Entity.class, DataWatcherRegistry.a);
-+    public static final DataWatcherObject<Integer> ay = DataWatcher.a(Entity.class, DataWatcherRegistry.b);
-+    public static final DataWatcherObject<String> az = DataWatcher.a(Entity.class, DataWatcherRegistry.d);
-+    public static final DataWatcherObject<Boolean> aA = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
-+    public static final DataWatcherObject<Boolean> aB = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
-+    // SportBukkit end
-     public boolean aa;
-     public int ab;
-     public int ac;
+-    private static final DataWatcherObject<Byte> ay = DataWatcher.a(Entity.class, DataWatcherRegistry.a);
++    private static final DataWatcherObject<Byte> ay = DataWatcher.a(Entity.class, DataWatcherRegistry.a); public static final DataWatcherObject<Byte> FLAGS = ay; // SportBukkit - add public alias
+     private static final DataWatcherObject<Integer> az = DataWatcher.a(Entity.class, DataWatcherRegistry.b);
+     private static final DataWatcherObject<String> aA = DataWatcher.a(Entity.class, DataWatcherRegistry.d);
+     private static final DataWatcherObject<Boolean> aB = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
-index cd4ab44..bceb04c 100644
+index 54b7f71..9dd7df7 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
 @@ -5,8 +5,10 @@ import java.util.List;
@@ -45,10 +35,10 @@ index cd4ab44..bceb04c 100644
      public PacketPlayOutEntityMetadata() {}
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index ad03ddf..d3f7bad 100644
+index ef1fe42..be81e4b 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1158,6 +1158,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1157,6 +1157,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                  }
              }
  
@@ -60,7 +50,7 @@ index ad03ddf..d3f7bad 100644
 +                if(entity instanceof EntityLiving && !(entity instanceof EntityArmorStand)) { // Don't show non-living ents or armor stands
 +                    for(int i = 0; i < metadataPacket.b.size(); i++) {
 +                        DataWatcher.Item flagsItem = (DataWatcher.Item) metadataPacket.b.get(i);
-+                        if(flagsItem.a() == Entity.ax && flagsItem.b() instanceof Byte) { // Flags at metadata index 0
++                        if(Entity.FLAGS.equals(flagsItem.a()) && flagsItem.b() instanceof Byte) { // Flags at metadata index 0
 +                            byte entityFlags = (Byte) flagsItem.b();
 +                            if((entityFlags & 0x20) != 0) { // Invisible flag
 +                                PacketPlayOutEntityMetadata replacedMetadataPacket = new PacketPlayOutEntityMetadata();
@@ -81,7 +71,7 @@ index ad03ddf..d3f7bad 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b9db866..dd3cb38 100644
+index 119a473..3d9ae08 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -85,6 +85,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -92,7 +82,7 @@ index b9db866..dd3cb38 100644
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -1213,6 +1214,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1216,6 +1217,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

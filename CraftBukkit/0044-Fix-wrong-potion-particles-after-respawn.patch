@@ -1,26 +1,26 @@
-From 41164f37fa85770d22c2b35d1b8986ed1e14d136 Mon Sep 17 00:00:00 2001
+From 15520776825d74515aad3c63a8948888d27c64f9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 22:38:54 -0400
 Subject: [PATCH] Fix wrong potion particles after respawn
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 8544eb8..12060c4 100644
+index 2252212..072cda5 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -597,6 +597,7 @@ public abstract class EntityLiving extends Entity {
+@@ -598,6 +598,7 @@ public abstract class EntityLiving extends Entity {
          return false;
      }
  
-+    public void clearPotionEffectMetadata() { this.bM(); } // SportBukkit - alias for following method
-     protected void bM() {
++    public void clearPotionEffectMetadata() { this.bN(); } // SportBukkit - alias for following method
+     protected void bN() {
          this.datawatcher.set(EntityLiving.g, Boolean.valueOf(false));
          this.datawatcher.set(EntityLiving.f, Integer.valueOf(0));
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 1e44a88..de26157 100644
+index 3e9b63a..33891c3 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -1279,6 +1279,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1277,6 +1277,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.deathTicks = 0;
          this.removeAllEffects();
          this.updateEffects = true;

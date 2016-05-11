@@ -1,0 +1,49 @@
+From fd6e476f42d8bb856f17740042bcac1ef0f9d8af Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 19 Apr 2016 20:30:55 -0400
+Subject: [PATCH] Use client ticks to make attack speed more accurate
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
+index bca5fc6..2d55eb8 100644
+--- a/src/main/java/net/minecraft/server/EntityHuman.java
++++ b/src/main/java/net/minecraft/server/EntityHuman.java
+@@ -67,6 +67,8 @@ public abstract class EntityHuman extends EntityLiving {
+     private final ItemCooldown bV = this.l();
+     public EntityFishingHook hookedFish;
+ 
++    public int clientTicksSinceLastAttack; // SportBukkit
++
+     // SportBukkit start - natural regen API
+     public boolean fastNaturalRegeneration = true;
+     public boolean slowNaturalRegeneration = true;
+@@ -1904,11 +1906,12 @@ public abstract class EntityHuman extends EntityLiving {
+     }
+ 
+     public float o(float f) {
+-        return MathHelper.a(((float) this.aE + f) / this.cZ(), 0.0F, 1.0F);
++        return MathHelper.a(((float) Math.max(this.aE, this.clientTicksSinceLastAttack) + f) / this.cZ(), 0.0F, 1.0F); // SportBukkit - check client and server ticks
+     }
+ 
+     public void da() {
+         this.aE = 0;
++        this.clientTicksSinceLastAttack = 0; // SportBukkit
+     }
+ 
+     public ItemCooldown db() {
+diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
+index 10f51c4..c5d34a6 100644
+--- a/src/main/java/net/minecraft/server/PlayerConnection.java
++++ b/src/main/java/net/minecraft/server/PlayerConnection.java
+@@ -494,6 +494,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                     this.d();
+                 }
+ 
++                this.player.clientTicksSinceLastAttack++; // SportBukkit
++
+                 // SportBukkit start - velocity prediction
+                 this.player.handleClientTick(
+                     packetplayinflying.hasPos ? new Vector(packetplayinflying.x,
+-- 
+1.9.0
+

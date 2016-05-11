@@ -1,14 +1,14 @@
-From 67b2e14ebe98cec78d7b50290f34f5d0a8f7b9fd Mon Sep 17 00:00:00 2001
+From b649453ea504cafc4adf7cc886d6dd4d656ae361 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Feb 2015 04:32:45 -0500
 Subject: [PATCH] Title API
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
-index 2286c9e..7e7e769 100644
+index 31a2b21..20ee8be 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
-@@ -10,6 +10,18 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
+@@ -11,6 +11,18 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
      private int d;
      private int e;
  
@@ -27,7 +27,7 @@ index 2286c9e..7e7e769 100644
      public PacketPlayOutTitle() {}
  
      public PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction packetplayouttitle_enumtitleaction, IChatBaseComponent ichatbasecomponent) {
-@@ -45,7 +57,13 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
+@@ -46,7 +58,13 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
      public void b(PacketDataSerializer packetdataserializer) throws IOException {
          packetdataserializer.a((Enum) this.a);
          if (this.a == PacketPlayOutTitle.EnumTitleAction.TITLE || this.a == PacketPlayOutTitle.EnumTitleAction.SUBTITLE) {
@@ -43,10 +43,10 @@ index 2286c9e..7e7e769 100644
  
          if (this.a == PacketPlayOutTitle.EnumTitleAction.TIMES) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d2a57b5..92fec72 100644
+index 6bd6913..2201ff5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1767,4 +1767,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1770,4 +1770,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.setPlayerListHeaderFooter(header == null ? null : new BaseComponent[]{ header },
                                         footer == null ? null : new BaseComponent[]{ footer });
      }

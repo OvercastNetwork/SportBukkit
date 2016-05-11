@@ -1,14 +1,14 @@
-From f4996cca7218e1386ba5abd208d85e3fbfaa2888 Mon Sep 17 00:00:00 2001
+From 53d8f51cb43fad42084e01d7e3b78af589633238 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Jan 2013 14:12:03 -0500
 Subject: [PATCH] Add PlayerOnGroundEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 72c9bbe..159e081 100644
+index c5184ea..02e9336 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -100,6 +100,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -99,6 +99,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      private int G;
      private boolean processedDisconnect; // CraftBukkit - Added
  
@@ -17,8 +17,8 @@ index 72c9bbe..159e081 100644
      public PlayerConnection(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
          this.minecraftServer = minecraftserver;
          this.networkManager = networkmanager;
-@@ -624,6 +626,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
-                         this.B &= !this.player.hasEffect(MobEffects.LEVITATION) && !this.player.cB() && !worldserver.d(this.player.getBoundingBox().g(0.0625D).a(0.0D, -0.55D, 0.0D));
+@@ -623,6 +625,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                         this.B &= !this.player.hasEffect(MobEffects.LEVITATION) && !this.player.cC() && !worldserver.d(this.player.getBoundingBox().g(0.0625D).a(0.0D, -0.55D, 0.0D));
                          this.player.onGround = packetplayinflying.a();
                          this.minecraftServer.getPlayerList().d(this.player);
 +                        // SportBukkit start

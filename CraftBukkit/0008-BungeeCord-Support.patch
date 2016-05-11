@@ -1,4 +1,4 @@
-From 26d3ac99d59219ad02a618e23442c868da39a3f4 Mon Sep 17 00:00:00 2001
+From df1c2412265e73406b8041008a42b8bcfbc11647 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,10 +7,10 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 459fc78..047549f 100644
+index da163af..009fe6b 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
-@@ -72,6 +72,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
+@@ -71,6 +71,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
                  this.b.close(chatcomponenttext);
              } else {
                  this.b.setPacketListener(new LoginListener(this.a, this.b));
@@ -76,10 +76,10 @@ index 4ecb603..78e5e4a 100644
  
      protected GameProfile a(GameProfile gameprofile) {
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index 5ed2c96..d76be47 100644
+index f740778..e073e49 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
-@@ -64,7 +64,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -65,7 +65,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
      private final Queue<NetworkManager.QueuedPacket> i = Queues.newConcurrentLinkedQueue();
      private final ReentrantReadWriteLock j = new ReentrantReadWriteLock();
      public Channel channel;

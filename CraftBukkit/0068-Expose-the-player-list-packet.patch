@@ -1,14 +1,14 @@
-From 6c448f11d22a0aa2bfbbb9bad09fc2d88ccbcad7 Mon Sep 17 00:00:00 2001
+From c9d7bd01bf6804099cedee97dab087d2d889db9a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 13 Feb 2015 02:34:42 -0500
 Subject: [PATCH] Expose the player list packet
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-index 77dfe6a..43e8f87 100644
+index 7cf9fe5..925870b 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-@@ -143,6 +143,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
+@@ -144,6 +144,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
  
                  packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.c().getId());
                  packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.b());
@@ -24,7 +24,7 @@ index 77dfe6a..43e8f87 100644
                  if (packetplayoutplayerinfo_playerinfodata.d() == null) {
                      packetdataserializer.writeBoolean(false);
                  } else {
-@@ -163,6 +172,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
+@@ -164,6 +173,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
  
              case 4:
                  packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
@@ -40,7 +40,7 @@ index 77dfe6a..43e8f87 100644
                  if (packetplayoutplayerinfo_playerinfodata.d() == null) {
                      packetdataserializer.writeBoolean(false);
                  } else {
-@@ -226,6 +244,8 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
+@@ -227,6 +245,8 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
  
      public class PlayerInfoData {
  

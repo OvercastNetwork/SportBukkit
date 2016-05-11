@@ -1,14 +1,14 @@
-From 8d2f66d07e19dde427d786d7fcba43e3dffaedfa Mon Sep 17 00:00:00 2001
+From f5cb96bf8e76968ca503a953b9cde71a6d823861 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 17 Apr 2014 19:56:31 -0500
 Subject: [PATCH] Make ticksFlown in EntityFireworks public
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
-index 7454fde..455a11c 100644
+index 354a6ba..859b18c 100644
 --- a/src/main/java/net/minecraft/server/EntityFireworks.java
 +++ b/src/main/java/net/minecraft/server/EntityFireworks.java
-@@ -5,7 +5,7 @@ import com.google.common.base.Optional;
+@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
  public class EntityFireworks extends Entity {
  
      public static final DataWatcherObject<Optional<ItemStack>> FIREWORK_ITEM = DataWatcher.a(EntityFireworks.class, DataWatcherRegistry.f);

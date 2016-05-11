@@ -1,4 +1,4 @@
-From bf81202d2864e76c5d23a280e016773573f697e5 Mon Sep 17 00:00:00 2001
+From 48fe25a753f0b6d0f0fead2bcb9fe01869baef1b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -18,10 +18,10 @@ index 737035b..63fec2a 100644
 -    }
  }
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index ebec984..0a43b53 100644
+index f401d91..20d7af2 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
-@@ -33,7 +33,7 @@ public class Item {
+@@ -34,7 +34,7 @@ public class Item {
      private String name;
  
      public static int getId(Item item) {
@@ -52,6 +52,19 @@ index e5f457b..61a5592 100644
 -        return this.c((GameProfile) object);
 -    }
  }
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+index a79fa01..ccf806e 100644
+--- a/src/main/java/net/minecraft/server/PacketEncoder.java
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -42,7 +42,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
+         }
+     }
+ 
+-    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws Exception {
++    protected void encode(ChannelHandlerContext channelhandlercontext, Packet<?> object, ByteBuf bytebuf) throws Exception {
+         this.a(channelhandlercontext, (Packet) object, bytebuf);
+     }
+ }
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 index 2b23a5d..35f6c5c 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
@@ -75,10 +88,10 @@ index 2b23a5d..35f6c5c 100644
          packetdataserializer.a((Enum) this.action);
          if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 8e5c5b0..723fcfe 100644
+index 969241a..3db505a 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -729,7 +729,7 @@ public abstract class PlayerList {
+@@ -730,7 +730,7 @@ public abstract class PlayerList {
  
      public void f(EntityPlayer entityplayer) {
          GameProfile gameprofile = entityplayer.getProfile();
@@ -88,10 +101,10 @@ index 8e5c5b0..723fcfe 100644
          i = this.server.R() && this.server.worldServer[0].getWorldData().u() ? 4 : i;
          i = this.t ? 4 : i;
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index 37ad4cc..c62d3af 100644
+index fb04a3c..09be98e 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -59,8 +59,8 @@ public class ServerConnection {
+@@ -58,8 +58,8 @@ public class ServerConnection {
      };
      private final MinecraftServer f;
      public volatile boolean d;
@@ -102,7 +115,7 @@ index 37ad4cc..c62d3af 100644
  
      public ServerConnection(MinecraftServer minecraftserver) {
          this.f = minecraftserver;
-@@ -152,7 +152,7 @@ public class ServerConnection {
+@@ -151,7 +151,7 @@ public class ServerConnection {
                              ServerConnection.e.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
                              final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
  

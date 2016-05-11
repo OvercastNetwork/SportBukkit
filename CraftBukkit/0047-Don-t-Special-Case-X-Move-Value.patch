@@ -1,14 +1,14 @@
-From 27e7bfb28e6980542f5b59cbf6214013a8dc4faa Mon Sep 17 00:00:00 2001
+From 57d1b86ac12d693dc7eeba69b1666d0788b44922 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Sun, 6 Oct 2013 17:36:28 +1100
 Subject: [PATCH] Don't Special Case X Move Value
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 8e6219f..7711448 100644
+index 5c36475..c3a4ac0 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -128,6 +128,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -127,6 +127,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      private float lastPitch = Float.MAX_VALUE;
      private float lastYaw = Float.MAX_VALUE;
      private boolean justTeleported = false;
@@ -16,7 +16,7 @@ index 8e6219f..7711448 100644
  
      public CraftPlayer getPlayer() {
          return (this.player == null) ? null : (CraftPlayer) this.player.getBukkitEntity();
-@@ -355,6 +356,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -354,6 +355,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
                  // CraftBukkit start - fire PlayerMoveEvent
                  Player player = this.getPlayer();
@@ -35,7 +35,7 @@ index 8e6219f..7711448 100644
                  Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
                  Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
  
-@@ -380,7 +393,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -379,7 +392,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                      this.lastPitch = to.getPitch();
  
                      // Skip the first time we do this

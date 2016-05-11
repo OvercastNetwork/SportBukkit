@@ -1,14 +1,14 @@
-From 430e2038be3d8b5eae4644f3dcea5472d0112a8b Mon Sep 17 00:00:00 2001
+From 6197d898243052749bc9132058d4f41b2a876a6d Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 13:06:05 +1100
 Subject: [PATCH] BungeeCord Chat API
 
 
 diff --git a/src/main/java/net/minecraft/server/ChatModifier.java b/src/main/java/net/minecraft/server/ChatModifier.java
-index 21f7e6b..51acabf 100644
+index 8cf8313..623ecdd 100644
 --- a/src/main/java/net/minecraft/server/ChatModifier.java
 +++ b/src/main/java/net/minecraft/server/ChatModifier.java
-@@ -110,6 +110,18 @@ public class ChatModifier {
+@@ -115,6 +115,18 @@ public class ChatModifier {
  
      public ChatModifier() {}
  
@@ -24,9 +24,9 @@ index 21f7e6b..51acabf 100644
 +    public String getInsertionRaw() { return this.j; }
 +    // SportBukkit end
 +
+     @Nullable
      public EnumChatFormat getColor() {
          return this.b == null ? this.o().getColor() : this.b;
-     }
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutChat.java b/src/main/java/net/minecraft/server/PacketPlayOutChat.java
 index c5147b6..c0e1199 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutChat.java
@@ -86,7 +86,7 @@ index 0b14ae1..2c0be02 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 01213f2..c3839e4 100644
+index 688219c..52af9a1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -20,6 +20,7 @@ import java.util.Set;
@@ -97,7 +97,7 @@ index 01213f2..c3839e4 100644
  
  import java.util.WeakHashMap;
  import java.util.Arrays;
-@@ -1716,4 +1717,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1719,4 +1720,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setLocale(String locale) {
          getHandle().locale = locale;
      }

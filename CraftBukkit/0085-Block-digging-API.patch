@@ -1,14 +1,14 @@
-From 92021ef53244646023c618acaa0412955fbc1337 Mon Sep 17 00:00:00 2001
+From c98e09a8d5f125a2813d6bc91cd315d70ca35b92 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 May 2015 14:30:20 -0400
 Subject: [PATCH] Block digging API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 99a93fa..d76f274 100644
+index 9d420e3..219d964 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-@@ -13,9 +13,9 @@ public class PlayerInteractManager {
+@@ -14,9 +14,9 @@ public class PlayerInteractManager {
      public World world;
      public EntityPlayer player;
      private WorldSettings.EnumGamemode gamemode;
@@ -20,7 +20,7 @@ index 99a93fa..d76f274 100644
      private int currentTick;
      private boolean h;
      private BlockPosition i;
-@@ -241,6 +241,7 @@ public class PlayerInteractManager {
+@@ -242,6 +242,7 @@ public class PlayerInteractManager {
      public void e() {
          this.d = false;
          this.world.c(this.player.getId(), this.f, -1);
@@ -29,10 +29,10 @@ index 99a93fa..d76f274 100644
  
      private boolean c(BlockPosition blockposition) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 95a79b5..6ba95f3 100644
+index b2c9d3b..bfb8cc0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1855,4 +1855,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1858,4 +1858,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                                                               java.util.EnumSet.allOf(PacketPlayOutPosition.EnumPlayerTeleportFlags.class),
                                                               cause);
      }
@@ -49,7 +49,7 @@ index 95a79b5..6ba95f3 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 26b65b9..531bd9e 100644
+index bdbbc86..afa8ade 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -270,6 +270,14 @@ public class CraftEventFactory {

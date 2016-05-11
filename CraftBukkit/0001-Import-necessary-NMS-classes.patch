@@ -1,4 +1,4 @@
-From dc11e106b83a6f55d7dd89bbd404c9e296534dda Mon Sep 17 00:00:00 2001
+From 1734bec6205a25c11b4ac23833b45d56fe752df2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -6,7 +6,7 @@ Subject: [PATCH] Import necessary NMS classes
 
 diff --git a/src/main/java/net/minecraft/server/BlockFalling.java b/src/main/java/net/minecraft/server/BlockFalling.java
 new file mode 100644
-index 0000000..6654240
+index 0000000..e770063
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFalling.java
 @@ -0,0 +1,75 @@
@@ -31,7 +31,7 @@ index 0000000..6654240
 +        world.a(blockposition, (Block) this, this.a(world));
 +    }
 +
-+    public void doPhysics(World world, BlockPosition blockposition, IBlockData iblockdata, Block block) {
++    public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block) {
 +        world.a(blockposition, (Block) this, this.a(world));
 +    }
 +
@@ -87,14 +87,15 @@ index 0000000..6654240
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
-index 0000000..cdbb7a4
+index 0000000..a076f4d
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
-@@ -0,0 +1,224 @@
+@@ -0,0 +1,227 @@
 +package net.minecraft.server;
 +
 +import java.util.Iterator;
 +import java.util.Random;
++import javax.annotation.Nullable;
 +
 +public abstract class BlockFluids extends Block {
 +
@@ -110,6 +111,7 @@ index 0000000..cdbb7a4
 +        return BlockFluids.j;
 +    }
 +
++    @Nullable
 +    public AxisAlignedBB a(IBlockData iblockdata, World world, BlockPosition blockposition) {
 +        return BlockFluids.k;
 +    }
@@ -126,12 +128,12 @@ index 0000000..cdbb7a4
 +        return (float) (i + 1) / 9.0F;
 +    }
 +
-+    protected int c(IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        return iblockaccess.getType(blockposition).getMaterial() == this.material ? ((Integer) iblockaccess.getType(blockposition).get(BlockFluids.LEVEL)).intValue() : -1;
++    protected int i(IBlockData iblockdata) {
++        return iblockdata.getMaterial() == this.material ? ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue() : -1;
 +    }
 +
-+    protected int d(IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        int i = this.c(iblockaccess, blockposition);
++    protected int x(IBlockData iblockdata) {
++        int i = this.i(iblockdata);
 +
 +        return i >= 8 ? 0 : i;
 +    }
@@ -158,6 +160,7 @@ index 0000000..cdbb7a4
 +        return EnumRenderType.LIQUID;
 +    }
 +
++    @Nullable
 +    public Item getDropType(IBlockData iblockdata, Random random, int i) {
 +        return null;
 +    }
@@ -166,24 +169,24 @@ index 0000000..cdbb7a4
 +        return 0;
 +    }
 +
-+    protected Vec3D f(IBlockAccess iblockaccess, BlockPosition blockposition) {
++    protected Vec3D a(IBlockAccess iblockaccess, BlockPosition blockposition, IBlockData iblockdata) {
 +        double d0 = 0.0D;
 +        double d1 = 0.0D;
 +        double d2 = 0.0D;
-+        int i = this.d(iblockaccess, blockposition);
++        int i = this.x(iblockdata);
 +        BlockPosition.PooledBlockPosition blockposition_pooledblockposition = BlockPosition.PooledBlockPosition.s();
 +        Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 +
 +        while (iterator.hasNext()) {
 +            EnumDirection enumdirection = (EnumDirection) iterator.next();
 +
-+            blockposition_pooledblockposition.h(blockposition).c(enumdirection);
-+            int j = this.d(iblockaccess, blockposition_pooledblockposition);
++            blockposition_pooledblockposition.j(blockposition).d(enumdirection);
++            int j = this.x(iblockaccess.getType(blockposition_pooledblockposition));
 +            int k;
 +
 +            if (j < 0) {
 +                if (!iblockaccess.getType(blockposition_pooledblockposition).getMaterial().isSolid()) {
-+                    j = this.d(iblockaccess, blockposition_pooledblockposition.down());
++                    j = this.x(iblockaccess.getType(blockposition_pooledblockposition.down()));
 +                    if (j >= 0) {
 +                        k = j - (i - 8);
 +                        d0 += (double) (enumdirection.getAdjacentX() * k);
@@ -201,13 +204,13 @@ index 0000000..cdbb7a4
 +
 +        Vec3D vec3d = new Vec3D(d0, d1, d2);
 +
-+        if (((Integer) iblockaccess.getType(blockposition).get(BlockFluids.LEVEL)).intValue() >= 8) {
++        if (((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue() >= 8) {
 +            Iterator iterator1 = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
 +
 +            while (iterator1.hasNext()) {
 +                EnumDirection enumdirection1 = (EnumDirection) iterator1.next();
 +
-+                blockposition_pooledblockposition.h(blockposition).c(enumdirection1);
++                blockposition_pooledblockposition.j(blockposition).d(enumdirection1);
 +                if (this.a(iblockaccess, (BlockPosition) blockposition_pooledblockposition, enumdirection1) || this.a(iblockaccess, blockposition_pooledblockposition.up(), enumdirection1)) {
 +                    vec3d = vec3d.a().add(0.0D, -6.0D, 0.0D);
 +                    break;
@@ -220,7 +223,7 @@ index 0000000..cdbb7a4
 +    }
 +
 +    public Vec3D a(World world, BlockPosition blockposition, Entity entity, Vec3D vec3d) {
-+        return vec3d.e(this.f(world, blockposition));
++        return vec3d.e(this.a((IBlockAccess) world, blockposition, world.getType(blockposition)));
 +    }
 +
 +    public int a(World world) {
@@ -231,7 +234,7 @@ index 0000000..cdbb7a4
 +        this.e(world, blockposition, iblockdata);
 +    }
 +
-+    public void doPhysics(World world, BlockPosition blockposition, IBlockData iblockdata, Block block) {
++    public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block) {
 +        this.e(world, blockposition, iblockdata);
 +    }
 +
@@ -317,11 +320,13 @@ index 0000000..cdbb7a4
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
 new file mode 100644
-index 0000000..d72b692
+index 0000000..ce79e19
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
-@@ -0,0 +1,98 @@
+@@ -0,0 +1,100 @@
 +package net.minecraft.server;
++
++import javax.annotation.Nullable;
 +
 +public class BlockTNT extends Block {
 +
@@ -342,7 +347,7 @@ index 0000000..d72b692
 +
 +    }
 +
-+    public void doPhysics(World world, BlockPosition blockposition, IBlockData iblockdata, Block block) {
++    public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block) {
 +        if (world.isBlockIndirectlyPowered(blockposition)) {
 +            this.postBreak(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)));
 +            world.setAir(blockposition);
@@ -375,7 +380,7 @@ index 0000000..d72b692
 +        }
 +    }
 +
-+    public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
++    public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
 +        if (itemstack != null && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
 +            this.a(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)), (EntityLiving) entityhuman);
 +            world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 11);
@@ -833,10 +838,10 @@ index 0000000..737035b
 +}
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
 new file mode 100644
-index 0000000..ebec984
+index 0000000..f401d91
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/Item.java
-@@ -0,0 +1,824 @@
+@@ -0,0 +1,844 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.Function;
@@ -846,6 +851,7 @@ index 0000000..ebec984
 +import java.util.Map;
 +import java.util.Random;
 +import java.util.UUID;
++import javax.annotation.Nullable;
 +
 +public class Item {
 +
@@ -879,6 +885,7 @@ index 0000000..ebec984
 +        return (Item) Item.REGISTRY.getId(i);
 +    }
 +
++    @Nullable
 +    public static Item getItemOf(Block block) {
 +        return (Item) Item.a.get(block);
 +    }
@@ -927,6 +934,7 @@ index 0000000..ebec984
 +        return new InteractionResultWrapper(EnumInteractionResult.PASS, itemstack);
 +    }
 +
++    @Nullable
 +    public ItemStack a(ItemStack itemstack, World world, EntityLiving entityliving) {
 +        return itemstack;
 +    }
@@ -1095,7 +1103,8 @@ index 0000000..ebec984
 +
 +    public static void t() {
 +        a(Blocks.STONE, (Item) (new ItemMultiTexture(Blocks.STONE, Blocks.STONE, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockStone.EnumStoneVariant.a(itemstack.getData()).d();
 +            }
 +
@@ -1105,7 +1114,8 @@ index 0000000..ebec984
 +        })).b("stone"));
 +        a((Block) Blocks.GRASS, (Item) (new ItemWithAuxData(Blocks.GRASS, false)));
 +        a(Blocks.DIRT, (Item) (new ItemMultiTexture(Blocks.DIRT, Blocks.DIRT, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockDirt.EnumDirtVariant.a(itemstack.getData()).c();
 +            }
 +
@@ -1115,7 +1125,8 @@ index 0000000..ebec984
 +        })).b("dirt"));
 +        b(Blocks.COBBLESTONE);
 +        a(Blocks.PLANKS, (Item) (new ItemMultiTexture(Blocks.PLANKS, Blocks.PLANKS, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockWood.EnumLogVariant.a(itemstack.getData()).d();
 +            }
 +
@@ -1124,7 +1135,8 @@ index 0000000..ebec984
 +            }
 +        })).b("wood"));
 +        a(Blocks.SAPLING, (Item) (new ItemMultiTexture(Blocks.SAPLING, Blocks.SAPLING, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockWood.EnumLogVariant.a(itemstack.getData()).d();
 +            }
 +
@@ -1134,7 +1146,8 @@ index 0000000..ebec984
 +        })).b("sapling"));
 +        b(Blocks.BEDROCK);
 +        a((Block) Blocks.SAND, (Item) (new ItemMultiTexture(Blocks.SAND, Blocks.SAND, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockSand.EnumSandVariant.a(itemstack.getData()).d();
 +            }
 +
@@ -1147,7 +1160,8 @@ index 0000000..ebec984
 +        b(Blocks.IRON_ORE);
 +        b(Blocks.COAL_ORE);
 +        a(Blocks.LOG, (Item) (new ItemMultiTexture(Blocks.LOG, Blocks.LOG, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockWood.EnumLogVariant.a(itemstack.getData()).d();
 +            }
 +
@@ -1156,7 +1170,8 @@ index 0000000..ebec984
 +            }
 +        })).b("log"));
 +        a(Blocks.LOG2, (Item) (new ItemMultiTexture(Blocks.LOG2, Blocks.LOG2, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockWood.EnumLogVariant.a(itemstack.getData() + 4).d();
 +            }
 +
@@ -1167,7 +1182,8 @@ index 0000000..ebec984
 +        a((Block) Blocks.LEAVES, (Item) (new ItemLeaves(Blocks.LEAVES)).b("leaves"));
 +        a((Block) Blocks.LEAVES2, (Item) (new ItemLeaves(Blocks.LEAVES2)).b("leaves"));
 +        a(Blocks.SPONGE, (Item) (new ItemMultiTexture(Blocks.SPONGE, Blocks.SPONGE, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return (itemstack.getData() & 1) == 1 ? "wet" : "dry";
 +            }
 +
@@ -1180,7 +1196,8 @@ index 0000000..ebec984
 +        b(Blocks.LAPIS_BLOCK);
 +        b(Blocks.DISPENSER);
 +        a(Blocks.SANDSTONE, (Item) (new ItemMultiTexture(Blocks.SANDSTONE, Blocks.SANDSTONE, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockSandStone.EnumSandstoneVariant.a(itemstack.getData()).c();
 +            }
 +
@@ -1198,7 +1215,8 @@ index 0000000..ebec984
 +        a((Block) Blocks.PISTON, (Item) (new ItemPiston(Blocks.PISTON)));
 +        a(Blocks.WOOL, (Item) (new ItemCloth(Blocks.WOOL)).b("cloth"));
 +        a((Block) Blocks.YELLOW_FLOWER, (Item) (new ItemMultiTexture(Blocks.YELLOW_FLOWER, Blocks.YELLOW_FLOWER, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockFlowers.EnumFlowerVarient.a(BlockFlowers.EnumFlowerType.YELLOW, itemstack.getData()).d();
 +            }
 +
@@ -1207,7 +1225,8 @@ index 0000000..ebec984
 +            }
 +        })).b("flower"));
 +        a((Block) Blocks.RED_FLOWER, (Item) (new ItemMultiTexture(Blocks.RED_FLOWER, Blocks.RED_FLOWER, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockFlowers.EnumFlowerVarient.a(BlockFlowers.EnumFlowerType.RED, itemstack.getData()).d();
 +            }
 +
@@ -1269,7 +1288,8 @@ index 0000000..ebec984
 +        b(Blocks.LIT_PUMPKIN);
 +        b(Blocks.TRAPDOOR);
 +        a(Blocks.MONSTER_EGG, (Item) (new ItemMultiTexture(Blocks.MONSTER_EGG, Blocks.MONSTER_EGG, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockMonsterEggs.EnumMonsterEggVarient.a(itemstack.getData()).c();
 +            }
 +
@@ -1278,7 +1298,8 @@ index 0000000..ebec984
 +            }
 +        })).b("monsterStoneEgg"));
 +        a(Blocks.STONEBRICK, (Item) (new ItemMultiTexture(Blocks.STONEBRICK, Blocks.STONEBRICK, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockSmoothBrick.EnumStonebrickType.a(itemstack.getData()).c();
 +            }
 +
@@ -1323,7 +1344,8 @@ index 0000000..ebec984
 +        b(Blocks.COMMAND_BLOCK);
 +        b((Block) Blocks.BEACON);
 +        a(Blocks.COBBLESTONE_WALL, (Item) (new ItemMultiTexture(Blocks.COBBLESTONE_WALL, Blocks.COBBLESTONE_WALL, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockCobbleWall.EnumCobbleVariant.a(itemstack.getData()).c();
 +            }
 +
@@ -1357,7 +1379,8 @@ index 0000000..ebec984
 +        b(Blocks.SLIME);
 +        b(Blocks.GRASS_PATH);
 +        a((Block) Blocks.DOUBLE_PLANT, (Item) (new ItemMultiTexture(Blocks.DOUBLE_PLANT, Blocks.DOUBLE_PLANT, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockTallPlant.EnumTallFlowerVariants.a(itemstack.getData()).c();
 +            }
 +
@@ -1368,7 +1391,8 @@ index 0000000..ebec984
 +        a((Block) Blocks.STAINED_GLASS, (Item) (new ItemCloth(Blocks.STAINED_GLASS)).b("stainedGlass"));
 +        a((Block) Blocks.STAINED_GLASS_PANE, (Item) (new ItemCloth(Blocks.STAINED_GLASS_PANE)).b("stainedGlassPane"));
 +        a(Blocks.PRISMARINE, (Item) (new ItemMultiTexture(Blocks.PRISMARINE, Blocks.PRISMARINE, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockPrismarine.EnumPrismarineVariant.a(itemstack.getData()).c();
 +            }
 +
@@ -1378,7 +1402,8 @@ index 0000000..ebec984
 +        })).b("prismarine"));
 +        b(Blocks.SEA_LANTERN);
 +        a(Blocks.RED_SANDSTONE, (Item) (new ItemMultiTexture(Blocks.RED_SANDSTONE, Blocks.RED_SANDSTONE, new Function() {
-+            public String a(ItemStack itemstack) {
++            @Nullable
++            public String a(@Nullable ItemStack itemstack) {
 +                return BlockRedSandstone.EnumRedSandstoneVariant.a(itemstack.getData()).c();
 +            }
 +
@@ -1862,6 +1887,60 @@ index 0000000..e5f457b
 +        return this.c((GameProfile) object);
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+new file mode 100644
+index 0000000..a79fa01
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -0,0 +1,48 @@
++package net.minecraft.server;
++
++import io.netty.buffer.ByteBuf;
++import io.netty.channel.ChannelHandlerContext;
++import io.netty.handler.codec.MessageToByteEncoder;
++import java.io.IOException;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++import org.apache.logging.log4j.Marker;
++import org.apache.logging.log4j.MarkerManager;
++
++public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
++
++    private static final Logger a = LogManager.getLogger();
++    private static final Marker b = MarkerManager.getMarker("PACKET_SENT", NetworkManager.b);
++    private final EnumProtocolDirection c;
++
++    public PacketEncoder(EnumProtocolDirection enumprotocoldirection) {
++        this.c = enumprotocoldirection;
++    }
++
++    protected void a(ChannelHandlerContext channelhandlercontext, Packet<?> packet, ByteBuf bytebuf) throws Exception {
++        Integer integer = ((EnumProtocol) channelhandlercontext.channel().attr(NetworkManager.c).get()).a(this.c, packet);
++
++        if (PacketEncoder.a.isDebugEnabled()) {
++            PacketEncoder.a.debug(PacketEncoder.b, "OUT: [{}:{}] {}", new Object[] { channelhandlercontext.channel().attr(NetworkManager.c).get(), integer, packet.getClass().getName()});
++        }
++
++        if (integer == null) {
++            throw new IOException("Can\'t serialize unregistered packet");
++        } else {
++            PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
++
++            packetdataserializer.d(integer.intValue());
++
++            try {
++                packet.b(packetdataserializer);
++            } catch (Throwable throwable) {
++                PacketEncoder.a.error(throwable);
++            }
++
++        }
++    }
++
++    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws Exception {
++        this.a(channelhandlercontext, (Packet) object, bytebuf);
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java b/src/main/java/net/minecraft/server/PacketHandshakingInSetProtocol.java
 new file mode 100644
 index 0000000..1cb9d60
@@ -2026,13 +2105,14 @@ index 0000000..2b23a5d
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
 new file mode 100644
-index 0000000..9a83510
+index 0000000..9d23a64
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
-@@ -0,0 +1,30 @@
+@@ -0,0 +1,31 @@
 +package net.minecraft.server;
 +
 +import java.io.IOException;
++import javax.annotation.Nullable;
 +
 +public class PacketPlayOutAttachEntity implements Packet<PacketListenerPlayOut> {
 +
@@ -2041,7 +2121,7 @@ index 0000000..9a83510
 +
 +    public PacketPlayOutAttachEntity() {}
 +
-+    public PacketPlayOutAttachEntity(Entity entity, Entity entity1) {
++    public PacketPlayOutAttachEntity(Entity entity, @Nullable Entity entity1) {
 +        this.a = entity.getId();
 +        this.b = entity1 != null ? entity1.getId() : -1;
 +    }
@@ -2240,15 +2320,19 @@ index 0000000..76a558e
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 new file mode 100644
-index 0000000..3f7fde2
+index 0000000..4248aa1
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
-@@ -0,0 +1,110 @@
+@@ -0,0 +1,152 @@
 +package net.minecraft.server;
 +
++import com.google.common.collect.Lists;
 +import io.netty.buffer.ByteBuf;
 +import io.netty.buffer.Unpooled;
 +import java.io.IOException;
++import java.util.Iterator;
++import java.util.List;
++import java.util.Map.Entry;
 +
 +public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
 +
@@ -2256,24 +2340,41 @@ index 0000000..3f7fde2
 +    private int b;
 +    private int c;
 +    private byte[] d;
-+    private boolean e;
++    private List<NBTTagCompound> e;
++    private boolean f;
 +
 +    public PacketPlayOutMapChunk() {}
 +
-+    public PacketPlayOutMapChunk(Chunk chunk, boolean flag, int i) {
++    public PacketPlayOutMapChunk(Chunk chunk, int i) {
 +        this.a = chunk.locX;
 +        this.b = chunk.locZ;
-+        this.e = flag;
-+        boolean flag1 = !chunk.getWorld().worldProvider.m();
++        this.f = i == '\uffff';
++        boolean flag = !chunk.getWorld().worldProvider.m();
 +
-+        this.d = new byte[a(chunk, flag, flag1, i)];
-+        this.c = a(new PacketDataSerializer(this.f()), chunk, flag, flag1, i);
++        this.d = new byte[this.a(chunk, flag, i)];
++        this.c = this.a(new PacketDataSerializer(this.g()), chunk, flag, i);
++        this.e = Lists.newArrayList();
++        Iterator iterator = chunk.getTileEntities().entrySet().iterator();
++
++        while (iterator.hasNext()) {
++            Entry entry = (Entry) iterator.next();
++            BlockPosition blockposition = (BlockPosition) entry.getKey();
++            TileEntity tileentity = (TileEntity) entry.getValue();
++            int j = blockposition.getY() >> 4;
++
++            if (this.e() || (i & 1 << j) != 0) {
++                NBTTagCompound nbttagcompound = tileentity.E_();
++
++                this.e.add(nbttagcompound);
++            }
++        }
++
 +    }
 +
 +    public void a(PacketDataSerializer packetdataserializer) throws IOException {
 +        this.a = packetdataserializer.readInt();
 +        this.b = packetdataserializer.readInt();
-+        this.e = packetdataserializer.readBoolean();
++        this.f = packetdataserializer.readBoolean();
 +        this.c = packetdataserializer.g();
 +        int i = packetdataserializer.g();
 +
@@ -2282,30 +2383,47 @@ index 0000000..3f7fde2
 +        } else {
 +            this.d = new byte[i];
 +            packetdataserializer.readBytes(this.d);
++            int j = packetdataserializer.g();
++
++            this.e = Lists.newArrayList();
++
++            for (int k = 0; k < j; ++k) {
++                this.e.add(packetdataserializer.j());
++            }
++
 +        }
 +    }
 +
 +    public void b(PacketDataSerializer packetdataserializer) throws IOException {
 +        packetdataserializer.writeInt(this.a);
 +        packetdataserializer.writeInt(this.b);
-+        packetdataserializer.writeBoolean(this.e);
++        packetdataserializer.writeBoolean(this.f);
 +        packetdataserializer.d(this.c);
 +        packetdataserializer.d(this.d.length);
 +        packetdataserializer.writeBytes(this.d);
++        packetdataserializer.d(this.e.size());
++        Iterator iterator = this.e.iterator();
++
++        while (iterator.hasNext()) {
++            NBTTagCompound nbttagcompound = (NBTTagCompound) iterator.next();
++
++            packetdataserializer.a(nbttagcompound);
++        }
++
 +    }
 +
 +    public void a(PacketListenerPlayOut packetlistenerplayout) {
 +        packetlistenerplayout.a(this);
 +    }
 +
-+    private ByteBuf f() {
++    private ByteBuf g() {
 +        ByteBuf bytebuf = Unpooled.wrappedBuffer(this.d);
 +
 +        bytebuf.writerIndex(0);
 +        return bytebuf;
 +    }
 +
-+    public static int a(PacketDataSerializer packetdataserializer, Chunk chunk, boolean flag, boolean flag1, int i) {
++    public int a(PacketDataSerializer packetdataserializer, Chunk chunk, boolean flag, int i) {
 +        int j = 0;
 +        ChunkSection[] achunksection = chunk.getSections();
 +        int k = 0;
@@ -2313,24 +2431,24 @@ index 0000000..3f7fde2
 +        for (int l = achunksection.length; k < l; ++k) {
 +            ChunkSection chunksection = achunksection[k];
 +
-+            if (chunksection != Chunk.a && (!flag || !chunksection.a()) && (i & 1 << k) != 0) {
++            if (chunksection != Chunk.a && (!this.e() || !chunksection.a()) && (i & 1 << k) != 0) {
 +                j |= 1 << k;
 +                chunksection.getBlocks().b(packetdataserializer);
 +                packetdataserializer.writeBytes(chunksection.getEmittedLightArray().asBytes());
-+                if (flag1) {
++                if (flag) {
 +                    packetdataserializer.writeBytes(chunksection.getSkyLightArray().asBytes());
 +                }
 +            }
 +        }
 +
-+        if (flag) {
++        if (this.e()) {
 +            packetdataserializer.writeBytes(chunk.getBiomeIndex());
 +        }
 +
 +        return j;
 +    }
 +
-+    protected static int a(Chunk chunk, boolean flag, boolean flag1, int i) {
++    protected int a(Chunk chunk, boolean flag, int i) {
 +        int j = 0;
 +        ChunkSection[] achunksection = chunk.getSections();
 +        int k = 0;
@@ -2338,25 +2456,29 @@ index 0000000..3f7fde2
 +        for (int l = achunksection.length; k < l; ++k) {
 +            ChunkSection chunksection = achunksection[k];
 +
-+            if (chunksection != Chunk.a && (!flag || !chunksection.a()) && (i & 1 << k) != 0) {
++            if (chunksection != Chunk.a && (!this.e() || !chunksection.a()) && (i & 1 << k) != 0) {
 +                j += chunksection.getBlocks().a();
 +                j += chunksection.getEmittedLightArray().asBytes().length;
-+                if (flag1) {
++                if (flag) {
 +                    j += chunksection.getSkyLightArray().asBytes().length;
 +                }
 +            }
 +        }
 +
-+        if (flag) {
++        if (this.e()) {
 +            j += chunk.getBiomeIndex().length;
 +        }
 +
 +        return j;
 +    }
++
++    public boolean e() {
++        return this.f;
++    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMount.java b/src/main/java/net/minecraft/server/PacketPlayOutMount.java
 new file mode 100644
-index 0000000..1466730
+index 0000000..882d3f4
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMount.java
 @@ -0,0 +1,38 @@
@@ -2374,7 +2496,7 @@ index 0000000..1466730
 +
 +    public PacketPlayOutMount(Entity entity) {
 +        this.a = entity.getId();
-+        List list = entity.bu();
++        List list = entity.bv();
 +
 +        this.b = new int[list.size()];
 +
@@ -2525,10 +2647,10 @@ index 0000000..e9f24b3
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 new file mode 100644
-index 0000000..7c2c832
+index 0000000..476da40
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-@@ -0,0 +1,254 @@
+@@ -0,0 +1,256 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.Objects;
@@ -2538,6 +2660,7 @@ index 0000000..7c2c832
 +import java.io.IOException;
 +import java.util.Iterator;
 +import java.util.List;
++import javax.annotation.Nullable;
 +
 +public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
 +
@@ -2748,7 +2871,7 @@ index 0000000..7c2c832
 +        private final GameProfile d;
 +        private final IChatBaseComponent e;
 +
-+        public PlayerInfoData(GameProfile gameprofile, int i, WorldSettings.EnumGamemode worldsettings_enumgamemode, IChatBaseComponent ichatbasecomponent) {
++        public PlayerInfoData(GameProfile gameprofile, int i, WorldSettings.EnumGamemode worldsettings_enumgamemode, @Nullable IChatBaseComponent ichatbasecomponent) {
 +            this.d = gameprofile;
 +            this.b = i;
 +            this.c = worldsettings_enumgamemode;
@@ -2767,6 +2890,7 @@ index 0000000..7c2c832
 +            return this.c;
 +        }
 +
++        @Nullable
 +        public IChatBaseComponent d() {
 +            return this.e;
 +        }
@@ -2820,7 +2944,7 @@ index 0000000..5f5b382
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 new file mode 100644
-index 0000000..f86bf8d
+index 0000000..dbdb87f
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 @@ -0,0 +1,119 @@
@@ -2864,7 +2988,7 @@ index 0000000..f86bf8d
 +            this.d = scoreboardteam.getSuffix();
 +            this.j = scoreboardteam.packOptionData();
 +            this.e = scoreboardteam.getNameTagVisibility().e;
-+            this.f = scoreboardteam.k().e;
++            this.f = scoreboardteam.getCollisionRule().e;
 +            this.g = scoreboardteam.m().b();
 +        }
 +
@@ -3047,7 +3171,7 @@ index 0000000..428bc93
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 new file mode 100644
-index 0000000..d2309d9
+index 0000000..6f20d71
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 @@ -0,0 +1,106 @@
@@ -3085,7 +3209,7 @@ index 0000000..d2309d9
 +        this.f = entityliving.locZ;
 +        this.j = (byte) ((int) (entityliving.yaw * 256.0F / 360.0F));
 +        this.k = (byte) ((int) (entityliving.pitch * 256.0F / 360.0F));
-+        this.l = (byte) ((int) (entityliving.aO * 256.0F / 360.0F));
++        this.l = (byte) ((int) (entityliving.aP * 256.0F / 360.0F));
 +        double d0 = 3.9D;
 +        double d1 = entityliving.motX;
 +        double d2 = entityliving.motY;
@@ -3157,15 +3281,56 @@ index 0000000..d2309d9
 +        packetlistenerplayout.a(this);
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
 new file mode 100644
-index 0000000..2286c9e
+index 0000000..b30c97e
 --- /dev/null
-+++ b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
-@@ -0,0 +1,99 @@
++++ b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
+@@ -0,0 +1,34 @@
 +package net.minecraft.server;
 +
 +import java.io.IOException;
++
++public class PacketPlayOutTileEntityData implements Packet<PacketListenerPlayOut> {
++
++    private BlockPosition a;
++    private int b;
++    private NBTTagCompound c;
++
++    public PacketPlayOutTileEntityData() {}
++
++    public PacketPlayOutTileEntityData(BlockPosition blockposition, int i, NBTTagCompound nbttagcompound) {
++        this.a = blockposition;
++        this.b = i;
++        this.c = nbttagcompound;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.e();
++        this.b = packetdataserializer.readUnsignedByte();
++        this.c = packetdataserializer.j();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a(this.a);
++        packetdataserializer.writeByte((byte) this.b);
++        packetdataserializer.a(this.c);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
+new file mode 100644
+index 0000000..31a2b21
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
+@@ -0,0 +1,100 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import javax.annotation.Nullable;
 +
 +public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
 +
@@ -3185,7 +3350,7 @@ index 0000000..2286c9e
 +        this(PacketPlayOutTitle.EnumTitleAction.TIMES, (IChatBaseComponent) null, i, j, k);
 +    }
 +
-+    public PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction packetplayouttitle_enumtitleaction, IChatBaseComponent ichatbasecomponent, int i, int j, int k) {
++    public PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction packetplayouttitle_enumtitleaction, @Nullable IChatBaseComponent ichatbasecomponent, int i, int j, int k) {
 +        this.a = packetplayouttitle_enumtitleaction;
 +        this.b = ichatbasecomponent;
 +        this.c = i;
@@ -3264,10 +3429,10 @@ index 0000000..2286c9e
 +}
 diff --git a/src/main/java/net/minecraft/server/PotionUtil.java b/src/main/java/net/minecraft/server/PotionUtil.java
 new file mode 100644
-index 0000000..b091517
+index 0000000..b971c51
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PotionUtil.java
-@@ -0,0 +1,136 @@
+@@ -0,0 +1,137 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.Objects;
@@ -3276,6 +3441,7 @@ index 0000000..b091517
 +import java.util.Collection;
 +import java.util.Iterator;
 +import java.util.List;
++import javax.annotation.Nullable;
 +
 +public class PotionUtil {
 +
@@ -3291,7 +3457,7 @@ index 0000000..b091517
 +        return arraylist;
 +    }
 +
-+    public static List<MobEffect> a(NBTTagCompound nbttagcompound) {
++    public static List<MobEffect> a(@Nullable NBTTagCompound nbttagcompound) {
 +        ArrayList arraylist = Lists.newArrayList();
 +
 +        arraylist.addAll(c(nbttagcompound).a());
@@ -3303,14 +3469,14 @@ index 0000000..b091517
 +        return b(itemstack.getTag());
 +    }
 +
-+    public static List<MobEffect> b(NBTTagCompound nbttagcompound) {
++    public static List<MobEffect> b(@Nullable NBTTagCompound nbttagcompound) {
 +        ArrayList arraylist = Lists.newArrayList();
 +
 +        a(nbttagcompound, (List) arraylist);
 +        return arraylist;
 +    }
 +
-+    public static void a(NBTTagCompound nbttagcompound, List<MobEffect> list) {
++    public static void a(@Nullable NBTTagCompound nbttagcompound, List<MobEffect> list) {
 +        if (nbttagcompound != null && nbttagcompound.hasKeyOfType("CustomPotionEffects", 9)) {
 +            NBTTagList nbttaglist = nbttagcompound.getList("CustomPotionEffects", 10);
 +
@@ -3367,7 +3533,7 @@ index 0000000..b091517
 +        return c(itemstack.getTag());
 +    }
 +
-+    public static PotionRegistry c(NBTTagCompound nbttagcompound) {
++    public static PotionRegistry c(@Nullable NBTTagCompound nbttagcompound) {
 +        return nbttagcompound == null ? Potions.b : PotionRegistry.a(nbttagcompound.getString("Potion"));
 +    }
 +
@@ -3477,167 +3643,12 @@ index 0000000..b07e7d5
 +        return regionfile.b(i & 31, j & 31);
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/ScoreboardTeam.java b/src/main/java/net/minecraft/server/ScoreboardTeam.java
-new file mode 100644
-index 0000000..71d372f
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/ScoreboardTeam.java
-@@ -0,0 +1,149 @@
-+package net.minecraft.server;
-+
-+import com.google.common.collect.Sets;
-+import java.util.Collection;
-+import java.util.Set;
-+
-+public class ScoreboardTeam extends ScoreboardTeamBase {
-+
-+    private final Scoreboard a;
-+    private final String b;
-+    private final Set<String> c = Sets.newHashSet();
-+    private String d;
-+    private String e = "";
-+    private String f = "";
-+    private boolean g = true;
-+    private boolean h = true;
-+    private ScoreboardTeamBase.EnumNameTagVisibility i;
-+    private ScoreboardTeamBase.EnumNameTagVisibility j;
-+    private EnumChatFormat k;
-+    private ScoreboardTeamBase.EnumTeamPush l;
-+
-+    public ScoreboardTeam(Scoreboard scoreboard, String s) {
-+        this.i = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
-+        this.j = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
-+        this.k = EnumChatFormat.RESET;
-+        this.l = ScoreboardTeamBase.EnumTeamPush.ALWAYS;
-+        this.a = scoreboard;
-+        this.b = s;
-+        this.d = s;
-+    }
-+
-+    public String getName() {
-+        return this.b;
-+    }
-+
-+    public String getDisplayName() {
-+        return this.d;
-+    }
-+
-+    public void setDisplayName(String s) {
-+        if (s == null) {
-+            throw new IllegalArgumentException("Name cannot be null");
-+        } else {
-+            this.d = s;
-+            this.a.handleTeamChanged(this);
-+        }
-+    }
-+
-+    public Collection<String> getPlayerNameSet() {
-+        return this.c;
-+    }
-+
-+    public String getPrefix() {
-+        return this.e;
-+    }
-+
-+    public void setPrefix(String s) {
-+        if (s == null) {
-+            throw new IllegalArgumentException("Prefix cannot be null");
-+        } else {
-+            this.e = s;
-+            this.a.handleTeamChanged(this);
-+        }
-+    }
-+
-+    public String getSuffix() {
-+        return this.f;
-+    }
-+
-+    public void setSuffix(String s) {
-+        this.f = s;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public String getFormattedName(String s) {
-+        return this.getPrefix() + s + this.getSuffix();
-+    }
-+
-+    public static String getPlayerDisplayName(ScoreboardTeamBase scoreboardteambase, String s) {
-+        return scoreboardteambase == null ? s : scoreboardteambase.getFormattedName(s);
-+    }
-+
-+    public boolean allowFriendlyFire() {
-+        return this.g;
-+    }
-+
-+    public void setAllowFriendlyFire(boolean flag) {
-+        this.g = flag;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public boolean canSeeFriendlyInvisibles() {
-+        return this.h;
-+    }
-+
-+    public void setCanSeeFriendlyInvisibles(boolean flag) {
-+        this.h = flag;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public ScoreboardTeamBase.EnumNameTagVisibility getNameTagVisibility() {
-+        return this.i;
-+    }
-+
-+    public ScoreboardTeamBase.EnumNameTagVisibility j() {
-+        return this.j;
-+    }
-+
-+    public void setNameTagVisibility(ScoreboardTeamBase.EnumNameTagVisibility scoreboardteambase_enumnametagvisibility) {
-+        this.i = scoreboardteambase_enumnametagvisibility;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public void b(ScoreboardTeamBase.EnumNameTagVisibility scoreboardteambase_enumnametagvisibility) {
-+        this.j = scoreboardteambase_enumnametagvisibility;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public ScoreboardTeamBase.EnumTeamPush k() {
-+        return this.l;
-+    }
-+
-+    public void a(ScoreboardTeamBase.EnumTeamPush scoreboardteambase_enumteampush) {
-+        this.l = scoreboardteambase_enumteampush;
-+        this.a.handleTeamChanged(this);
-+    }
-+
-+    public int packOptionData() {
-+        int i = 0;
-+
-+        if (this.allowFriendlyFire()) {
-+            i |= 1;
-+        }
-+
-+        if (this.canSeeFriendlyInvisibles()) {
-+            i |= 2;
-+        }
-+
-+        return i;
-+    }
-+
-+    public void a(EnumChatFormat enumchatformat) {
-+        this.k = enumchatformat;
-+    }
-+
-+    public EnumChatFormat m() {
-+        return this.k;
-+    }
-+}
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 new file mode 100644
-index 0000000..37ad4cc
+index 0000000..fb04a3c
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,174 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.Lists;
@@ -3663,7 +3674,6 @@ index 0000000..37ad4cc
 +import java.util.Collections;
 +import java.util.Iterator;
 +import java.util.List;
-+import java.util.concurrent.Callable;
 +import org.apache.logging.log4j.LogManager;
 +import org.apache.logging.log4j.Logger;
 +
@@ -3777,7 +3787,7 @@ index 0000000..37ad4cc
 +                                CrashReport crashreport = CrashReport.a(exception, "Ticking memory connection");
 +                                CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Ticking connection");
 +
-+                                crashreportsystemdetails.a("Connection", new Callable() {
++                                crashreportsystemdetails.a("Connection", new CrashReportCallable() {
 +                                    public String a() throws Exception {
 +                                        return networkmanager.toString();
 +                                    }

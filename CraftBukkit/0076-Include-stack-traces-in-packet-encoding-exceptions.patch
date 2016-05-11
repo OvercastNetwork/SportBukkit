@@ -1,19 +1,19 @@
-From 29aab232ee1decfc820e2bc1313e91099d96e2a9 Mon Sep 17 00:00:00 2001
+From 268c6d3ce2a22f8abd494a0c94b7c519c2a6dcc3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 Feb 2015 06:36:47 -0500
 Subject: [PATCH] Include stack traces in packet encoding exceptions
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index 03d1f91..78eb92c 100644
+index ccf806e..b39319e 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
 +++ b/src/main/java/net/minecraft/server/PacketEncoder.java
-@@ -38,7 +38,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
+@@ -36,7 +36,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
              try {
                  packet.b(packetdataserializer);
              } catch (Throwable throwable) {
 -                PacketEncoder.a.error(throwable);
-+                PacketEncoder.a.error("Exception serializing packet " + packet, throwable);
++                PacketEncoder.a.error("Exception serializing packet " + packet, throwable); // SportBukkit - better error message
              }
  
          }

@@ -1,14 +1,14 @@
-From aa2de7447a7690438cb3280d666608bdd467e257 Mon Sep 17 00:00:00 2001
+From 6a275663717937edaddcba37275200936d989db4 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 25 Jan 2014 14:08:35 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9519b02..7b03ded 100644
+index 6f7de6a..66d8963 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -113,6 +113,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -117,6 +117,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
      public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
      public int autosavePeriod;
      // CraftBukkit end
@@ -21,7 +21,7 @@ index 9519b02..7b03ded 100644
  
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
-@@ -501,48 +507,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -505,48 +511,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          this.isRunning = false;
      }
  
@@ -39,7 +39,7 @@ index 9519b02..7b03ded 100644
 -                long i = 0L;
 -
                  this.q.setMOTD(new ChatComponentText(this.motd));
-                 this.q.setServerInfo(new ServerPing.ServerData("1.9.2", 109));
+                 this.q.setServerInfo(new ServerPing.ServerData("1.9.4", 110));
                  this.a(this.q);
  
 +                // Spigot start

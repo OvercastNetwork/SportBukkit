@@ -1,14 +1,14 @@
-From e0b9fdd01f9e0eaf1efd499ab716259162d99b4f Mon Sep 17 00:00:00 2001
+From aaee44b22eaf3496042b7a156490a1b3906f39f5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 Feb 2015 03:36:10 -0500
 Subject: [PATCH] Fix sending irrelevant block updates to the client
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index c8c9d22..5f83547 100644
+index 5a92450..cc4d14a 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -366,7 +366,7 @@ public abstract class World implements IBlockAccess {
+@@ -371,7 +371,7 @@ public abstract class World implements IBlockAccess {
  
      // CraftBukkit start - Split off from original setTypeAndData(int i, int j, int k, Block block, int l, int i1) method in order to directly send client and physic updates
      public void notifyAndUpdatePhysics(BlockPosition blockposition, Chunk chunk, IBlockData oldBlock, IBlockData newBlock, int flag) {

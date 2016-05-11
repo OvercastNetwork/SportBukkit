@@ -1,14 +1,14 @@
-From 8c3d53b81b06f433154d046f748cfd313337c896 Mon Sep 17 00:00:00 2001
+From a364f3acd12930f594f79ee5668c18901dd940d9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 9 Dec 2014 02:08:38 -0500
 Subject: [PATCH] Better handling of plugin startup errors
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 52ba6b8..2cab91d 100644
+index 5189332..c53bbf1 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -354,7 +354,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -353,7 +353,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
      }
  
      protected void B() {
@@ -18,10 +18,10 @@ index 52ba6b8..2cab91d 100644
  
      public void D() { // CraftBukkit - fix decompile error
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ffd02fb..751dda3 100644
+index 2251ba5..77bbda8 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -119,6 +119,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -123,6 +123,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
      private static final int SAMPLE_INTERVAL = 100;
      public final double[] recentTps = new double[ 3 ];
      // Spigot end
@@ -31,7 +31,7 @@ index ffd02fb..751dda3 100644
  
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
-@@ -558,8 +561,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -562,8 +565,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
              } else {
                  // CraftBukkit - if init fails, stop the server
                  // this.a((CrashReport) null);
@@ -42,7 +42,7 @@ index ffd02fb..751dda3 100644
              MinecraftServer.LOGGER.error("Encountered an unexpected exception", throwable);
              CrashReport crashreport = null;
  
-@@ -891,6 +896,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -895,6 +900,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
              // CraftBukkit end
          } catch (Exception exception) {
              MinecraftServer.LOGGER.fatal("Failed to start the minecraft server", exception);

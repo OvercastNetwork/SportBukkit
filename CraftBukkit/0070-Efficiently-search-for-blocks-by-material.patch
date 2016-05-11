@@ -1,20 +1,20 @@
-From 1d0ea8e1ba79e0029cd6a2097a78097d57b0ffc2 Mon Sep 17 00:00:00 2001
+From ada0c0a70a4e0f60ad26c0b332fc84fb1b2b12f7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Feb 2015 04:58:46 -0500
 Subject: [PATCH] Efficiently search for blocks by material
 
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 582e684..d997b46 100644
+index 5a71bcc..f7b8f34 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -693,6 +693,7 @@ public class Chunk {
+@@ -697,6 +697,7 @@ public class Chunk {
          }
      }
  
 +    public void removeTileEntityAt(BlockPosition blockposition) { this.d(blockposition); } // SportBukkit - alias for following method
      public void d(BlockPosition blockposition) {
-         if (this.i) {
+         if (this.j) {
              TileEntity tileentity = (TileEntity) this.tileEntities.remove(blockposition);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 index bacb3db..831a1ac 100644

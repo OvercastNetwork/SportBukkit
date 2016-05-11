@@ -1,14 +1,14 @@
-From ed3dbc476f756eb2c46eb05bdcf6d382e5383b3e Mon Sep 17 00:00:00 2001
+From 46800f8c5ec16308ec1f734e7fb2ffed20a7e07e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Feb 2015 03:39:46 -0500
 Subject: [PATCH] Add setting to disable skull fetching
 
 
 diff --git a/src/main/java/net/minecraft/server/TileEntitySkull.java b/src/main/java/net/minecraft/server/TileEntitySkull.java
-index 244a424..04d004c 100644
+index 0303ac9..36d44be 100644
 --- a/src/main/java/net/minecraft/server/TileEntitySkull.java
 +++ b/src/main/java/net/minecraft/server/TileEntitySkull.java
-@@ -110,7 +110,13 @@ public class TileEntitySkull extends TileEntity implements ITickable {
+@@ -115,7 +115,13 @@ public class TileEntitySkull extends TileEntity implements ITickable {
                      Property property = (Property) Iterables.getFirst(gameprofile1.getProperties().get("textures"), (Object) null);
  
                      if (property == null) {

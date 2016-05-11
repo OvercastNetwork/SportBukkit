@@ -1,4 +1,4 @@
-From 2570d3ce0a30e9604dfa5a326e02090b1eae5f70 Mon Sep 17 00:00:00 2001
+From 237997850548f4ff878efbcd450128f426948701 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 13 Nov 2012 19:38:11 -0600
 Subject: [PATCH] Enable multiworld maps
@@ -24,10 +24,10 @@ index 9c9656b..f0bdfad 100644
          worldmap.a(entityhuman.locX, entityhuman.locZ, worldmap.scale);
          worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - use bukkit dimension
 diff --git a/src/main/java/net/minecraft/server/ItemWorldMap.java b/src/main/java/net/minecraft/server/ItemWorldMap.java
-index 1ecbe99..56d8923 100644
+index 0f0c5cc..e9fee9f 100644
 --- a/src/main/java/net/minecraft/server/ItemWorldMap.java
 +++ b/src/main/java/net/minecraft/server/ItemWorldMap.java
-@@ -16,19 +16,18 @@ public class ItemWorldMap extends ItemWorldMapBase {
+@@ -17,19 +17,18 @@ public class ItemWorldMap extends ItemWorldMapBase {
      }
  
      public WorldMap getSavedMap(ItemStack itemstack, World world) {
@@ -50,7 +50,7 @@ index 1ecbe99..56d8923 100644
  
              // CraftBukkit start
              MapInitializeEvent event = new MapInitializeEvent(worldmap.mapView);
-@@ -207,7 +206,6 @@ public class ItemWorldMap extends ItemWorldMapBase {
+@@ -209,7 +208,6 @@ public class ItemWorldMap extends ItemWorldMapBase {
      protected static void a(ItemStack itemstack, World world, int i) {
          WorldMap worldmap = Items.FILLED_MAP.getSavedMap(itemstack, world);
  

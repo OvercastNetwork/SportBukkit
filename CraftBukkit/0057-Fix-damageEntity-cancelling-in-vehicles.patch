@@ -1,14 +1,14 @@
-From e086a15c2ad4f3b141d32b02e26250c5eaae1da3 Mon Sep 17 00:00:00 2001
+From 342a1fcadb8051eb76b491ed4ae68e921fe7245b Mon Sep 17 00:00:00 2001
 From: ShinyDialga45 <shinydialga45@gmail.com>
 Date: Sat, 25 Oct 2014 16:04:15 -0500
 Subject: [PATCH] Fix damageEntity cancelling in vehicles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityBoat.java b/src/main/java/net/minecraft/server/EntityBoat.java
-index 53b55ff..3b1ae8f 100644
+index 67e86e0..8f6c066 100644
 --- a/src/main/java/net/minecraft/server/EntityBoat.java
 +++ b/src/main/java/net/minecraft/server/EntityBoat.java
-@@ -114,7 +114,7 @@ public class EntityBoat extends Entity {
+@@ -117,7 +117,7 @@ public class EntityBoat extends Entity {
                  this.world.getServer().getPluginManager().callEvent(event);
  
                  if (event.isCancelled()) {
@@ -18,10 +18,10 @@ index 53b55ff..3b1ae8f 100644
                  // f = event.getDamage(); // TODO Why don't we do this?
                  // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/EntityMinecartAbstract.java b/src/main/java/net/minecraft/server/EntityMinecartAbstract.java
-index a649ae7..11c0e5b 100644
+index ae8bfb8..28c59df 100644
 --- a/src/main/java/net/minecraft/server/EntityMinecartAbstract.java
 +++ b/src/main/java/net/minecraft/server/EntityMinecartAbstract.java
-@@ -127,7 +127,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
+@@ -130,7 +130,7 @@ public abstract class EntityMinecartAbstract extends Entity implements INamableT
                  this.world.getServer().getPluginManager().callEvent(event);
  
                  if (event.isCancelled()) {

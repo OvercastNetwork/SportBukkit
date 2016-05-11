@@ -1,14 +1,14 @@
-From f72497f98f0f209c73e6cfdbc06098692c221fbe Mon Sep 17 00:00:00 2001
+From 7d5aa8d3266b4f03c4853d7f9f61d544e25397a4 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 1 Sep 2014 15:37:16 -0500
 Subject: [PATCH] Remove this shit
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index acced03..20b9fea 100644
+index cd7eee7..5189332 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -125,7 +125,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -124,7 +124,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
          DedicatedServer.LOGGER.info("Loading properties");
          this.propertyManager = new PropertyManager(this.options); // CraftBukkit - CLI argument support
          this.q = new EULA(new File("eula.txt"));

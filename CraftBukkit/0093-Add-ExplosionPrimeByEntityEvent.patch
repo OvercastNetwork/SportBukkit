@@ -1,14 +1,14 @@
-From 92ff2c3603499b65a3d4763fc6c4c7266763d004 Mon Sep 17 00:00:00 2001
+From c367b3d50f341772beda590d8dd8ca7a1fb15987 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:52 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index cb194ac..d2c23b1 100644
+index 5323722..94c8b5e 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
-@@ -2,6 +2,7 @@ package net.minecraft.server;
+@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
  
  public class BlockTNT extends Block {
      private boolean isPrimed = false; // SportBukkit
@@ -16,7 +16,7 @@ index cb194ac..d2c23b1 100644
  
      public static final BlockStateBoolean EXPLODE = BlockStateBoolean.of("explode");
  
-@@ -41,7 +42,12 @@ public class BlockTNT extends Block {
+@@ -43,7 +44,12 @@ public class BlockTNT extends Block {
              EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), explosion.getSource());
  
              // SportBukkit start - allow exploded TNT to cancel priming
@@ -30,7 +30,7 @@ index cb194ac..d2c23b1 100644
              world.getServer().getPluginManager().callEvent(event);
  
              if (!event.isCancelled()) {
-@@ -65,7 +71,12 @@ public class BlockTNT extends Block {
+@@ -67,7 +73,12 @@ public class BlockTNT extends Block {
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), entityliving);
  
                  // SportBukkit start - fire ExplosionPrimeEvent
@@ -44,9 +44,9 @@ index cb194ac..d2c23b1 100644
                  world.getServer().getPluginManager().callEvent(event);
  
                  if(!event.isCancelled()) {
-@@ -81,7 +92,9 @@ public class BlockTNT extends Block {
+@@ -83,7 +94,9 @@ public class BlockTNT extends Block {
  
-     public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
+     public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
          if (itemstack != null && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
 +            try { primer = entityhuman; // SportBukkit
              this.a(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)), (EntityLiving) entityhuman);
@@ -54,7 +54,7 @@ index cb194ac..d2c23b1 100644
              // SportBukkit start - don't remove block if TNT priming is cancelled
              if (isPrimed) {
                  world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 11);
-@@ -104,7 +117,9 @@ public class BlockTNT extends Block {
+@@ -106,7 +119,9 @@ public class BlockTNT extends Block {
              EntityArrow entityarrow = (EntityArrow) entity;
  
              if (entityarrow.isBurning()) {
@@ -65,10 +65,10 @@ index cb194ac..d2c23b1 100644
                  if (isPrimed) {
                      world.setAir(blockposition);
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index bc13133..4b295f6 100644
+index 8a757f3..0248d92 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
-@@ -3,6 +3,7 @@ package net.minecraft.server;
+@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
  // CraftBukkit start
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -76,15 +76,15 @@ index bc13133..4b295f6 100644
  // CraftBukkit end
  
  public class EntityCreeper extends EntityMonster {
-@@ -15,6 +16,7 @@ public class EntityCreeper extends EntityMonster {
+@@ -16,6 +17,7 @@ public class EntityCreeper extends EntityMonster {
      private int maxFuseTicks = 30;
      private int explosionRadius = 3;
-     private int bz = 0;
+     private int bA = 0;
 +    private Entity primer; // SportBukkit
  
      public EntityCreeper(World world) {
          super(world);
-@@ -97,7 +99,13 @@ public class EntityCreeper extends EntityMonster {
+@@ -98,7 +100,13 @@ public class EntityCreeper extends EntityMonster {
  
              if (i > 0 && this.fuseTicks == 0) {
                  // SportBukkit start - fire ExplosionPrimeEvent
@@ -99,15 +99,15 @@ index bc13133..4b295f6 100644
                  this.world.getServer().getPluginManager().callEvent(event);
  
                  if (event.isCancelled()) {
-@@ -188,6 +196,7 @@ public class EntityCreeper extends EntityMonster {
-             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bx, this.bz(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+@@ -190,6 +198,7 @@ public class EntityCreeper extends EntityMonster {
+             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bx, this.bA(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
              entityhuman.a(enumhand);
              if (!this.world.isClientSide) {
 +                this.primer = entityhuman; // SportBukkit
-                 this.dc();
+                 this.dd();
                  itemstack.damage(1, entityhuman);
                  return true;
-@@ -203,7 +212,12 @@ public class EntityCreeper extends EntityMonster {
+@@ -205,7 +214,12 @@ public class EntityCreeper extends EntityMonster {
              float f = this.isPowered() ? 2.0F : 1.0F;
  
              // CraftBukkit start
@@ -120,12 +120,12 @@ index bc13133..4b295f6 100644
 +            }
              this.world.getServer().getPluginManager().callEvent(event);
              if (!event.isCancelled()) {
-                 this.aT = true;
+                 this.aU = true;
 diff --git a/src/main/java/net/minecraft/server/EntityEnderCrystal.java b/src/main/java/net/minecraft/server/EntityEnderCrystal.java
-index f9edab1..ff3a53b 100644
+index fc67040..6f8e0c7 100644
 --- a/src/main/java/net/minecraft/server/EntityEnderCrystal.java
 +++ b/src/main/java/net/minecraft/server/EntityEnderCrystal.java
-@@ -5,6 +5,7 @@ import com.google.common.base.Optional;
+@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
  // CraftBukkit start
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.event.entity.ExplosionPrimeEvent;
@@ -133,7 +133,7 @@ index f9edab1..ff3a53b 100644
  // CraftBukkit end
  
  public class EntityEnderCrystal extends Entity {
-@@ -91,7 +92,12 @@ public class EntityEnderCrystal extends Entity {
+@@ -92,7 +93,12 @@ public class EntityEnderCrystal extends Entity {
                  this.die();
                  if (!this.world.isClientSide) {
                      // CraftBukkit start

@@ -1,11 +1,11 @@
-From 9d0a7cdfab13f57ed3adb07e711087b71bbdbafe Mon Sep 17 00:00:00 2001
+From 9d04ea4eb3fd9e016b1a2e2b835f00fdd703b0e2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 25 Sep 2014 18:42:47 -0400
 Subject: [PATCH] Fix deadlock during shutdown
 
 
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index c62d3af..960b495 100644
+index 09be98e..330940c 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
 @@ -20,6 +20,7 @@ import io.netty.util.concurrent.Future;
@@ -16,7 +16,7 @@ index c62d3af..960b495 100644
  import java.util.Collections;
  import java.util.Iterator;
  import java.util.List;
-@@ -107,16 +108,33 @@ public class ServerConnection {
+@@ -106,16 +107,33 @@ public class ServerConnection {
          this.d = false;
          Iterator iterator = this.g.iterator();
  

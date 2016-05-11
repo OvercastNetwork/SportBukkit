@@ -1,14 +1,14 @@
-From 45bfbfedbdabc5d4b125f8747ef1518acb5a4cd4 Mon Sep 17 00:00:00 2001
+From bfe3f64759337856d3bac173ac3e3280889f90ea Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 21:57:34 +0200
 Subject: [PATCH] Add getHostname to Player
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 60d54ef..9d34e80 100644
+index 558780b..98d2805 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -64,6 +64,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -65,6 +65,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public boolean keepLevel = false;
      public double maxHealthCache;
      public boolean joining = true;
@@ -17,10 +17,10 @@ index 60d54ef..9d34e80 100644
  
      public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index b5685f5..a3f5b6d 100644
+index 9df9070..14f8315 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -466,6 +466,8 @@ public abstract class PlayerList {
+@@ -467,6 +467,8 @@ public abstract class PlayerList {
          SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));
@@ -30,10 +30,10 @@ index b5685f5..a3f5b6d 100644
          PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
          String s;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 559dd41..c86d2be 100644
+index 07e2dc0..25a18bb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1435,4 +1435,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1438,4 +1438,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          getHandle().playerConnection.sendPacket(packetplayoutworldparticles);
  
      }

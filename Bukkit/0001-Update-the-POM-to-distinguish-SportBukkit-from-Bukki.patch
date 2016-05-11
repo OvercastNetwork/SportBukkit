@@ -1,11 +1,11 @@
-From 839fdd0e469a3bcd2f39aaacdf1a5dc703a3dcc3 Mon Sep 17 00:00:00 2001
+From ee9b7b39f162827705e537a43f1053820712cb5a Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Dec 2013 23:16:10 -0600
 Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
 
 
 diff --git a/pom.xml b/pom.xml
-index 28467cf..013aca6 100644
+index 345a216..6323fb4 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,20 +3,13 @@
@@ -22,7 +22,7 @@ index 28467cf..013aca6 100644
 -    <artifactId>bukkit</artifactId>
 +    <groupId>tc.oc</groupId>
 +    <artifactId>sportbukkit-api</artifactId>
-     <version>1.9.2-R0.1-SNAPSHOT</version>
+     <version>1.9.4-R0.1-SNAPSHOT</version>
      <packaging>jar</packaging>
  
 -    <name>Bukkit</name>

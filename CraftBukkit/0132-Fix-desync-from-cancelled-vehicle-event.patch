@@ -1,0 +1,117 @@
+From f9a51cc0bcf104714925167d0f757928d03dd327 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Mon, 21 Mar 2016 02:50:33 -0400
+Subject: [PATCH] Fix desync from cancelled vehicle event
+
+
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index 963c73d..711b5f8 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -1677,6 +1677,24 @@ public abstract class Entity implements ICommandListener {
+         if (!flag && (!this.n(entity) || !entity.q(this))) {
+             return false;
+         } else {
++            // CraftBukkit start
++            com.google.common.base.Preconditions.checkState(!getPassengers().contains(entity), "Circular entity riding! %s %s", entity, this);
++
++            CraftEntity craft = (CraftEntity) getBukkitEntity().getVehicle();
++            Entity orig = craft == null ? null : craft.getHandle();
++            if (entity.getBukkitEntity() instanceof Vehicle && getBukkitEntity() instanceof LivingEntity) {
++                VehicleEnterEvent event = new VehicleEnterEvent(
++                        (Vehicle) entity.getBukkitEntity(),
++                         getBukkitEntity()
++                );
++                Bukkit.getPluginManager().callEvent(event);
++                CraftEntity craftn = (CraftEntity) getBukkitEntity().getVehicle();
++                Entity n = craftn == null ? null : craftn.getHandle();
++                if (event.isCancelled() || n != orig) {
++                    return false;
++                }
++            }
++            // CraftBukkit end
+             if (this.isPassenger()) {
+                 this.stopRiding();
+             }
+@@ -1701,6 +1719,22 @@ public abstract class Entity implements ICommandListener {
+ 
+     public void stopRiding() {
+         if (this.at != null) {
++            // CraftBukkit start
++            CraftEntity craft = (CraftEntity) getBukkitEntity().getVehicle();
++            Entity orig = craft == null ? null : craft.getHandle();
++            if (this.getRiding().getBukkitEntity() instanceof Vehicle && getBukkitEntity() instanceof LivingEntity && world.isChunkLoaded((int) locX >> 4, (int) locZ >> 4, false)) { // Boolean not used
++                VehicleExitEvent event = new VehicleExitEvent(
++                        (Vehicle) this.getRiding().getBukkitEntity(),
++                        (LivingEntity) getBukkitEntity()
++                );
++                Bukkit.getPluginManager().callEvent(event);
++                CraftEntity craftn = (CraftEntity) getBukkitEntity().getVehicle();
++                Entity n = craftn == null ? null : craftn.getHandle();
++                if (event.isCancelled() || n != orig) {
++                    return;
++                }
++            }
++            // CraftBukkit end
+             Entity entity = this.at;
+ 
+             this.at = null;
+@@ -1713,24 +1747,6 @@ public abstract class Entity implements ICommandListener {
+         if (entity.bz() != this) {
+             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
+         } else {
+-            // CraftBukkit start
+-            com.google.common.base.Preconditions.checkState(!entity.passengers.contains(this), "Circular entity riding! %s %s", this, entity);
+-
+-            CraftEntity craft = (CraftEntity) entity.getBukkitEntity().getVehicle();
+-            Entity orig = craft == null ? null : craft.getHandle();
+-            if (getBukkitEntity() instanceof Vehicle && entity.getBukkitEntity() instanceof LivingEntity && entity.world.isChunkLoaded((int) entity.locX >> 4, (int) entity.locZ >> 4, false)) { // Boolean not used
+-                VehicleEnterEvent event = new VehicleEnterEvent(
+-                        (Vehicle) getBukkitEntity(),
+-                         entity.getBukkitEntity()
+-                );
+-                Bukkit.getPluginManager().callEvent(event);
+-                CraftEntity craftn = (CraftEntity) entity.getBukkitEntity().getVehicle();
+-                Entity n = craftn == null ? null : craftn.getHandle();
+-                if (event.isCancelled() || n != orig) {
+-                    return;
+-                }
+-            }
+-            // CraftBukkit end
+             if (!this.world.isClientSide && entity instanceof EntityHuman && !(this.bu() instanceof EntityHuman)) {
+                 this.passengers.add(0, entity);
+             } else {
+@@ -1744,22 +1760,6 @@ public abstract class Entity implements ICommandListener {
+         if (entity.bz() == this) {
+             throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
+         } else {
+-            // CraftBukkit start
+-            CraftEntity craft = (CraftEntity) entity.getBukkitEntity().getVehicle();
+-            Entity orig = craft == null ? null : craft.getHandle();
+-            if (getBukkitEntity() instanceof Vehicle && entity.getBukkitEntity() instanceof LivingEntity) {
+-                VehicleExitEvent event = new VehicleExitEvent(
+-                        (Vehicle) getBukkitEntity(),
+-                        (LivingEntity) entity.getBukkitEntity()
+-                );
+-                Bukkit.getPluginManager().callEvent(event);
+-                CraftEntity craftn = (CraftEntity) entity.getBukkitEntity().getVehicle();
+-                Entity n = craftn == null ? null : craftn.getHandle();
+-                if (event.isCancelled() || n != orig) {
+-                    return;
+-                }
+-            }
+-            // CraftBukkit end
+             this.passengers.remove(entity);
+             entity.j = 60;
+         }
+@@ -2604,6 +2604,7 @@ public abstract class Entity implements ICommandListener {
+         return entity instanceof EntityHuman ? ((EntityHuman) entity).cK() : !this.world.isClientSide;
+     }
+ 
++    @Nullable Entity getRiding() { return this.bz(); } // SportBukkit - alias for following method
+     @Nullable
+     public Entity bz() {
+         return this.at;
+-- 
+1.9.0
+

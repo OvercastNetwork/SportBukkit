@@ -1,4 +1,4 @@
-From 2185ae0801b40ee188b75056197761fafb0b27c2 Mon Sep 17 00:00:00 2001
+From a10bdc9fda99c4888a97d0e052d8fdc0238c9407 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Fri, 5 Oct 2012 12:00:26 -0700
 Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
@@ -6,10 +6,10 @@ Subject: [PATCH] Call BlockFormEvent for obsidian and cobblestone formation
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
-index 675cdc0..a3dbb1c 100644
+index a076f4d..bea23b5 100644
 --- a/src/main/java/net/minecraft/server/BlockFluids.java
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
-@@ -160,17 +160,37 @@ public abstract class BlockFluids extends Block {
+@@ -163,17 +163,37 @@ public abstract class BlockFluids extends Block {
              if (flag) {
                  Integer integer = (Integer) iblockdata.get(BlockFluids.LEVEL);
  

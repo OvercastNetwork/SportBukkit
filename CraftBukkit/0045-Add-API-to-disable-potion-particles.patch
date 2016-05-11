@@ -1,14 +1,14 @@
-From 13abe3d2963c63bba48090e09baec24332303ace Mon Sep 17 00:00:00 2001
+From 22a294f05d5bf29a62a3a29b27ce6152587fd531 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 12060c4..e9ff132 100644
+index 072cda5..1d90d87 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -23,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+@@ -24,6 +24,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
  import org.bukkit.event.entity.EntityRegainHealthEvent;
  import org.bukkit.event.entity.EntityTeleportEvent;
  import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -17,8 +17,8 @@ index 12060c4..e9ff132 100644
  // CraftBukkit end
  
  public abstract class EntityLiving extends Entity {
-@@ -572,10 +574,17 @@ public abstract class EntityLiving extends Entity {
-             this.bM();
+@@ -573,10 +575,17 @@ public abstract class EntityLiving extends Entity {
+             this.bN();
              this.setInvisible(false);
          } else {
 -            Collection collection = this.effects.values();
@@ -29,7 +29,7 @@ index 12060c4..e9ff132 100644
 +                this.datawatcher.set(EntityLiving.g, Boolean.valueOf(a(collection)));
 +                this.datawatcher.set(EntityLiving.f, Integer.valueOf(PotionUtil.a(collection)));
 +            } else {
-+                this.bM();
++                this.clearPotionEffectMetadata();
 +            }
 +            // SportBukkit end
  
@@ -38,7 +38,7 @@ index 12060c4..e9ff132 100644
              this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
          }
  
-@@ -824,7 +833,7 @@ public abstract class EntityLiving extends Entity {
+@@ -827,7 +836,7 @@ public abstract class EntityLiving extends Entity {
  
                  // CraftBukkit start
                  if(this instanceof EntityAnimal){
@@ -48,7 +48,7 @@ index 12060c4..e9ff132 100644
                          ((EntityTameableAnimal)this).getGoalSit().setSitting(false);
                      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 6ef55bd..9a9134d 100644
+index aad4ce6..1e46372 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -77,6 +77,7 @@ import org.bukkit.util.Vector;

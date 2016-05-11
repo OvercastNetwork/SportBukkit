@@ -1,0 +1,237 @@
+From b9e2806ff648c485b24cea7fb51e2607fd308b95 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 14 May 2016 23:40:38 -0400
+Subject: [PATCH] 1.9 to 1.9.2 legacy protocol support
+
+
+diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
+index 0c9c9eb..f1cc98c 100644
+--- a/src/main/java/net/minecraft/server/HandshakeListener.java
++++ b/src/main/java/net/minecraft/server/HandshakeListener.java
+@@ -65,7 +65,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
+                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.9.4");
+                 this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
+                 this.b.close(chatcomponenttext);
+-            } else if (packethandshakinginsetprotocol.b() < 110) {
++            } else if (packethandshakinginsetprotocol.b() < 107) { // SportBukkit
+                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.9.4");
+                 this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
+                 this.b.close(chatcomponenttext);
+diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+index 3caf1e4..f3544bc 100644
+--- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
++++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
+@@ -25,6 +25,8 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
+ 
+ public class PacketDataSerializer extends ByteBuf {
+ 
++    public int protocolVersion = 110; // SportBukkit
++
+     private final ByteBuf a;
+ 
+     public PacketDataSerializer(ByteBuf bytebuf) {
+diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
+index b39319e..6cc519b 100644
+--- a/src/main/java/net/minecraft/server/PacketEncoder.java
++++ b/src/main/java/net/minecraft/server/PacketEncoder.java
+@@ -31,6 +31,14 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
+         } else {
+             PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
+ 
++            // SportBukkit start
++            final NetworkManager networkManager = channelhandlercontext.pipeline().get(NetworkManager.class);
++            if(networkManager != null) {
++                packetdataserializer.protocolVersion = networkManager.protocolVersion;
++                integer = org.bukkit.craftbukkit.protocol.ProtocolTranslators.translator(packetdataserializer.protocolVersion).reversePacketId(integer);
++            }
++            // SportBukkit end
++
+             packetdataserializer.d(integer.intValue());
+ 
+             try {
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
+index 4248aa1..1d3288a 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
+@@ -75,6 +75,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
+         packetdataserializer.d(this.c);
+         packetdataserializer.d(this.d.length);
+         packetdataserializer.writeBytes(this.d);
++        if(packetdataserializer.protocolVersion < 110) return; // SportBukkit
+         packetdataserializer.d(this.e.size());
+         Iterator iterator = this.e.iterator();
+ 
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
+index b30c97e..ee10455 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
+@@ -23,6 +23,18 @@ public class PacketPlayOutTileEntityData implements Packet<PacketListenerPlayOut
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        // SportBukkit start
++        if(b == 9 && packetdataserializer.protocolVersion < 110) {
++            // Fake a sign update packet
++            packetdataserializer.writerIndex(packetdataserializer.writerIndex() - 1);
++            packetdataserializer.d(0x46); // rewrite the packet ID
++            packetdataserializer.a(this.a);
++            for(int line = 0; line < 4; line++) {
++                packetdataserializer.a(IChatBaseComponent.ChatSerializer.a(c.getString("Text" + (line + 1))));
++            }
++            return;
++        }
++        // SportBukkit end
+         packetdataserializer.a(this.a);
+         packetdataserializer.writeByte((byte) this.b);
+         packetdataserializer.a(this.c);
+diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
+index 89d63bc..ed98a9f 100644
+--- a/src/main/java/net/minecraft/server/PlayerChunk.java
++++ b/src/main/java/net/minecraft/server/PlayerChunk.java
+@@ -36,6 +36,33 @@ public class PlayerChunk {
+     };
+     // CraftBukkit end
+ 
++    // SportBukkit start
++    private List<Packet> getTileEntityPackets(int sectionMask) {
++        final List<Packet> packets = new java.util.ArrayList<Packet>();
++        for(TileEntity tile : chunk.getTileEntities().values()) {
++            if((sectionMask & (1 << (tile.getPosition().getY() >> 4))) != 0) {
++                final Packet packet = tile.getUpdatePacket();
++                if(packet != null) packets.add(packet);
++            }
++        }
++        return packets;
++    }
++
++    private void sendLegacyTileEntityUpdates(int sectionMask, java.util.Collection<EntityPlayer> players) {
++        if(sectionMask == 0 || players.isEmpty()) return;
++        List<Packet> packets = null;
++        for(EntityPlayer viewer : players) {
++            if(viewer.protocolVersion < 110) {
++                if(packets == null) {
++                    packets = getTileEntityPackets(sectionMask);
++                    if(packets.isEmpty()) return;
++                }
++                for(Packet packet : packets) viewer.playerConnection.sendPacket(packet);
++            }
++        }
++    }
++    // SportBukkit end
++
+     public PlayerChunk(PlayerChunkMap playerchunkmap, int i, int j) {
+         this.playerChunkMap = playerchunkmap;
+         this.location = new ChunkCoordIntPair(i, j);
+@@ -138,6 +165,7 @@ public class PlayerChunk {
+                 this.playerChunkMap.getWorld().getTracker().a(entityplayer, this.chunk);
+             }
+ 
++            sendLegacyTileEntityUpdates(0xffff, this.c); // SportBukkit
+             return true;
+         }
+     }
+@@ -146,6 +174,7 @@ public class PlayerChunk {
+         if (this.done) {
+             entityplayer.playerConnection.sendPacket(new PacketPlayOutMapChunk(this.chunk, '\uffff'));
+             this.playerChunkMap.getWorld().getTracker().a(entityplayer, this.chunk);
++            sendLegacyTileEntityUpdates(0xffff, java.util.Collections.singleton(entityplayer)); // SportBukkit
+         }
+     }
+ 
+@@ -207,6 +236,7 @@ public class PlayerChunk {
+                     }
+                 } else if (this.dirtyCount == 64) {
+                     this.a((Packet) (new PacketPlayOutMapChunk(this.chunk, this.h)));
++                    sendLegacyTileEntityUpdates(this.h, this.c); // SportBukkit
+                 } else {
+                     this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 2eb2372..3d1fe50 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1801,6 +1801,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+ 
+     @Override
+     public Set<Integer> getProtocolVersions() {
+-        return ImmutableSet.of(110);
++        return ImmutableSet.of(107, 108, 109, 110);
+     }
+ }
+diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java
+new file mode 100644
+index 0000000..cfc09fa
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java
+@@ -0,0 +1,21 @@
++package org.bukkit.craftbukkit.protocol;
++
++import com.google.common.collect.BiMap;
++import com.google.common.collect.HashBiMap;
++
++public abstract class ProtocolTranslator {
++
++    protected final BiMap<Integer, Integer> IDS = HashBiMap.create(); // legacyId -> currentId
++
++    public abstract int protocolVersion();
++
++    public int forwardPacketId(int legacyId) {
++        final Integer currentId = IDS.get(legacyId);
++        return currentId != null ? currentId : legacyId;
++    }
++
++    public int reversePacketId(int currentId) {
++        final Integer legacyId = IDS.inverse().get(currentId);
++        return legacyId != null ? legacyId : currentId;
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java
+new file mode 100644
+index 0000000..5d650ca
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java
+@@ -0,0 +1,41 @@
++package org.bukkit.craftbukkit.protocol;
++
++import java.util.List;
++
++import com.google.common.collect.ImmutableList;
++
++public class ProtocolTranslators {
++
++    public static ProtocolTranslator translator(int protocolVersion) {
++        for(ProtocolTranslator translator : TRANSLATORS) {
++            if(translator.protocolVersion() <= protocolVersion) {
++                return translator;
++            }
++        }
++        return IDENTITY;
++    }
++
++    private static final ProtocolTranslator IDENTITY = new Identity();
++
++    private static final List<? extends ProtocolTranslator> TRANSLATORS = ImmutableList.of(
++        IDENTITY,
++        new From109()
++    );
++
++    private static class Identity extends ProtocolTranslator {
++        @Override public int protocolVersion() { return 110; }
++    }
++
++    private static class From109 extends Identity {
++        @Override public int protocolVersion() { return 109; }
++
++        public From109() {
++            IDS.put(0x47, 0x46); // PacketPlayOutNamedSoundEffect
++            IDS.put(0x48, 0x47); // PacketPlayOutPlayerListHeaderFooter
++            IDS.put(0x49, 0x48); // PacketPlayOutCollect
++            IDS.put(0x4a, 0x49); // PacketPlayOutEntityTeleport
++            IDS.put(0x4b, 0x4a); // PacketPlayOutUpdateAttributes
++            IDS.put(0x4c, 0x4b); // PacketPlayOutEntityEffect
++        }
++    }
++}
+-- 
+1.9.0
+

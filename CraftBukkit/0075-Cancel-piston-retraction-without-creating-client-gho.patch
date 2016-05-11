@@ -1,14 +1,14 @@
-From afd54f18a3a8547616924a33286a05cc7e9df149 Mon Sep 17 00:00:00 2001
+From 0642ac7480ab1169665407da56e0fd991af57645 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 Feb 2015 05:18:37 -0500
 Subject: [PATCH] Cancel piston retraction without creating client ghost blocks
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockPiston.java b/src/main/java/net/minecraft/server/BlockPiston.java
-index 47abb8c..3354084 100644
+index 7e9d4fd..9b2628e 100644
 --- a/src/main/java/net/minecraft/server/BlockPiston.java
 +++ b/src/main/java/net/minecraft/server/BlockPiston.java
-@@ -178,6 +178,11 @@ public class BlockPiston extends BlockDirectional {
+@@ -179,6 +179,11 @@ public class BlockPiston extends BlockDirectional {
          }
  
          if (i == 0) {
@@ -20,7 +20,7 @@ index 47abb8c..3354084 100644
              if (!this.a(world, blockposition, enumdirection, true)) {
                  return false;
              }
-@@ -193,6 +198,12 @@ public class BlockPiston extends BlockDirectional {
+@@ -194,6 +199,12 @@ public class BlockPiston extends BlockDirectional {
  
              world.setTypeAndData(blockposition, Blocks.PISTON_EXTENSION.getBlockData().set(BlockPistonMoving.FACING, enumdirection).set(BlockPistonMoving.TYPE, this.sticky ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT), 3);
              world.setTileEntity(blockposition, BlockPistonMoving.a(this.fromLegacyData(j), enumdirection, false, true));
@@ -33,7 +33,7 @@ index 47abb8c..3354084 100644
              if (this.sticky) {
                  BlockPosition blockposition1 = blockposition.a(enumdirection.getAdjacentX() * 2, enumdirection.getAdjacentY() * 2, enumdirection.getAdjacentZ() * 2);
                  IBlockData iblockdata1 = world.getType(blockposition1);
-@@ -308,6 +319,7 @@ public class BlockPiston extends BlockDirectional {
+@@ -310,6 +321,7 @@ public class BlockPiston extends BlockDirectional {
              int j = list.size() + list1.size();
              IBlockData[] aiblockdata = new IBlockData[j];
              EnumDirection enumdirection1 = flag ? enumdirection : enumdirection.opposite();
@@ -41,7 +41,7 @@ index 47abb8c..3354084 100644
              // CraftBukkit start
              final org.bukkit.block.Block bblock = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
  
-@@ -350,6 +362,7 @@ public class BlockPiston extends BlockDirectional {
+@@ -352,6 +364,7 @@ public class BlockPiston extends BlockDirectional {
                  return false;
              }
              // CraftBukkit end
@@ -50,7 +50,7 @@ index 47abb8c..3354084 100644
              int k;
              BlockPosition blockposition2;
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index f35f770..26b65b9 100644
+index e55a01e..bdbbc86 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -1,6 +1,7 @@

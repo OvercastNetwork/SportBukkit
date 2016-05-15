@@ -1,4 +1,4 @@
-From b9e2806ff648c485b24cea7fb51e2607fd308b95 Mon Sep 17 00:00:00 2001
+From ffbd9a7e264e4d886fc886b98cdeff8af3708e8c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] 1.9 to 1.9.2 legacy protocol support
@@ -49,6 +49,25 @@ index b39319e..6cc519b 100644
              packetdataserializer.d(integer.intValue());
  
              try {
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
+index 1b4d0fc..bd5e2e7 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
+@@ -54,7 +54,13 @@ public class PacketPlayOutLogin implements Packet<PacketListenerPlayOut> {
+         }
+ 
+         packetdataserializer.writeByte(i);
+-        packetdataserializer.writeInt(this.d);
++        // SportBukkit start
++        if (packetdataserializer.protocolVersion < 108) {
++            packetdataserializer.writeByte(this.d);
++        } else {
++            packetdataserializer.writeInt(this.d);
++        }
++        // SportBukkit end
+         packetdataserializer.writeByte(this.e.a());
+         packetdataserializer.writeByte(this.f);
+         packetdataserializer.a(this.g.name());
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 index 4248aa1..1d3288a 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
@@ -61,6 +80,29 @@ index 4248aa1..1d3288a 100644
          packetdataserializer.d(this.e.size());
          Iterator iterator = this.e.iterator();
  
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+index 2db80e8..4d55b00 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+@@ -38,7 +38,17 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+-        packetdataserializer.d(SoundEffect.a.a(this.a)); // SportBukkit - fix decompile error
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 108) {
++            int id = SoundEffect.a.a(this.a);
++            if (id >= SoundEffect.a.a(SoundEffect.a.get(new MinecraftKey("item.elytra.flying")))) {
++                id--;
++            }
++            packetdataserializer.d(id);
++        } else {
++            packetdataserializer.d(SoundEffect.a.a(this.a));
++        }
++        // SportBukkit end
+         packetdataserializer.a((Enum) this.b);
+         packetdataserializer.writeInt(this.c);
+         packetdataserializer.writeInt(this.d);
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
 index b30c97e..ee10455 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
@@ -187,7 +229,7 @@ index 0000000..cfc09fa
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java
 new file mode 100644
-index 0000000..5d650ca
+index 0000000..5c5313f
 --- /dev/null
 +++ b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslators.java
 @@ -0,0 +1,41 @@
@@ -208,21 +250,21 @@ index 0000000..5d650ca
 +        return IDENTITY;
 +    }
 +
-+    private static final ProtocolTranslator IDENTITY = new Identity();
++    private static final ProtocolTranslator IDENTITY = new Proto110();
 +
 +    private static final List<? extends ProtocolTranslator> TRANSLATORS = ImmutableList.of(
 +        IDENTITY,
-+        new From109()
++        new Proto107()
 +    );
 +
-+    private static class Identity extends ProtocolTranslator {
++    private static class Proto110 extends ProtocolTranslator {
 +        @Override public int protocolVersion() { return 110; }
 +    }
 +
-+    private static class From109 extends Identity {
-+        @Override public int protocolVersion() { return 109; }
++    private static class Proto107 extends Proto110 {
++        @Override public int protocolVersion() { return 107; }
 +
-+        public From109() {
++        public Proto107() {
 +            IDS.put(0x47, 0x46); // PacketPlayOutNamedSoundEffect
 +            IDS.put(0x48, 0x47); // PacketPlayOutPlayerListHeaderFooter
 +            IDS.put(0x49, 0x48); // PacketPlayOutCollect

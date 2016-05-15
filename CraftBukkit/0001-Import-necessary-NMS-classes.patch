@@ -1,4 +1,4 @@
-From 1734bec6205a25c11b4ac23833b45d56fe752df2 Mon Sep 17 00:00:00 2001
+From 13a34a159c2abe1791799883207d4d2b48494652 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -2318,6 +2318,79 @@ index 0000000..76a558e
 +        packetlistenerplayout.a(this);
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
+new file mode 100644
+index 0000000..1b4d0fc
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
+@@ -0,0 +1,67 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutLogin implements Packet<PacketListenerPlayOut> {
++
++    private int a;
++    private boolean b;
++    private WorldSettings.EnumGamemode c;
++    private int d;
++    private EnumDifficulty e;
++    private int f;
++    private WorldType g;
++    private boolean h;
++
++    public PacketPlayOutLogin() {}
++
++    public PacketPlayOutLogin(int i, WorldSettings.EnumGamemode worldsettings_enumgamemode, boolean flag, int j, EnumDifficulty enumdifficulty, int k, WorldType worldtype, boolean flag1) {
++        this.a = i;
++        this.d = j;
++        this.e = enumdifficulty;
++        this.c = worldsettings_enumgamemode;
++        this.f = k;
++        this.b = flag;
++        this.g = worldtype;
++        this.h = flag1;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.readInt();
++        short short0 = packetdataserializer.readUnsignedByte();
++
++        this.b = (short0 & 8) == 8;
++        int i = short0 & -9;
++
++        this.c = WorldSettings.EnumGamemode.getById(i);
++        this.d = packetdataserializer.readInt();
++        this.e = EnumDifficulty.getById(packetdataserializer.readUnsignedByte());
++        this.f = packetdataserializer.readUnsignedByte();
++        this.g = WorldType.getType(packetdataserializer.e(16));
++        if (this.g == null) {
++            this.g = WorldType.NORMAL;
++        }
++
++        this.h = packetdataserializer.readBoolean();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.writeInt(this.a);
++        int i = this.c.getId();
++
++        if (this.b) {
++            i |= 8;
++        }
++
++        packetdataserializer.writeByte(i);
++        packetdataserializer.writeInt(this.d);
++        packetdataserializer.writeByte(this.e.a());
++        packetdataserializer.writeByte(this.f);
++        packetdataserializer.a(this.g.name());
++        packetdataserializer.writeBoolean(this.h);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 new file mode 100644
 index 0000000..4248aa1
@@ -2577,6 +2650,65 @@ index 0000000..072c2ba
 +        packetdataserializer.writeByte(this.f);
 +        packetdataserializer.writeByte(this.g);
 +        this.h.a(packetdataserializer);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+new file mode 100644
+index 0000000..b035dc8
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+@@ -0,0 +1,53 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import org.apache.commons.lang3.Validate;
++
++public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayOut> {
++
++    private SoundEffect a;
++    private SoundCategory b;
++    private int c;
++    private int d;
++    private int e;
++    private float f;
++    private int g;
++
++    public PacketPlayOutNamedSoundEffect() {}
++
++    public PacketPlayOutNamedSoundEffect(SoundEffect soundeffect, SoundCategory soundcategory, double d0, double d1, double d2, float f, float f1) {
++        Validate.notNull(soundeffect, "sound", new Object[0]);
++        this.a = soundeffect;
++        this.b = soundcategory;
++        this.c = (int) (d0 * 8.0D);
++        this.d = (int) (d1 * 8.0D);
++        this.e = (int) (d2 * 8.0D);
++        this.f = f;
++        this.g = (int) (f1 * 63.0F);
++        f1 = MathHelper.a(f1, 0.0F, 255.0F);
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = (SoundEffect) SoundEffect.a.getId(packetdataserializer.g());
++        this.b = (SoundCategory) packetdataserializer.a(SoundCategory.class);
++        this.c = packetdataserializer.readInt();
++        this.d = packetdataserializer.readInt();
++        this.e = packetdataserializer.readInt();
++        this.f = packetdataserializer.readFloat();
++        this.g = packetdataserializer.readUnsignedByte();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(SoundEffect.a.a((Object) this.a));
++        packetdataserializer.a((Enum) this.b);
++        packetdataserializer.writeInt(this.c);
++        packetdataserializer.writeInt(this.d);
++        packetdataserializer.writeInt(this.e);
++        packetdataserializer.writeFloat(this.f);
++        packetdataserializer.writeByte(this.g);
 +    }
 +
 +    public void a(PacketListenerPlayOut packetlistenerplayout) {

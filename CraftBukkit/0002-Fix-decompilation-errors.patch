@@ -1,4 +1,4 @@
-From 48fe25a753f0b6d0f0fead2bcb9fe01869baef1b Mon Sep 17 00:00:00 2001
+From a63c5d8c3c286682b8cd23777c1e5fd2d9615c79 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -87,6 +87,19 @@ index 2b23a5d..35f6c5c 100644
          packetdataserializer.d(this.a);
          packetdataserializer.a((Enum) this.action);
          if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+index b035dc8..2db80e8 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+@@ -38,7 +38,7 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+-        packetdataserializer.d(SoundEffect.a.a((Object) this.a));
++        packetdataserializer.d(SoundEffect.a.a(this.a)); // SportBukkit - fix decompile error
+         packetdataserializer.a((Enum) this.b);
+         packetdataserializer.writeInt(this.c);
+         packetdataserializer.writeInt(this.d);
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
 index 969241a..3db505a 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java

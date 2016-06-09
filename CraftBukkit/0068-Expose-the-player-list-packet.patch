@@ -1,11 +1,11 @@
-From c9d7bd01bf6804099cedee97dab087d2d889db9a Mon Sep 17 00:00:00 2001
+From 3d4cc4ab420ed2dc526fd15f0583a22f14e115e6 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 13 Feb 2015 02:34:42 -0500
 Subject: [PATCH] Expose the player list packet
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-index 7cf9fe5..925870b 100644
+index f7a02a6..ae78d61 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 @@ -144,6 +144,15 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
@@ -47,7 +47,7 @@ index 7cf9fe5..925870b 100644
 +        public net.md_5.bungee.api.chat.BaseComponent[] displayName; // SportBukkit
 +
          private final int b;
-         private final WorldSettings.EnumGamemode c;
+         private final EnumGamemode c;
          private final GameProfile d;
 -- 
 1.9.0

@@ -1,4 +1,4 @@
-From 6ae950e9ca86daa3a3356d583e1a08be77ab95bd Mon Sep 17 00:00:00 2001
+From b3fcdb8b9dc26ca6409d29bf38e302e0b30a4dab Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 19 Jun 2015 15:02:55 -0400
 Subject: [PATCH] Retrieve metadata by plugin
@@ -70,10 +70,10 @@ index a21c32a..a946ee0 100644
          return server.getEntityMetadata().getMetadata(this, metadataKey);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3158574..471a0ed 100644
+index 529e746..9d626ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1457,6 +1457,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1450,6 +1450,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

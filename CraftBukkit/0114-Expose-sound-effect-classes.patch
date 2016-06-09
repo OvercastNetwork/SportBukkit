@@ -1,4 +1,4 @@
-From 16dc4f2b326154ae146bf94866eeac2e23378b37 Mon Sep 17 00:00:00 2001
+From 993aa2034bf04bf314e272a0877e960e9b21b199 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 05:28:58 -0500
 Subject: [PATCH] Expose sound effect classes
@@ -17,7 +17,7 @@ index 0f5e4d5..f6bcfae 100644
          return this.stepSound;
      }
 diff --git a/src/main/java/net/minecraft/server/SoundEffectType.java b/src/main/java/net/minecraft/server/SoundEffectType.java
-index 98a147b..3824101 100644
+index cad3fef..b3b061b 100644
 --- a/src/main/java/net/minecraft/server/SoundEffectType.java
 +++ b/src/main/java/net/minecraft/server/SoundEffectType.java
 @@ -40,15 +40,23 @@ public class SoundEffectType {
@@ -29,19 +29,19 @@ index 98a147b..3824101 100644
          return this.p;
      }
  
-+    public SoundEffect placeSound() { return this.d(); } // SportBukkit - alias for following method
++    public SoundEffect placeSound() { return this.e(); } // SportBukkit - alias for following method
      public SoundEffect e() {
          return this.q;
      }
  
-+    public SoundEffect fallSound() { return this.d(); } // SportBukkit - alias for following method
++    public SoundEffect fallSound() { return this.g(); } // SportBukkit - alias for following method
      public SoundEffect g() {
          return this.s;
      }
 +
 +    // SportBukkit start - add missing accessors
 +    public SoundEffect breakSound() { return this.o;}
-+    public SoundEffect hitSound() { return this.o;}
++    public SoundEffect hitSound() { return this.r;}
 +    // SportBukkit end
  }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java

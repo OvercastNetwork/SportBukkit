@@ -1,11 +1,11 @@
-From bca46ed3cbdbf872c1ceb66f11e5da1b72fef5c7 Mon Sep 17 00:00:00 2001
+From 1cbdf0a605a8549a1cf6fb8a878b9c055e473142 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 25 Apr 2016 20:47:20 -0400
 Subject: [PATCH] Add Player.willBeOnline method
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 5fb9236..dd8f27a 100644
+index 15a496d..8ae64c8 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -384,6 +384,8 @@ public abstract class PlayerList {
@@ -35,18 +35,18 @@ index 4521786..b4ca640 100644
          Player player = getPlayer();
          if (player != null) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 28d746c..2c78a9a 100644
+index 17b3d24..cf7bee7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -94,6 +94,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -93,6 +93,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private Skin realSkin;
      private boolean showInvisibles;
      private PlayerResourcePackStatusEvent.Status resourcePackStatus;
-     private String resourcePackHash;
 +    private boolean quitting;
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -132,6 +133,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -131,6 +132,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return server.getPlayer(getUniqueId()) != null;
      }
  

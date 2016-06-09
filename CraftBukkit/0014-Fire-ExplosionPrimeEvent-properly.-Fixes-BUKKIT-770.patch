@@ -1,11 +1,11 @@
-From 958ccae405608692d873c2768873e0eb96eb155d Mon Sep 17 00:00:00 2001
+From d65cfc4034314022e8b359bc3470381e9e1e2c5c Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index ce79e19..5323722 100644
+index 863cba4..841c40e 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -63,26 +63,21 @@ index ce79e19..5323722 100644
          }
      }
  
-@@ -47,8 +66,16 @@ public class BlockTNT extends Block {
+@@ -47,6 +66,13 @@ public class BlockTNT extends Block {
              if (((Boolean) iblockdata.get(BlockTNT.EXPLODE)).booleanValue()) {
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), entityliving);
  
--                world.addEntity(entitytntprimed);
--                world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gk, SoundCategory.BLOCKS, 1.0F, 1.0F);
 +                // SportBukkit start - fire ExplosionPrimeEvent
 +                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                world.getServer().getPluginManager().callEvent(event);
-+
-+                if(!event.isCancelled()) {
-+                    isPrimed = true;
-+                    world.addEntity(entitytntprimed);
-+                    world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gk, SoundCategory.BLOCKS, 1.0F, 1.0F);
-+                }
++                if(!event.isCancelled()) return;
++                isPrimed = true;
 +                // SportBukkit end
++
+                 world.addEntity(entitytntprimed);
+                 world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gz, SoundCategory.BLOCKS, 1.0F, 1.0F);
              }
- 
-         }
-@@ -57,7 +84,11 @@ public class BlockTNT extends Block {
+@@ -57,7 +83,11 @@ public class BlockTNT extends Block {
      public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
          if (itemstack != null && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
              this.a(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)), (EntityLiving) entityhuman);
@@ -95,7 +90,7 @@ index ce79e19..5323722 100644
              if (itemstack.getItem() == Items.FLINT_AND_STEEL) {
                  itemstack.damage(1, entityhuman);
              } else if (!entityhuman.abilities.canInstantlyBuild) {
-@@ -76,7 +107,11 @@ public class BlockTNT extends Block {
+@@ -76,7 +106,11 @@ public class BlockTNT extends Block {
  
              if (entityarrow.isBurning()) {
                  this.a(world, blockposition, world.getType(blockposition).set(BlockTNT.EXPLODE, Boolean.valueOf(true)), entityarrow.shooter instanceof EntityLiving ? (EntityLiving) entityarrow.shooter : null);

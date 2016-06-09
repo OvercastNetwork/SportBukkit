@@ -1,7 +1,7 @@
-From 86bb3ec1de6be108c829e55b34b282a52fdc3dde Mon Sep 17 00:00:00 2001
+From a04165551ae6f70bed0975aa08d1d342c3900c8a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
-Subject: [PATCH] 1.9 to 1.9.2 legacy protocol support
+Subject: [PATCH] Legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
@@ -31,7 +31,7 @@ index a24c2c0..bdd13d6 100644
  
      public PacketDataSerializer(ByteBuf bytebuf) {
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index b39319e..6cc519b 100644
+index f4066bd..e0eb61c 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
 +++ b/src/main/java/net/minecraft/server/PacketEncoder.java
 @@ -31,6 +31,14 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
@@ -50,7 +50,7 @@ index b39319e..6cc519b 100644
  
              try {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
-index 1b4d0fc..bd5e2e7 100644
+index 9a973d5..0204a68 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 @@ -54,7 +54,13 @@ public class PacketPlayOutLogin implements Packet<PacketListenerPlayOut> {
@@ -69,7 +69,7 @@ index 1b4d0fc..bd5e2e7 100644
          packetdataserializer.writeByte(this.f);
          packetdataserializer.a(this.g.name());
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
-index 4248aa1..1d3288a 100644
+index 925e27d..0cc7e95 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 @@ -75,6 +75,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
@@ -81,10 +81,10 @@ index 4248aa1..1d3288a 100644
          Iterator iterator = this.e.iterator();
  
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
-index 2db80e8..4d55b00 100644
+index 030f02f..7596422 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
-@@ -38,7 +38,17 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
+@@ -37,7 +37,17 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
      }
  
      public void b(PacketDataSerializer packetdataserializer) throws IOException {

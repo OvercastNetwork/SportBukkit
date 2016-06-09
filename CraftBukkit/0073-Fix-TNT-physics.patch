@@ -1,11 +1,24 @@
-From aeb461a2e283d712e0f8f4dbf0f96069fe584bf6 Mon Sep 17 00:00:00 2001
+From 6f7c6faf3091571b9986d38e438f30e5a4764323 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 08:28:39 -0500
 Subject: [PATCH] Fix TNT physics
 
 
+diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
+index 4e2b632..5e18321 100644
+--- a/src/main/java/net/minecraft/server/Entity.java
++++ b/src/main/java/net/minecraft/server/Entity.java
+@@ -968,7 +968,7 @@ public abstract class Entity implements ICommandListener {
+         return this.inWater;
+     }
+ 
+-    public boolean ak() {
++    public boolean ak() { // SportBukkit - method overridden in EntityTNTPrimed (use this comment to find the base method if it gets renamed)
+         if (this.bB() instanceof EntityBoat) {
+             this.inWater = false;
+         } else if (this.world.a(this.getBoundingBox().grow(0.0D, -0.4000000059604645D, 0.0D).shrink(0.001D), Material.WATER, this)) {
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index b4354ab..7315433 100644
+index b4354ab..de844e7 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 @@ -78,6 +78,43 @@ public class EntityTNTPrimed extends Entity {
@@ -14,15 +27,15 @@ index b4354ab..7315433 100644
  
 +    // SportBukkit start - Prevent TNT from being pushed in water by overriding the method that applies the motion
 +    @Override
-+    public boolean aj() {
-+        if(this.world.getServer().getWaterPushesTNT()) return super.aj();
++    public boolean ak() {
++        if(this.world.getServer().getWaterPushesTNT()) return super.ak();
 +
 +        // Preserve velocity while calling the super method
 +        double oldMotX = this.motX;
 +        double oldMotY = this.motY;
 +        double oldMotZ = this.motZ;
 +
-+        super.aj();
++        super.ak();
 +
 +        this.motX = oldMotX;
 +        this.motY = oldMotY;

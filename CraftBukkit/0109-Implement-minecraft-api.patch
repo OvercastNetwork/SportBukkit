@@ -1,4 +1,4 @@
-From 784b269a375532f4a367d143965a84574f8509fb Mon Sep 17 00:00:00 2001
+From fd27e37b281fb63d805d5d48b3cb7afca6773f74 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -41,7 +41,7 @@ index f46c87f..3c8082b 100644
      private IChatBaseComponent n;
      private boolean o;
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 4c7b057..95dfc74 100644
+index 52e73a0..0270b73 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -473,6 +473,7 @@ public abstract class PlayerList {
@@ -158,10 +158,10 @@ index a946ee0..cbeac09 100644
          return getHandle().getName();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 471a0ed..c943d27 100644
+index 9d626ef..ad53e4d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1780,6 +1780,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1773,6 +1773,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -191,7 +191,7 @@ index 471a0ed..c943d27 100644
      public void sendMessage(BaseComponent component) {
        sendMessage( new BaseComponent[] { component } );
      }
-@@ -1890,4 +1913,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1883,4 +1906,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids) {
          return getTargetedBlock(getBlockReach(), nonSolids, liquids);
      }

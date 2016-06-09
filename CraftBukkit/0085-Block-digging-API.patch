@@ -1,4 +1,4 @@
-From aa1b7e5728d7c8aab9cd69e8a05dcafb70aeb600 Mon Sep 17 00:00:00 2001
+From a6a9398e8d8d5969aed53d5fcaf66176b668fb2c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 May 2015 14:30:20 -0400
 Subject: [PATCH] Block digging API
@@ -29,10 +29,10 @@ index 277fd53..6291603 100644
  
      private boolean c(BlockPosition blockposition) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4dd6722..071bf61 100644
+index a097b76..33a77be 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1858,4 +1858,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1851,4 +1851,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                                                               java.util.EnumSet.allOf(PacketPlayOutPosition.EnumPlayerTeleportFlags.class),
                                                               cause);
      }

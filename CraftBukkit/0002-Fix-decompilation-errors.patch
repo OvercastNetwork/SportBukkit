@@ -1,24 +1,25 @@
-From af5c470f2e9e71587f8c409ef95537d22a540dcb Mon Sep 17 00:00:00 2001
+From 3569975cdce30442c3b661b2073e3b16aa7aea73 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
 
 
 diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
-index 737035b..63fec2a 100644
+index 737035b..5886e4c 100644
 --- a/src/main/java/net/minecraft/server/GameProfileBanList.java
 +++ b/src/main/java/net/minecraft/server/GameProfileBanList.java
-@@ -51,8 +51,4 @@ public class GameProfileBanList extends JsonList<GameProfile, GameProfileBanEntr
- 
+@@ -52,7 +52,9 @@ public class GameProfileBanList extends JsonList<GameProfile, GameProfileBanEntr
          return (GameProfile) gameprofilebanentry.getKey();
      }
--
--    protected String a(Object object) {
--        return this.b((GameProfile) object);
--    }
+ 
++    /* SportBukkit - fix decomp error
+     protected String a(Object object) {
+         return this.b((GameProfile) object);
+     }
++    SportBukkit */
  }
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index f401d91..20d7af2 100644
+index accb5d3..85b07a0 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
 @@ -34,7 +34,7 @@ public class Item {
@@ -26,12 +27,12 @@ index f401d91..20d7af2 100644
  
      public static int getId(Item item) {
 -        return item == null ? 0 : Item.REGISTRY.a((Object) item);
-+        return item == null ? 0 : Item.REGISTRY.a(item);
++        return item == null ? 0 : Item.REGISTRY.a(item); // SportBukkit - fix decomp error
      }
  
      public static Item getById(int i) {
 diff --git a/src/main/java/net/minecraft/server/OpList.java b/src/main/java/net/minecraft/server/OpList.java
-index e5f457b..61a5592 100644
+index e5f457b..bf3bc6e 100644
 --- a/src/main/java/net/minecraft/server/OpList.java
 +++ b/src/main/java/net/minecraft/server/OpList.java
 @@ -28,7 +28,7 @@ public class OpList extends JsonList<GameProfile, OpListEntry> {
@@ -39,7 +40,7 @@ index e5f457b..61a5592 100644
      }
  
 -    public int a(GameProfile gameprofile) {
-+    public int getLevel(GameProfile gameprofile) {
++    public int getLevel(GameProfile gameprofile) { // SportBukkit - rename method to avoid decomp error
          OpListEntry oplistentry = (OpListEntry) this.get(gameprofile);
  
          return oplistentry != null ? oplistentry.a() : 0;
@@ -53,7 +54,7 @@ index e5f457b..61a5592 100644
 -    }
  }
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index a79fa01..ccf806e 100644
+index a79fa01..dd53ee7 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
 +++ b/src/main/java/net/minecraft/server/PacketEncoder.java
 @@ -42,7 +42,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
@@ -61,7 +62,7 @@ index a79fa01..ccf806e 100644
      }
  
 -    protected void encode(ChannelHandlerContext channelhandlercontext, Object object, ByteBuf bytebuf) throws Exception {
-+    protected void encode(ChannelHandlerContext channelhandlercontext, Packet<?> object, ByteBuf bytebuf) throws Exception {
++    protected void encode(ChannelHandlerContext channelhandlercontext, Packet<?> object, ByteBuf bytebuf) throws Exception { // SportBukkit - fix decomp error
          this.a(channelhandlercontext, (Packet) object, bytebuf);
      }
  }
@@ -88,10 +89,10 @@ index 2b23a5d..35f6c5c 100644
          packetdataserializer.a((Enum) this.action);
          if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
-index b035dc8..2db80e8 100644
+index 736015c..030f02f 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
-@@ -38,7 +38,7 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
+@@ -37,7 +37,7 @@ public class PacketPlayOutNamedSoundEffect implements Packet<PacketListenerPlayO
      }
  
      public void b(PacketDataSerializer packetdataserializer) throws IOException {
@@ -101,7 +102,7 @@ index b035dc8..2db80e8 100644
          packetdataserializer.writeInt(this.c);
          packetdataserializer.writeInt(this.d);
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 14c2e4b..d1b1008 100644
+index 14c2e4b..fa38563 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -732,7 +732,7 @@ public abstract class PlayerList {
@@ -109,49 +110,38 @@ index 14c2e4b..d1b1008 100644
      public void f(EntityPlayer entityplayer) {
          GameProfile gameprofile = entityplayer.getProfile();
 -        int i = this.isOp(gameprofile) ? this.operators.a(gameprofile) : 0;
-+        int i = this.isOp(gameprofile) ? this.operators.getLevel(gameprofile) : 0;
++        int i = this.isOp(gameprofile) ? this.operators.getLevel(gameprofile) : 0; // SportBukkit - rename method to avoid decomp error
  
          i = this.server.R() && this.server.worldServer[0].getWorldData().u() ? 4 : i;
          i = this.t ? 4 : i;
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index fb04a3c..09be98e 100644
+index 9d0d206..66613e2 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -58,8 +58,8 @@ public class ServerConnection {
+@@ -58,8 +58,10 @@ public class ServerConnection {
      };
      private final MinecraftServer f;
      public volatile boolean d;
 -    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.newArrayList());
 -    private final List<NetworkManager> h = Collections.synchronizedList(Lists.newArrayList());
++    // SportBukkit start - fix decomp errors
 +    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.<ChannelFuture>newArrayList());
 +    private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
++    // SportBukkit end
  
      public ServerConnection(MinecraftServer minecraftserver) {
          this.f = minecraftserver;
-@@ -151,7 +151,7 @@ public class ServerConnection {
-                             ServerConnection.e.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
+@@ -151,7 +153,7 @@ public class ServerConnection {
+                             ServerConnection.e.warn("Failed to handle packet for {}", new Object[] { networkmanager.getSocketAddress(), exception});
                              final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
  
 -                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener() {
-+                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener<Future<? super Void>>() {
++                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener<Future<? super Void>>() { // SportBukkit - fix decomp error
                                  public void operationComplete(Future<? super Void> future) throws Exception {
                                      networkmanager.close(chatcomponenttext);
                                  }
-diff --git a/src/main/java/net/minecraft/server/SoundEffectType.java b/src/main/java/net/minecraft/server/SoundEffectType.java
-index 91d617c..98a147b 100644
---- a/src/main/java/net/minecraft/server/SoundEffectType.java
-+++ b/src/main/java/net/minecraft/server/SoundEffectType.java
-@@ -6,7 +6,7 @@ public class SoundEffectType {
-     public static final SoundEffectType b = new SoundEffectType(1.0F, 1.0F, SoundEffects.ca, SoundEffects.ce, SoundEffects.cd, SoundEffects.cc, SoundEffects.cb);
-     public static final SoundEffectType c = new SoundEffectType(1.0F, 1.0F, SoundEffects.bV, SoundEffects.bZ, SoundEffects.bY, SoundEffects.bX, SoundEffects.bW);
-     public static final SoundEffectType d = new SoundEffectType(1.0F, 1.0F, SoundEffects.ga, SoundEffects.gi, SoundEffects.gf, SoundEffects.ge, SoundEffects.gd);
--    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.do, SoundEffects.du, SoundEffects.dr, SoundEffects.dq, SoundEffects.dp);
-+    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.BLOCK_METAL_BREAK, SoundEffects.du, SoundEffects.dr, SoundEffects.dq, SoundEffects.dp);
-     public static final SoundEffectType f = new SoundEffectType(1.0F, 1.0F, SoundEffects.bQ, SoundEffects.bU, SoundEffects.bT, SoundEffects.bS, SoundEffects.bR);
-     public static final SoundEffectType g = new SoundEffectType(1.0F, 1.0F, SoundEffects.ag, SoundEffects.ak, SoundEffects.aj, SoundEffects.ai, SoundEffects.ah);
-     public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.eH, SoundEffects.eL, SoundEffects.eK, SoundEffects.eJ, SoundEffects.eI);
 diff --git a/src/main/java/net/minecraft/server/SoundEffects.java b/src/main/java/net/minecraft/server/SoundEffects.java
-index a74bb3c..b58fd79 100644
+index 87d9393..0589d54 100644
 --- a/src/main/java/net/minecraft/server/SoundEffects.java
 +++ b/src/main/java/net/minecraft/server/SoundEffects.java
 @@ -224,7 +224,7 @@ public class SoundEffects {
@@ -159,31 +149,32 @@ index a74bb3c..b58fd79 100644
      public static final SoundEffect dm;
      public static final SoundEffect dn;
 -    public static final SoundEffect do;
-+    public static final SoundEffect BLOCK_METAL_BREAK;
++    public static final SoundEffect ENTITY_LINGERINGPOTION_THROW; // SportBukkit - fix illegal identifier
      public static final SoundEffect dp;
      public static final SoundEffect dq;
      public static final SoundEffect dr;
-@@ -683,7 +683,7 @@ public class SoundEffects {
-             dl = a("entity.magmacube.hurt");
-             dm = a("entity.magmacube.jump");
-             dn = a("entity.magmacube.squish");
--            do = a("block.metal.break");
-+            BLOCK_METAL_BREAK = a("block.metal.break");
-             dp = a("block.metal.fall");
-             dq = a("block.metal.hit");
-             dr = a("block.metal.place");
+@@ -702,7 +702,7 @@ public class SoundEffects {
+             dl = a("block.lever.click");
+             dm = a("entity.lightning.impact");
+             dn = a("entity.lightning.thunder");
+-            do = a("entity.lingeringpotion.throw");
++            ENTITY_LINGERINGPOTION_THROW = a("entity.lingeringpotion.throw"); // SportBukkit - fix illegal identifier
+             dp = a("entity.magmacube.death");
+             dq = a("entity.magmacube.hurt");
+             dr = a("entity.magmacube.jump");
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
-index 85085d5..9b396cf 100644
+index 85085d5..be2f4c1 100644
 --- a/src/main/java/net/minecraft/server/WhiteList.java
 +++ b/src/main/java/net/minecraft/server/WhiteList.java
-@@ -51,8 +51,4 @@ public class WhiteList extends JsonList<GameProfile, WhiteListEntry> {
- 
+@@ -52,7 +52,9 @@ public class WhiteList extends JsonList<GameProfile, WhiteListEntry> {
          return (GameProfile) whitelistentry.getKey();
      }
--
--    protected String a(Object object) {
--        return this.b((GameProfile) object);
--    }
+ 
++    /* SportBukkit - fix decomp error
+     protected String a(Object object) {
+         return this.b((GameProfile) object);
+     }
++    SportBukkit */
  }
 -- 
 1.9.0

@@ -1,4 +1,4 @@
-From a939119a822db2c757885e21095ce8e9e9fcdf92 Mon Sep 17 00:00:00 2001
+From fa44140291c26b221bd161ab70a72dfb3adb0f95 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -6,7 +6,7 @@ Subject: [PATCH] Import necessary NMS classes
 
 diff --git a/src/main/java/net/minecraft/server/BlockFalling.java b/src/main/java/net/minecraft/server/BlockFalling.java
 new file mode 100644
-index 0000000..e770063
+index 0000000..8f22dab
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFalling.java
 @@ -0,0 +1,75 @@
@@ -44,9 +44,9 @@ index 0000000..e770063
 +
 +    private void b(World world, BlockPosition blockposition) {
 +        if (i(world.getType(blockposition.down())) && blockposition.getY() >= 0) {
-+            byte b0 = 32;
++            boolean flag = true;
 +
-+            if (!BlockFalling.instaFall && world.areChunksLoadedBetween(blockposition.a(-b0, -b0, -b0), blockposition.a(b0, b0, b0))) {
++            if (!BlockFalling.instaFall && world.areChunksLoadedBetween(blockposition.a(-32, -32, -32), blockposition.a(32, 32, 32))) {
 +                if (!world.isClientSide) {
 +                    EntityFallingBlock entityfallingblock = new EntityFallingBlock(world, (double) blockposition.getX() + 0.5D, (double) blockposition.getY(), (double) blockposition.getZ() + 0.5D, world.getType(blockposition));
 +
@@ -87,7 +87,7 @@ index 0000000..e770063
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
 new file mode 100644
-index 0000000..a076f4d
+index 0000000..ddd5199
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockFluids.java
 @@ -0,0 +1,227 @@
@@ -278,7 +278,7 @@ index 0000000..a076f4d
 +        double d1 = (double) blockposition.getY();
 +        double d2 = (double) blockposition.getZ();
 +
-+        world.a((EntityHuman) null, blockposition, SoundEffects.dc, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
++        world.a((EntityHuman) null, blockposition, SoundEffects.dh, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
 +
 +        for (int i = 0; i < 8; ++i) {
 +            world.addParticle(EnumParticle.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D, new int[0]);
@@ -320,7 +320,7 @@ index 0000000..a076f4d
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
 new file mode 100644
-index 0000000..ce79e19
+index 0000000..863cba4
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -0,0 +1,100 @@
@@ -374,7 +374,7 @@ index 0000000..ce79e19
 +                EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), entityliving);
 +
 +                world.addEntity(entitytntprimed);
-+                world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gk, SoundCategory.BLOCKS, 1.0F, 1.0F);
++                world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gz, SoundCategory.BLOCKS, 1.0F, 1.0F);
 +            }
 +
 +        }
@@ -838,10 +838,10 @@ index 0000000..737035b
 +}
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
 new file mode 100644
-index 0000000..f401d91
+index 0000000..accb5d3
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/Item.java
-@@ -0,0 +1,844 @@
+@@ -0,0 +1,850 @@
 +package net.minecraft.server;
 +
 +import com.google.common.base.Function;
@@ -1075,7 +1075,7 @@ index 0000000..f401d91
 +        float f6 = f3 * f4;
 +        float f7 = f2 * f4;
 +        double d3 = 5.0D;
-+        Vec3D vec3d1 = vec3d.add((double) f6 * d3, (double) f5 * d3, (double) f7 * d3);
++        Vec3D vec3d1 = vec3d.add((double) f6 * 5.0D, (double) f5 * 5.0D, (double) f7 * 5.0D);
 +
 +        return world.rayTrace(vec3d, vec3d1, flag, !flag, false);
 +    }
@@ -1148,7 +1148,7 @@ index 0000000..f401d91
 +        a((Block) Blocks.SAND, (Item) (new ItemMultiTexture(Blocks.SAND, Blocks.SAND, new Function() {
 +            @Nullable
 +            public String a(@Nullable ItemStack itemstack) {
-+                return BlockSand.EnumSandVariant.a(itemstack.getData()).d();
++                return BlockSand.EnumSandVariant.a(itemstack.getData()).e();
 +            }
 +
 +            public Object apply(Object object) {
@@ -1415,6 +1415,12 @@ index 0000000..f401d91
 +        a((Block) Blocks.STONE_SLAB2, (Item) (new ItemStep(Blocks.STONE_SLAB2, Blocks.STONE_SLAB2, Blocks.DOUBLE_STONE_SLAB2)).b("stoneSlab2"));
 +        b(Blocks.dc);
 +        b(Blocks.dd);
++        b(Blocks.df);
++        b(Blocks.dg);
++        b(Blocks.dh);
++        b(Blocks.di);
++        b(Blocks.dj);
++        b(Blocks.STRUCTURE_BLOCK);
 +        a(256, "iron_shovel", (new ItemSpade(Item.EnumToolMaterial.IRON)).c("shovelIron"));
 +        a(257, "iron_pickaxe", (new ItemPickaxe(Item.EnumToolMaterial.IRON)).c("pickaxeIron"));
 +        a(258, "iron_axe", (new ItemAxe(Item.EnumToolMaterial.IRON)).c("hatchetIron"));
@@ -1612,18 +1618,18 @@ index 0000000..f401d91
 +        a(446, "jungle_boat", new ItemBoat(EntityBoat.EnumBoatType.JUNGLE));
 +        a(447, "acacia_boat", new ItemBoat(EntityBoat.EnumBoatType.ACACIA));
 +        a(448, "dark_oak_boat", new ItemBoat(EntityBoat.EnumBoatType.DARK_OAK));
-+        a(2256, "record_13", (new ItemRecord("13", SoundEffects.ev)).c("record"));
-+        a(2257, "record_cat", (new ItemRecord("cat", SoundEffects.ex)).c("record"));
-+        a(2258, "record_blocks", (new ItemRecord("blocks", SoundEffects.ew)).c("record"));
-+        a(2259, "record_chirp", (new ItemRecord("chirp", SoundEffects.ey)).c("record"));
-+        a(2260, "record_far", (new ItemRecord("far", SoundEffects.ez)).c("record"));
-+        a(2261, "record_mall", (new ItemRecord("mall", SoundEffects.eA)).c("record"));
-+        a(2262, "record_mellohi", (new ItemRecord("mellohi", SoundEffects.eB)).c("record"));
-+        a(2263, "record_stal", (new ItemRecord("stal", SoundEffects.eC)).c("record"));
-+        a(2264, "record_strad", (new ItemRecord("strad", SoundEffects.eD)).c("record"));
-+        a(2265, "record_ward", (new ItemRecord("ward", SoundEffects.eF)).c("record"));
-+        a(2266, "record_11", (new ItemRecord("11", SoundEffects.eu)).c("record"));
-+        a(2267, "record_wait", (new ItemRecord("wait", SoundEffects.eE)).c("record"));
++        a(2256, "record_13", (new ItemRecord("13", SoundEffects.eG)).c("record"));
++        a(2257, "record_cat", (new ItemRecord("cat", SoundEffects.eI)).c("record"));
++        a(2258, "record_blocks", (new ItemRecord("blocks", SoundEffects.eH)).c("record"));
++        a(2259, "record_chirp", (new ItemRecord("chirp", SoundEffects.eJ)).c("record"));
++        a(2260, "record_far", (new ItemRecord("far", SoundEffects.eK)).c("record"));
++        a(2261, "record_mall", (new ItemRecord("mall", SoundEffects.eL)).c("record"));
++        a(2262, "record_mellohi", (new ItemRecord("mellohi", SoundEffects.eM)).c("record"));
++        a(2263, "record_stal", (new ItemRecord("stal", SoundEffects.eN)).c("record"));
++        a(2264, "record_strad", (new ItemRecord("strad", SoundEffects.eO)).c("record"));
++        a(2265, "record_ward", (new ItemRecord("ward", SoundEffects.eQ)).c("record"));
++        a(2266, "record_11", (new ItemRecord("11", SoundEffects.eF)).c("record"));
++        a(2267, "record_wait", (new ItemRecord("wait", SoundEffects.eP)).c("record"));
 +    }
 +
 +    private static void b(Block block) {
@@ -1986,44 +1992,6 @@ index 0000000..1cb9d60
 +        return this.a;
 +    }
 +}
-diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
-new file mode 100644
-index 0000000..04e52d2
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
-@@ -0,0 +1,32 @@
-+package net.minecraft.server;
-+
-+import java.io.IOException;
-+
-+public class PacketPlayInResourcePackStatus implements Packet<PacketListenerPlayIn> {
-+
-+    private String a;
-+    public PacketPlayInResourcePackStatus.EnumResourcePackStatus status;
-+
-+    public PacketPlayInResourcePackStatus() {}
-+
-+    public void a(PacketDataSerializer packetdataserializer) throws IOException {
-+        this.a = packetdataserializer.e(40);
-+        this.status = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) packetdataserializer.a(PacketPlayInResourcePackStatus.EnumResourcePackStatus.class);
-+    }
-+
-+    public void b(PacketDataSerializer packetdataserializer) throws IOException {
-+        packetdataserializer.a(this.a);
-+        packetdataserializer.a((Enum) this.status);
-+    }
-+
-+    public void a(PacketListenerPlayIn packetlistenerplayin) {
-+        packetlistenerplayin.a(this);
-+    }
-+
-+    public static enum EnumResourcePackStatus {
-+
-+        SUCCESSFULLY_LOADED, DECLINED, FAILED_DOWNLOAD, ACCEPTED;
-+
-+        private EnumResourcePackStatus() {}
-+    }
-+}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 new file mode 100644
 index 0000000..2b23a5d
@@ -2320,7 +2288,7 @@ index 0000000..76a558e
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 new file mode 100644
-index 0000000..1b4d0fc
+index 0000000..9a973d5
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 @@ -0,0 +1,67 @@
@@ -2332,7 +2300,7 @@ index 0000000..1b4d0fc
 +
 +    private int a;
 +    private boolean b;
-+    private WorldSettings.EnumGamemode c;
++    private EnumGamemode c;
 +    private int d;
 +    private EnumDifficulty e;
 +    private int f;
@@ -2341,11 +2309,11 @@ index 0000000..1b4d0fc
 +
 +    public PacketPlayOutLogin() {}
 +
-+    public PacketPlayOutLogin(int i, WorldSettings.EnumGamemode worldsettings_enumgamemode, boolean flag, int j, EnumDifficulty enumdifficulty, int k, WorldType worldtype, boolean flag1) {
++    public PacketPlayOutLogin(int i, EnumGamemode enumgamemode, boolean flag, int j, EnumDifficulty enumdifficulty, int k, WorldType worldtype, boolean flag1) {
 +        this.a = i;
 +        this.d = j;
 +        this.e = enumdifficulty;
-+        this.c = worldsettings_enumgamemode;
++        this.c = enumgamemode;
 +        this.f = k;
 +        this.b = flag;
 +        this.g = worldtype;
@@ -2359,7 +2327,7 @@ index 0000000..1b4d0fc
 +        this.b = (short0 & 8) == 8;
 +        int i = short0 & -9;
 +
-+        this.c = WorldSettings.EnumGamemode.getById(i);
++        this.c = EnumGamemode.getById(i);
 +        this.d = packetdataserializer.readInt();
 +        this.e = EnumDifficulty.getById(packetdataserializer.readUnsignedByte());
 +        this.f = packetdataserializer.readUnsignedByte();
@@ -2393,7 +2361,7 @@ index 0000000..1b4d0fc
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 new file mode 100644
-index 0000000..4248aa1
+index 0000000..925e27d
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 @@ -0,0 +1,152 @@
@@ -2436,7 +2404,7 @@ index 0000000..4248aa1
 +            int j = blockposition.getY() >> 4;
 +
 +            if (this.e() || (i & 1 << j) != 0) {
-+                NBTTagCompound nbttagcompound = tileentity.E_();
++                NBTTagCompound nbttagcompound = tileentity.c();
 +
 +                this.e.add(nbttagcompound);
 +            }
@@ -2551,7 +2519,7 @@ index 0000000..4248aa1
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMount.java b/src/main/java/net/minecraft/server/PacketPlayOutMount.java
 new file mode 100644
-index 0000000..882d3f4
+index 0000000..9891622
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMount.java
 @@ -0,0 +1,38 @@
@@ -2569,7 +2537,7 @@ index 0000000..882d3f4
 +
 +    public PacketPlayOutMount(Entity entity) {
 +        this.a = entity.getId();
-+        List list = entity.bv();
++        List list = entity.bx();
 +
 +        this.b = new int[list.size()];
 +
@@ -2658,10 +2626,10 @@ index 0000000..072c2ba
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
 new file mode 100644
-index 0000000..b035dc8
+index 0000000..736015c
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,52 @@
 +package net.minecraft.server;
 +
 +import java.io.IOException;
@@ -2675,7 +2643,7 @@ index 0000000..b035dc8
 +    private int d;
 +    private int e;
 +    private float f;
-+    private int g;
++    private float g;
 +
 +    public PacketPlayOutNamedSoundEffect() {}
 +
@@ -2687,8 +2655,7 @@ index 0000000..b035dc8
 +        this.d = (int) (d1 * 8.0D);
 +        this.e = (int) (d2 * 8.0D);
 +        this.f = f;
-+        this.g = (int) (f1 * 63.0F);
-+        f1 = MathHelper.a(f1, 0.0F, 255.0F);
++        this.g = f1;
 +    }
 +
 +    public void a(PacketDataSerializer packetdataserializer) throws IOException {
@@ -2698,7 +2665,7 @@ index 0000000..b035dc8
 +        this.d = packetdataserializer.readInt();
 +        this.e = packetdataserializer.readInt();
 +        this.f = packetdataserializer.readFloat();
-+        this.g = packetdataserializer.readUnsignedByte();
++        this.g = packetdataserializer.readFloat();
 +    }
 +
 +    public void b(PacketDataSerializer packetdataserializer) throws IOException {
@@ -2708,7 +2675,7 @@ index 0000000..b035dc8
 +        packetdataserializer.writeInt(this.d);
 +        packetdataserializer.writeInt(this.e);
 +        packetdataserializer.writeFloat(this.f);
-+        packetdataserializer.writeByte(this.g);
++        packetdataserializer.writeFloat(this.g);
 +    }
 +
 +    public void a(PacketListenerPlayOut packetlistenerplayout) {
@@ -2779,7 +2746,7 @@ index 0000000..e9f24b3
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 new file mode 100644
-index 0000000..476da40
+index 0000000..0012ee5
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 @@ -0,0 +1,256 @@
@@ -2833,7 +2800,7 @@ index 0000000..476da40
 +        for (int j = 0; j < i; ++j) {
 +            GameProfile gameprofile = null;
 +            int k = 0;
-+            WorldSettings.EnumGamemode worldsettings_enumgamemode = null;
++            EnumGamemode enumgamemode = null;
 +            IChatBaseComponent ichatbasecomponent = null;
 +
 +            switch (PacketPlayOutPlayerInfo.SyntheticClass_1.a[this.a.ordinal()]) {
@@ -2852,7 +2819,7 @@ index 0000000..476da40
 +                    }
 +                }
 +
-+                worldsettings_enumgamemode = WorldSettings.EnumGamemode.getById(packetdataserializer.g());
++                enumgamemode = EnumGamemode.getById(packetdataserializer.g());
 +                k = packetdataserializer.g();
 +                if (packetdataserializer.readBoolean()) {
 +                    ichatbasecomponent = packetdataserializer.f();
@@ -2861,7 +2828,7 @@ index 0000000..476da40
 +
 +            case 2:
 +                gameprofile = new GameProfile(packetdataserializer.i(), (String) null);
-+                worldsettings_enumgamemode = WorldSettings.EnumGamemode.getById(packetdataserializer.g());
++                enumgamemode = EnumGamemode.getById(packetdataserializer.g());
 +                break;
 +
 +            case 3:
@@ -2880,7 +2847,7 @@ index 0000000..476da40
 +                gameprofile = new GameProfile(packetdataserializer.i(), (String) null);
 +            }
 +
-+            this.b.add(new PacketPlayOutPlayerInfo.PlayerInfoData(gameprofile, k, worldsettings_enumgamemode, ichatbasecomponent));
++            this.b.add(new PacketPlayOutPlayerInfo.PlayerInfoData(gameprofile, k, enumgamemode, ichatbasecomponent));
 +        }
 +
 +    }
@@ -2999,14 +2966,14 @@ index 0000000..476da40
 +    public class PlayerInfoData {
 +
 +        private final int b;
-+        private final WorldSettings.EnumGamemode c;
++        private final EnumGamemode c;
 +        private final GameProfile d;
 +        private final IChatBaseComponent e;
 +
-+        public PlayerInfoData(GameProfile gameprofile, int i, WorldSettings.EnumGamemode worldsettings_enumgamemode, @Nullable IChatBaseComponent ichatbasecomponent) {
++        public PlayerInfoData(GameProfile gameprofile, int i, EnumGamemode enumgamemode, @Nullable IChatBaseComponent ichatbasecomponent) {
 +            this.d = gameprofile;
 +            this.b = i;
-+            this.c = worldsettings_enumgamemode;
++            this.c = enumgamemode;
 +            this.e = ichatbasecomponent;
 +        }
 +
@@ -3018,7 +2985,7 @@ index 0000000..476da40
 +            return this.b;
 +        }
 +
-+        public WorldSettings.EnumGamemode c() {
++        public EnumGamemode c() {
 +            return this.c;
 +        }
 +
@@ -3076,7 +3043,7 @@ index 0000000..5f5b382
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 new file mode 100644
-index 0000000..dbdb87f
+index 0000000..d8ec504
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 @@ -0,0 +1,119 @@
@@ -3096,7 +3063,7 @@ index 0000000..dbdb87f
 +    private String e;
 +    private String f;
 +    private int g;
-+    private Collection<String> h;
++    private final Collection<String> h;
 +    private int i;
 +    private int j;
 +
@@ -3303,7 +3270,7 @@ index 0000000..428bc93
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 new file mode 100644
-index 0000000..6f20d71
+index 0000000..7148714
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 @@ -0,0 +1,106 @@
@@ -3341,34 +3308,34 @@ index 0000000..6f20d71
 +        this.f = entityliving.locZ;
 +        this.j = (byte) ((int) (entityliving.yaw * 256.0F / 360.0F));
 +        this.k = (byte) ((int) (entityliving.pitch * 256.0F / 360.0F));
-+        this.l = (byte) ((int) (entityliving.aP * 256.0F / 360.0F));
++        this.l = (byte) ((int) (entityliving.aQ * 256.0F / 360.0F));
 +        double d0 = 3.9D;
 +        double d1 = entityliving.motX;
 +        double d2 = entityliving.motY;
 +        double d3 = entityliving.motZ;
 +
-+        if (d1 < -d0) {
-+            d1 = -d0;
++        if (d1 < -3.9D) {
++            d1 = -3.9D;
 +        }
 +
-+        if (d2 < -d0) {
-+            d2 = -d0;
++        if (d2 < -3.9D) {
++            d2 = -3.9D;
 +        }
 +
-+        if (d3 < -d0) {
-+            d3 = -d0;
++        if (d3 < -3.9D) {
++            d3 = -3.9D;
 +        }
 +
-+        if (d1 > d0) {
-+            d1 = d0;
++        if (d1 > 3.9D) {
++            d1 = 3.9D;
 +        }
 +
-+        if (d2 > d0) {
-+            d2 = d0;
++        if (d2 > 3.9D) {
++            d2 = 3.9D;
 +        }
 +
-+        if (d3 > d0) {
-+            d3 = d0;
++        if (d3 > 3.9D) {
++            d3 = 3.9D;
 +        }
 +
 +        this.g = (int) (d1 * 8000.0D);
@@ -3777,7 +3744,7 @@ index 0000000..b07e7d5
 +}
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 new file mode 100644
-index 0000000..fb04a3c
+index 0000000..9d0d206
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
 @@ -0,0 +1,174 @@
@@ -3931,7 +3898,7 @@ index 0000000..fb04a3c
 +                                throw new ReportedException(crashreport);
 +                            }
 +
-+                            ServerConnection.e.warn("Failed to handle packet for " + networkmanager.getSocketAddress(), exception);
++                            ServerConnection.e.warn("Failed to handle packet for {}", new Object[] { networkmanager.getSocketAddress(), exception});
 +                            final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
 +
 +                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener() {
@@ -3957,17 +3924,17 @@ index 0000000..fb04a3c
 +}
 diff --git a/src/main/java/net/minecraft/server/SoundEffect.java b/src/main/java/net/minecraft/server/SoundEffect.java
 new file mode 100644
-index 0000000..140aa54
+index 0000000..37e17b5
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/SoundEffect.java
-@@ -0,0 +1,465 @@
+@@ -0,0 +1,484 @@
 +package net.minecraft.server;
 +
 +public class SoundEffect {
 +
 +    public static final RegistryMaterials<MinecraftKey, SoundEffect> a = new RegistryMaterials();
 +    private final MinecraftKey b;
-+    private static int c = 0;
++    private static int c;
 +
 +    public SoundEffect(MinecraftKey minecraftkey) {
 +        this.b = minecraftkey;
@@ -3998,6 +3965,7 @@ index 0000000..140aa54
 +        a("block.dispenser.dispense");
 +        a("block.dispenser.fail");
 +        a("block.dispenser.launch");
++        a("block.enchantment_table.use");
 +        a("block.end_gateway.spawn");
 +        a("block.enderchest.close");
 +        a("block.enderchest.open");
@@ -4222,6 +4190,10 @@ index 0000000..140aa54
 +        a("entity.hostile.small_fall");
 +        a("entity.hostile.splash");
 +        a("entity.hostile.swim");
++        a("entity.husk.ambient");
++        a("entity.husk.death");
++        a("entity.husk.hurt");
++        a("entity.husk.step");
 +        a("entity.irongolem.attack");
 +        a("entity.irongolem.death");
 +        a("entity.irongolem.hurt");
@@ -4270,6 +4242,12 @@ index 0000000..140aa54
 +        a("entity.player.small_fall");
 +        a("entity.player.splash");
 +        a("entity.player.swim");
++        a("entity.polar_bear.ambient");
++        a("entity.polar_bear.baby_ambient");
++        a("entity.polar_bear.death");
++        a("entity.polar_bear.hurt");
++        a("entity.polar_bear.step");
++        a("entity.polar_bear.warning");
 +        a("entity.rabbit.ambient");
 +        a("entity.rabbit.attack");
 +        a("entity.rabbit.death");
@@ -4328,6 +4306,10 @@ index 0000000..140aa54
 +        a("entity.squid.ambient");
 +        a("entity.squid.death");
 +        a("entity.squid.hurt");
++        a("entity.stray.ambient");
++        a("entity.stray.death");
++        a("entity.stray.hurt");
++        a("entity.stray.step");
 +        a("entity.tnt.primed");
 +        a("entity.villager.ambient");
 +        a("entity.villager.death");
@@ -4346,6 +4328,10 @@ index 0000000..140aa54
 +        a("entity.wither.hurt");
 +        a("entity.wither.shoot");
 +        a("entity.wither.spawn");
++        a("entity.wither_skeleton.ambient");
++        a("entity.wither_skeleton.death");
++        a("entity.wither_skeleton.hurt");
++        a("entity.wither_skeleton.step");
 +        a("entity.wolf.ambient");
 +        a("entity.wolf.death");
 +        a("entity.wolf.growl");
@@ -4428,7 +4414,7 @@ index 0000000..140aa54
 +}
 diff --git a/src/main/java/net/minecraft/server/SoundEffectType.java b/src/main/java/net/minecraft/server/SoundEffectType.java
 new file mode 100644
-index 0000000..91d617c
+index 0000000..cad3fef
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/SoundEffectType.java
 @@ -0,0 +1,54 @@
@@ -4436,18 +4422,18 @@ index 0000000..91d617c
 +
 +public class SoundEffectType {
 +
-+    public static final SoundEffectType a = new SoundEffectType(1.0F, 1.0F, SoundEffects.gY, SoundEffects.hg, SoundEffects.hd, SoundEffects.hc, SoundEffects.hb);
-+    public static final SoundEffectType b = new SoundEffectType(1.0F, 1.0F, SoundEffects.ca, SoundEffects.ce, SoundEffects.cd, SoundEffects.cc, SoundEffects.cb);
-+    public static final SoundEffectType c = new SoundEffectType(1.0F, 1.0F, SoundEffects.bV, SoundEffects.bZ, SoundEffects.bY, SoundEffects.bX, SoundEffects.bW);
-+    public static final SoundEffectType d = new SoundEffectType(1.0F, 1.0F, SoundEffects.ga, SoundEffects.gi, SoundEffects.gf, SoundEffects.ge, SoundEffects.gd);
-+    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.do, SoundEffects.du, SoundEffects.dr, SoundEffects.dq, SoundEffects.dp);
-+    public static final SoundEffectType f = new SoundEffectType(1.0F, 1.0F, SoundEffects.bQ, SoundEffects.bU, SoundEffects.bT, SoundEffects.bS, SoundEffects.bR);
++    public static final SoundEffectType a = new SoundEffectType(1.0F, 1.0F, SoundEffects.hr, SoundEffects.hz, SoundEffects.hw, SoundEffects.hv, SoundEffects.hu);
++    public static final SoundEffectType b = new SoundEffectType(1.0F, 1.0F, SoundEffects.cb, SoundEffects.cf, SoundEffects.ce, SoundEffects.cd, SoundEffects.cc);
++    public static final SoundEffectType c = new SoundEffectType(1.0F, 1.0F, SoundEffects.bW, SoundEffects.ca, SoundEffects.bZ, SoundEffects.bY, SoundEffects.bX);
++    public static final SoundEffectType d = new SoundEffectType(1.0F, 1.0F, SoundEffects.gl, SoundEffects.gt, SoundEffects.gq, SoundEffects.gp, SoundEffects.go);
++    public static final SoundEffectType e = new SoundEffectType(1.0F, 1.5F, SoundEffects.dt, SoundEffects.dz, SoundEffects.dw, SoundEffects.dv, SoundEffects.du);
++    public static final SoundEffectType f = new SoundEffectType(1.0F, 1.0F, SoundEffects.bR, SoundEffects.bV, SoundEffects.bU, SoundEffects.bT, SoundEffects.bS);
 +    public static final SoundEffectType g = new SoundEffectType(1.0F, 1.0F, SoundEffects.ag, SoundEffects.ak, SoundEffects.aj, SoundEffects.ai, SoundEffects.ah);
-+    public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.eH, SoundEffects.eL, SoundEffects.eK, SoundEffects.eJ, SoundEffects.eI);
-+    public static final SoundEffectType i = new SoundEffectType(1.0F, 1.0F, SoundEffects.fM, SoundEffects.fQ, SoundEffects.fP, SoundEffects.fO, SoundEffects.fN);
-+    public static final SoundEffectType j = new SoundEffectType(1.0F, 1.0F, SoundEffects.cW, SoundEffects.da, SoundEffects.cZ, SoundEffects.cY, SoundEffects.cX);
++    public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.eS, SoundEffects.eW, SoundEffects.eV, SoundEffects.eU, SoundEffects.eT);
++    public static final SoundEffectType i = new SoundEffectType(1.0F, 1.0F, SoundEffects.fX, SoundEffects.gb, SoundEffects.ga, SoundEffects.fZ, SoundEffects.fY);
++    public static final SoundEffectType j = new SoundEffectType(1.0F, 1.0F, SoundEffects.db, SoundEffects.df, SoundEffects.de, SoundEffects.dd, SoundEffects.dc);
 +    public static final SoundEffectType k = new SoundEffectType(0.3F, 1.0F, SoundEffects.b, SoundEffects.h, SoundEffects.g, SoundEffects.e, SoundEffects.d);
-+    public static final SoundEffectType l = new SoundEffectType(1.0F, 1.0F, SoundEffects.fr, SoundEffects.fz, SoundEffects.fx, SoundEffects.fu, SoundEffects.ft);
++    public static final SoundEffectType l = new SoundEffectType(1.0F, 1.0F, SoundEffects.fC, SoundEffects.fK, SoundEffects.fI, SoundEffects.fF, SoundEffects.fE);
 +    public final float m;
 +    public final float n;
 +    private final SoundEffect o;
@@ -4488,10 +4474,10 @@ index 0000000..91d617c
 +}
 diff --git a/src/main/java/net/minecraft/server/SoundEffects.java b/src/main/java/net/minecraft/server/SoundEffects.java
 new file mode 100644
-index 0000000..a74bb3c
+index 0000000..87d9393
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/SoundEffects.java
-@@ -0,0 +1,910 @@
+@@ -0,0 +1,948 @@
 +package net.minecraft.server;
 +
 +public class SoundEffects {
@@ -4722,12 +4708,12 @@ index 0000000..a74bb3c
 +    public static final SoundEffect dp;
 +    public static final SoundEffect dq;
 +    public static final SoundEffect dr;
-+    public static final SoundEffect BLOCK_METAL_PRESSUREPLATE_CLICK_OFF;
++    public static final SoundEffect ds;
 +    public static final SoundEffect dt;
 +    public static final SoundEffect du;
 +    public static final SoundEffect dv;
 +    public static final SoundEffect dw;
-+    public static final SoundEffect dx;
++    public static final SoundEffect BLOCK_METAL_PRESSUREPLATE_CLICK_OFF;
 +    public static final SoundEffect dy;
 +    public static final SoundEffect dz;
 +    public static final SoundEffect dA;
@@ -4753,22 +4739,22 @@ index 0000000..a74bb3c
 +    public static final SoundEffect dU;
 +    public static final SoundEffect dV;
 +    public static final SoundEffect dW;
-+    public static final SoundEffect ENTITY_PLAYER_ATTACK_CRIT;
++    public static final SoundEffect dX;
 +    public static final SoundEffect dY;
 +    public static final SoundEffect dZ;
 +    public static final SoundEffect ea;
 +    public static final SoundEffect eb;
-+    public static final SoundEffect ec;
++    public static final SoundEffect ENTITY_PLAYER_ATTACK_CRIT;
 +    public static final SoundEffect ed;
 +    public static final SoundEffect ee;
 +    public static final SoundEffect ef;
 +    public static final SoundEffect eg;
-+    public static final SoundEffect ENTITY_PLAYER_HURT;
++    public static final SoundEffect eh;
 +    public static final SoundEffect ei;
 +    public static final SoundEffect ej;
 +    public static final SoundEffect ek;
 +    public static final SoundEffect el;
-+    public static final SoundEffect em;
++    public static final SoundEffect ENTITY_PLAYER_HURT;
 +    public static final SoundEffect en;
 +    public static final SoundEffect eo;
 +    public static final SoundEffect ep;
@@ -4940,6 +4926,25 @@ index 0000000..a74bb3c
 +    public static final SoundEffect hz;
 +    public static final SoundEffect hA;
 +    public static final SoundEffect hB;
++    public static final SoundEffect hC;
++    public static final SoundEffect hD;
++    public static final SoundEffect hE;
++    public static final SoundEffect hF;
++    public static final SoundEffect hG;
++    public static final SoundEffect hH;
++    public static final SoundEffect hI;
++    public static final SoundEffect hJ;
++    public static final SoundEffect hK;
++    public static final SoundEffect hL;
++    public static final SoundEffect hM;
++    public static final SoundEffect hN;
++    public static final SoundEffect hO;
++    public static final SoundEffect hP;
++    public static final SoundEffect hQ;
++    public static final SoundEffect hR;
++    public static final SoundEffect hS;
++    public static final SoundEffect hT;
++    public static final SoundEffect hU;
 +
 +    private static SoundEffect a(String s) {
 +        SoundEffect soundeffect = (SoundEffect) SoundEffect.a.get(new MinecraftKey(s));
@@ -5044,361 +5049,380 @@ index 0000000..a74bb3c
 +            aI = a("entity.elder_guardian.hurt");
 +            aJ = a("entity.elder_guardian.hurt_land");
 +            aK = a("item.elytra.flying");
-+            aL = a("block.enderchest.close");
-+            aM = a("block.enderchest.open");
-+            aN = a("entity.enderdragon.ambient");
-+            aO = a("entity.enderdragon.death");
-+            aP = a("entity.enderdragon_fireball.explode");
-+            aQ = a("entity.enderdragon.flap");
-+            aR = a("entity.enderdragon.growl");
-+            aS = a("entity.enderdragon.hurt");
-+            aT = a("entity.enderdragon.shoot");
-+            aU = a("entity.endereye.launch");
-+            aV = a("entity.endermen.ambient");
-+            aW = a("entity.endermen.death");
-+            aX = a("entity.endermen.hurt");
-+            aY = a("entity.endermen.scream");
-+            aZ = a("entity.endermen.stare");
-+            ba = a("entity.endermen.teleport");
-+            bb = a("entity.endermite.ambient");
-+            bc = a("entity.endermite.death");
-+            bd = a("entity.endermite.hurt");
-+            be = a("entity.endermite.step");
-+            bf = a("entity.enderpearl.throw");
-+            bg = a("block.end_gateway.spawn");
-+            bh = a("entity.experience_bottle.throw");
-+            bi = a("entity.experience_orb.pickup");
-+            bj = a("entity.experience_orb.touch");
-+            bk = a("block.fence_gate.close");
-+            bl = a("block.fence_gate.open");
-+            bm = a("item.firecharge.use");
-+            bn = a("entity.firework.blast");
-+            bo = a("entity.firework.blast_far");
-+            bp = a("entity.firework.large_blast");
-+            bq = a("entity.firework.large_blast_far");
-+            br = a("entity.firework.launch");
-+            bs = a("entity.firework.shoot");
-+            bt = a("entity.firework.twinkle");
-+            bu = a("entity.firework.twinkle_far");
-+            bv = a("block.fire.ambient");
-+            bw = a("block.fire.extinguish");
-+            bx = a("item.flintandsteel.use");
-+            by = a("block.furnace.fire_crackle");
-+            bz = a("entity.generic.big_fall");
-+            bA = a("entity.generic.burn");
-+            bB = a("entity.generic.death");
-+            bC = a("entity.generic.drink");
-+            bD = a("entity.generic.eat");
-+            bE = a("entity.generic.explode");
-+            bF = a("entity.generic.extinguish_fire");
-+            bG = a("entity.generic.hurt");
-+            bH = a("entity.generic.small_fall");
-+            bI = a("entity.generic.splash");
-+            bJ = a("entity.generic.swim");
-+            bK = a("entity.ghast.ambient");
-+            bL = a("entity.ghast.death");
-+            bM = a("entity.ghast.hurt");
-+            bN = a("entity.ghast.scream");
-+            bO = a("entity.ghast.shoot");
-+            bP = a("entity.ghast.warn");
-+            bQ = a("block.glass.break");
-+            bR = a("block.glass.fall");
-+            bS = a("block.glass.hit");
-+            bT = a("block.glass.place");
-+            bU = a("block.glass.step");
-+            bV = a("block.grass.break");
-+            bW = a("block.grass.fall");
-+            bX = a("block.grass.hit");
-+            bY = a("block.grass.place");
-+            bZ = a("block.grass.step");
-+            ca = a("block.gravel.break");
-+            cb = a("block.gravel.fall");
-+            cc = a("block.gravel.hit");
-+            cd = a("block.gravel.place");
-+            ce = a("block.gravel.step");
-+            cf = a("entity.guardian.ambient");
-+            cg = a("entity.guardian.ambient_land");
-+            ch = a("entity.guardian.attack");
-+            ci = a("entity.guardian.death");
-+            cj = a("entity.guardian.death_land");
-+            ck = a("entity.guardian.flop");
-+            cl = a("entity.guardian.hurt");
-+            cm = a("entity.guardian.hurt_land");
-+            cn = a("item.hoe.till");
-+            co = a("entity.horse.ambient");
-+            cp = a("entity.horse.angry");
-+            cq = a("entity.horse.armor");
-+            cr = a("entity.horse.breathe");
-+            cs = a("entity.horse.death");
-+            ct = a("entity.horse.eat");
-+            cu = a("entity.horse.gallop");
-+            cv = a("entity.horse.hurt");
-+            cw = a("entity.horse.jump");
-+            cx = a("entity.horse.land");
-+            cy = a("entity.horse.saddle");
-+            cz = a("entity.horse.step");
-+            cA = a("entity.horse.step_wood");
-+            cB = a("entity.hostile.big_fall");
-+            cC = a("entity.hostile.death");
-+            cD = a("entity.hostile.hurt");
-+            cE = a("entity.hostile.small_fall");
-+            cF = a("entity.hostile.splash");
-+            cG = a("entity.hostile.swim");
-+            cH = a("entity.irongolem.attack");
-+            cI = a("entity.irongolem.death");
-+            cJ = a("entity.irongolem.hurt");
-+            cK = a("entity.irongolem.step");
-+            cL = a("block.iron_door.close");
-+            cM = a("block.iron_door.open");
-+            cN = a("block.iron_trapdoor.close");
-+            cO = a("block.iron_trapdoor.open");
-+            cP = a("entity.itemframe.add_item");
-+            cQ = a("entity.itemframe.break");
-+            cR = a("entity.itemframe.place");
-+            cS = a("entity.itemframe.remove_item");
-+            cT = a("entity.itemframe.rotate_item");
-+            cU = a("entity.item.break");
-+            cV = a("entity.item.pickup");
-+            cW = a("block.ladder.break");
-+            cX = a("block.ladder.fall");
-+            cY = a("block.ladder.hit");
-+            cZ = a("block.ladder.place");
-+            da = a("block.ladder.step");
-+            db = a("block.lava.ambient");
-+            dc = a("block.lava.extinguish");
-+            dd = a("block.lava.pop");
-+            de = a("entity.leashknot.break");
-+            df = a("entity.leashknot.place");
-+            dg = a("block.lever.click");
-+            dh = a("entity.lightning.impact");
-+            di = a("entity.lightning.thunder");
-+            dj = a("entity.lingeringpotion.throw");
-+            dk = a("entity.magmacube.death");
-+            dl = a("entity.magmacube.hurt");
-+            dm = a("entity.magmacube.jump");
-+            dn = a("entity.magmacube.squish");
-+            do = a("block.metal.break");
-+            dp = a("block.metal.fall");
-+            dq = a("block.metal.hit");
-+            dr = a("block.metal.place");
++            aL = a("block.enchantment_table.use");
++            aM = a("block.enderchest.close");
++            aN = a("block.enderchest.open");
++            aO = a("entity.enderdragon.ambient");
++            aP = a("entity.enderdragon.death");
++            aQ = a("entity.enderdragon_fireball.explode");
++            aR = a("entity.enderdragon.flap");
++            aS = a("entity.enderdragon.growl");
++            aT = a("entity.enderdragon.hurt");
++            aU = a("entity.enderdragon.shoot");
++            aV = a("entity.endereye.launch");
++            aW = a("entity.endermen.ambient");
++            aX = a("entity.endermen.death");
++            aY = a("entity.endermen.hurt");
++            aZ = a("entity.endermen.scream");
++            ba = a("entity.endermen.stare");
++            bb = a("entity.endermen.teleport");
++            bc = a("entity.endermite.ambient");
++            bd = a("entity.endermite.death");
++            be = a("entity.endermite.hurt");
++            bf = a("entity.endermite.step");
++            bg = a("entity.enderpearl.throw");
++            bh = a("block.end_gateway.spawn");
++            bi = a("entity.experience_bottle.throw");
++            bj = a("entity.experience_orb.pickup");
++            bk = a("entity.experience_orb.touch");
++            bl = a("block.fence_gate.close");
++            bm = a("block.fence_gate.open");
++            bn = a("item.firecharge.use");
++            bo = a("entity.firework.blast");
++            bp = a("entity.firework.blast_far");
++            bq = a("entity.firework.large_blast");
++            br = a("entity.firework.large_blast_far");
++            bs = a("entity.firework.launch");
++            bt = a("entity.firework.shoot");
++            bu = a("entity.firework.twinkle");
++            bv = a("entity.firework.twinkle_far");
++            bw = a("block.fire.ambient");
++            bx = a("block.fire.extinguish");
++            by = a("item.flintandsteel.use");
++            bz = a("block.furnace.fire_crackle");
++            bA = a("entity.generic.big_fall");
++            bB = a("entity.generic.burn");
++            bC = a("entity.generic.death");
++            bD = a("entity.generic.drink");
++            bE = a("entity.generic.eat");
++            bF = a("entity.generic.explode");
++            bG = a("entity.generic.extinguish_fire");
++            bH = a("entity.generic.hurt");
++            bI = a("entity.generic.small_fall");
++            bJ = a("entity.generic.splash");
++            bK = a("entity.generic.swim");
++            bL = a("entity.ghast.ambient");
++            bM = a("entity.ghast.death");
++            bN = a("entity.ghast.hurt");
++            bO = a("entity.ghast.scream");
++            bP = a("entity.ghast.shoot");
++            bQ = a("entity.ghast.warn");
++            bR = a("block.glass.break");
++            bS = a("block.glass.fall");
++            bT = a("block.glass.hit");
++            bU = a("block.glass.place");
++            bV = a("block.glass.step");
++            bW = a("block.grass.break");
++            bX = a("block.grass.fall");
++            bY = a("block.grass.hit");
++            bZ = a("block.grass.place");
++            ca = a("block.grass.step");
++            cb = a("block.gravel.break");
++            cc = a("block.gravel.fall");
++            cd = a("block.gravel.hit");
++            ce = a("block.gravel.place");
++            cf = a("block.gravel.step");
++            cg = a("entity.guardian.ambient");
++            ch = a("entity.guardian.ambient_land");
++            ci = a("entity.guardian.attack");
++            cj = a("entity.guardian.death");
++            ck = a("entity.guardian.death_land");
++            cl = a("entity.guardian.flop");
++            cm = a("entity.guardian.hurt");
++            cn = a("entity.guardian.hurt_land");
++            co = a("item.hoe.till");
++            cp = a("entity.horse.ambient");
++            cq = a("entity.horse.angry");
++            cr = a("entity.horse.armor");
++            cs = a("entity.horse.breathe");
++            ct = a("entity.horse.death");
++            cu = a("entity.horse.eat");
++            cv = a("entity.horse.gallop");
++            cw = a("entity.horse.hurt");
++            cx = a("entity.horse.jump");
++            cy = a("entity.horse.land");
++            cz = a("entity.horse.saddle");
++            cA = a("entity.horse.step");
++            cB = a("entity.horse.step_wood");
++            cC = a("entity.hostile.big_fall");
++            cD = a("entity.hostile.death");
++            cE = a("entity.hostile.hurt");
++            cF = a("entity.hostile.small_fall");
++            cG = a("entity.hostile.splash");
++            cH = a("entity.hostile.swim");
++            cI = a("entity.husk.ambient");
++            cJ = a("entity.husk.death");
++            cK = a("entity.husk.hurt");
++            cL = a("entity.husk.step");
++            cM = a("entity.irongolem.attack");
++            cN = a("entity.irongolem.death");
++            cO = a("entity.irongolem.hurt");
++            cP = a("entity.irongolem.step");
++            cQ = a("block.iron_door.close");
++            cR = a("block.iron_door.open");
++            cS = a("block.iron_trapdoor.close");
++            cT = a("block.iron_trapdoor.open");
++            cU = a("entity.itemframe.add_item");
++            cV = a("entity.itemframe.break");
++            cW = a("entity.itemframe.place");
++            cX = a("entity.itemframe.remove_item");
++            cY = a("entity.itemframe.rotate_item");
++            cZ = a("entity.item.break");
++            da = a("entity.item.pickup");
++            db = a("block.ladder.break");
++            dc = a("block.ladder.fall");
++            dd = a("block.ladder.hit");
++            de = a("block.ladder.place");
++            df = a("block.ladder.step");
++            dg = a("block.lava.ambient");
++            dh = a("block.lava.extinguish");
++            di = a("block.lava.pop");
++            dj = a("entity.leashknot.break");
++            dk = a("entity.leashknot.place");
++            dl = a("block.lever.click");
++            dm = a("entity.lightning.impact");
++            dn = a("entity.lightning.thunder");
++            do = a("entity.lingeringpotion.throw");
++            dp = a("entity.magmacube.death");
++            dq = a("entity.magmacube.hurt");
++            dr = a("entity.magmacube.jump");
++            ds = a("entity.magmacube.squish");
++            dt = a("block.metal.break");
++            du = a("block.metal.fall");
++            dv = a("block.metal.hit");
++            dw = a("block.metal.place");
 +            BLOCK_METAL_PRESSUREPLATE_CLICK_OFF = a("block.metal_pressureplate.click_off");
-+            dt = a("block.metal_pressureplate.click_on");
-+            du = a("block.metal.step");
-+            dv = a("entity.minecart.inside");
-+            dw = a("entity.minecart.riding");
-+            dx = a("entity.mooshroom.shear");
-+            dy = a("entity.mule.ambient");
-+            dz = a("entity.mule.death");
-+            dA = a("entity.mule.hurt");
-+            dB = a("music.creative");
-+            dC = a("music.credits");
-+            dD = a("music.dragon");
-+            dE = a("music.end");
-+            dF = a("music.game");
-+            dG = a("music.menu");
-+            dH = a("music.nether");
-+            dI = a("block.note.basedrum");
-+            dJ = a("block.note.bass");
-+            dK = a("block.note.harp");
-+            dL = a("block.note.hat");
-+            dM = a("block.note.pling");
-+            dN = a("block.note.snare");
-+            dO = a("entity.painting.break");
-+            dP = a("entity.painting.place");
-+            dQ = a("entity.pig.ambient");
-+            dR = a("entity.pig.death");
-+            dS = a("entity.pig.hurt");
-+            dT = a("entity.pig.saddle");
-+            dU = a("entity.pig.step");
-+            dV = a("block.piston.contract");
-+            dW = a("block.piston.extend");
++            dy = a("block.metal_pressureplate.click_on");
++            dz = a("block.metal.step");
++            dA = a("entity.minecart.inside");
++            dB = a("entity.minecart.riding");
++            dC = a("entity.mooshroom.shear");
++            dD = a("entity.mule.ambient");
++            dE = a("entity.mule.death");
++            dF = a("entity.mule.hurt");
++            dG = a("music.creative");
++            dH = a("music.credits");
++            dI = a("music.dragon");
++            dJ = a("music.end");
++            dK = a("music.game");
++            dL = a("music.menu");
++            dM = a("music.nether");
++            dN = a("block.note.basedrum");
++            dO = a("block.note.bass");
++            dP = a("block.note.harp");
++            dQ = a("block.note.hat");
++            dR = a("block.note.pling");
++            dS = a("block.note.snare");
++            dT = a("entity.painting.break");
++            dU = a("entity.painting.place");
++            dV = a("entity.pig.ambient");
++            dW = a("entity.pig.death");
++            dX = a("entity.pig.hurt");
++            dY = a("entity.pig.saddle");
++            dZ = a("entity.pig.step");
++            ea = a("block.piston.contract");
++            eb = a("block.piston.extend");
 +            ENTITY_PLAYER_ATTACK_CRIT = a("entity.player.attack.crit");
-+            dY = a("entity.player.attack.knockback");
-+            dZ = a("entity.player.attack.nodamage");
-+            ea = a("entity.player.attack.strong");
-+            eb = a("entity.player.attack.sweep");
-+            ec = a("entity.player.attack.weak");
-+            ed = a("entity.player.big_fall");
-+            ee = a("entity.player.breath");
-+            ef = a("entity.player.burp");
-+            eg = a("entity.player.death");
++            ed = a("entity.player.attack.knockback");
++            ee = a("entity.player.attack.nodamage");
++            ef = a("entity.player.attack.strong");
++            eg = a("entity.player.attack.sweep");
++            eh = a("entity.player.attack.weak");
++            ei = a("entity.player.big_fall");
++            ej = a("entity.player.breath");
++            ek = a("entity.player.burp");
++            el = a("entity.player.death");
 +            ENTITY_PLAYER_HURT = a("entity.player.hurt");
-+            ei = a("entity.player.levelup");
-+            ej = a("entity.player.small_fall");
-+            ek = a("entity.player.splash");
-+            el = a("entity.player.swim");
-+            em = a("block.portal.ambient");
-+            en = a("block.portal.travel");
-+            eo = a("block.portal.trigger");
-+            ep = a("entity.rabbit.ambient");
-+            eq = a("entity.rabbit.attack");
-+            er = a("entity.rabbit.death");
-+            es = a("entity.rabbit.hurt");
-+            et = a("entity.rabbit.jump");
-+            eu = a("record.11");
-+            ev = a("record.13");
-+            ew = a("record.blocks");
-+            ex = a("record.cat");
-+            ey = a("record.chirp");
-+            ez = a("record.far");
-+            eA = a("record.mall");
-+            eB = a("record.mellohi");
-+            eC = a("record.stal");
-+            eD = a("record.strad");
-+            eE = a("record.wait");
-+            eF = a("record.ward");
-+            eG = a("block.redstone_torch.burnout");
-+            eH = a("block.sand.break");
-+            eI = a("block.sand.fall");
-+            eJ = a("block.sand.hit");
-+            eK = a("block.sand.place");
-+            eL = a("block.sand.step");
-+            eM = a("entity.sheep.ambient");
-+            eN = a("entity.sheep.death");
-+            eO = a("entity.sheep.hurt");
-+            eP = a("entity.sheep.shear");
-+            eQ = a("entity.sheep.step");
-+            eR = a("item.shield.block");
-+            eS = a("item.shield.break");
-+            eT = a("item.shovel.flatten");
-+            eU = a("entity.shulker.ambient");
-+            eV = a("entity.shulker_bullet.hit");
-+            eW = a("entity.shulker_bullet.hurt");
-+            eX = a("entity.shulker.close");
-+            eY = a("entity.shulker.death");
-+            eZ = a("entity.shulker.hurt");
-+            fa = a("entity.shulker.hurt_closed");
-+            fb = a("entity.shulker.open");
-+            fc = a("entity.shulker.shoot");
-+            fd = a("entity.shulker.teleport");
-+            fe = a("entity.silverfish.ambient");
-+            ff = a("entity.silverfish.death");
-+            fg = a("entity.silverfish.hurt");
-+            fh = a("entity.silverfish.step");
-+            fi = a("entity.skeleton.ambient");
-+            fj = a("entity.skeleton.death");
-+            fk = a("entity.skeleton_horse.ambient");
-+            fl = a("entity.skeleton_horse.death");
-+            fm = a("entity.skeleton_horse.hurt");
-+            fn = a("entity.skeleton.hurt");
-+            fo = a("entity.skeleton.shoot");
-+            fp = a("entity.skeleton.step");
-+            fq = a("entity.slime.attack");
-+            fr = a("block.slime.break");
-+            fs = a("entity.slime.death");
-+            ft = a("block.slime.fall");
-+            fu = a("block.slime.hit");
-+            fv = a("entity.slime.hurt");
-+            fw = a("entity.slime.jump");
-+            fx = a("block.slime.place");
-+            fy = a("entity.slime.squish");
-+            fz = a("block.slime.step");
-+            fA = a("entity.small_magmacube.death");
-+            fB = a("entity.small_magmacube.hurt");
-+            fC = a("entity.small_magmacube.squish");
-+            fD = a("entity.small_slime.death");
-+            fE = a("entity.small_slime.hurt");
-+            fF = a("entity.small_slime.jump");
-+            fG = a("entity.small_slime.squish");
-+            fH = a("entity.snowball.throw");
-+            fI = a("entity.snowman.ambient");
-+            fJ = a("entity.snowman.death");
-+            fK = a("entity.snowman.hurt");
-+            fL = a("entity.snowman.shoot");
-+            fM = a("block.snow.break");
-+            fN = a("block.snow.fall");
-+            fO = a("block.snow.hit");
-+            fP = a("block.snow.place");
-+            fQ = a("block.snow.step");
-+            fR = a("entity.spider.ambient");
-+            fS = a("entity.spider.death");
-+            fT = a("entity.spider.hurt");
-+            fU = a("entity.spider.step");
-+            fV = a("entity.splash_potion.break");
-+            fW = a("entity.splash_potion.throw");
-+            fX = a("entity.squid.ambient");
-+            fY = a("entity.squid.death");
-+            fZ = a("entity.squid.hurt");
-+            ga = a("block.stone.break");
-+            gb = a("block.stone_button.click_off");
-+            gc = a("block.stone_button.click_on");
-+            gd = a("block.stone.fall");
-+            ge = a("block.stone.hit");
-+            gf = a("block.stone.place");
-+            gg = a("block.stone_pressureplate.click_off");
-+            gh = a("block.stone_pressureplate.click_on");
-+            gi = a("block.stone.step");
-+            gj = a("enchant.thorns.hit");
-+            gk = a("entity.tnt.primed");
-+            gl = a("block.tripwire.attach");
-+            gm = a("block.tripwire.click_off");
-+            gn = a("block.tripwire.click_on");
-+            go = a("block.tripwire.detach");
-+            gp = a("ui.button.click");
-+            gq = a("entity.villager.ambient");
-+            gr = a("entity.villager.death");
-+            gs = a("entity.villager.hurt");
-+            gt = a("entity.villager.no");
-+            gu = a("entity.villager.trading");
-+            gv = a("entity.villager.yes");
-+            gw = a("block.waterlily.place");
-+            gx = a("block.water.ambient");
-+            gy = a("weather.rain");
-+            gz = a("weather.rain.above");
-+            gA = a("entity.witch.ambient");
-+            gB = a("entity.witch.death");
-+            gC = a("entity.witch.drink");
-+            gD = a("entity.witch.hurt");
-+            gE = a("entity.witch.throw");
-+            gF = a("entity.wither.ambient");
-+            gG = a("entity.wither.break_block");
-+            gH = a("entity.wither.death");
-+            gI = a("entity.wither.hurt");
-+            gJ = a("entity.wither.shoot");
-+            gK = a("entity.wither.spawn");
-+            gL = a("entity.wolf.ambient");
-+            gM = a("entity.wolf.death");
-+            gN = a("entity.wolf.growl");
-+            gO = a("entity.wolf.howl");
-+            gP = a("entity.wolf.hurt");
-+            gQ = a("entity.wolf.pant");
-+            gR = a("entity.wolf.shake");
-+            gS = a("entity.wolf.step");
-+            gT = a("entity.wolf.whine");
-+            gU = a("block.wooden_door.close");
-+            gV = a("block.wooden_door.open");
-+            gW = a("block.wooden_trapdoor.close");
-+            gX = a("block.wooden_trapdoor.open");
-+            gY = a("block.wood.break");
-+            gZ = a("block.wood_button.click_off");
-+            ha = a("block.wood_button.click_on");
-+            hb = a("block.wood.fall");
-+            hc = a("block.wood.hit");
-+            hd = a("block.wood.place");
-+            he = a("block.wood_pressureplate.click_off");
-+            hf = a("block.wood_pressureplate.click_on");
-+            hg = a("block.wood.step");
-+            hh = a("entity.zombie.ambient");
-+            hi = a("entity.zombie.attack_door_wood");
-+            hj = a("entity.zombie.attack_iron_door");
-+            hk = a("entity.zombie.break_door_wood");
-+            hl = a("entity.zombie.death");
-+            hm = a("entity.zombie_horse.ambient");
-+            hn = a("entity.zombie_horse.death");
-+            ho = a("entity.zombie_horse.hurt");
-+            hp = a("entity.zombie.hurt");
-+            hq = a("entity.zombie.infect");
-+            hr = a("entity.zombie_pig.ambient");
-+            hs = a("entity.zombie_pig.angry");
-+            ht = a("entity.zombie_pig.death");
-+            hu = a("entity.zombie_pig.hurt");
-+            hv = a("entity.zombie.step");
-+            hw = a("entity.zombie_villager.ambient");
-+            hx = a("entity.zombie_villager.converted");
-+            hy = a("entity.zombie_villager.cure");
-+            hz = a("entity.zombie_villager.death");
-+            hA = a("entity.zombie_villager.hurt");
-+            hB = a("entity.zombie_villager.step");
++            en = a("entity.player.levelup");
++            eo = a("entity.player.small_fall");
++            ep = a("entity.player.splash");
++            eq = a("entity.player.swim");
++            er = a("entity.polar_bear.ambient");
++            es = a("entity.polar_bear.baby_ambient");
++            et = a("entity.polar_bear.death");
++            eu = a("entity.polar_bear.hurt");
++            ev = a("entity.polar_bear.step");
++            ew = a("entity.polar_bear.warning");
++            ex = a("block.portal.ambient");
++            ey = a("block.portal.travel");
++            ez = a("block.portal.trigger");
++            eA = a("entity.rabbit.ambient");
++            eB = a("entity.rabbit.attack");
++            eC = a("entity.rabbit.death");
++            eD = a("entity.rabbit.hurt");
++            eE = a("entity.rabbit.jump");
++            eF = a("record.11");
++            eG = a("record.13");
++            eH = a("record.blocks");
++            eI = a("record.cat");
++            eJ = a("record.chirp");
++            eK = a("record.far");
++            eL = a("record.mall");
++            eM = a("record.mellohi");
++            eN = a("record.stal");
++            eO = a("record.strad");
++            eP = a("record.wait");
++            eQ = a("record.ward");
++            eR = a("block.redstone_torch.burnout");
++            eS = a("block.sand.break");
++            eT = a("block.sand.fall");
++            eU = a("block.sand.hit");
++            eV = a("block.sand.place");
++            eW = a("block.sand.step");
++            eX = a("entity.sheep.ambient");
++            eY = a("entity.sheep.death");
++            eZ = a("entity.sheep.hurt");
++            fa = a("entity.sheep.shear");
++            fb = a("entity.sheep.step");
++            fc = a("item.shield.block");
++            fd = a("item.shield.break");
++            fe = a("item.shovel.flatten");
++            ff = a("entity.shulker.ambient");
++            fg = a("entity.shulker_bullet.hit");
++            fh = a("entity.shulker_bullet.hurt");
++            fi = a("entity.shulker.close");
++            fj = a("entity.shulker.death");
++            fk = a("entity.shulker.hurt");
++            fl = a("entity.shulker.hurt_closed");
++            fm = a("entity.shulker.open");
++            fn = a("entity.shulker.shoot");
++            fo = a("entity.shulker.teleport");
++            fp = a("entity.silverfish.ambient");
++            fq = a("entity.silverfish.death");
++            fr = a("entity.silverfish.hurt");
++            fs = a("entity.silverfish.step");
++            ft = a("entity.skeleton.ambient");
++            fu = a("entity.skeleton.death");
++            fv = a("entity.skeleton_horse.ambient");
++            fw = a("entity.skeleton_horse.death");
++            fx = a("entity.skeleton_horse.hurt");
++            fy = a("entity.skeleton.hurt");
++            fz = a("entity.skeleton.shoot");
++            fA = a("entity.skeleton.step");
++            fB = a("entity.slime.attack");
++            fC = a("block.slime.break");
++            fD = a("entity.slime.death");
++            fE = a("block.slime.fall");
++            fF = a("block.slime.hit");
++            fG = a("entity.slime.hurt");
++            fH = a("entity.slime.jump");
++            fI = a("block.slime.place");
++            fJ = a("entity.slime.squish");
++            fK = a("block.slime.step");
++            fL = a("entity.small_magmacube.death");
++            fM = a("entity.small_magmacube.hurt");
++            fN = a("entity.small_magmacube.squish");
++            fO = a("entity.small_slime.death");
++            fP = a("entity.small_slime.hurt");
++            fQ = a("entity.small_slime.jump");
++            fR = a("entity.small_slime.squish");
++            fS = a("entity.snowball.throw");
++            fT = a("entity.snowman.ambient");
++            fU = a("entity.snowman.death");
++            fV = a("entity.snowman.hurt");
++            fW = a("entity.snowman.shoot");
++            fX = a("block.snow.break");
++            fY = a("block.snow.fall");
++            fZ = a("block.snow.hit");
++            ga = a("block.snow.place");
++            gb = a("block.snow.step");
++            gc = a("entity.spider.ambient");
++            gd = a("entity.spider.death");
++            ge = a("entity.spider.hurt");
++            gf = a("entity.spider.step");
++            gg = a("entity.splash_potion.break");
++            gh = a("entity.splash_potion.throw");
++            gi = a("entity.squid.ambient");
++            gj = a("entity.squid.death");
++            gk = a("entity.squid.hurt");
++            gl = a("block.stone.break");
++            gm = a("block.stone_button.click_off");
++            gn = a("block.stone_button.click_on");
++            go = a("block.stone.fall");
++            gp = a("block.stone.hit");
++            gq = a("block.stone.place");
++            gr = a("block.stone_pressureplate.click_off");
++            gs = a("block.stone_pressureplate.click_on");
++            gt = a("block.stone.step");
++            gu = a("entity.stray.ambient");
++            gv = a("entity.stray.death");
++            gw = a("entity.stray.hurt");
++            gx = a("entity.stray.step");
++            gy = a("enchant.thorns.hit");
++            gz = a("entity.tnt.primed");
++            gA = a("block.tripwire.attach");
++            gB = a("block.tripwire.click_off");
++            gC = a("block.tripwire.click_on");
++            gD = a("block.tripwire.detach");
++            gE = a("ui.button.click");
++            gF = a("entity.villager.ambient");
++            gG = a("entity.villager.death");
++            gH = a("entity.villager.hurt");
++            gI = a("entity.villager.no");
++            gJ = a("entity.villager.trading");
++            gK = a("entity.villager.yes");
++            gL = a("block.waterlily.place");
++            gM = a("block.water.ambient");
++            gN = a("weather.rain");
++            gO = a("weather.rain.above");
++            gP = a("entity.witch.ambient");
++            gQ = a("entity.witch.death");
++            gR = a("entity.witch.drink");
++            gS = a("entity.witch.hurt");
++            gT = a("entity.witch.throw");
++            gU = a("entity.wither.ambient");
++            gV = a("entity.wither.break_block");
++            gW = a("entity.wither.death");
++            gX = a("entity.wither.hurt");
++            gY = a("entity.wither.shoot");
++            gZ = a("entity.wither.spawn");
++            ha = a("entity.wither_skeleton.ambient");
++            hb = a("entity.wither_skeleton.death");
++            hc = a("entity.wither_skeleton.hurt");
++            hd = a("entity.wither_skeleton.step");
++            he = a("entity.wolf.ambient");
++            hf = a("entity.wolf.death");
++            hg = a("entity.wolf.growl");
++            hh = a("entity.wolf.howl");
++            hi = a("entity.wolf.hurt");
++            hj = a("entity.wolf.pant");
++            hk = a("entity.wolf.shake");
++            hl = a("entity.wolf.step");
++            hm = a("entity.wolf.whine");
++            hn = a("block.wooden_door.close");
++            ho = a("block.wooden_door.open");
++            hp = a("block.wooden_trapdoor.close");
++            hq = a("block.wooden_trapdoor.open");
++            hr = a("block.wood.break");
++            hs = a("block.wood_button.click_off");
++            ht = a("block.wood_button.click_on");
++            hu = a("block.wood.fall");
++            hv = a("block.wood.hit");
++            hw = a("block.wood.place");
++            hx = a("block.wood_pressureplate.click_off");
++            hy = a("block.wood_pressureplate.click_on");
++            hz = a("block.wood.step");
++            hA = a("entity.zombie.ambient");
++            hB = a("entity.zombie.attack_door_wood");
++            hC = a("entity.zombie.attack_iron_door");
++            hD = a("entity.zombie.break_door_wood");
++            hE = a("entity.zombie.death");
++            hF = a("entity.zombie_horse.ambient");
++            hG = a("entity.zombie_horse.death");
++            hH = a("entity.zombie_horse.hurt");
++            hI = a("entity.zombie.hurt");
++            hJ = a("entity.zombie.infect");
++            hK = a("entity.zombie_pig.ambient");
++            hL = a("entity.zombie_pig.angry");
++            hM = a("entity.zombie_pig.death");
++            hN = a("entity.zombie_pig.hurt");
++            hO = a("entity.zombie.step");
++            hP = a("entity.zombie_villager.ambient");
++            hQ = a("entity.zombie_villager.converted");
++            hR = a("entity.zombie_villager.cure");
++            hS = a("entity.zombie_villager.death");
++            hT = a("entity.zombie_villager.hurt");
++            hU = a("entity.zombie_villager.step");
 +        }
 +    }
 +}

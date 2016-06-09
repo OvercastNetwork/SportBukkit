@@ -1,11 +1,11 @@
-From b7219e07e55fd408a4f8d2db87fdc12ad6c0407d Mon Sep 17 00:00:00 2001
+From f7436ec5afb8f882aaa1a8499a484252cdaf3f12 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:52 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 5323722..94c8b5e 100644
+index 841c40e..3061baf 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -4,6 +4,7 @@ import javax.annotation.Nullable;
@@ -42,9 +42,9 @@ index 5323722..94c8b5e 100644
 +                    event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                }
                  world.getServer().getPluginManager().callEvent(event);
- 
-                 if(!event.isCancelled()) {
-@@ -83,7 +94,9 @@ public class BlockTNT extends Block {
+                 if(!event.isCancelled()) return;
+                 isPrimed = true;
+@@ -82,7 +93,9 @@ public class BlockTNT extends Block {
  
      public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
          if (itemstack != null && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
@@ -54,7 +54,7 @@ index 5323722..94c8b5e 100644
              // SportBukkit start - don't remove block if TNT priming is cancelled
              if (isPrimed) {
                  world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 11);
-@@ -106,7 +119,9 @@ public class BlockTNT extends Block {
+@@ -105,7 +118,9 @@ public class BlockTNT extends Block {
              EntityArrow entityarrow = (EntityArrow) entity;
  
              if (entityarrow.isBurning()) {

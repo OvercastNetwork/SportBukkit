@@ -1,4 +1,4 @@
-From 02c38323cef23850c0e3fa2c2bb598b655bd6149 Mon Sep 17 00:00:00 2001
+From 7fa01a7083654c3cbc5ef6c64d2204f6e0cbed22 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
@@ -39,7 +39,7 @@ index bdfe2dc..1ce8f27 100644
       */
      public boolean getIsolatePlugins();
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index c9954fd..dab77ad 100644
+index 0094607..cace5cb 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -52,6 +52,48 @@ public interface Entity extends Metadatable, CommandSender, Physical {
@@ -92,7 +92,7 @@ index c9954fd..dab77ad 100644
       * state updated by the server and is not recalculated unless the entity
       * moves.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3fe5807..21cdf3a 100644
+index 9afab66..2c032a2 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -24,6 +24,7 @@ import org.bukkit.map.MapView;
@@ -103,7 +103,7 @@ index 3fe5807..21cdf3a 100644
  
  /**
   * Represents a player, connected or not
-@@ -1589,4 +1590,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1583,4 +1584,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @return Information about the targeted block, or null if no blocks were found
       */
      RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids);

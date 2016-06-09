@@ -1,11 +1,11 @@
-From c7174c9ef4102b75740ee1fe97ca6bef8044c3d7 Mon Sep 17 00:00:00 2001
+From 03e5fbe52c739e62f2b481628fc0a1823acf7bf6 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index e416e46..f19fd58 100644
+index 4e2b632..5475b22 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -64,7 +64,7 @@ public abstract class Entity implements ICommandListener {
@@ -16,8 +16,8 @@ index e416e46..f19fd58 100644
 +    public boolean i; public void setCanObstruct(boolean yes) { this.i = yes; } // SportBukkit - add setter
      public final List<Entity> passengers;
      protected int j;
-     private Entity at;
-@@ -1170,6 +1170,7 @@ public abstract class Entity implements ICommandListener {
+     private Entity au;
+@@ -1188,6 +1188,7 @@ public abstract class Entity implements ICommandListener {
      public void d(EntityHuman entityhuman) {}
  
      public void collide(Entity entity) {
@@ -26,10 +26,10 @@ index e416e46..f19fd58 100644
              if (!entity.noclip && !this.noclip) {
                  double d0 = entity.locX - this.locX;
 diff --git a/src/main/java/net/minecraft/server/EntityBoat.java b/src/main/java/net/minecraft/server/EntityBoat.java
-index 8f6c066..0243a11 100644
+index b3cb80f..2386126 100644
 --- a/src/main/java/net/minecraft/server/EntityBoat.java
 +++ b/src/main/java/net/minecraft/server/EntityBoat.java
-@@ -86,7 +86,7 @@ public class EntityBoat extends Entity {
+@@ -90,7 +90,7 @@ public class EntityBoat extends Entity {
  
      @Nullable
      public AxisAlignedBB j(Entity entity) {
@@ -39,10 +39,10 @@ index 8f6c066..0243a11 100644
  
      @Nullable
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index c7baba2..47f5591 100644
+index 05a099c..3a25cb8 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -392,7 +392,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -397,7 +397,7 @@ public abstract class EntityHuman extends EntityLiving {
  
              List list = this.world.getEntities(this, axisalignedbb);
  
@@ -52,11 +52,11 @@ index c7baba2..47f5591 100644
  
                  if (!entity.dead) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index d8d6f33..623e15f 100644
+index 911cfed..f848a4e 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -2001,7 +2001,7 @@ public abstract class EntityLiving extends Entity {
-     protected void co() {
+@@ -2034,7 +2034,7 @@ public abstract class EntityLiving extends Entity {
+     protected void cs() {
          List list = this.world.getEntities(this, this.getBoundingBox(), IEntitySelector.a(this));
  
 -        if (!list.isEmpty()) {
@@ -65,10 +65,10 @@ index d8d6f33..623e15f 100644
                  Entity entity = (Entity) list.get(i);
                  // TODO better check now?
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 1b277f9..f3cd3dc 100644
+index 37b2b71..bf102f8 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -62,6 +62,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -67,6 +67,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      public IChatBaseComponent listName;
      public org.bukkit.Location compassTarget;
      public int newExp = 0;
@@ -77,7 +77,7 @@ index 1b277f9..f3cd3dc 100644
      public int newLevel = 0;
      public int newTotalExp = 0;
      public boolean keepLevel = false;
-@@ -182,6 +184,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -187,6 +189,18 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
          this.playerConnection.sendPacket(new PacketPlayOutCombatEvent(this.getCombatTracker(), PacketPlayOutCombatEvent.EnumCombatEventType.ENTER_COMBAT));
      }
  
@@ -97,7 +97,7 @@ index 1b277f9..f3cd3dc 100644
          super.exitCombat();
          this.playerConnection.sendPacket(new PacketPlayOutCombatEvent(this.getCombatTracker(), PacketPlayOutCombatEvent.EnumCombatEventType.END_COMBAT));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index a37a01d..485e94d 100644
+index 9f39bf7..e1df5db 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1510,6 +1510,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

@@ -1,11 +1,11 @@
-From eaf1e9947abda34b273379e6495e659c12173300 Mon Sep 17 00:00:00 2001
+From 754e29509f707053025d57a070d44ef467aea55e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 21:57:42 -0400
 Subject: [PATCH] Archery attributes
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index 903e87b..6dd41d5 100644
+index 1019f98..c023cce 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -72,13 +72,23 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -37,7 +37,7 @@ index 903e87b..6dd41d5 100644
  
      public void shoot(double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 880c8cf..0bf3eed 100644
+index 00adbfa..08ec6f8 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -36,6 +36,11 @@ import org.bukkit.craftbukkit.entity.CraftLivingEntity;
@@ -51,8 +51,8 @@ index 880c8cf..0bf3eed 100644
 +
      private static final UUID a = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
      private static final AttributeModifier b = (new AttributeModifier(EntityLiving.a, "Sprinting speed boost", 0.30000001192092896D, 2)).a(false);
-     protected static final DataWatcherObject<Byte> at = DataWatcher.a(EntityLiving.class, DataWatcherRegistry.a);
-@@ -146,6 +151,10 @@ public abstract class EntityLiving extends Entity {
+     protected static final DataWatcherObject<Byte> au = DataWatcher.a(EntityLiving.class, DataWatcherRegistry.a);
+@@ -148,6 +153,10 @@ public abstract class EntityLiving extends Entity {
          this.getAttributeMap().b(GenericAttributes.MOVEMENT_SPEED);
          this.getAttributeMap().b(GenericAttributes.g);
          this.getAttributeMap().b(GenericAttributes.h);

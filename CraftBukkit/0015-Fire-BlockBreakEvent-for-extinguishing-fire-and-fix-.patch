@@ -1,4 +1,4 @@
-From 3078c1b5b02131a6c925ae600bac4c01d7788f22 Mon Sep 17 00:00:00 2001
+From decefef2201790ea92175afafc8f57c2b88555c8 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -6,7 +6,7 @@ Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 6b65829..9d420e3 100644
+index 6eaecd8..277fd53 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
 @@ -112,6 +112,13 @@ public class PlayerInteractManager {
@@ -42,10 +42,10 @@ index 6b65829..9d420e3 100644
  
              if (event.useItemInHand() == Event.Result.DENY) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index aad4258..48e9259 100644
+index 3cfb30e..b60c82c 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1814,8 +1814,13 @@ public abstract class World implements IBlockAccess {
+@@ -1818,8 +1818,13 @@ public abstract class World implements IBlockAccess {
      public boolean douseFire(@Nullable EntityHuman entityhuman, BlockPosition blockposition, EnumDirection enumdirection) {
          blockposition = blockposition.shift(enumdirection);
          if (this.getType(blockposition).getBlock() == Blocks.FIRE) {

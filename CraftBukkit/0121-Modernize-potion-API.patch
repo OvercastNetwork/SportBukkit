@@ -1,11 +1,11 @@
-From 27e78c89384dd707c1a1e38dea151cdcbfadfd35 Mon Sep 17 00:00:00 2001
+From d868b3fa5b3f11d1218d0d9f32bfb83c5600455b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:10:18 -0500
 Subject: [PATCH] Modernize potion API
 
 
 diff --git a/src/main/java/net/minecraft/server/MobEffectList.java b/src/main/java/net/minecraft/server/MobEffectList.java
-index 59d2e89..0a5acab 100644
+index f6a231b..bb8fbbb 100644
 --- a/src/main/java/net/minecraft/server/MobEffectList.java
 +++ b/src/main/java/net/minecraft/server/MobEffectList.java
 @@ -224,10 +224,5 @@ public class MobEffectList {
@@ -13,8 +13,8 @@ index 59d2e89..0a5acab 100644
          MobEffectList.REGISTRY.a(26, new MinecraftKey("luck"), (new MobEffectList(false, 3381504)).c("effect.luck").b(5, 2).j().a(GenericAttributes.i, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0D, 0));
          MobEffectList.REGISTRY.a(27, new MinecraftKey("unluck"), (new MobEffectList(true, 12624973)).c("effect.unluck").b(6, 2).a(GenericAttributes.i, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0D, 0));
 -        // CraftBukkit start
--        for (MobEffectList effect : REGISTRY) {
--            org.bukkit.potion.PotionEffectType.registerPotionEffectType(new org.bukkit.craftbukkit.potion.CraftPotionEffectType(effect));
+-        for (Object effect : REGISTRY) {
+-            org.bukkit.potion.PotionEffectType.registerPotionEffectType(new org.bukkit.craftbukkit.potion.CraftPotionEffectType((MobEffectList) effect));
 -        }
 -        // CraftBukkit end
      }

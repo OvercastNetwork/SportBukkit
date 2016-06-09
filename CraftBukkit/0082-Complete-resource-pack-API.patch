@@ -1,4 +1,4 @@
-From 8a8ef5aa148b7fb8badfb0a8de8b96bf32f59c73 Mon Sep 17 00:00:00 2001
+From 6cf7eae8a77e9869c4378c2aa2eb5c6deb37b8a3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 4 Apr 2015 23:17:52 -0400
 Subject: [PATCH] Complete resource pack API
@@ -18,10 +18,10 @@ index 04e52d2..d04b2e3 100644
  
      public PacketPlayInResourcePackStatus() {}
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 80a3b50..765bf89 100644
+index 76c6fba..2297472 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1047,7 +1047,10 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1046,7 +1046,10 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
      // CraftBukkit start
      public void a(PacketPlayInResourcePackStatus packetplayinresourcepackstatus) {
@@ -34,7 +34,7 @@ index 80a3b50..765bf89 100644
      // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ce8f945..b2c9d3b 100644
+index 096d563..4dd6722 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -61,6 +61,7 @@ import org.bukkit.entity.EntityType;

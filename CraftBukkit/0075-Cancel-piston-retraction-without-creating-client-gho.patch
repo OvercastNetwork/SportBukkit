@@ -1,11 +1,11 @@
-From 0642ac7480ab1169665407da56e0fd991af57645 Mon Sep 17 00:00:00 2001
+From 14bd07fc004e55c21bb19e01c45b9c4f7a90cf5a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 Feb 2015 05:18:37 -0500
 Subject: [PATCH] Cancel piston retraction without creating client ghost blocks
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockPiston.java b/src/main/java/net/minecraft/server/BlockPiston.java
-index 7e9d4fd..9b2628e 100644
+index 6bdd3a4..50c7e20 100644
 --- a/src/main/java/net/minecraft/server/BlockPiston.java
 +++ b/src/main/java/net/minecraft/server/BlockPiston.java
 @@ -179,6 +179,11 @@ public class BlockPiston extends BlockDirectional {
@@ -50,7 +50,7 @@ index 7e9d4fd..9b2628e 100644
              int k;
              BlockPosition blockposition2;
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index e55a01e..bdbbc86 100644
+index 0ecb5c5..3936fb8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -1,6 +1,7 @@
@@ -61,7 +61,7 @@ index e55a01e..bdbbc86 100644
  import java.util.ArrayList;
  import java.util.EnumMap;
  import java.util.List;
-@@ -1023,4 +1024,59 @@ public class CraftEventFactory {
+@@ -1025,4 +1026,59 @@ public class CraftEventFactory {
          Bukkit.getPluginManager().callEvent(event);
          return event;
      }

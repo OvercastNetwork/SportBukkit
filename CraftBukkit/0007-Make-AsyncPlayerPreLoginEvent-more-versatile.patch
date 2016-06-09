@@ -1,11 +1,11 @@
-From 5857d557b4f0093292d6e3b2735275e8c653f264 Mon Sep 17 00:00:00 2001
+From ec2c1a566f56870ae39581fd2eefdbe0072aabb3 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 3cca9ff..4ecb603 100644
+index a5cbe04..dfea131 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -68,6 +68,12 @@ public class LoginListener implements PacketLoginInListener, ITickable {
@@ -19,7 +19,7 @@ index 3cca9ff..4ecb603 100644
 +        }
 +        // SportBukkit end
          try {
-             LoginListener.c.info("Disconnecting " + this.d() + ": " + s);
+             LoginListener.c.info("Disconnecting {}: {}", new Object[] { this.d(), s});
              ChatComponentText chatcomponenttext = new ChatComponentText(s);
 @@ -81,9 +87,11 @@ public class LoginListener implements PacketLoginInListener, ITickable {
      }
@@ -35,7 +35,7 @@ index 3cca9ff..4ecb603 100644
          EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, hostname);
 @@ -133,7 +141,15 @@ public class LoginListener implements PacketLoginInListener, ITickable {
              this.g = LoginListener.EnumProtocolState.KEY;
-             this.networkManager.sendPacket(new PacketLoginOutEncryptionBegin(this.j, this.server.O().getPublic(), this.e));
+             this.networkManager.sendPacket(new PacketLoginOutEncryptionBegin("", this.server.O().getPublic(), this.e));
          } else {
 -            this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
 +            // SportBukkit start - call pre-login event in offline mode
@@ -91,16 +91,17 @@ index 3cca9ff..4ecb603 100644
 -                                }
 -                            }
 -                            // CraftBukkit end
-+                            if (!networkManager.isConnected()) return; // SportBukkit - ensure player is still connected
-                             LoginListener.c.info("UUID of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
+-                            LoginListener.c.info("UUID of player {} is {}", new Object[] { LoginListener.this.i.getName(), LoginListener.this.i.getId()});
 -                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
++                            if (!networkManager.isConnected()) return; // SportBukkit - ensure player is still connected
++                            LoginListener.c.info("UUID of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
                          } else if (LoginListener.this.server.R()) {
                              LoginListener.c.warn("Failed to verify username but will let them in anyway!");
                              LoginListener.this.i = LoginListener.this.a(gameprofile);
 -                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
                          } else {
                              LoginListener.this.disconnect("Failed to verify username!");
-                             LoginListener.c.error("Username \'" + gameprofile.getName() + "\' tried to join with an invalid session"); // CraftBukkit - fix null pointer
+                             LoginListener.c.error("Username \'{}\' tried to join with an invalid session", new Object[] { gameprofile.getName()});
 @@ -208,7 +186,6 @@ public class LoginListener implements PacketLoginInListener, ITickable {
                          if (LoginListener.this.server.R()) {
                              LoginListener.c.warn("Authentication servers are down but will let them in anyway!");

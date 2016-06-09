@@ -1,4 +1,4 @@
-From d40c32939156974b2d12e8b9774de9f3f061d0ff Mon Sep 17 00:00:00 2001
+From 958ccae405608692d873c2768873e0eb96eb155d Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
@@ -109,11 +109,11 @@ index ce79e19..5323722 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 6d97dee..8a757f3 100644
+index 1624680..dbb9169 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
-@@ -97,7 +97,16 @@ public class EntityCreeper extends EntityMonster {
-             int i = this.db();
+@@ -101,7 +101,16 @@ public class EntityCreeper extends EntityMonster {
+             int i = this.df();
  
              if (i > 0 && this.fuseTicks == 0) {
 -                this.a(SoundEffects.at, 1.0F, 0.5F);
@@ -131,7 +131,7 @@ index 6d97dee..8a757f3 100644
  
              this.fuseTicks += i;
 diff --git a/src/main/java/net/minecraft/server/EntityLargeFireball.java b/src/main/java/net/minecraft/server/EntityLargeFireball.java
-index b62c037..c9d46cc 100644
+index b25ed1a..0ff37de 100644
 --- a/src/main/java/net/minecraft/server/EntityLargeFireball.java
 +++ b/src/main/java/net/minecraft/server/EntityLargeFireball.java
 @@ -23,15 +23,9 @@ public class EntityLargeFireball extends EntityFireball {
@@ -153,10 +153,10 @@ index b62c037..c9d46cc 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index e467aff..e382e1e 100644
+index fc7d581..b4354ab 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-@@ -80,13 +80,9 @@ public class EntityTNTPrimed extends Entity {
+@@ -83,13 +83,9 @@ public class EntityTNTPrimed extends Entity {
          // float f = 4.0F;
  
          org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
@@ -166,9 +166,9 @@ index e467aff..e382e1e 100644
 -        server.getPluginManager().callEvent(event);
 -
 -        if (!event.isCancelled()) {
--            this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 2.0F), this.locZ, event.getRadius(), event.getFire(), true);
+-            this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, event.getRadius(), event.getFire(), true);
 -        }
-+        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 2.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
++        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
          // CraftBukkit end
      }
  

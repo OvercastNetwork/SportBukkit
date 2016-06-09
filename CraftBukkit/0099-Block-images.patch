@@ -1,11 +1,11 @@
-From 8e0962a02005ad402bff0ebe44541c317472398c Mon Sep 17 00:00:00 2001
+From 7f3ef909c1be49df542c9380fc0b7a35332f0783 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 1 Jul 2015 12:42:37 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 28b4a4b..67acea8 100644
+index f2edb9c..f250cc4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -36,6 +36,7 @@ import org.bukkit.Warning.WarningState;
@@ -24,7 +24,7 @@ index 28b4a4b..67acea8 100644
  import org.bukkit.craftbukkit.boss.CraftBossBar;
  import org.bukkit.craftbukkit.command.VanillaCommandWrapper;
  import org.bukkit.craftbukkit.entity.CraftPlayer;
-@@ -1682,6 +1684,11 @@ public final class CraftServer implements Server {
+@@ -1695,6 +1697,11 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -37,7 +37,7 @@ index 28b4a4b..67acea8 100644
          return scoreboardManager;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index f1a04bf..79ad958 100644
+index 8b6f1d7..1b66067 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -30,8 +30,12 @@ import org.bukkit.WorldBorder;
@@ -53,7 +53,7 @@ index f1a04bf..79ad958 100644
  import org.bukkit.craftbukkit.block.CraftBlockState;
  import org.bukkit.craftbukkit.entity.*;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
-@@ -1585,4 +1589,19 @@ public class CraftWorld implements World {
+@@ -1587,4 +1591,19 @@ public class CraftWorld implements World {
              cps.unload(chunk);
          }
      }

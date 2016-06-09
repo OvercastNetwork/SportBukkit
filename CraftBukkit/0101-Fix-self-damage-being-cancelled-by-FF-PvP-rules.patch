@@ -1,14 +1,14 @@
-From 748e33b2fbce072cbdba3ffe816b5448329d5e87 Mon Sep 17 00:00:00 2001
+From ee1a0c86fa62b3979eaf373cee88d5c9d31250d1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 10 Jul 2015 23:32:00 -0400
 Subject: [PATCH] Fix self-damage being cancelled by FF/PvP rules
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index f884fd8..001cdce 100644
+index cd1f450..5f6348e 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -772,6 +772,9 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -777,6 +777,9 @@ public abstract class EntityHuman extends EntityLiving {
      public boolean a(EntityHuman entityhuman) {
          // CraftBukkit start - Change to check OTHER player's scoreboard team according to API
          // To summarize this method's logic, it's "Can parameter hurt this"
@@ -19,10 +19,10 @@ index f884fd8..001cdce 100644
          if (entityhuman instanceof EntityPlayer) {
              EntityPlayer thatPlayer = (EntityPlayer) entityhuman;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 81560e9..97a3e76 100644
+index da79530..63c6553 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -500,6 +500,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -510,6 +510,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
      }
  
      public boolean a(EntityHuman entityhuman) {

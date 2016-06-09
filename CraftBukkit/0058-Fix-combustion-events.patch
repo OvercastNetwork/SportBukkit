@@ -1,11 +1,11 @@
-From c9fc1655a429cf3f7ef36079279c03352d77cad3 Mon Sep 17 00:00:00 2001
+From 09fa64e5d5efc2cd4903d2ebb961e427e9f7f5af Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
-index e1df0d6..3e99607 100644
+index 60b882e..7352b70 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java
 +++ b/src/main/java/net/minecraft/server/DispenserRegistry.java
 @@ -230,7 +230,7 @@ public class DispenserRegistry {
@@ -26,7 +26,7 @@ index e1df0d6..3e99607 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index a98c00c..d534789 100644
+index b0d1760..f5068ff 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,8 @@ import org.bukkit.block.BlockFace;
@@ -46,7 +46,7 @@ index a98c00c..d534789 100644
      public boolean inWater;
      public int noDamageTicks;
      protected boolean justCreated;
-@@ -392,24 +395,25 @@ public abstract class Entity implements ICommandListener {
+@@ -394,24 +397,25 @@ public abstract class Entity implements ICommandListener {
  
      protected void burnFromLava() {
          if (!this.fireProof) {
@@ -88,9 +88,9 @@ index a98c00c..d534789 100644
                  }
                  return;
              }
-@@ -765,22 +769,34 @@ public abstract class Entity implements ICommandListener {
+@@ -764,22 +768,34 @@ public abstract class Entity implements ICommandListener {
  
-             boolean flag2 = this.ah();
+             boolean flag2 = this.ai();
  
 -            if (this.world.f(this.getBoundingBox().shrink(0.001D))) {
 -                this.burn(1);
@@ -136,7 +136,7 @@ index a98c00c..d534789 100644
                  }
              } else if (this.fireTicks <= 0) {
                  this.fireTicks = -this.maxFireTicks;
-@@ -791,6 +807,15 @@ public abstract class Entity implements ICommandListener {
+@@ -790,6 +806,15 @@ public abstract class Entity implements ICommandListener {
                  this.fireTicks = -this.maxFireTicks;
              }
  
@@ -153,10 +153,10 @@ index a98c00c..d534789 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 4d6f362..c2164c9 100644
+index 0eecc2d..8c05ecf 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1731,6 +1731,38 @@ public abstract class World implements IBlockAccess {
+@@ -1735,6 +1735,38 @@ public abstract class World implements IBlockAccess {
          return false;
      }
  
@@ -196,15 +196,15 @@ index 4d6f362..c2164c9 100644
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.f(axisalignedbb.d);
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 63d5b87..e55a01e 100644
+index 1c60b02..0ecb5c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -483,18 +483,16 @@ public class CraftEventFactory {
+@@ -483,18 +483,18 @@ public class CraftEventFactory {
                  event.getEntity().setLastDamageCause(event);
              }
              return event;
--        } else if (source == DamageSource.LAVA) {
--            EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), DamageCause.LAVA, modifiers, modifierFunctions));
+-        } else if (source == DamageSource.LAVA || source == DamageSource.HOT_FLOOR) {
+-            EntityDamageEvent event = callEvent(new EntityDamageByBlockEvent(null, entity.getBukkitEntity(), (source == DamageSource.LAVA) ? DamageCause.LAVA : DamageCause.HOT_FLOOR, modifiers, modifierFunctions));
 -            if (!event.isCancelled()) {
 -                event.getEntity().setLastDamageCause(event);
 -            }
@@ -219,10 +219,12 @@ index 63d5b87..e55a01e 100644
 +                cause = DamageCause.FIRE;
 +            } else if (source == DamageSource.LAVA) {
 +                cause = DamageCause.LAVA;
++            } else if (source == DamageSource.HOT_FLOOR) {
++                cause = DamageCause.HOT_FLOOR;
              } else {
-                 throw new AssertionError(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex));
+                 throw new IllegalStateException(String.format("Unhandled damage of %s by %s from %s", entity, damager, source.translationIndex));
              }
-@@ -528,6 +526,8 @@ public class CraftEventFactory {
+@@ -528,6 +528,8 @@ public class CraftEventFactory {
          DamageCause cause = null;
          if (source == DamageSource.FIRE) {
              cause = DamageCause.FIRE;

@@ -1,23 +1,23 @@
-From 516c1d64013925399dbba83da1a46be416173e38 Mon Sep 17 00:00:00 2001
+From 8642831286d734822baa752d53cec8cdd225169b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 07:40:29 -0400
 Subject: [PATCH] Fix passenger desync
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index e250e33..6f41253 100644
+index 71ddc62..2e2187e 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -2517,6 +2517,7 @@ public abstract class Entity implements ICommandListener {
+@@ -2546,6 +2546,7 @@ public abstract class Entity implements ICommandListener {
          return null;
      }
  
-+    public List<Entity> getPassengers() { return this.bv(); } // SportBukkit - alias for following method
-     public List<Entity> bv() {
++    public List<Entity> getPassengers() { return this.bx(); } // SportBukkit - alias for following method
+     public List<Entity> bx() {
          return (List) (this.passengers.isEmpty() ? Collections.emptyList() : Lists.newArrayList(this.passengers));
      }
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index cb67947..f683c05 100644
+index e2d9009..d148ce6 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -446,6 +446,12 @@ public class EntityTrackerEntry {

@@ -1,4 +1,4 @@
-From df1c2412265e73406b8041008a42b8bcfbc11647 Mon Sep 17 00:00:00 2001
+From dfa0e512276f2faad275abd21546584e1bbd6c9f Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,7 +7,7 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index da163af..009fe6b 100644
+index 31cdef8..e7a113d 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -71,6 +71,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -40,7 +40,7 @@ index da163af..009fe6b 100644
              }
              break;
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 4ecb603..78e5e4a 100644
+index dfea131..b132c49 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -144,7 +144,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
@@ -76,7 +76,7 @@ index 4ecb603..78e5e4a 100644
  
      protected GameProfile a(GameProfile gameprofile) {
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index f740778..e073e49 100644
+index da6efc7..f46c87f 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -65,7 +65,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
@@ -106,10 +106,10 @@ index 1cb9d60..295f43d 100644
          this.d = EnumProtocol.a(packetdataserializer.g());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1a524a3..dba3f3b 100644
+index e9859bb..7cb0a18 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -167,6 +167,8 @@ public final class CraftServer implements Server {
+@@ -168,6 +168,8 @@ public final class CraftServer implements Server {
      private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
      private final List<CraftPlayer> playerView;
      public int reloadCount;
@@ -118,7 +118,7 @@ index 1a524a3..dba3f3b 100644
  
      private final class BooleanWrapper {
          private boolean value = true;
-@@ -240,6 +242,7 @@ public final class CraftServer implements Server {
+@@ -241,6 +243,7 @@ public final class CraftServer implements Server {
          }
  
          saveCommandsConfig();

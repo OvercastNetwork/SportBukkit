@@ -1,24 +1,24 @@
-From ffbd9a7e264e4d886fc886b98cdeff8af3708e8c Mon Sep 17 00:00:00 2001
+From 86bb3ec1de6be108c829e55b34b282a52fdc3dde Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] 1.9 to 1.9.2 legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 0c9c9eb..f1cc98c 100644
+index c5f3656..5da31c1 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -65,7 +65,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
-                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.9.4");
+                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.10");
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
--            } else if (packethandshakinginsetprotocol.b() < 110) {
+-            } else if (packethandshakinginsetprotocol.b() < 210) {
 +            } else if (packethandshakinginsetprotocol.b() < 107) { // SportBukkit
-                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.9.4");
+                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.10");
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
 diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
-index 3caf1e4..f3544bc 100644
+index a24c2c0..bdd13d6 100644
 --- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
 +++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
 @@ -25,6 +25,8 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
@@ -127,7 +127,7 @@ index b30c97e..ee10455 100644
          packetdataserializer.writeByte((byte) this.b);
          packetdataserializer.a(this.c);
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index 89d63bc..ed98a9f 100644
+index dd40e98..a814ee1 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -36,6 +36,33 @@ public class PlayerChunk {
@@ -180,7 +180,7 @@ index 89d63bc..ed98a9f 100644
          }
      }
  
-@@ -207,6 +236,7 @@ public class PlayerChunk {
+@@ -209,6 +238,7 @@ public class PlayerChunk {
                      }
                  } else if (this.dirtyCount == 64) {
                      this.a((Packet) (new PacketPlayOutMapChunk(this.chunk, this.h)));
@@ -189,10 +189,10 @@ index 89d63bc..ed98a9f 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2eb2372..3d1fe50 100644
+index a642334..f85e934 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1801,6 +1801,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1814,6 +1814,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      @Override
      public Set<Integer> getProtocolVersions() {

@@ -1,11 +1,11 @@
-From a0bd4556987885d75d8ae2c60949916892fbc5f4 Mon Sep 17 00:00:00 2001
+From 7325aef67fc0f863ad38883a091076913b8bde16 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:17 -0400
 Subject: [PATCH] Component support for signs
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index de07319..691850d 100644
+index fb2b66b..01e2665 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -12,6 +12,9 @@ import java.util.Collections;
@@ -26,7 +26,7 @@ index de07319..691850d 100644
  import org.bukkit.craftbukkit.util.CraftChatMessage;
  import org.bukkit.craftbukkit.util.LazyPlayerSet;
  import org.bukkit.craftbukkit.util.Waitable;
-@@ -2233,16 +2237,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2232,16 +2236,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              int x = packetplayinupdatesign.a().getX();
              int y = packetplayinupdatesign.a().getY();
              int z = packetplayinupdatesign.a().getZ();
@@ -173,7 +173,7 @@ index 42a6f9a..66c7578 100644
      public TileEntitySign getTileEntity() {
          return sign;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 2c78a9a..8a835de 100644
+index 9bb1865..9f5cb1a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -57,6 +57,7 @@ import org.bukkit.craftbukkit.CraftWorld;
@@ -226,7 +226,7 @@ index 2c78a9a..8a835de 100644
 +        }
 +
          TileEntitySign sign = new TileEntitySign();
-         sign.a(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ())); // PAIL: rename
+         sign.setPosition(new BlockPosition(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
 -        System.arraycopy(components, 0, sign.lines, 0, sign.lines.length);
 +        System.arraycopy(lines, 0, sign.lines, 0, sign.lines.length);
  

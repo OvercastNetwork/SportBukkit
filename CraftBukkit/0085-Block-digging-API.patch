@@ -1,17 +1,17 @@
-From c98e09a8d5f125a2813d6bc91cd315d70ca35b92 Mon Sep 17 00:00:00 2001
+From aa1b7e5728d7c8aab9cd69e8a05dcafb70aeb600 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 May 2015 14:30:20 -0400
 Subject: [PATCH] Block digging API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 9d420e3..219d964 100644
+index 277fd53..6291603 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
 @@ -14,9 +14,9 @@ public class PlayerInteractManager {
      public World world;
      public EntityPlayer player;
-     private WorldSettings.EnumGamemode gamemode;
+     private EnumGamemode gamemode;
 -    private boolean d;
 +    public boolean d; // SportBukkit - private -> public
      private int lastDigTick;
@@ -29,7 +29,7 @@ index 9d420e3..219d964 100644
  
      private boolean c(BlockPosition blockposition) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b2c9d3b..bfb8cc0 100644
+index 4dd6722..071bf61 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1858,4 +1858,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -49,7 +49,7 @@ index b2c9d3b..bfb8cc0 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index bdbbc86..afa8ade 100644
+index 3936fb8..5d919a2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -270,6 +270,14 @@ public class CraftEventFactory {

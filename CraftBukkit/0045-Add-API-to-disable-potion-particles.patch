@@ -1,11 +1,11 @@
-From 22a294f05d5bf29a62a3a29b27ce6152587fd531 Mon Sep 17 00:00:00 2001
+From ad03cd2dbfdb4ab99ac1342dea954cdb8c359175 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 072cda5..1d90d87 100644
+index 8ffea0c..751d303 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -24,6 +24,8 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -17,8 +17,8 @@ index 072cda5..1d90d87 100644
  // CraftBukkit end
  
  public abstract class EntityLiving extends Entity {
-@@ -573,10 +575,17 @@ public abstract class EntityLiving extends Entity {
-             this.bN();
+@@ -580,10 +582,17 @@ public abstract class EntityLiving extends Entity {
+             this.bP();
              this.setInvisible(false);
          } else {
 -            Collection collection = this.effects.values();
@@ -38,7 +38,7 @@ index 072cda5..1d90d87 100644
              this.setInvisible(this.hasEffect(MobEffects.INVISIBILITY));
          }
  
-@@ -827,7 +836,7 @@ public abstract class EntityLiving extends Entity {
+@@ -835,7 +844,7 @@ public abstract class EntityLiving extends Entity {
  
                  // CraftBukkit start
                  if(this instanceof EntityAnimal){

@@ -1,15 +1,15 @@
-From 12d52c490817ee2b3da7f5388b93de0b33781b0e Mon Sep 17 00:00:00 2001
+From 2acc259ee7c04fcaf07f41785eddb700e28a8871 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 21 Jun 2015 15:07:20 -0400
 Subject: [PATCH] Custom replacement for eaten items
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 1d90d87..a135065 100644
+index 751d303..d81cab2 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -2227,12 +2227,25 @@ public abstract class EntityLiving extends Entity {
-             ItemStack itemstack = (craftItem.equals(event.getItem())) ? this.bn.a(this.world, this) : CraftItemStack.asNMSCopy(event.getItem()).a(world, this);
+@@ -2260,12 +2260,25 @@ public abstract class EntityLiving extends Entity {
+             ItemStack itemstack = (craftItem.equals(event.getItem())) ? this.bo.a(this.world, this) : CraftItemStack.asNMSCopy(event.getItem()).a(world, this);
              // CraftBukkit end
  
 +            // SportBukkit start - save the default replacement item and change it if necessary
@@ -23,8 +23,8 @@ index 1d90d87..a135065 100644
                  itemstack = null;
              }
  
-             this.a(this.cu(), itemstack);
-             this.cA();
+             this.a(this.cy(), itemstack);
+             this.cE();
 +
 +            // SportBukkit start - if the replacement is anything but the default, update the client inventory
 +            if(this instanceof EntityPlayer && !com.google.common.base.Objects.equal(defaultReplacement, itemstack)) {

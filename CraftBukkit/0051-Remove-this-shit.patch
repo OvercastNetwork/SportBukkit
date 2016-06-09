@@ -1,21 +1,21 @@
-From 7d5aa8d3266b4f03c4853d7f9f61d544e25397a4 Mon Sep 17 00:00:00 2001
+From b56a42a4f3cf84aa8a1069fb3d78c19f3d3bb706 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 1 Sep 2014 15:37:16 -0500
 Subject: [PATCH] Remove this shit
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index cd7eee7..5189332 100644
+index 34c7747..bf67982 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -124,7 +124,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -126,7 +126,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
          DedicatedServer.LOGGER.info("Loading properties");
          this.propertyManager = new PropertyManager(this.options); // CraftBukkit - CLI argument support
-         this.q = new EULA(new File("eula.txt"));
--        if (!this.q.a()) {
-+        if (false && !this.q.a()) { // SportBukkit - disable check
+         this.r = new EULA(new File("eula.txt"));
+-        if (!this.r.a()) {
++        if (false && !this.r.a()) { // SportBukkit - disable check
              DedicatedServer.LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
-             this.q.b();
+             this.r.b();
              return false;
 -- 
 1.9.0

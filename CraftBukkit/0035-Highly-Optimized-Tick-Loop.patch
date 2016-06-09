@@ -1,11 +1,11 @@
-From 6a275663717937edaddcba37275200936d989db4 Mon Sep 17 00:00:00 2001
+From deda51a7e967746c7d7e9bc57fe8dfcc18ae15a7 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 25 Jan 2014 14:08:35 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 6f7de6a..66d8963 100644
+index 0945794..d56657e 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -117,6 +117,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -21,7 +21,7 @@ index 6f7de6a..66d8963 100644
  
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
-@@ -505,48 +511,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -512,48 +518,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          this.isRunning = false;
      }
  
@@ -39,7 +39,7 @@ index 6f7de6a..66d8963 100644
 -                long i = 0L;
 -
                  this.q.setMOTD(new ChatComponentText(this.motd));
-                 this.q.setServerInfo(new ServerPing.ServerData("1.9.4", 110));
+                 this.q.setServerInfo(new ServerPing.ServerData("1.10", 210));
                  this.a(this.q);
  
 +                // Spigot start

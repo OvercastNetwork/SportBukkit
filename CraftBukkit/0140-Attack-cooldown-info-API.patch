@@ -1,35 +1,35 @@
-From 315238b4edabc156f9c4f0d202c19568d0b5247d Mon Sep 17 00:00:00 2001
+From 690bd6e4a305cad8fe36c4bb6cdbc93975e15189 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:13:07 -0400
 Subject: [PATCH] Attack cooldown info API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 2d55eb8..8ff2e7f 100644
+index 2788282..529a7d0 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -969,7 +969,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -976,7 +976,7 @@ public abstract class EntityHuman extends EntityLiving {
  
                  f *= 0.2F + f2 * f2 * 0.8F;
                  f1 *= f2;
--                this.da();
-+                // this.da();   SportBukkit - don't reset cooldown here, let the arm swing packet do it
+-                this.de();
++                // this.de();   SportBukkit - don't reset cooldown here, let the arm swing packet do it
                  if (f > 0.0F || f1 > 0.0F) {
                      boolean flag = f2 > 0.9F;
                      boolean flag1 = false;
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 822fec0..880c8cf 100644
+index c00d5be..00adbfa 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -58,7 +58,7 @@ public abstract class EntityLiving extends Entity {
      public int deathTicks;
-     public float aC;
      public float aD;
--    protected int aE;
-+    protected int aE; public int ticksSinceLastAttack() { return aE; } // SportBukkit - add accessor
-     public float aF;
+     public float aE;
+-    protected int aF;
++    protected int aF; public int ticksSinceLastAttack() { return aF; } // SportBukkit - add accessor
      public float aG;
      public float aH;
+     public float aI;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 index 74fbb3c..9dd6cbf 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java

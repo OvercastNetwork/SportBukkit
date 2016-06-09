@@ -1,14 +1,14 @@
-From 4051e6df9f0b9e8dbe7960ebcd2fdac9a62a3a95 Mon Sep 17 00:00:00 2001
+From 17a37fc710f702c8974324c42986974a88280e75 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 25 Aug 2015 05:30:20 -0400
 Subject: [PATCH] Dynamic port allocation
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index c53bbf1..df9e88c 100644
+index a002bba..82dfae1 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -171,6 +171,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -173,6 +173,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
  
              try {
                  this.am().a(inetaddress, this.P());
@@ -38,10 +38,10 @@ index c53bbf1..df9e88c 100644
      public String f_() {
          return this.getMotd();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 77bbda8..0dccba4 100644
+index 9d972b3..c7a5f09 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1072,6 +1072,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1079,6 +1079,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          return this.H;
      }
  
@@ -49,7 +49,7 @@ index 77bbda8..0dccba4 100644
      public int P() {
          return this.u;
      }
-@@ -1291,6 +1292,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1301,6 +1302,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
      }
  
@@ -83,10 +83,10 @@ index 330940c..b45153c 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 67acea8..4097e19 100644
+index f250cc4..4800e47 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -512,12 +512,28 @@ public final class CraftServer implements Server {
+@@ -513,12 +513,28 @@ public final class CraftServer implements Server {
  
      // NOTE: These are dependent on the corresponding call in MinecraftServer
      // so if that changes this will need to as well

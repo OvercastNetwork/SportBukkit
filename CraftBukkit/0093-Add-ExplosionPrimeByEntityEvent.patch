@@ -1,4 +1,4 @@
-From c367b3d50f341772beda590d8dd8ca7a1fb15987 Mon Sep 17 00:00:00 2001
+From b7219e07e55fd408a4f8d2db87fdc12ad6c0407d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:52 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
@@ -65,7 +65,7 @@ index 5323722..94c8b5e 100644
                  if (isPrimed) {
                      world.setAir(blockposition);
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 8a757f3..0248d92 100644
+index dbb9169..c6c5681 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
 @@ -4,6 +4,7 @@ import javax.annotation.Nullable;
@@ -79,12 +79,12 @@ index 8a757f3..0248d92 100644
 @@ -16,6 +17,7 @@ public class EntityCreeper extends EntityMonster {
      private int maxFuseTicks = 30;
      private int explosionRadius = 3;
-     private int bA = 0;
+     private int bB;
 +    private Entity primer; // SportBukkit
  
      public EntityCreeper(World world) {
          super(world);
-@@ -98,7 +100,13 @@ public class EntityCreeper extends EntityMonster {
+@@ -102,7 +104,13 @@ public class EntityCreeper extends EntityMonster {
  
              if (i > 0 && this.fuseTicks == 0) {
                  // SportBukkit start - fire ExplosionPrimeEvent
@@ -99,15 +99,15 @@ index 8a757f3..0248d92 100644
                  this.world.getServer().getPluginManager().callEvent(event);
  
                  if (event.isCancelled()) {
-@@ -190,6 +198,7 @@ public class EntityCreeper extends EntityMonster {
-             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bx, this.bA(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+@@ -194,6 +202,7 @@ public class EntityCreeper extends EntityMonster {
+             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.by, this.bC(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
              entityhuman.a(enumhand);
              if (!this.world.isClientSide) {
 +                this.primer = entityhuman; // SportBukkit
-                 this.dd();
+                 this.dh();
                  itemstack.damage(1, entityhuman);
                  return true;
-@@ -205,7 +214,12 @@ public class EntityCreeper extends EntityMonster {
+@@ -209,7 +218,12 @@ public class EntityCreeper extends EntityMonster {
              float f = this.isPowered() ? 2.0F : 1.0F;
  
              // CraftBukkit start
@@ -120,7 +120,7 @@ index 8a757f3..0248d92 100644
 +            }
              this.world.getServer().getPluginManager().callEvent(event);
              if (!event.isCancelled()) {
-                 this.aU = true;
+                 this.aV = true;
 diff --git a/src/main/java/net/minecraft/server/EntityEnderCrystal.java b/src/main/java/net/minecraft/server/EntityEnderCrystal.java
 index fc67040..6f8e0c7 100644
 --- a/src/main/java/net/minecraft/server/EntityEnderCrystal.java

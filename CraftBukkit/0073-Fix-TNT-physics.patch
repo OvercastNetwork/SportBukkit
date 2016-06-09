@@ -1,14 +1,14 @@
-From e7ffaf7160129ca63a9c66e99cccceda9dc0f486 Mon Sep 17 00:00:00 2001
+From aeb461a2e283d712e0f8f4dbf0f96069fe584bf6 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 08:28:39 -0500
 Subject: [PATCH] Fix TNT physics
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index e382e1e..b17342e 100644
+index b4354ab..7315433 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-@@ -75,6 +75,43 @@ public class EntityTNTPrimed extends Entity {
+@@ -78,6 +78,43 @@ public class EntityTNTPrimed extends Entity {
  
      }
  
@@ -52,16 +52,7 @@ index e382e1e..b17342e 100644
      private void explode() {
          // CraftBukkit start
          // float f = 4.0F;
-@@ -82,7 +119,7 @@ public class EntityTNTPrimed extends Entity {
-         org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
-         org.bukkit.entity.Explosive explosive = (org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this);
- 
--        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 2.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
-+        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
-         // CraftBukkit end
-     }
- 
-@@ -99,7 +136,7 @@ public class EntityTNTPrimed extends Entity {
+@@ -102,7 +139,7 @@ public class EntityTNTPrimed extends Entity {
      }
  
      public float getHeadHeight() {
@@ -71,10 +62,10 @@ index e382e1e..b17342e 100644
  
      public void setFuseTicks(int i) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2c0be02..b422072 100644
+index 5701b49..55a4c7d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -608,6 +608,11 @@ public final class CraftServer implements Server {
+@@ -609,6 +609,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

@@ -1,48 +1,53 @@
-From 87b5f1211aa878bb73323fe82169c7b8cab71069 Mon Sep 17 00:00:00 2001
+From 3ac83f6e7b2896f98fa779982c087c1d0299047e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index c5a2353..f884fd8 100644
+index 5f04602..cd1f450 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -27,7 +27,7 @@ public abstract class EntityHuman extends EntityLiving {
  
      private static final DataWatcherObject<Float> a = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.c);
      private static final DataWatcherObject<Integer> b = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.b);
--    protected static final DataWatcherObject<Byte> bq = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
-+    protected static final DataWatcherObject<Byte> bq = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a); public static final DataWatcherObject<Byte> SKIN_PARTS = bq; // SportBukkit - add public alias
-     protected static final DataWatcherObject<Byte> br = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
+-    protected static final DataWatcherObject<Byte> br = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
++    protected static final DataWatcherObject<Byte> br = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a); public static final DataWatcherObject<Byte> SKIN_PARTS = br; // SportBukkit - add public alias
+     protected static final DataWatcherObject<Byte> bs = DataWatcher.a(EntityHuman.class, DataWatcherRegistry.a);
      public PlayerInventory inventory = new PlayerInventory(this);
      private InventoryEnderChest enderChest = new InventoryEnderChest();
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 33891c3..81560e9 100644
+index b9fe53c..da79530 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -20,6 +20,8 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
- import org.bukkit.craftbukkit.event.CraftEventFactory;
- import org.bukkit.craftbukkit.inventory.CraftItemStack;
- import org.bukkit.event.inventory.InventoryType;
-+import org.bukkit.craftbukkit.util.Skins;
-+import org.bukkit.event.player.PlayerSkinPartsChangeEvent;
- import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+@@ -25,6 +25,11 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+ import org.bukkit.inventory.MainHand;
  // CraftBukkit end
  
-@@ -1058,8 +1060,14 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
-         // SportBukkit end
-         this.cg = packetplayinsettings.c();
-         this.ch = packetplayinsettings.d();
--        this.getDataWatcher().set(EntityPlayer.bq, Byte.valueOf((byte) packetplayinsettings.e()));
-         this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) (packetplayinsettings.f() == EnumMainHand.LEFT ? 0 : 1)));
++// SportBukkit start
++import org.bukkit.craftbukkit.util.Skins;
++import org.bukkit.event.player.PlayerSkinPartsChangeEvent;
++// SportBukkit end
 +
-+        // SportBukkit - skin parts event
-+        int skinFlags = datawatcher.get(EntityPlayer.bq);
+ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+     private static final Logger bS = LogManager.getLogger();
+@@ -1069,8 +1074,16 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+         this.ch = packetplayinsettings.c();
+         this.ci = packetplayinsettings.d();
+-        this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e()));
++        // this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e())); SportBukkit - move this below
+         this.getDataWatcher().set(EntityPlayer.bs, Byte.valueOf((byte) (packetplayinsettings.getMainHand() == EnumMainHand.LEFT ? 0 : 1)));
++
++        // SportBukkit start - skin parts event
++        int skinFlags = datawatcher.get(EntityPlayer.br);
 +        if(skinFlags != packetplayinsettings.e()) {
-+            this.getDataWatcher().set(EntityPlayer.bq, Byte.valueOf((byte) packetplayinsettings.e()));
++            this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e()));
 +            Bukkit.getPluginManager().callEvent(new PlayerSkinPartsChangeEvent(this.getBukkitEntity(), Skins.partsFromFlags(skinFlags)));
 +        }
++        // SportBukkit end
      }
  
      public EntityHuman.EnumChatVisibility getChatFlags() {
@@ -106,7 +111,7 @@ index dbdb87f..5fd1062 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 357c264..ef1fe42 100644
+index e88b03d..c7e60b4 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
@@ -118,7 +123,7 @@ index 357c264..ef1fe42 100644
  import org.bukkit.Location;
  import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
-@@ -1084,6 +1086,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1083,6 +1085,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void sendPacket(final Packet<?> packet) {
@@ -127,7 +132,7 @@ index 357c264..ef1fe42 100644
          if (packet instanceof PacketPlayOutChat) {
              PacketPlayOutChat packetplayoutchat = (PacketPlayOutChat) packet;
              EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = this.player.getChatFlags();
-@@ -1104,10 +1108,60 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1103,10 +1107,60 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              PacketPlayOutSpawnPosition packet6 = (PacketPlayOutSpawnPosition) packet;
              this.player.compassTarget = new Location(this.getPlayer().getWorld(), packet6.position.getX(), packet6.position.getY(), packet6.position.getZ());
          }
@@ -190,7 +195,7 @@ index 357c264..ef1fe42 100644
              CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index ede4e5a..9c40387 100644
+index ab7f164..4c7b057 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -232,10 +237,10 @@ index ede4e5a..9c40387 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b04c214..0b14ae1 100644
+index 297dbaa..62b4ea9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -402,7 +402,7 @@ public final class CraftServer implements Server {
+@@ -403,7 +403,7 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -244,7 +249,7 @@ index b04c214..0b14ae1 100644
          Validate.notNull(name, "Name cannot be null");
  
          Player found = getPlayerExact(name);
-@@ -414,8 +414,8 @@ public final class CraftServer implements Server {
+@@ -415,8 +415,8 @@ public final class CraftServer implements Server {
          String lowerName = name.toLowerCase();
          int delta = Integer.MAX_VALUE;
          for (Player player : getOnlinePlayers()) {
@@ -255,7 +260,7 @@ index b04c214..0b14ae1 100644
                  if (curDelta < delta) {
                      found = player;
                      delta = curDelta;
-@@ -428,11 +428,18 @@ public final class CraftServer implements Server {
+@@ -429,11 +429,18 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -277,7 +282,7 @@ index b04c214..0b14ae1 100644
      }
  
      @Override
-@@ -457,13 +464,13 @@ public final class CraftServer implements Server {
+@@ -458,13 +465,13 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -293,7 +298,7 @@ index b04c214..0b14ae1 100644
  
              if (partialName.equalsIgnoreCase(iterPlayerName)) {
                  // Exact match
-@@ -481,6 +488,21 @@ public final class CraftServer implements Server {
+@@ -482,6 +489,21 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -315,7 +320,7 @@ index b04c214..0b14ae1 100644
      public int getMaxPlayers() {
          return playerList.getMaxPlayers();
      }
-@@ -1610,8 +1632,8 @@ public final class CraftServer implements Server {
+@@ -1617,8 +1639,8 @@ public final class CraftServer implements Server {
          PlayerChatTabCompleteEvent event = new PlayerChatTabCompleteEvent(player, message, completions);
          String token = event.getLastToken();
          for (Player p : getOnlinePlayers()) {
@@ -357,7 +362,7 @@ index 1314c74..8f875ca 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index f054a53..d7a25aa 100644
+index e840798..80b3a9e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -11,6 +11,7 @@ import org.bukkit.EntityEffect;
@@ -368,7 +373,7 @@ index f054a53..d7a25aa 100644
  import org.bukkit.craftbukkit.CraftServer;
  import org.bukkit.craftbukkit.CraftWorld;
  import org.bukkit.event.entity.EntityDamageEvent;
-@@ -482,6 +483,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -483,6 +484,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
      }
  
      @Override
@@ -397,7 +402,7 @@ index 813b080..f2c3022 100644
          return true;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 6f4ce7a..688219c 100644
+index 7bcfed4..34e08c9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1,5 +1,6 @@

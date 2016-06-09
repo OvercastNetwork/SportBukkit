@@ -1,11 +1,11 @@
-From 794035bcbd26e7793a2d58294becc0a030fd551f Mon Sep 17 00:00:00 2001
+From 435da92cb6e35d502958d152846ea10aa354a5a1 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Wed, 25 Dec 2013 20:11:34 -0600
 Subject: [PATCH] Add EntityDespawnInVoidEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 8763e79..a98c00c 100644
+index 754df42..b0d1760 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -25,6 +25,7 @@ import org.bukkit.entity.Hanging;
@@ -16,7 +16,7 @@ index 8763e79..a98c00c 100644
  import org.bukkit.event.hanging.HangingBreakByEntityEvent;
  import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
  import org.bukkit.event.vehicle.VehicleEnterEvent;
-@@ -435,6 +436,9 @@ public abstract class Entity implements ICommandListener {
+@@ -437,6 +438,9 @@ public abstract class Entity implements ICommandListener {
      }
  
      protected void Y() {

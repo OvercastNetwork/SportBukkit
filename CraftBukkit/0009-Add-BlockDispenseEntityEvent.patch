@@ -1,11 +1,11 @@
-From e71fa37120476d8a24f25b3c09e9c0f2cf1152e6 Mon Sep 17 00:00:00 2001
+From 892920d82731b9884f29e4cf6f7ae832e53ef611 Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Fri, 12 Apr 2013 21:34:01 -0700
 Subject: [PATCH] Add BlockDispenseEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorItem.java b/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
-index 9fbd16e..955957a 100644
+index 1480025..e5a0972 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorItem.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -39,7 +39,7 @@ index 9fbd16e..955957a 100644
          if (!event.getItem().getType().equals(craftItem.getType())) {
              // Chain to handler for new item
 diff --git a/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java b/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
-index 450b411..87928f6 100644
+index b7ff524..8cbbc56 100644
 --- a/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
 +++ b/src/main/java/net/minecraft/server/DispenseBehaviorProjectile.java
 @@ -2,7 +2,7 @@ package net.minecraft.server;
@@ -69,7 +69,7 @@ index 450b411..87928f6 100644
          ((Entity) iprojectile).projectileSource = new org.bukkit.craftbukkit.projectiles.CraftBlockProjectileSource((TileEntityDispenser) isourceblock.getTileEntity());
          // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
-index 00d4890..e1df0d6 100644
+index 092bb79..60b882e 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java
 +++ b/src/main/java/net/minecraft/server/DispenserRegistry.java
 @@ -9,7 +9,9 @@ import org.apache.logging.log4j.Logger;
@@ -200,7 +200,7 @@ index 00d4890..e1df0d6 100644
  
              entityboat.setType(this.c);
 diff --git a/src/main/java/net/minecraft/server/ItemMinecart.java b/src/main/java/net/minecraft/server/ItemMinecart.java
-index 0563f34..5cd4a11 100644
+index c4c6dac..df45ca1 100644
 --- a/src/main/java/net/minecraft/server/ItemMinecart.java
 +++ b/src/main/java/net/minecraft/server/ItemMinecart.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -233,10 +233,10 @@ index 0563f34..5cd4a11 100644
              if (itemstack.hasName()) {
                  entityminecartabstract.setCustomName(itemstack.getName());
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 79fcbc4..f054a53 100644
+index a4f21b7..e840798 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -221,6 +221,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -222,6 +222,13 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          return entity.world.getWorld();
      }
  

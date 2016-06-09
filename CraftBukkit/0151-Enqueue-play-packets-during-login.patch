@@ -1,11 +1,11 @@
-From b6d7169279c50b5c533d2042cb4d319365d524e2 Mon Sep 17 00:00:00 2001
+From 951b0e95c5633e8df31e6dc5452ece36d8383c2e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 May 2016 03:31:16 -0400
 Subject: [PATCH] Enqueue play packets during login
 
 
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index dc0babb..042f704 100644
+index 0fb442e..9ffbfbd 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -263,6 +263,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
@@ -17,7 +17,7 @@ index dc0babb..042f704 100644
          return this.m;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index ef7d414..de07319 100644
+index 79741f8..fb2b66b 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -106,10 +106,26 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -48,7 +48,7 @@ index ef7d414..de07319 100644
          this.player = entityplayer;
          entityplayer.playerConnection = this;
  
-@@ -1140,6 +1156,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1139,6 +1155,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void sendPacket(final Packet<?> packet) {
@@ -63,7 +63,7 @@ index ef7d414..de07319 100644
  
          if (packet instanceof PacketPlayOutChat) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index dd8f27a..426b35f 100644
+index 1f2e621..fa26036 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -130,7 +130,11 @@ public abstract class PlayerList {

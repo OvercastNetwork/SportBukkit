@@ -1,35 +1,26 @@
-From b580bd90c501bf67850c61dd2b9084c9b25a5221 Mon Sep 17 00:00:00 2001
+From c6debca6f7054fada0dcb187239eb68dfa8e5daf Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 6 Aug 2015 22:18:57 -0400
 Subject: [PATCH] Skull skin API
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java b/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
-index eb1548a..65a2352 100644
+index 632d631..cf5e7dc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftSkull.java
-@@ -1,15 +1,18 @@
- package org.bukkit.craftbukkit.block;
- 
-+import java.util.UUID;
-+
- import com.mojang.authlib.GameProfile;
- import net.minecraft.server.MinecraftServer;
- import net.minecraft.server.TileEntitySkull;
- import org.bukkit.Material;
--
-+import org.bukkit.Skin;
- import org.bukkit.SkullType;
- import org.bukkit.block.Block;
- import org.bukkit.block.BlockFace;
+@@ -14,6 +14,10 @@ import org.bukkit.block.BlockFace;
  import org.bukkit.block.Skull;
  import org.bukkit.craftbukkit.CraftWorld;
-+import org.bukkit.craftbukkit.util.Skins;
  
++import java.util.UUID;
++import org.bukkit.Skin;
++import org.bukkit.craftbukkit.util.Skins;
++
  public class CraftSkull extends CraftBlockState implements Skull {
      private static final int MAX_OWNER_LENGTH = 16;
-@@ -176,6 +179,18 @@ public class CraftSkull extends CraftBlockState implements Skull {
-         return true;
+     private final TileEntitySkull skull;
+@@ -195,6 +199,18 @@ public class CraftSkull extends CraftBlockState implements Skull {
+         this.profile = new GameProfile(player.getUniqueId(), player.getName());
      }
  
 +    @Override

@@ -1,14 +1,14 @@
-From cc9520c02bdcac244924ac2e08de1d52f46e487d Mon Sep 17 00:00:00 2001
+From 16dc4f2b326154ae146bf94866eeac2e23378b37 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 05:28:58 -0500
 Subject: [PATCH] Expose sound effect classes
 
 
 diff --git a/src/main/java/net/minecraft/server/Block.java b/src/main/java/net/minecraft/server/Block.java
-index f76252a..51e19f2 100644
+index 0f5e4d5..f6bcfae 100644
 --- a/src/main/java/net/minecraft/server/Block.java
 +++ b/src/main/java/net/minecraft/server/Block.java
-@@ -579,6 +579,7 @@ public class Block {
+@@ -584,6 +584,7 @@ public class Block {
          return this.blockData;
      }
  
@@ -45,10 +45,10 @@ index 98a147b..3824101 100644
 +    // SportBukkit end
  }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index cc4d14a..ff97187 100644
+index a8c08e2..495174e 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -866,6 +866,7 @@ public abstract class World implements IBlockAccess {
+@@ -870,6 +870,7 @@ public abstract class World implements IBlockAccess {
          this.a(entityhuman, (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, soundeffect, soundcategory, f, f1);
      }
  

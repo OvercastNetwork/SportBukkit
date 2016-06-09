@@ -1,11 +1,11 @@
-From cb5d704418457e3c6fa60013d0e55b4b0641243f Mon Sep 17 00:00:00 2001
+From b8c2c1f5852b3613202c13048ed0e64fa9bc3817 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] Implement the affectsSpawning API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 001cdce..c7baba2 100644
+index 5f6348e..05a099c 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -1,6 +1,7 @@
@@ -16,8 +16,8 @@ index 001cdce..c7baba2 100644
  import com.google.common.collect.Lists;
  import com.mojang.authlib.GameProfile;
  import java.util.Arrays;
-@@ -66,6 +67,19 @@ public abstract class EntityHuman extends EntityLiving {
-     private final ItemCooldown bV = this.l();
+@@ -65,6 +66,19 @@ public abstract class EntityHuman extends EntityLiving {
+     private final ItemCooldown bW = this.l();
      public EntityFishingHook hookedFish;
  
 +    // SportBukkit start - affectsSpawning API
@@ -37,10 +37,10 @@ index 001cdce..c7baba2 100644
      public boolean fauxSleeping;
      public String spawnWorld = "";
 diff --git a/src/main/java/net/minecraft/server/EntityInsentient.java b/src/main/java/net/minecraft/server/EntityInsentient.java
-index ccd9d67..15b54a0 100644
+index 8e6797b..1c672a7 100644
 --- a/src/main/java/net/minecraft/server/EntityInsentient.java
 +++ b/src/main/java/net/minecraft/server/EntityInsentient.java
-@@ -601,7 +601,7 @@ public abstract class EntityInsentient extends EntityLiving {
+@@ -624,7 +624,7 @@ public abstract class EntityInsentient extends EntityLiving {
          if (this.persistent) {
              this.ticksFarFromPlayer = 0;
          } else {
@@ -50,20 +50,20 @@ index ccd9d67..15b54a0 100644
              if (entityhuman != null) {
                  double d0 = entityhuman.locX - this.locX;
 diff --git a/src/main/java/net/minecraft/server/EntitySilverfish.java b/src/main/java/net/minecraft/server/EntitySilverfish.java
-index b5fce84..912a87f 100644
+index c4e5f50..a01ae46 100644
 --- a/src/main/java/net/minecraft/server/EntitySilverfish.java
 +++ b/src/main/java/net/minecraft/server/EntitySilverfish.java
-@@ -88,7 +88,7 @@ public class EntitySilverfish extends EntityMonster {
+@@ -93,7 +93,7 @@ public class EntitySilverfish extends EntityMonster {
  
-     public boolean cG() {
-         if (super.cG()) {
+     public boolean cK() {
+         if (super.cK()) {
 -            EntityHuman entityhuman = this.world.b(this, 5.0D);
 +            EntityHuman entityhuman = this.world.findNearbyPlayerNotInCreativeMode(this, 5.0D, EntityHuman.affectsSpawningFilter()); // SportBukkit - affectsSpawning filter
  
              return entityhuman == null;
          } else {
 diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
-index 64ad136..fba4d93 100644
+index 8264cac..5ccec09 100644
 --- a/src/main/java/net/minecraft/server/EntityZombie.java
 +++ b/src/main/java/net/minecraft/server/EntityZombie.java
 @@ -197,7 +197,7 @@ public class EntityZombie extends EntityMonster {
@@ -76,7 +76,7 @@ index 64ad136..fba4d93 100644
                              entityzombie.setGoalTarget(entityliving, EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET, true);
                              entityzombie.prepare(this.world.D(new BlockPosition(entityzombie)), (GroupDataEntity) null);
 diff --git a/src/main/java/net/minecraft/server/MobSpawnerAbstract.java b/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
-index 065dadd..fbd3e7e 100644
+index 8086487..deae697 100644
 --- a/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
 +++ b/src/main/java/net/minecraft/server/MobSpawnerAbstract.java
 @@ -32,7 +32,7 @@ public abstract class MobSpawnerAbstract {
@@ -89,7 +89,7 @@ index 065dadd..fbd3e7e 100644
  
      public void c() {
 diff --git a/src/main/java/net/minecraft/server/SpawnerCreature.java b/src/main/java/net/minecraft/server/SpawnerCreature.java
-index be02945..894044f 100644
+index c1a7827..b4b84f2 100644
 --- a/src/main/java/net/minecraft/server/SpawnerCreature.java
 +++ b/src/main/java/net/minecraft/server/SpawnerCreature.java
 @@ -31,6 +31,8 @@ public final class SpawnerCreature {
@@ -111,7 +111,7 @@ index be02945..894044f 100644
                                                          biomebase_biomemeta = worldserver.a(enumcreaturetype, (BlockPosition) blockposition_mutableblockposition);
                                                          if (biomebase_biomemeta == null) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index ff97187..e325f02 100644
+index 495174e..bbee823 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -122,7 +122,7 @@ index ff97187..e325f02 100644
  import com.google.common.collect.Lists;
  import java.util.ArrayList;
  import java.util.Calendar;
-@@ -2613,16 +2614,31 @@ public abstract class World implements IBlockAccess {
+@@ -2617,16 +2618,31 @@ public abstract class World implements IBlockAccess {
  
      @Nullable
      public EntityHuman findNearbyPlayer(Entity entity, double d0) {
@@ -156,7 +156,7 @@ index ff97187..e325f02 100644
          double d4 = -1.0D;
          EntityHuman entityhuman = null;
  
-@@ -2634,6 +2650,8 @@ public abstract class World implements IBlockAccess {
+@@ -2638,6 +2654,8 @@ public abstract class World implements IBlockAccess {
              }
              // CraftBukkit end
  
@@ -165,7 +165,7 @@ index ff97187..e325f02 100644
              if ((IEntitySelector.d.apply(entityhuman1) || !flag) && (IEntitySelector.e.apply(entityhuman1) || flag)) {
                  double d5 = entityhuman1.e(d0, d1, d2);
  
-@@ -2648,9 +2666,17 @@ public abstract class World implements IBlockAccess {
+@@ -2652,9 +2670,17 @@ public abstract class World implements IBlockAccess {
      }
  
      public boolean isPlayerNearby(double d0, double d1, double d2, double d3) {

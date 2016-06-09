@@ -1,14 +1,14 @@
-From d6410857fe21598a0a9b7add41cf686eae4ea6e3 Mon Sep 17 00:00:00 2001
+From b3ab3d191bb78613fbd929ef2329e781e55ad34f Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Thu, 5 Jun 2014 22:02:07 +0200
 Subject: [PATCH] Normalize offline player's name case before creating an UUID
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 527c844..c5a2353 100644
+index 81c0712..5f04602 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
-@@ -1796,7 +1796,7 @@ public abstract class EntityHuman extends EntityLiving {
+@@ -1805,7 +1805,7 @@ public abstract class EntityHuman extends EntityLiving {
      }
  
      public static UUID d(String s) {
@@ -18,7 +18,7 @@ index 527c844..c5a2353 100644
  
      public boolean a(ChestLock chestlock) {
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 78e5e4a..e2e6191 100644
+index b132c49..1ef4b31 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -271,7 +271,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
@@ -31,10 +31,10 @@ index 78e5e4a..e2e6191 100644
          return new GameProfile(uuid, gameprofile.getName());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9a3e434..82f0c4b 100644
+index f3650d8..2f6c302 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1291,7 +1291,7 @@ public final class CraftServer implements Server {
+@@ -1292,7 +1292,7 @@ public final class CraftServer implements Server {
              GameProfile profile = console.getUserCache().getProfile(name);
              if (profile == null) {
                  // Make an OfflinePlayer using an offline mode UUID since the name has no profile

@@ -1,11 +1,11 @@
-From de35a2d9c554ceaac046bb9b45b844724265136c Mon Sep 17 00:00:00 2001
+From a1fb1f09e06dd05a17fde3ded613c158d9f6cc28 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:00:35 -0400
 Subject: [PATCH] Entity bounding box API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index d0be6b4..22d7fbb 100644
+index a26d236..1fa3059 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -7,6 +7,7 @@ import org.bukkit.World;
@@ -16,10 +16,10 @@ index d0be6b4..22d7fbb 100644
  import org.bukkit.util.Vector;
  
  import java.util.List;
-@@ -444,4 +445,6 @@ public interface Entity extends Metadatable, CommandSender, Physical {
-      * @return whether the entity is
+@@ -474,4 +475,6 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+      * @param gravity whether gravity should apply
       */
-     public boolean isInvulnerable();
+     void setGravity(boolean gravity);
 +
 +    Cuboid getBoundingBox();
  }

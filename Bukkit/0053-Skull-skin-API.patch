@@ -1,24 +1,23 @@
-From 9bb1ae8184baafe57a1a0e4bb0aabdcc1ab00d8f Mon Sep 17 00:00:00 2001
+From a2a62acfc950b8adfa0976b7ff67eade21ba6a88 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 6 Aug 2015 22:18:43 -0400
 Subject: [PATCH] Skull skin API
 
 
 diff --git a/src/main/java/org/bukkit/block/Skull.java b/src/main/java/org/bukkit/block/Skull.java
-index 4f4896f..20d8871 100644
+index 7fbbc6b..2117090 100644
 --- a/src/main/java/org/bukkit/block/Skull.java
 +++ b/src/main/java/org/bukkit/block/Skull.java
-@@ -1,5 +1,8 @@
- package org.bukkit.block;
+@@ -2,6 +2,7 @@ package org.bukkit.block;
  
-+import java.util.UUID;
-+
+ import java.util.UUID;
+ import org.bukkit.OfflinePlayer;
 +import org.bukkit.Skin;
  import org.bukkit.SkullType;
  
  /**
-@@ -33,6 +36,21 @@ public interface Skull extends BlockState {
-     public boolean setOwner(String name);
+@@ -55,6 +56,21 @@ public interface Skull extends BlockState {
+     public void setOwningPlayer(OfflinePlayer player);
  
      /**
 +     * Set the owner and appearance of this skull. A skull with this data set

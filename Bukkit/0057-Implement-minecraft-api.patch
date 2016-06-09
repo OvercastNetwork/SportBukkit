@@ -1,11 +1,11 @@
-From b2964e58bf45a3408e4e981a5bf063270a5f5ec2 Mon Sep 17 00:00:00 2001
+From 021b2699afa9e92a278b782dbaf373bf0b4b22fb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
 
 
 diff --git a/pom.xml b/pom.xml
-index 41e14e7..782c40f 100644
+index 9f30447..d539fe0 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -95,11 +95,9 @@
@@ -19,7 +19,7 @@ index 41e14e7..782c40f 100644
 -            <scope>compile</scope>
 +            <groupId>tc.oc</groupId>
 +            <artifactId>minecraft-api</artifactId>
-+            <version>1.9-SNAPSHOT</version>
++            <version>1.10-SNAPSHOT</version>
          </dependency>
  
          <!-- testing -->
@@ -115,7 +115,7 @@ index 1f4c8ce..bdd9bca 100644
          Object val = get(path, null);
          if (val != null) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 10629a4..91ffd77 100644
+index 09aa84f..db9f982 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -28,7 +28,7 @@ import org.bukkit.util.RayBlockIntersection;

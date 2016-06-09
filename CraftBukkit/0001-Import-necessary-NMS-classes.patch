@@ -1,4 +1,4 @@
-From fa44140291c26b221bd161ab70a72dfb3adb0f95 Mon Sep 17 00:00:00 2001
+From d5482300813873aaa885c4073bdaba715a02e4f9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -1992,6 +1992,45 @@ index 0000000..1cb9d60
 +        return this.a;
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+new file mode 100644
+index 0000000..512b3e4
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
+@@ -0,0 +1,33 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayInResourcePackStatus implements Packet<PacketListenerPlayIn> {
++
++    public PacketPlayInResourcePackStatus.EnumResourcePackStatus status;
++
++    public PacketPlayInResourcePackStatus() {}
++
++    public PacketPlayInResourcePackStatus(PacketPlayInResourcePackStatus.EnumResourcePackStatus packetplayinresourcepackstatus_enumresourcepackstatus) {
++        this.status = packetplayinresourcepackstatus_enumresourcepackstatus;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.status = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) packetdataserializer.a(PacketPlayInResourcePackStatus.EnumResourcePackStatus.class);
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a((Enum) this.status);
++    }
++
++    public void a(PacketListenerPlayIn packetlistenerplayin) {
++        packetlistenerplayin.a(this);
++    }
++
++    public static enum EnumResourcePackStatus {
++
++        SUCCESSFULLY_LOADED, DECLINED, FAILED_DOWNLOAD, ACCEPTED;
++
++        private EnumResourcePackStatus() {}
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 new file mode 100644
 index 0000000..2b23a5d
@@ -2150,6 +2189,64 @@ index 0000000..c5147b6
 +
 +    public boolean b() {
 +        return this.b == 1 || this.b == 2;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
+new file mode 100644
+index 0000000..8a19c73
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
+@@ -0,0 +1,52 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import org.apache.commons.lang3.Validate;
++
++public class PacketPlayOutCustomSoundEffect implements Packet<PacketListenerPlayOut> {
++
++    private String a;
++    private SoundCategory b;
++    private int c;
++    private int d = Integer.MAX_VALUE;
++    private int e;
++    private float f;
++    private float g;
++
++    public PacketPlayOutCustomSoundEffect() {}
++
++    public PacketPlayOutCustomSoundEffect(String s, SoundCategory soundcategory, double d0, double d1, double d2, float f, float f1) {
++        Validate.notNull(s, "name", new Object[0]);
++        this.a = s;
++        this.b = soundcategory;
++        this.c = (int) (d0 * 8.0D);
++        this.d = (int) (d1 * 8.0D);
++        this.e = (int) (d2 * 8.0D);
++        this.f = f;
++        this.g = f1;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.e(256);
++        this.b = (SoundCategory) packetdataserializer.a(SoundCategory.class);
++        this.c = packetdataserializer.readInt();
++        this.d = packetdataserializer.readInt();
++        this.e = packetdataserializer.readInt();
++        this.f = packetdataserializer.readFloat();
++        this.g = packetdataserializer.readFloat();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a(this.a);
++        packetdataserializer.a((Enum) this.b);
++        packetdataserializer.writeInt(this.c);
++        packetdataserializer.writeInt(this.d);
++        packetdataserializer.writeInt(this.e);
++        packetdataserializer.writeFloat(this.f);
++        packetdataserializer.writeFloat(this.g);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityHeadRotation.java

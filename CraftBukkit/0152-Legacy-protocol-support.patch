@@ -1,4 +1,4 @@
-From 14062b9b41b2ab347e6e159332c9c9865ae767b5 Mon Sep 17 00:00:00 2001
+From 8734108db647290edb94ab48172edb32ffab3c0f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -108,7 +108,7 @@ index f4066bd..ec493e7 100644
  
              try {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
-index 512b3e4..819f50f 100644
+index 512b3e4..8bb9a41 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
 @@ -13,10 +13,20 @@ public class PacketPlayInResourcePackStatus implements Packet<PacketListenerPlay
@@ -116,7 +116,7 @@ index 512b3e4..819f50f 100644
  
      public void a(PacketDataSerializer packetdataserializer) throws IOException {
 +        // SportBukkit start
-+        if(packetdataserializer.protocolVersion < 210) {
++        if(packetdataserializer.protocolVersion < 204) {
 +            packetdataserializer.e(40);
 +        }
 +        // SportBukkit end
@@ -125,7 +125,7 @@ index 512b3e4..819f50f 100644
  
      public void b(PacketDataSerializer packetdataserializer) throws IOException {
 +        // SportBukkit start
-+        if(packetdataserializer.protocolVersion < 210) {
++        if(packetdataserializer.protocolVersion < 204) {
 +            packetdataserializer.a("0123456789012345678901234567890123456789");
 +        }
 +        // SportBukkit end
@@ -373,7 +373,7 @@ index cb7c231..2ec181c 100644
  
                                  if (b1 == 2) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c3eb87b..169d235 100644
+index c3eb87b..3d90a85 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1814,6 +1814,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
@@ -381,7 +381,7 @@ index c3eb87b..169d235 100644
      @Override
      public Set<Integer> getProtocolVersions() {
 -        return ImmutableSet.of(210);
-+        return ImmutableSet.of(107, 108, 109, 110, 201, 202, 203, 210);
++        return ImmutableSet.of(107, 108, 109, 110, 201, 202, 203, 204, 205, 210);
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java

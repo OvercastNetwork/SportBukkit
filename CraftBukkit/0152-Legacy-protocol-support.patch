@@ -1,4 +1,4 @@
-From 4a7b3c6b195a45d3402a63c6fe5a9c5f65be64e1 Mon Sep 17 00:00:00 2001
+From 14062b9b41b2ab347e6e159332c9c9865ae767b5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -347,7 +347,7 @@ index dd40e98..a814ee1 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index cb7c231..1eca8cd 100644
+index cb7c231..2ec181c 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1252,6 +1252,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -358,6 +358,20 @@ index cb7c231..1eca8cd 100644
                                  replacementItem.a(flagsItem.c());
                                  replacedMetadataPacket.b.set(i, replacementItem); // Clear invisibility
  
+@@ -2586,10 +2587,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                                 tileentitystructure.b(EnumBlockRotation.valueOf(s6));
+                                 tileentitystructure.b(packetdataserializer.e(128));
+                                 tileentitystructure.a(packetdataserializer.readBoolean());
++                                if(packetdataserializer.protocolVersion >= 201) { // SportBukkit - legacy proto translation
+                                 tileentitystructure.e(packetdataserializer.readBoolean());
+                                 tileentitystructure.f(packetdataserializer.readBoolean());
++                                if(packetdataserializer.protocolVersion >= 202) { // SportBukkit
+                                 tileentitystructure.a(MathHelper.a(packetdataserializer.readFloat(), 0.0F, 1.0F));
+                                 tileentitystructure.a(packetdataserializer.h());
++                                }} // SportBukkit
+                                 String s7 = tileentitystructure.d();
+ 
+                                 if (b1 == 2) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 index c3eb87b..169d235 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java

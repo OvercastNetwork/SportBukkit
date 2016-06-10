@@ -1,11 +1,11 @@
-From d65cfc4034314022e8b359bc3470381e9e1e2c5c Mon Sep 17 00:00:00 2001
+From f1715069d6962aecc7dd5fbb68122502d1f62f29 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 863cba4..841c40e 100644
+index 863cba4..0e52dc1 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -70,7 +70,7 @@ index 863cba4..841c40e 100644
 +                // SportBukkit start - fire ExplosionPrimeEvent
 +                org.bukkit.event.entity.ExplosionPrimeEvent event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                world.getServer().getPluginManager().callEvent(event);
-+                if(!event.isCancelled()) return;
++                if(event.isCancelled()) return;
 +                isPrimed = true;
 +                // SportBukkit end
 +

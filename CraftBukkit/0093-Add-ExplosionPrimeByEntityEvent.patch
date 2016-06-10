@@ -1,11 +1,11 @@
-From f7436ec5afb8f882aaa1a8499a484252cdaf3f12 Mon Sep 17 00:00:00 2001
+From bdb0f62862e413b7c592b96113602fd751fa2070 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:52 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 841c40e..3061baf 100644
+index 0e52dc1..ba58349 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -4,6 +4,7 @@ import javax.annotation.Nullable;
@@ -42,7 +42,7 @@ index 841c40e..3061baf 100644
 +                    event = new org.bukkit.event.entity.ExplosionPrimeEvent((org.bukkit.entity.Explosive) entitytntprimed.getBukkitEntity());
 +                }
                  world.getServer().getPluginManager().callEvent(event);
-                 if(!event.isCancelled()) return;
+                 if(event.isCancelled()) return;
                  isPrimed = true;
 @@ -82,7 +93,9 @@ public class BlockTNT extends Block {
  

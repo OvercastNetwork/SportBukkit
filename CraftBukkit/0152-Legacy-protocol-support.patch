@@ -1,4 +1,4 @@
-From 8734108db647290edb94ab48172edb32ffab3c0f Mon Sep 17 00:00:00 2001
+From 90da04f6aca42b10835685c5447124d0dd68b108 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -67,10 +67,14 @@ index c5f3656..5da31c1 100644
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
 diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
-index a24c2c0..20d27a2 100644
+index a24c2c0..892d0e5 100644
 --- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
 +++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
-@@ -25,6 +25,8 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
+@@ -22,9 +22,12 @@ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
+ import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
++import org.bukkit.craftbukkit.protocol.ProtocolTranslator; // SportBukkit
  
  public class PacketDataSerializer extends ByteBuf {
  
@@ -79,6 +83,17 @@ index a24c2c0..20d27a2 100644
      private final ByteBuf a;
  
      public PacketDataSerializer(ByteBuf bytebuf) {
+@@ -236,6 +239,10 @@ public class PacketDataSerializer extends ByteBuf {
+     public PacketDataSerializer a(@Nullable ItemStack itemstack) {
+         if (itemstack == null || itemstack.getItem() == null) { // CraftBukkit - NPE fix itemstack.getItem()
+             this.writeShort(-1);
++        // SportBukkit start - legacy clients will crash if they get an unknown item
++        } else if(!ProtocolTranslator.hasItem(protocolVersion, itemstack.getItem())) {
++            this.writeShort(-1);
++        // SportBukkit end
+         } else {
+             this.writeShort(Item.getId(itemstack.getItem()));
+             this.writeByte(itemstack.count);
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
 index f4066bd..ec493e7 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
@@ -386,14 +401,19 @@ index c3eb87b..3d90a85 100644
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java
 new file mode 100644
-index 0000000..8850fe9
+index 0000000..965e1f5
 --- /dev/null
 +++ b/src/main/java/org/bukkit/craftbukkit/protocol/ProtocolTranslator.java
-@@ -0,0 +1,107 @@
+@@ -0,0 +1,130 @@
 +package org.bukkit.craftbukkit.protocol;
 +
++import java.util.Map;
++
++import com.google.common.collect.ImmutableMap;
 +import net.minecraft.server.Entity;
 +import net.minecraft.server.EntityAreaEffectCloud;
++import net.minecraft.server.Item;
++import net.minecraft.server.MinecraftKey;
 +
 +/**
 + * Translate indexes between the given protocol and the current protocol.
@@ -495,6 +515,24 @@ index 0000000..8850fe9
 +            trans.insert(24); // block.enchantment_table.use
 +        }
 +        return trans.id;
++    }
++
++    private static Item item(String key) {
++        return Item.REGISTRY.get(new MinecraftKey(key));
++    }
++
++    private static final Map<Item, Integer> ITEM_PROTO = ImmutableMap.<Item, Integer>builder()
++        .put(item("magma"), 201)
++        .put(item("nether_wart_block"), 201)
++        .put(item("red_nether_brick"), 201)
++        .put(item("bone_block"), 201)
++        .put(item("structure_void"), 201)
++        .put(item("structure_block"), 201) // block was in 1.9, but not an item until 1.10
++        .build();
++
++    public static boolean hasItem(int proto, Item item) {
++        final Integer first = ITEM_PROTO.get(item);
++        return first == null || first <= proto;
 +    }
 +}
 -- 

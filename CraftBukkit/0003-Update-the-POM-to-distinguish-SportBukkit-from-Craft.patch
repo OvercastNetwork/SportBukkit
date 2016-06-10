@@ -1,11 +1,11 @@
-From fb90b58d335c19060ef725cd540500b4240e7be3 Mon Sep 17 00:00:00 2001
+From 8e01d982520873f043143056cdaf0d08b4f48cb2 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index f0f21ec..ff8acff 100644
+index f0f21ec..119d577 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,28 +1,38 @@
@@ -55,7 +55,7 @@ index f0f21ec..ff8acff 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -56,6 +66,11 @@
+@@ -56,6 +66,16 @@
              <version>5.1.37</version>
              <scope>compile</scope>
          </dependency>
@@ -64,10 +64,15 @@ index f0f21ec..ff8acff 100644
 +            <artifactId>gson</artifactId>
 +            <version>2.2.4</version>
 +        </dependency>
++        <dependency>
++            <groupId>com.google.code.findbugs</groupId>
++            <artifactId>findbugs</artifactId>
++            <version>3.0.0</version>
++        </dependency>
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
-@@ -184,17 +199,6 @@
+@@ -184,17 +204,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>
                                  </relocation>

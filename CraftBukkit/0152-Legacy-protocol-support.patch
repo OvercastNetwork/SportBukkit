@@ -1,11 +1,11 @@
-From 90da04f6aca42b10835685c5447124d0dd68b108 Mon Sep 17 00:00:00 2001
+From ba9ac701f8a2a35f0fef9196214f226968bb09ff Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 94f9a0a..8877480 100644
+index 94f9a0a..f40b137 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReadWriteLock;
@@ -41,7 +41,7 @@ index 94f9a0a..8877480 100644
  
      public static class Item<T> {
  
-+        public Class<? extends Entity> entityClass; // SportBukkit
++        public Class<? extends Entity> entityClass = Entity.class; // SportBukkit
          private final DataWatcherObject<T> a;
          private T b;
          private boolean c;

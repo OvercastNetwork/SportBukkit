@@ -1,0 +1,40 @@
+From 5d801a4d0bd4f05e380deb41e9d7f329f9d18e65 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 10 Jun 2016 23:22:17 -0400
+Subject: [PATCH] Fix magma block NPE
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockMagma.java b/src/main/java/net/minecraft/server/BlockMagma.java
+index 3d958b2..33f7d3f 100644
+--- a/src/main/java/net/minecraft/server/BlockMagma.java
++++ b/src/main/java/net/minecraft/server/BlockMagma.java
+@@ -2,6 +2,8 @@ package net.minecraft.server;
+ 
+ import java.util.Random;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // SportBukkit
++
+ public class BlockMagma extends Block {
+ 
+     public BlockMagma() {
+@@ -17,7 +19,17 @@ public class BlockMagma extends Block {
+ 
+     public void stepOn(World world, BlockPosition blockposition, Entity entity) {
+         if (!entity.isFireProof() && entity instanceof EntityLiving && !EnchantmentManager.j((EntityLiving) entity)) {
++            // SportBukkit start - set damager block
++            final org.bukkit.block.Block oldBlockDamage = CraftEventFactory.blockDamage;
++            CraftEventFactory.blockDamage = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++            try {
++            // SportBukkit end
+             entity.damageEntity(DamageSource.HOT_FLOOR, 1.0F);
++            // SportBukkit start
++            } finally {
++                CraftEventFactory.blockDamage = oldBlockDamage;
++            }
++            // SportBukkit end
+         }
+ 
+         super.stepOn(world, blockposition, entity);
+-- 
+1.9.0
+

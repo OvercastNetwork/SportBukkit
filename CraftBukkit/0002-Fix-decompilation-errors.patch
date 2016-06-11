@@ -1,4 +1,4 @@
-From 3569975cdce30442c3b661b2073e3b16aa7aea73 Mon Sep 17 00:00:00 2001
+From d5f647f676018eb794cede1f91144eac5ae8962c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -140,28 +140,6 @@ index 9d0d206..66613e2 100644
                                  public void operationComplete(Future<? super Void> future) throws Exception {
                                      networkmanager.close(chatcomponenttext);
                                  }
-diff --git a/src/main/java/net/minecraft/server/SoundEffects.java b/src/main/java/net/minecraft/server/SoundEffects.java
-index 87d9393..0589d54 100644
---- a/src/main/java/net/minecraft/server/SoundEffects.java
-+++ b/src/main/java/net/minecraft/server/SoundEffects.java
-@@ -224,7 +224,7 @@ public class SoundEffects {
-     public static final SoundEffect dl;
-     public static final SoundEffect dm;
-     public static final SoundEffect dn;
--    public static final SoundEffect do;
-+    public static final SoundEffect ENTITY_LINGERINGPOTION_THROW; // SportBukkit - fix illegal identifier
-     public static final SoundEffect dp;
-     public static final SoundEffect dq;
-     public static final SoundEffect dr;
-@@ -702,7 +702,7 @@ public class SoundEffects {
-             dl = a("block.lever.click");
-             dm = a("entity.lightning.impact");
-             dn = a("entity.lightning.thunder");
--            do = a("entity.lingeringpotion.throw");
-+            ENTITY_LINGERINGPOTION_THROW = a("entity.lingeringpotion.throw"); // SportBukkit - fix illegal identifier
-             dp = a("entity.magmacube.death");
-             dq = a("entity.magmacube.hurt");
-             dr = a("entity.magmacube.jump");
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
 index 85085d5..be2f4c1 100644
 --- a/src/main/java/net/minecraft/server/WhiteList.java

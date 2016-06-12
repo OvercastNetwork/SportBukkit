@@ -1,4 +1,4 @@
-From 24d37290b5f1e3156e0859df775f523a4452cc35 Mon Sep 17 00:00:00 2001
+From c660f498da5b6ed847fbd9eda7337303196ad199 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
@@ -17,10 +17,10 @@ index e8162b2..faee42f 100644
                  entityhuman.receive(this, 1);
                  ItemStack itemstack = EnchantmentManager.b(Enchantments.A, (EntityLiving) entityhuman);
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index cc488cc..f8c98b7 100644
+index 7061881..bcc6ab7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -937,6 +937,13 @@ public class CraftEventFactory {
+@@ -939,6 +939,13 @@ public class CraftEventFactory {
          return event;
      }
  

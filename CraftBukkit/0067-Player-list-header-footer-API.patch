@@ -1,4 +1,4 @@
-From 91577e306e40001f947ab993e0ed67ad83f99b4e Mon Sep 17 00:00:00 2001
+From a4fda3dd8b8a54dd85d85f1302b9e4566b02e4dd Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 12 Feb 2015 22:38:42 -0500
 Subject: [PATCH] Player list header/footer API
@@ -40,10 +40,10 @@ index 5f5b382..34d0783 100644
  
      public void a(PacketListenerPlayOut packetlistenerplayout) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 52af9a1..119a473 100644
+index 84f203c..4f0c1ae 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1734,4 +1734,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1749,4 +1749,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          packet.components = components;
          getHandle().playerConnection.sendPacket(packet);
      }

@@ -1,4 +1,4 @@
-From b47f88a5b279c7dead048dc70fa198aa7c61d060 Mon Sep 17 00:00:00 2001
+From 1c347bbafe7ee485b4dfd1bbae4114b2187c6307 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -316,55 +316,6 @@ index 0000000..ddd5199
 +        } else {
 +            throw new IllegalArgumentException("Invalid material");
 +        }
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/BlockMagma.java b/src/main/java/net/minecraft/server/BlockMagma.java
-new file mode 100644
-index 0000000..3d958b2
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/BlockMagma.java
-@@ -0,0 +1,43 @@
-+package net.minecraft.server;
-+
-+import java.util.Random;
-+
-+public class BlockMagma extends Block {
-+
-+    public BlockMagma() {
-+        super(Material.STONE);
-+        this.a(CreativeModeTab.b);
-+        this.a(0.2F);
-+        this.a(true);
-+    }
-+
-+    public MaterialMapColor r(IBlockData iblockdata) {
-+        return MaterialMapColor.K;
-+    }
-+
-+    public void stepOn(World world, BlockPosition blockposition, Entity entity) {
-+        if (!entity.isFireProof() && entity instanceof EntityLiving && !EnchantmentManager.j((EntityLiving) entity)) {
-+            entity.damageEntity(DamageSource.HOT_FLOOR, 1.0F);
-+        }
-+
-+        super.stepOn(world, blockposition, entity);
-+    }
-+
-+    public void b(World world, BlockPosition blockposition, IBlockData iblockdata, Random random) {
-+        BlockPosition blockposition1 = blockposition.up();
-+        IBlockData iblockdata1 = world.getType(blockposition1);
-+
-+        if (iblockdata1.getBlock() == Blocks.WATER || iblockdata1.getBlock() == Blocks.FLOWING_WATER) {
-+            world.setAir(blockposition1);
-+            world.a((EntityHuman) null, blockposition, SoundEffects.bx, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-+            if (world instanceof WorldServer) {
-+                ((WorldServer) world).a(EnumParticle.SMOKE_LARGE, (double) blockposition1.getX() + 0.5D, (double) blockposition1.getY() + 0.25D, (double) blockposition1.getZ() + 0.5D, 8, 0.5D, 0.25D, 0.5D, 0.0D, new int[0]);
-+            }
-+        }
-+
-+    }
-+
-+    public boolean a(IBlockData iblockdata, Entity entity) {
-+        return entity.isFireProof();
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
@@ -3864,79 +3815,6 @@ index 0000000..b971c51
 +            itemstack.setTag(nbttagcompound);
 +            return itemstack;
 +        }
-+    }
-+}
-diff --git a/src/main/java/net/minecraft/server/RegionFileCache.java b/src/main/java/net/minecraft/server/RegionFileCache.java
-new file mode 100644
-index 0000000..b07e7d5
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/RegionFileCache.java
-@@ -0,0 +1,67 @@
-+package net.minecraft.server;
-+
-+import com.google.common.collect.Maps;
-+import java.io.DataInputStream;
-+import java.io.DataOutputStream;
-+import java.io.File;
-+import java.io.IOException;
-+import java.util.Iterator;
-+import java.util.Map;
-+
-+public class RegionFileCache {
-+
-+    private static final Map<File, RegionFile> a = Maps.newHashMap();
-+
-+    public static synchronized RegionFile a(File file, int i, int j) {
-+        File file1 = new File(file, "region");
-+        File file2 = new File(file1, "r." + (i >> 5) + "." + (j >> 5) + ".mca");
-+        RegionFile regionfile = (RegionFile) RegionFileCache.a.get(file2);
-+
-+        if (regionfile != null) {
-+            return regionfile;
-+        } else {
-+            if (!file1.exists()) {
-+                file1.mkdirs();
-+            }
-+
-+            if (RegionFileCache.a.size() >= 256) {
-+                a();
-+            }
-+
-+            RegionFile regionfile1 = new RegionFile(file2);
-+
-+            RegionFileCache.a.put(file2, regionfile1);
-+            return regionfile1;
-+        }
-+    }
-+
-+    public static synchronized void a() {
-+        Iterator iterator = RegionFileCache.a.values().iterator();
-+
-+        while (iterator.hasNext()) {
-+            RegionFile regionfile = (RegionFile) iterator.next();
-+
-+            try {
-+                if (regionfile != null) {
-+                    regionfile.c();
-+                }
-+            } catch (IOException ioexception) {
-+                ioexception.printStackTrace();
-+            }
-+        }
-+
-+        RegionFileCache.a.clear();
-+    }
-+
-+    public static DataInputStream c(File file, int i, int j) {
-+        RegionFile regionfile = a(file, i, j);
-+
-+        return regionfile.a(i & 31, j & 31);
-+    }
-+
-+    public static DataOutputStream d(File file, int i, int j) {
-+        RegionFile regionfile = a(file, i, j);
-+
-+        return regionfile.b(i & 31, j & 31);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java

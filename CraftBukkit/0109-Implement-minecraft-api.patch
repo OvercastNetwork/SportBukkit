@@ -1,4 +1,4 @@
-From 76bfaaf56189517813f0c7f4aa94ad1f6d91d76d Mon Sep 17 00:00:00 2001
+From f01dfcc4db73730ce9f82f0c8525b02251bc191c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -158,10 +158,10 @@ index a946ee0..cbeac09 100644
          return getHandle().getName();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 9d626ef..ad53e4d 100644
+index a160fdc..7878f3d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1773,6 +1773,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1788,6 +1788,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -191,7 +191,7 @@ index 9d626ef..ad53e4d 100644
      public void sendMessage(BaseComponent component) {
        sendMessage( new BaseComponent[] { component } );
      }
-@@ -1883,4 +1906,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1898,4 +1921,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids) {
          return getTargetedBlock(getBlockReach(), nonSolids, liquids);
      }

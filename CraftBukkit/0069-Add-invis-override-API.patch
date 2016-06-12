@@ -1,4 +1,4 @@
-From e79d60d5694ccc62e3acc05bceadd1ed30ea940c Mon Sep 17 00:00:00 2001
+From cbf2999133ead6188c2fdca23046c7e414fd6596 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
@@ -35,7 +35,7 @@ index 54b7f71..9dd7df7 100644
      public PacketPlayOutEntityMetadata() {}
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index c7e60b4..c9b6b7c 100644
+index 0ff8906..9d45d0b 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1156,6 +1156,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -71,7 +71,7 @@ index c7e60b4..c9b6b7c 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 5795462..ea1c785 100644
+index 4f0c1ae..bfbeb2b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -85,6 +85,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -82,7 +82,7 @@ index 5795462..ea1c785 100644
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -1216,6 +1217,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1231,6 +1232,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

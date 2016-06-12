@@ -1,11 +1,11 @@
-From bc9836fbbc67006fb5939fe702e9242b716d8509 Mon Sep 17 00:00:00 2001
+From de785b3280ca45ad6fa7d77fbba28b431630306a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:17 -0400
 Subject: [PATCH] Component support for signs
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 35ddf8e..cb7c231 100644
+index 3d53e9f..6b8ad01 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -12,6 +12,9 @@ import java.util.Collections;
@@ -173,7 +173,7 @@ index 42a6f9a..66c7578 100644
      public TileEntitySign getTileEntity() {
          return sign;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index cf7bee7..2be05b9 100644
+index efe590e..0ad8c03 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -57,6 +57,7 @@ import org.bukkit.craftbukkit.CraftWorld;
@@ -184,7 +184,7 @@ index cf7bee7..2be05b9 100644
  import org.bukkit.craftbukkit.util.CraftChatMessage;
  import org.bukkit.craftbukkit.util.CraftMagicNumbers;
  import org.bukkit.craftbukkit.util.Skins;
-@@ -665,23 +666,41 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -680,23 +681,41 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void sendSignChange(Location loc, String[] lines) {

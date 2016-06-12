@@ -1,4 +1,4 @@
-From 3ac83f6e7b2896f98fa779982c087c1d0299047e Mon Sep 17 00:00:00 2001
+From 622ffd42d64a12795a3fae8a037819d9de2e894b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
@@ -52,7 +52,7 @@ index b9fe53c..da79530 100644
  
      public EntityHuman.EnumChatVisibility getChatFlags() {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
-index 476da40..7cf9fe5 100644
+index 0012ee5..f7a02a6 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutPlayerInfo.java
 @@ -14,6 +14,20 @@ public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
@@ -77,7 +77,7 @@ index 476da40..7cf9fe5 100644
  
      public PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction packetplayoutplayerinfo_enumplayerinfoaction, EntityPlayer... aentityplayer) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
-index dbdb87f..5fd1062 100644
+index d8ec504..3e57fde 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutScoreboardTeam.java
 @@ -18,6 +18,29 @@ public class PacketPlayOutScoreboardTeam implements Packet<PacketListenerPlayOut
@@ -111,7 +111,7 @@ index dbdb87f..5fd1062 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index e88b03d..c7e60b4 100644
+index 56284a3..0ff8906 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
@@ -195,7 +195,7 @@ index e88b03d..c7e60b4 100644
              CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index ab7f164..4c7b057 100644
+index 74201f3..52e73a0 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -402,7 +402,7 @@ index 813b080..f2c3022 100644
          return true;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7bcfed4..34e08c9 100644
+index d8b7a33..942aed8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1,5 +1,6 @@
@@ -715,7 +715,7 @@ index 7bcfed4..34e08c9 100644
      public String getDisplayName() {
          return getHandle().displayName;
      }
-@@ -933,7 +1197,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -948,7 +1212,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          EntityTracker tracker = ((WorldServer) entity.world).tracker;
          EntityPlayer other = ((CraftPlayer) player).getHandle();
  
@@ -724,7 +724,7 @@ index 7bcfed4..34e08c9 100644
  
          EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(other.getId());
          if (entry != null && !entry.trackedPlayers.contains(getHandle())) {
-@@ -1164,6 +1428,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1179,6 +1443,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      public void disconnect(String reason) {

@@ -1,4 +1,4 @@
-From ff30c9d2b0be4caf4c289000747b4fc3cb1e3d1e Mon Sep 17 00:00:00 2001
+From 712035c33954d59842828acdefba2732a4721ae3 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -18,7 +18,7 @@ index 1672183..582d7bf 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 11f0fb2..49896b6 100644
+index 3ee0b91..ae83a67 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -52,6 +52,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
@@ -90,7 +90,7 @@ index 11f0fb2..49896b6 100644
          radius *= radius;
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 5bdf114..07e2dc0 100644
+index b89f917..f24c75c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -59,6 +59,7 @@ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
@@ -101,7 +101,7 @@ index 5bdf114..07e2dc0 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -311,15 +312,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -326,15 +327,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
@@ -117,7 +117,7 @@ index 5bdf114..07e2dc0 100644
      public <T> void playEffect(Location loc, Effect effect, T data) {
          if (data != null) {
              Validate.isTrue(effect.getData() != null && effect.getData().isAssignableFrom(data.getClass()), "Wrong kind of data for this effect!");
-@@ -327,8 +319,50 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -342,8 +334,50 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }
  

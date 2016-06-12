@@ -1,4 +1,4 @@
-From 0aece6faf7e4366595c7f083911367d7000d5811 Mon Sep 17 00:00:00 2001
+From 22c04b0e3bcb5f375a747ca13083fd6c63e5714d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 03:50:47 -0500
 Subject: [PATCH] Fix exception playing particle effects
@@ -23,7 +23,7 @@ index 582d7bf..845245c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 49896b6..d0497ae 100644
+index ae83a67..4efa4ad 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -912,7 +912,7 @@ public class CraftWorld implements World {
@@ -36,10 +36,10 @@ index 49896b6..d0497ae 100644
  
          int distance;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3d9ae08..6bd6913 100644
+index bfbeb2b..5e1435c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -621,7 +621,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -636,7 +636,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              if (effect.getData() != null && effect.getData().equals(MaterialData.class)) {
                  particleFullName.append('_').append(data);
              }

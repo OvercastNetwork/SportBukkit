@@ -1,4 +1,4 @@
-From 6723e1d92342dc7552e3af9ea6b7233f331358f4 Mon Sep 17 00:00:00 2001
+From a37e7b80fd07a36fee8f932b5aaffe442b4f4c74 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
@@ -34,10 +34,10 @@ index 4794521..8bd8105 100644
          this.ci = packetplayinsettings.d();
          this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e()));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 97cc888..a6498fc 100644
+index c727846..97845ea 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1443,4 +1443,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1458,4 +1458,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public String getHostname() {
          return getHandle().hostname;
      }
@@ -54,10 +54,10 @@ index 97cc888..a6498fc 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index f8c98b7..1c60b02 100644
+index bcc6ab7..07ee811 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -650,7 +650,7 @@ public class CraftEventFactory {
+@@ -652,7 +652,7 @@ public class CraftEventFactory {
          if (!event.isCancelled()) {
              state.update(true);
          }
@@ -66,7 +66,7 @@ index f8c98b7..1c60b02 100644
          return !event.isCancelled();
      }
  
-@@ -1016,4 +1016,11 @@ public class CraftEventFactory {
+@@ -1018,4 +1018,11 @@ public class CraftEventFactory {
  		cloud.world.getServer().getPluginManager().callEvent(event);
  		return event;
  	}

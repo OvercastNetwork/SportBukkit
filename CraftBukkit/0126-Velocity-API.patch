@@ -1,4 +1,4 @@
-From 044580dde3fa82019a8567bef57477323da7600f Mon Sep 17 00:00:00 2001
+From be033b5a788b22cfb6dbe1a0dccdd1d406549ff3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
@@ -108,7 +108,7 @@ index 3a25cb8..bd9ed1a 100644
                          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index f848a4e..6b3f5c3 100644
+index 7fc4806..4c9bf55 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -912,7 +912,7 @@ public abstract class EntityLiving extends Entity {
@@ -414,7 +414,7 @@ index acbf7a8..37f5d2c 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index b3ae581..4a3c8a0 100644
+index 1600fef..db4262d 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -60,6 +60,7 @@ import org.bukkit.inventory.CraftingInventory;
@@ -512,7 +512,7 @@ index 87405af..0336e05 100644
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c269dc0..a642334 100644
+index cb4cc45..c3eb87b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -634,6 +634,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
@@ -585,7 +585,7 @@ index cbeac09..a9d9227 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index e4d0cd4..d52255c 100644
+index 4f14333..b37e06d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
@@ -596,7 +596,7 @@ index e4d0cd4..d52255c 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1883,6 +1884,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1898,6 +1899,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

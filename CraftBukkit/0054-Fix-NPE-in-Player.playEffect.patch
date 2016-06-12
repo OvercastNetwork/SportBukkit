@@ -1,14 +1,14 @@
-From e30c5b597716f343c48ce0f8c3404bbf0f59ba39 Mon Sep 17 00:00:00 2001
+From 2efa576b98c48652bcf744fa7d944c9a946bd6ea Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 22 Sep 2014 05:35:35 -0400
 Subject: [PATCH] Fix NPE in Player.playEffect
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7afd7a2..efe6297 100644
+index 97845ea..d8b7a33 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -319,7 +319,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -334,7 +334,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }
  

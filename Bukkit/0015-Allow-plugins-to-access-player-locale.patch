@@ -1,14 +1,14 @@
-From 3c5ac34e4882c5f596238122a5996eb13c1286a8 Mon Sep 17 00:00:00 2001
+From 151f396d052ee182aad3960b9ef1fa37c6cf5ebc Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:32:00 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 49ccf8a..3953424 100644
+index 5b6e55d..0f75d8c 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1283,4 +1283,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1297,4 +1297,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @return The hostname and port
       */
      public String getHostname();

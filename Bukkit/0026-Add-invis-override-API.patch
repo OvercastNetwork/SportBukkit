@@ -1,14 +1,14 @@
-From 1d1799db039f1f9e79618fcd899fdae4b2818ca5 Mon Sep 17 00:00:00 2001
+From 0e356e684930d33d848e762b057a353a33df6caa Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:40 -0500
 Subject: [PATCH] Add invis override API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 86593bd..042d807 100644
+index 139de9a..f0c4ba3 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -981,6 +981,10 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -995,6 +995,10 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       */
      public boolean canSee(Player player);
  

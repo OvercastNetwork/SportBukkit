@@ -1,4 +1,4 @@
-From d1989e74deddfbb22a15fa6a2fdb190f4c198e86 Mon Sep 17 00:00:00 2001
+From 2a638b0456a0a7bd20c1ecaeab180d7e83c5a576 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:00:58 -0400
 Subject: [PATCH] Accurate block hit checking
@@ -77,7 +77,7 @@ index 235c15b..fe32537 100644
 +    RayBlockIntersection rayTrace(Location start, double distance);
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 8e603b4..09aa84f 100644
+index fcff8bc..375b9f7 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
@@ -88,7 +88,7 @@ index 8e603b4..09aa84f 100644
  
  /**
   * Represents a player, connected or not
-@@ -1545,4 +1546,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1559,4 +1560,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * or null if they are not digging any block.
       */
      public org.bukkit.block.Block getDiggingBlock();

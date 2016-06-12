@@ -1,14 +1,14 @@
-From d8ec7879fac53a6a8858b9371060b515315f0531 Mon Sep 17 00:00:00 2001
+From 82e9922fc78120dd315f49986fc409795ffdf4a3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 12 Feb 2015 22:15:03 -0500
 Subject: [PATCH] Player list header/footer API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 9dca34b..86593bd 100644
+index 419f869..139de9a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1435,4 +1435,20 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1449,4 +1449,20 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @param components the components to send
       */
      public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components);

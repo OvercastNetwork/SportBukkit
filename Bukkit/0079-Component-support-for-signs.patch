@@ -1,4 +1,4 @@
-From 984228f7951c8ff523a4e61bafae420b816a251a Mon Sep 17 00:00:00 2001
+From fbe23456be28c293bf40147a69eec433e5f75cf2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:23 -0400
 Subject: [PATCH] Component support for signs
@@ -49,7 +49,7 @@ index 5d7a633..7ded5ab 100644
      public void setLine(int index, String line) throws IndexOutOfBoundsException;
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 242bc08..3e39ce4 100644
+index 9f82eaf..7b52115 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,8 +1,10 @@
@@ -63,7 +63,7 @@ index 242bc08..3e39ce4 100644
  import org.bukkit.Achievement;
  import org.bukkit.ChatColor;
  import org.bukkit.Effect;
-@@ -450,6 +452,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -464,6 +466,9 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @throws IllegalArgumentException if location is null
       * @throws IllegalArgumentException if lines is non-null and has a length less than 4
       */

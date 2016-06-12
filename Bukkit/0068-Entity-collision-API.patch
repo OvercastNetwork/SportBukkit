@@ -1,14 +1,14 @@
-From 7352cd83952cb8d4ebc8b970be8a0db2b48215f4 Mon Sep 17 00:00:00 2001
+From 4001e59a9a7cc68dade3733a424efddb1afe8b67 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Apr 2012 01:39:04 -0400
 Subject: [PATCH] Entity collision API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 91ffd77..3fe5807 100644
+index e96c740..630fd1d 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1014,6 +1014,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1028,6 +1028,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
      public void setFlying(boolean value);
  
      /**

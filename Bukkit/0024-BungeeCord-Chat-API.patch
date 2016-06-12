@@ -1,11 +1,11 @@
-From f82a58b1e9df71a5c8a621b7a26b8035cd5cd610 Mon Sep 17 00:00:00 2001
+From 4da40cfc8ded91fef075e842f49c6e146b9982bd Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 12:59:14 +1100
 Subject: [PATCH] BungeeCord Chat API
 
 
 diff --git a/pom.xml b/pom.xml
-index 8e6a120..a26a910 100644
+index 4d8350a..dd67c2e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -81,6 +81,14 @@
@@ -74,10 +74,10 @@ index af90603..2bc7ccb 100644
 +    public void broadcast(net.md_5.bungee.api.chat.BaseComponent... components);
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index f5c2a62..9dca34b 100644
+index 656fba0..419f869 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1421,4 +1421,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1435,4 +1435,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * effectively setting it to the default of "en_US".
       */
      public void setLocale(String locale);

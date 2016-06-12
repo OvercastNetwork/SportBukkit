@@ -1,11 +1,11 @@
-From b4beacf5fcbe36850d0fdde51675b8e0d4beb103 Mon Sep 17 00:00:00 2001
+From 95b8eb48e135558d78c4a1597ebf3dbfe7f6937b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 4 Apr 2015 22:59:54 -0400
 Subject: [PATCH] Complete resource pack API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index e2514b8..beddcd6 100644
+index 66ad67f..f9ac011 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -19,6 +19,7 @@ import org.bukkit.Statistic;
@@ -16,7 +16,7 @@ index e2514b8..beddcd6 100644
  import org.bukkit.map.MapView;
  import org.bukkit.plugin.messaging.PluginMessageRecipient;
  import org.bukkit.scoreboard.Scoreboard;
-@@ -1099,13 +1100,30 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1113,13 +1114,30 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @param url The URL from which the client will download the resource
       *     pack. The string must contain only US-ASCII characters and should
       *     be encoded as per RFC 1738.

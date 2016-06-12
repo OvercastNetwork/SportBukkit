@@ -1,4 +1,4 @@
-From ba9ac701f8a2a35f0fef9196214f226968bb09ff Mon Sep 17 00:00:00 2001
+From 520f7c13f7fdb8dbfc0b608a622c5f49faff9603 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -94,6 +94,40 @@ index a24c2c0..892d0e5 100644
          } else {
              this.writeShort(Item.getId(itemstack.getItem()));
              this.writeByte(itemstack.count);
+diff --git a/src/main/java/net/minecraft/server/PacketDecoder.java b/src/main/java/net/minecraft/server/PacketDecoder.java
+index fc22c20..d892501 100644
+--- a/src/main/java/net/minecraft/server/PacketDecoder.java
++++ b/src/main/java/net/minecraft/server/PacketDecoder.java
+@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ import org.apache.logging.log4j.Marker;
+ import org.apache.logging.log4j.MarkerManager;
++import org.bukkit.craftbukkit.protocol.ProtocolTranslator; // SportBukkit
+ 
+ public class PacketDecoder extends ByteToMessageDecoder {
+ 
+@@ -23,7 +24,21 @@ public class PacketDecoder extends ByteToMessageDecoder {
+     protected void decode(ChannelHandlerContext channelhandlercontext, ByteBuf bytebuf, List<Object> list) throws Exception {
+         if (bytebuf.readableBytes() != 0) {
+             PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
++
++            // SportBukkit start - set protocol version
++            final NetworkManager networkManager = channelhandlercontext.pipeline().get(NetworkManager.class);
++            if(networkManager != null) {
++                packetdataserializer.protocolVersion = networkManager.protocolVersion;
++            }
++            // SportBukkit end
++
+             int i = packetdataserializer.g();
++
++            // SportBukkit start - translate packet ID
++            i = ProtocolTranslator.packetId(true, packetdataserializer.protocolVersion, i);
++            if(i < 0) return;
++            // SportBukkit end
++
+             Packet packet = ((EnumProtocol) channelhandlercontext.channel().attr(NetworkManager.c).get()).a(this.c, i);
+ 
+             if (packet == null) {
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
 index f4066bd..ec493e7 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java

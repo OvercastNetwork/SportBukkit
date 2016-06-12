@@ -1,9 +1,40 @@
-From 09fa64e5d5efc2cd4903d2ebb961e427e9f7f5af Mon Sep 17 00:00:00 2001
+From f337d9db700b966e9215879c0e5b09e12bbf7065 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
 
 
+diff --git a/src/main/java/net/minecraft/server/BlockMagma.java b/src/main/java/net/minecraft/server/BlockMagma.java
+index 3d958b2..33f7d3f 100644
+--- a/src/main/java/net/minecraft/server/BlockMagma.java
++++ b/src/main/java/net/minecraft/server/BlockMagma.java
+@@ -2,6 +2,8 @@ package net.minecraft.server;
+ 
+ import java.util.Random;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // SportBukkit
++
+ public class BlockMagma extends Block {
+ 
+     public BlockMagma() {
+@@ -17,7 +19,17 @@ public class BlockMagma extends Block {
+ 
+     public void stepOn(World world, BlockPosition blockposition, Entity entity) {
+         if (!entity.isFireProof() && entity instanceof EntityLiving && !EnchantmentManager.j((EntityLiving) entity)) {
++            // SportBukkit start - set damager block
++            final org.bukkit.block.Block oldBlockDamage = CraftEventFactory.blockDamage;
++            CraftEventFactory.blockDamage = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++            try {
++            // SportBukkit end
+             entity.damageEntity(DamageSource.HOT_FLOOR, 1.0F);
++            // SportBukkit start
++            } finally {
++                CraftEventFactory.blockDamage = oldBlockDamage;
++            }
++            // SportBukkit end
+         }
+ 
+         super.stepOn(world, blockposition, entity);
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
 index 60b882e..7352b70 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java

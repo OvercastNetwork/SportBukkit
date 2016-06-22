@@ -1,4 +1,4 @@
-From 021b2699afa9e92a278b782dbaf373bf0b4b22fb Mon Sep 17 00:00:00 2001
+From 32566ef783e76b45d278b87ea3e3a85d1b65de58 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -74,7 +74,7 @@ index 52e3ac4..5d9636d 100644
       * Sets the default value of the given path as provided.
       * <p>
 diff --git a/src/main/java/org/bukkit/configuration/ConfigurationSection.java b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
-index 166f2a6..871e10d 100644
+index 166f2a6..c2fef8b 100644
 --- a/src/main/java/org/bukkit/configuration/ConfigurationSection.java
 +++ b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
 @@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
@@ -86,8 +86,17 @@ index 166f2a6..871e10d 100644
      /**
       * Gets a set containing all keys in this section.
       * <p>
+@@ -767,6 +767,8 @@ public interface ConfigurationSection {
+      */
+     public boolean isColor(String path);
+ 
++    ConfigurationSection getSection(String path);
++
+     /**
+      * Gets the requested ConfigurationSection by path.
+      * <p>
 diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
-index 1f4c8ce..bdd9bca 100644
+index 1f4c8ce..2af8a36 100644
 --- a/src/main/java/org/bukkit/configuration/MemorySection.java
 +++ b/src/main/java/org/bukkit/configuration/MemorySection.java
 @@ -68,6 +68,11 @@ public class MemorySection implements ConfigurationSection {
@@ -102,20 +111,21 @@ index 1f4c8ce..bdd9bca 100644
      public Set<String> getKeys(boolean deep) {
          Set<String> result = new LinkedHashSet<String>();
  
-@@ -683,6 +688,11 @@ public class MemorySection implements ConfigurationSection {
+@@ -683,6 +688,12 @@ public class MemorySection implements ConfigurationSection {
          return val instanceof Color;
      }
  
 +    @Override
 +    public ConfigurationSection getSection(String path) {
-+        return getConfigurationSection(path);
++        final ConfigurationSection section = getConfigurationSection(path);
++        return section != null ? section : createSection(path);
 +    }
 +
      public ConfigurationSection getConfigurationSection(String path) {
          Object val = get(path, null);
          if (val != null) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 09aa84f..db9f982 100644
+index 375b9f7..e96c740 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -28,7 +28,7 @@ import org.bukkit.util.RayBlockIntersection;

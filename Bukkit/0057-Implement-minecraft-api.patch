@@ -1,4 +1,4 @@
-From 32566ef783e76b45d278b87ea3e3a85d1b65de58 Mon Sep 17 00:00:00 2001
+From f688b008fdb84358f4b47d86c4d37fc830469bb3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -74,7 +74,7 @@ index 52e3ac4..5d9636d 100644
       * Sets the default value of the given path as provided.
       * <p>
 diff --git a/src/main/java/org/bukkit/configuration/ConfigurationSection.java b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
-index 166f2a6..c2fef8b 100644
+index 166f2a6..40fcb0f 100644
 --- a/src/main/java/org/bukkit/configuration/ConfigurationSection.java
 +++ b/src/main/java/org/bukkit/configuration/ConfigurationSection.java
 @@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
@@ -95,11 +95,45 @@ index 166f2a6..c2fef8b 100644
      /**
       * Gets the requested ConfigurationSection by path.
       * <p>
+@@ -825,4 +827,6 @@ public interface ConfigurationSection {
+      * @throws IllegalArgumentException Thrown if path is null.
+      */
+     public void addDefault(String path, Object value);
++
++    ConfigurationSection needSection(String path) throws tc.oc.minecraft.api.configuration.InvalidConfigurationException;
+ }
+diff --git a/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java b/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java
+index d23480e..8944900 100644
+--- a/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java
++++ b/src/main/java/org/bukkit/configuration/InvalidConfigurationException.java
+@@ -4,7 +4,7 @@ package org.bukkit.configuration;
+  * Exception thrown when attempting to load an invalid {@link Configuration}
+  */
+ @SuppressWarnings("serial")
+-public class InvalidConfigurationException extends Exception {
++public class InvalidConfigurationException extends tc.oc.minecraft.api.configuration.InvalidConfigurationException {
+ 
+     /**
+      * Creates a new instance of InvalidConfigurationException without a
 diff --git a/src/main/java/org/bukkit/configuration/MemorySection.java b/src/main/java/org/bukkit/configuration/MemorySection.java
-index 1f4c8ce..2af8a36 100644
+index 1f4c8ce..f032374 100644
 --- a/src/main/java/org/bukkit/configuration/MemorySection.java
 +++ b/src/main/java/org/bukkit/configuration/MemorySection.java
-@@ -68,6 +68,11 @@ public class MemorySection implements ConfigurationSection {
+@@ -14,11 +14,12 @@ import org.bukkit.Color;
+ import org.bukkit.OfflinePlayer;
+ import org.bukkit.inventory.ItemStack;
+ import org.bukkit.util.Vector;
++import tc.oc.minecraft.api.configuration.AbstractConfigurationSection;
+ 
+ /**
+  * A type of {@link ConfigurationSection} that is stored in memory.
+  */
+-public class MemorySection implements ConfigurationSection {
++public class MemorySection extends AbstractConfigurationSection implements ConfigurationSection {
+     protected final Map<String, Object> map = new LinkedHashMap<String, Object>();
+     private final Configuration root;
+     private final ConfigurationSection parent;
+@@ -68,6 +69,11 @@ public class MemorySection implements ConfigurationSection {
          this.fullPath = createPath(parent, path);
      }
  
@@ -111,7 +145,7 @@ index 1f4c8ce..2af8a36 100644
      public Set<String> getKeys(boolean deep) {
          Set<String> result = new LinkedHashSet<String>();
  
-@@ -683,6 +688,12 @@ public class MemorySection implements ConfigurationSection {
+@@ -683,6 +689,17 @@ public class MemorySection implements ConfigurationSection {
          return val instanceof Color;
      }
  
@@ -119,6 +153,11 @@ index 1f4c8ce..2af8a36 100644
 +    public ConfigurationSection getSection(String path) {
 +        final ConfigurationSection section = getConfigurationSection(path);
 +        return section != null ? section : createSection(path);
++    }
++
++    @Override
++    public ConfigurationSection needSection(String path) throws tc.oc.minecraft.api.configuration.InvalidConfigurationException {
++        return needType(path, ConfigurationSection.class);
 +    }
 +
      public ConfigurationSection getConfigurationSection(String path) {

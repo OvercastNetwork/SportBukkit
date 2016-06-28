@@ -1,4 +1,4 @@
-From f01dfcc4db73730ce9f82f0c8525b02251bc191c Mon Sep 17 00:00:00 2001
+From f6c031f25161171d79f214b1207cf72ed11e867c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -17,7 +17,7 @@ index 1311f27..37b2b71 100644
  
      public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index e7a113d..c5f3656 100644
+index e1059f3..3ff8c0c 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -70,6 +70,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -41,10 +41,10 @@ index f46c87f..3c8082b 100644
      private IChatBaseComponent n;
      private boolean o;
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 52e73a0..0270b73 100644
+index 82b9574..614dfce 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -473,6 +473,7 @@ public abstract class PlayerList {
+@@ -475,6 +475,7 @@ public abstract class PlayerList {
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));
          entity.hostname = hostname;
@@ -53,7 +53,7 @@ index 52e73a0..0270b73 100644
          Player player = entity.getBukkitEntity();
          PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b033214..778264a 100644
+index 6147be6..961a7cd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -119,6 +119,7 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;

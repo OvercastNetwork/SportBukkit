@@ -1,4 +1,4 @@
-From a37e7b80fd07a36fee8f932b5aaffe442b4f4c74 Mon Sep 17 00:00:00 2001
+From 5499d5ed2f9b2f6087215da4f36f429c4612706b Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
@@ -54,7 +54,7 @@ index c727846..97845ea 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index bcc6ab7..07ee811 100644
+index ab47c31..f47f5ca 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -652,7 +652,7 @@ public class CraftEventFactory {
@@ -66,10 +66,10 @@ index bcc6ab7..07ee811 100644
          return !event.isCancelled();
      }
  
-@@ -1018,4 +1018,11 @@ public class CraftEventFactory {
- 		cloud.world.getServer().getPluginManager().callEvent(event);
- 		return event;
- 	}
+@@ -1027,4 +1027,11 @@ public class CraftEventFactory {
+         child.world.getServer().getPluginManager().callEvent(event);
+         return event;
+     }
 +
 +    public static PlayerLocaleChangeEvent callPlayerLocaleChangeEvent(EntityHuman who, String oldLocale, String newLocale) {
 +        Player player = (Player) who.getBukkitEntity();

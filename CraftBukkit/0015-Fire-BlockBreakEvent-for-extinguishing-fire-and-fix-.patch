@@ -1,4 +1,4 @@
-From decefef2201790ea92175afafc8f57c2b88555c8 Mon Sep 17 00:00:00 2001
+From af90e92404497281450717b889f11931dd40cdba Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 15 May 2013 20:09:16 -0500
 Subject: [PATCH] Fire BlockBreakEvent for extinguishing fire and fix
@@ -42,10 +42,10 @@ index 6eaecd8..277fd53 100644
  
              if (event.useItemInHand() == Event.Result.DENY) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 3cfb30e..b60c82c 100644
+index e5f2f0a..c84ad41 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1818,8 +1818,13 @@ public abstract class World implements IBlockAccess {
+@@ -1825,8 +1825,13 @@ public abstract class World implements IBlockAccess {
      public boolean douseFire(@Nullable EntityHuman entityhuman, BlockPosition blockposition, EnumDirection enumdirection) {
          blockposition = blockposition.shift(enumdirection);
          if (this.getType(blockposition).getBlock() == Blocks.FIRE) {

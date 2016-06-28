@@ -1,11 +1,11 @@
-From 7f3ef909c1be49df542c9380fc0b7a35332f0783 Mon Sep 17 00:00:00 2001
+From a6e9ca7d5bc0cec06f42612fd141814dad946d21 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 1 Jul 2015 12:42:37 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f2edb9c..f250cc4 100644
+index beb934d..488d51d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -36,6 +36,7 @@ import org.bukkit.Warning.WarningState;
@@ -37,7 +37,7 @@ index f2edb9c..f250cc4 100644
          return scoreboardManager;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 8b6f1d7..1b66067 100644
+index 15bfe0a..8a5faa7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -30,8 +30,12 @@ import org.bukkit.WorldBorder;
@@ -53,7 +53,7 @@ index 8b6f1d7..1b66067 100644
  import org.bukkit.craftbukkit.block.CraftBlockState;
  import org.bukkit.craftbukkit.entity.*;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
-@@ -1587,4 +1591,19 @@ public class CraftWorld implements World {
+@@ -1539,4 +1543,19 @@ public class CraftWorld implements World {
              cps.unload(chunk);
          }
      }

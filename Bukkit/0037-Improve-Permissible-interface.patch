@@ -1,4 +1,4 @@
-From 28d9da885364e3261d2fee87b9a52c7a03aae02f Mon Sep 17 00:00:00 2001
+From a949c99fa4ab2dc4921204916c3db020f7d63a6c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 28 May 2015 04:31:07 -0400
 Subject: [PATCH] Improve Permissible interface
@@ -94,7 +94,7 @@ index 5cd3cff..a7c0ef5 100644
 +    Collection<PermissionAttachmentInfo> getAttachments(Plugin plugin, Permission permission);
  }
 diff --git a/src/main/java/org/bukkit/permissions/PermissibleBase.java b/src/main/java/org/bukkit/permissions/PermissibleBase.java
-index 3b95061..8061974 100644
+index bc772e5..3f053be 100644
 --- a/src/main/java/org/bukkit/permissions/PermissibleBase.java
 +++ b/src/main/java/org/bukkit/permissions/PermissibleBase.java
 @@ -1,12 +1,17 @@
@@ -129,7 +129,7 @@ index 3b95061..8061974 100644
      public PermissibleBase(ServerOperator opable) {
          this.opable = opable;
 @@ -69,7 +74,7 @@ public class PermissibleBase implements Permissible {
-         String name = inName.toLowerCase();
+         String name = inName.toLowerCase(java.util.Locale.ENGLISH);
  
          if (isPermissionSet(name)) {
 -            return permissions.get(name).getValue();
@@ -138,7 +138,7 @@ index 3b95061..8061974 100644
              Permission perm = Bukkit.getServer().getPluginManager().getPermission(name);
  
 @@ -89,7 +94,7 @@ public class PermissibleBase implements Permissible {
-         String name = perm.getName().toLowerCase();
+         String name = perm.getName().toLowerCase(java.util.Locale.ENGLISH);
  
          if (isPermissionSet(name)) {
 -            return permissions.get(name).getValue();

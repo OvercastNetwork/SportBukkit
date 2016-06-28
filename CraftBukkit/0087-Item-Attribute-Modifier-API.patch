@@ -1,4 +1,4 @@
-From 2416260ec45b179e096dfe4e8ef861069b3ac145 Mon Sep 17 00:00:00 2001
+From 8cc452f14afc663af1ede8666be9344c5c8bce13 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 May 2015 06:31:14 -0400
 Subject: [PATCH] Item Attribute Modifier API
@@ -23,7 +23,7 @@ index 1ed4aa9..7b842e6 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
-index 7c94acc..a385997 100644
+index e3adb5b..a385997 100644
 --- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
 +++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
 @@ -17,23 +17,8 @@ public class CraftAttributeMap implements Attributable {
@@ -40,7 +40,7 @@ index 7c94acc..a385997 100644
 -        int first = bukkit.indexOf('_');
 -        int second = bukkit.indexOf('_', first + 1);
 -
--        StringBuilder sb = new StringBuilder(bukkit.toLowerCase());
+-        StringBuilder sb = new StringBuilder(bukkit.toLowerCase(java.util.Locale.ENGLISH));
 -
 -        sb.setCharAt(first, '.');
 -        if (second != -1) {

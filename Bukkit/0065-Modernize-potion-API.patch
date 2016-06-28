@@ -1,4 +1,4 @@
-From e245efcdbb7eeb4a68ad69edf56c541f77251235 Mon Sep 17 00:00:00 2001
+From d68952309ba5a69bc468cad3a4e5f1e5b765183e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:08:23 -0500
 Subject: [PATCH] Modernize potion API
@@ -52,7 +52,7 @@ index 732110a..9a3c7e2 100644
 +    PotionEffectRegistry potionEffectRegistry();
  }
 diff --git a/src/main/java/org/bukkit/inventory/meta/PotionMeta.java b/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
-index 1ebf066..0b390d4 100644
+index 2be09e2..9ca7aba 100644
 --- a/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
 +++ b/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
 @@ -1,5 +1,6 @@
@@ -117,7 +117,7 @@ index 0000000..724b62f
 +    PotionEffectType forLegacyName(String legacyName);
 +}
 diff --git a/src/main/java/org/bukkit/potion/PotionEffectType.java b/src/main/java/org/bukkit/potion/PotionEffectType.java
-index c62b168..8bea2a9 100644
+index 27c1f47..8bea2a9 100644
 --- a/src/main/java/org/bukkit/potion/PotionEffectType.java
 +++ b/src/main/java/org/bukkit/potion/PotionEffectType.java
 @@ -1,162 +1,157 @@
@@ -397,7 +397,7 @@ index c62b168..8bea2a9 100644
       */
      public static PotionEffectType getByName(String name) {
 -        Validate.notNull(name, "name cannot be null");
--        return byName.get(name.toLowerCase());
+-        return byName.get(name.toLowerCase(java.util.Locale.ENGLISH));
 +        return Bukkit.potionEffectRegistry().forLegacyName(name);
      }
  
@@ -411,7 +411,7 @@ index c62b168..8bea2a9 100644
       */
 +    @Deprecated
      public static void registerPotionEffectType(PotionEffectType type) {
--        if (byId[type.id] != null || byName.containsKey(type.getName().toLowerCase())) {
+-        if (byId[type.id] != null || byName.containsKey(type.getName().toLowerCase(java.util.Locale.ENGLISH))) {
 -            throw new IllegalArgumentException("Cannot set already-set type");
 -        } else if (!acceptingNew) {
 -            throw new IllegalStateException(
@@ -419,7 +419,7 @@ index c62b168..8bea2a9 100644
 -        }
 -
 -        byId[type.id] = type;
--        byName.put(type.getName().toLowerCase(), type);
+-        byName.put(type.getName().toLowerCase(java.util.Locale.ENGLISH), type);
 +        throw new UnsupportedOperationException();
      }
  
@@ -497,7 +497,7 @@ index 5db1ce8..2e4bf99 100644
  
      @Override
 diff --git a/src/main/java/org/bukkit/potion/PotionType.java b/src/main/java/org/bukkit/potion/PotionType.java
-index 95f238a..c0f16ef 100644
+index 60470b8..f68c127 100644
 --- a/src/main/java/org/bukkit/potion/PotionType.java
 +++ b/src/main/java/org/bukkit/potion/PotionType.java
 @@ -1,41 +1,60 @@

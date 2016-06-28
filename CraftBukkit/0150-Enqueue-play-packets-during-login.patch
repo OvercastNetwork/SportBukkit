@@ -1,4 +1,4 @@
-From b9a9fc249073dfd743689bdb42937af00a4f2b83 Mon Sep 17 00:00:00 2001
+From 55562cf44cc693ea56884ecaa56f56363ee3c35d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 May 2016 03:31:16 -0400
 Subject: [PATCH] Enqueue play packets during login
@@ -17,7 +17,7 @@ index 0fb442e..9ffbfbd 100644
          return this.m;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 5956c1a..35ddf8e 100644
+index b4ef2f8..b3e760c 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -106,10 +106,26 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -48,7 +48,7 @@ index 5956c1a..35ddf8e 100644
          this.player = entityplayer;
          entityplayer.playerConnection = this;
  
-@@ -1139,6 +1155,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1142,6 +1158,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void sendPacket(final Packet<?> packet) {
@@ -63,7 +63,7 @@ index 5956c1a..35ddf8e 100644
  
          if (packet instanceof PacketPlayOutChat) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 8ae64c8..93d6135 100644
+index 426e028..24c9a76 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -130,7 +130,11 @@ public abstract class PlayerList {
@@ -79,7 +79,7 @@ index 8ae64c8..93d6135 100644
  
          playerconnection.sendPacket(new PacketPlayOutLogin(entityplayer.getId(), entityplayer.playerInteractManager.getGameMode(), worlddata.isHardcore(), worldserver.worldProvider.getDimensionManager().getDimensionID(), worldserver.getDifficulty(), this.getMaxPlayers(), worlddata.getType(), worldserver.getGameRules().getBoolean("reducedDebugInfo")));
          entityplayer.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
-@@ -475,6 +479,7 @@ public abstract class PlayerList {
+@@ -477,6 +481,7 @@ public abstract class PlayerList {
          SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));

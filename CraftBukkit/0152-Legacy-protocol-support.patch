@@ -1,30 +1,30 @@
-From 6540d1418fb752df4d8e40f357a483acebb54cf1 Mon Sep 17 00:00:00 2001
+From bda817c518975a91b2d6b12b2448a6ecefd6adae Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 94f9a0a..f40b137 100644
+index 064c019..0c5ca19 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -13,6 +13,7 @@ import java.util.concurrent.locks.ReadWriteLock;
- import java.util.concurrent.locks.ReentrantReadWriteLock;
- import javax.annotation.Nullable;
+@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
  import org.apache.commons.lang3.ObjectUtils;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
 +import org.bukkit.craftbukkit.protocol.ProtocolTranslator; // SportBukkit
  
  public class DataWatcher {
  
-@@ -71,6 +72,7 @@ public class DataWatcher {
+@@ -86,6 +87,7 @@ public class DataWatcher {
  
      private <T> void registerObject(DataWatcherObject<T> datawatcherobject, Object t0) { // CraftBukkit Object
          DataWatcher.Item datawatcher_item = new DataWatcher.Item(datawatcherobject, t0);
 +        datawatcher_item.entityClass = b.getClass(); // SportBukkit
  
-         this.d.writeLock().lock();
-         this.c.put(Integer.valueOf(datawatcherobject.a()), datawatcher_item);
-@@ -204,7 +206,11 @@ public class DataWatcher {
+         this.e.writeLock().lock();
+         this.d.put(Integer.valueOf(datawatcherobject.a()), datawatcher_item);
+@@ -219,7 +221,11 @@ public class DataWatcher {
          if (i < 0) {
              throw new EncoderException("Unknown serializer type " + datawatcherobject.b());
          } else {
@@ -37,7 +37,7 @@ index 94f9a0a..f40b137 100644
              packetdataserializer.d(i);
              datawatcherobject.b().a(packetdataserializer, datawatcher_item.b());
          }
-@@ -244,6 +250,7 @@ public class DataWatcher {
+@@ -259,6 +265,7 @@ public class DataWatcher {
  
      public static class Item<T> {
  
@@ -45,7 +45,7 @@ index 94f9a0a..f40b137 100644
          private final DataWatcherObject<T> a;
          private T b;
          private boolean c;
-@@ -282,6 +289,7 @@ public class DataWatcher {
+@@ -297,6 +304,7 @@ public class DataWatcher {
                  value = (T) ((ItemStack) value).cloneItemStack();
              }
              final Item<T> copy = new Item<T>(this.a(), value);
@@ -54,16 +54,16 @@ index 94f9a0a..f40b137 100644
              return copy;
          }
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index c5f3656..5da31c1 100644
+index 3ff8c0c..eb55ad7 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -65,7 +65,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
-                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.10");
+                 chatcomponenttext = new ChatComponentText("Outdated server! I\'m still on 1.10.2");
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
 -            } else if (packethandshakinginsetprotocol.b() < 210) {
 +            } else if (packethandshakinginsetprotocol.b() < 107) { // SportBukkit
-                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.10");
+                 chatcomponenttext = new ChatComponentText("Outdated client! Please use 1.10.2");
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
 diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
@@ -396,10 +396,10 @@ index dd40e98..a814ee1 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 6b8ad01..ec0d5cf 100644
+index 4f8abd8..f2de712 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1252,6 +1252,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1255,6 +1255,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                                  replacedMetadataPacket.a = metadataPacket.a;
                                  replacedMetadataPacket.b = new ArrayList(metadataPacket.b);
                                  final DataWatcher.Item replacementItem = new DataWatcher.Item(flagsItem.a(), (byte) (entityFlags & ~0x20));
@@ -407,7 +407,7 @@ index 6b8ad01..ec0d5cf 100644
                                  replacementItem.a(flagsItem.c());
                                  replacedMetadataPacket.b.set(i, replacementItem); // Clear invisibility
  
-@@ -2596,10 +2597,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2599,10 +2600,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                                  tileentitystructure.b(EnumBlockRotation.valueOf(s6));
                                  tileentitystructure.b(packetdataserializer.e(128));
                                  tileentitystructure.a(packetdataserializer.readBoolean());
@@ -422,7 +422,7 @@ index 6b8ad01..ec0d5cf 100644
  
                                  if (b1 == 2) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c3eb87b..3d90a85 100644
+index a1baaf0..b475eb5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1814,6 +1814,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {

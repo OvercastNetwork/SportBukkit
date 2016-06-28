@@ -1,11 +1,11 @@
-From a4535a91219959295a9cf33bca6d678018f1d939 Mon Sep 17 00:00:00 2001
+From 8c333439bdb6d1a990237e2ad24bf90c9c250a21 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:01:46 -0400
 Subject: [PATCH] Accurate block hit checking
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index b6490b4..b91ad1e 100644
+index cc4f0eb..51ce911 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -58,6 +58,7 @@ import org.bukkit.plugin.Plugin;
@@ -16,7 +16,7 @@ index b6490b4..b91ad1e 100644
  import org.bukkit.util.Vector;
  
  public class CraftWorld implements World {
-@@ -633,6 +634,29 @@ public class CraftWorld implements World {
+@@ -585,6 +586,29 @@ public class CraftWorld implements World {
          return getHighestBlockAt(location.getBlockX(), location.getBlockZ());
      }
  
@@ -47,7 +47,7 @@ index b6490b4..b91ad1e 100644
          return CraftBlock.biomeBaseToBiome(this.world.getBiome(new BlockPosition(x, 0, z)));
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index cdeff9b..277d1fd 100644
+index 3239c06..cb1b7a2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -23,6 +23,8 @@ import org.bukkit.inventory.ItemStack;
@@ -59,7 +59,7 @@ index cdeff9b..277d1fd 100644
  
  public class CraftBlock implements Block {
      private final CraftChunk chunk;
-@@ -494,4 +496,29 @@ public class CraftBlock implements Block {
+@@ -500,4 +502,29 @@ public class CraftBlock implements Block {
      public void removeMetadata(String metadataKey, Plugin owningPlugin) {
          chunk.getCraftWorld().getBlockMetadata().removeMetadata(this, metadataKey, owningPlugin);
      }

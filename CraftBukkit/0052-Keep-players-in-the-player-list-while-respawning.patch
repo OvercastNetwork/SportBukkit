@@ -1,14 +1,14 @@
-From abda26a77873290f1a1d541f5737c476dbd64202 Mon Sep 17 00:00:00 2001
+From f7cf9f5bac6dd611a3b33be3e575513e8fde160f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 7 Sep 2014 21:17:24 -0400
 Subject: [PATCH] Keep players in the player list while respawning
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index fec450f..ab7f164 100644
+index f6886f8..394ee86 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -602,6 +602,7 @@ public abstract class PlayerList {
+@@ -604,6 +604,7 @@ public abstract class PlayerList {
          BlockPosition blockposition1;
  
          // CraftBukkit start - fire PlayerRespawnEvent
@@ -16,7 +16,7 @@ index fec450f..ab7f164 100644
          if (location == null) {
              boolean isBedSpawn = false;
              CraftWorld cworld = (CraftWorld) this.server.server.getWorld(entityplayer.spawnWorld);
-@@ -658,10 +659,12 @@ public abstract class PlayerList {
+@@ -660,10 +661,12 @@ public abstract class PlayerList {
          entityplayer1.playerConnection.sendPacket(new PacketPlayOutExperience(entityplayer1.exp, entityplayer1.expTotal, entityplayer1.expLevel));
          this.b(entityplayer1, worldserver);
          this.f(entityplayer1);

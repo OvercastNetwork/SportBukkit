@@ -1,4 +1,4 @@
-From cbf2999133ead6188c2fdca23046c7e414fd6596 Mon Sep 17 00:00:00 2001
+From 3227e0e6c6ac566d0d2fc5ab2ded5cfa96176246 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
@@ -35,10 +35,10 @@ index 54b7f71..9dd7df7 100644
      public PacketPlayOutEntityMetadata() {}
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 0ff8906..9d45d0b 100644
+index 3913a8e..b99b217 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1156,6 +1156,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1159,6 +1159,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                  }
              }
  

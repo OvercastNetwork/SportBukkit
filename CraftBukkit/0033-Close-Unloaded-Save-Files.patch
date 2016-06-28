@@ -1,11 +1,11 @@
-From 8c7aa5287a00a39f3fc9a747d69b3c94a5214682 Mon Sep 17 00:00:00 2001
+From ffb62cf92437bc3f36b08b263ecd56e9ade34314 Mon Sep 17 00:00:00 2001
 From: Antony Riley <antony@cyberiantiger.org>
 Date: Wed, 27 Mar 2013 01:41:54 +0200
 Subject: [PATCH] Close Unloaded Save Files
 
 
 diff --git a/src/main/java/net/minecraft/server/RegionFileCache.java b/src/main/java/net/minecraft/server/RegionFileCache.java
-index b07e7d5..d2fe1d2 100644
+index b551d6d..ebadb53 100644
 --- a/src/main/java/net/minecraft/server/RegionFileCache.java
 +++ b/src/main/java/net/minecraft/server/RegionFileCache.java
 @@ -10,7 +10,7 @@ import java.util.Map;
@@ -18,12 +18,12 @@ index b07e7d5..d2fe1d2 100644
      public static synchronized RegionFile a(File file, int i, int j) {
          File file1 = new File(file, "region");
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e9ac9ab..f3650d8 100644
+index f3c6eaa..5b7e569 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -968,6 +968,31 @@ public final class CraftServer implements Server {
  
-         worlds.remove(world.getName().toLowerCase());
+         worlds.remove(world.getName().toLowerCase(java.util.Locale.ENGLISH));
          console.worlds.remove(console.worlds.indexOf(handle));
 +
 +        File parentFolder = world.getWorldFolder().getAbsoluteFile();

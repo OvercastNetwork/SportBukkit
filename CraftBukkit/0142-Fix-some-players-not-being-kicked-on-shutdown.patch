@@ -1,14 +1,14 @@
-From ce5e4451f3c797bfe41ebe2612cda1ceec365183 Mon Sep 17 00:00:00 2001
+From 82e22bbe35ab6c2beaad8b19f7622e4fd4a4442b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 20:19:20 -0400
 Subject: [PATCH] Fix some players not being kicked on shutdown
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 95dfc74..3dbb23d 100644
+index 614dfce..4f5406c 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -1295,10 +1295,11 @@ public abstract class PlayerList {
+@@ -1296,10 +1296,11 @@ public abstract class PlayerList {
      }
  
      public void u() {

@@ -1,11 +1,11 @@
-From 862ebe5d4db26e4ffb23fbdad77ab8791b68c9bc Mon Sep 17 00:00:00 2001
+From 3e4e50226e31611aa6edb485000c3ed9047141f7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 Apr 2016 20:30:55 -0400
 Subject: [PATCH] Use client ticks to make attack speed more accurate
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index d312070..2788282 100644
+index f46fd49..fa41b3e 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -66,6 +66,8 @@ public abstract class EntityHuman extends EntityLiving {
@@ -32,10 +32,10 @@ index d312070..2788282 100644
  
      public ItemCooldown df() {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 739c151..1ad7146 100644
+index 92e03ac..c3796a2 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -494,6 +494,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -497,6 +497,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                      this.d();
                  }
  

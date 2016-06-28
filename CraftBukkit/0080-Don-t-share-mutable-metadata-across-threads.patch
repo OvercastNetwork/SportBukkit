@@ -1,14 +1,14 @@
-From 27c2ba0df66a8d1d509d842c0cc3bedbd010f575 Mon Sep 17 00:00:00 2001
+From cc3c4fe948186d46bcefff2f41919b7120ca8e0d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 20 Mar 2015 01:21:22 -0400
 Subject: [PATCH] Don't share mutable metadata across threads
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index ec77a5c..94f9a0a 100644
+index 47968a8..064c019 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -273,5 +273,28 @@ public class DataWatcher {
+@@ -288,5 +288,28 @@ public class DataWatcher {
          public void a(boolean flag) {
              this.c = flag;
          }
@@ -80,7 +80,7 @@ index 5b032df..475d52c 100644
  
      public void a(PacketListenerPlayOut packetlistenerplayout) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
-index 004a14e..f53ae91 100644
+index 53cc5ff..2bbacc9 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 @@ -84,6 +84,11 @@ public class PacketPlayOutSpawnEntityLiving implements Packet<PacketListenerPlay

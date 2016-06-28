@@ -1,4 +1,4 @@
-From 712035c33954d59842828acdefba2732a4721ae3 Mon Sep 17 00:00:00 2001
+From b7ee0bb14c88c3d03b1d8e7b0393210305290c26 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -18,7 +18,7 @@ index 1672183..582d7bf 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 3ee0b91..ae83a67 100644
+index 2fe3eae..35a3d56 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -52,6 +52,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
@@ -29,7 +29,7 @@ index 3ee0b91..ae83a67 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -857,6 +858,10 @@ public class CraftWorld implements World {
+@@ -809,6 +810,10 @@ public class CraftWorld implements World {
          playEffect(player.getLocation(), effect, data, 0);
      }
  
@@ -40,7 +40,7 @@ index 3ee0b91..ae83a67 100644
      public void playEffect(Location location, Effect effect, int data) {
          playEffect(location, effect, data, 64);
      }
-@@ -872,16 +877,44 @@ public class CraftWorld implements World {
+@@ -824,16 +829,44 @@ public class CraftWorld implements World {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }
  

@@ -1,11 +1,11 @@
-From 622ffd42d64a12795a3fae8a037819d9de2e894b Mon Sep 17 00:00:00 2001
+From d8d131fc9dd966a2a1da25ec059aa16bc2b1e3d7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 5f04602..cd1f450 100644
+index 879b753..607ac32 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -27,7 +27,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -111,7 +111,7 @@ index d8ec504..3e57fde 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 56284a3..0ff8906 100644
+index c0be56b..3913a8e 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -20,6 +20,8 @@ import org.apache.logging.log4j.Logger;
@@ -123,7 +123,7 @@ index 56284a3..0ff8906 100644
  import org.bukkit.Location;
  import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
-@@ -1083,6 +1085,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1086,6 +1088,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void sendPacket(final Packet<?> packet) {
@@ -132,7 +132,7 @@ index 56284a3..0ff8906 100644
          if (packet instanceof PacketPlayOutChat) {
              PacketPlayOutChat packetplayoutchat = (PacketPlayOutChat) packet;
              EntityHuman.EnumChatVisibility entityhuman_enumchatvisibility = this.player.getChatFlags();
-@@ -1103,10 +1107,60 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1106,10 +1110,60 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              PacketPlayOutSpawnPosition packet6 = (PacketPlayOutSpawnPosition) packet;
              this.player.compassTarget = new Location(this.getPlayer().getWorld(), packet6.position.getX(), packet6.position.getY(), packet6.position.getZ());
          }
@@ -195,7 +195,7 @@ index 56284a3..0ff8906 100644
              CrashReport crashreport = CrashReport.a(throwable, "Sending packet");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Packet being sent");
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 74201f3..52e73a0 100644
+index 394ee86..82b9574 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -27,6 +27,7 @@ import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
@@ -237,7 +237,7 @@ index 74201f3..52e73a0 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 297dbaa..62b4ea9 100644
+index c1d5c52..453d734 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -403,7 +403,7 @@ public final class CraftServer implements Server {
@@ -250,12 +250,12 @@ index 297dbaa..62b4ea9 100644
  
          Player found = getPlayerExact(name);
 @@ -415,8 +415,8 @@ public final class CraftServer implements Server {
-         String lowerName = name.toLowerCase();
+         String lowerName = name.toLowerCase(java.util.Locale.ENGLISH);
          int delta = Integer.MAX_VALUE;
          for (Player player : getOnlinePlayers()) {
--            if (player.getName().toLowerCase().startsWith(lowerName)) {
+-            if (player.getName().toLowerCase(java.util.Locale.ENGLISH).startsWith(lowerName)) {
 -                int curDelta = Math.abs(player.getName().length() - lowerName.length());
-+            if (player.getName(viewer).toLowerCase().startsWith(lowerName)) {
++            if (player.getName(viewer).toLowerCase(java.util.Locale.ENGLISH).startsWith(lowerName)) {
 +                int curDelta = Math.abs(player.getName(viewer).length() - lowerName.length());
                  if (curDelta < delta) {
                      found = player;

@@ -1,4 +1,4 @@
-From e6150eb004061f679d555b0c900204fb539dfa42 Mon Sep 17 00:00:00 2001
+From 40bfba22c9dabd1c72df60f1a2ffaabba5e67b72 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
@@ -26,7 +26,7 @@ index 60b882e..7352b70 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index b0d1760..f5068ff 100644
+index 48e6efd..f5068ff 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,8 @@ import org.bukkit.block.BlockFace;
@@ -109,7 +109,7 @@ index b0d1760..f5068ff 100644
 -                    ++this.fireTicks;
 -                    // CraftBukkit start - Not on fire yet
 -                    if (this.fireTicks <= 0) { // Only throw events on the first combust, otherwise it spams
--                        EntityCombustEvent event = new EntityCombustEvent(getBukkitEntity(), 8);
+-                        EntityCombustEvent event = new org.bukkit.event.entity.EntityCombustByBlockEvent(null, getBukkitEntity(), 8);
 -                        world.getServer().getPluginManager().callEvent(event);
 -
 -                        if (!event.isCancelled()) {
@@ -153,10 +153,10 @@ index b0d1760..f5068ff 100644
          }
      }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 0eecc2d..8c05ecf 100644
+index a5a4171..327676d 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1735,6 +1735,38 @@ public abstract class World implements IBlockAccess {
+@@ -1742,6 +1742,38 @@ public abstract class World implements IBlockAccess {
          return false;
      }
  
@@ -196,7 +196,7 @@ index 0eecc2d..8c05ecf 100644
          int i = MathHelper.floor(axisalignedbb.a);
          int j = MathHelper.f(axisalignedbb.d);
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 07ee811..36af172 100644
+index f47f5ca..dcfaeeb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -483,18 +483,16 @@ public class CraftEventFactory {

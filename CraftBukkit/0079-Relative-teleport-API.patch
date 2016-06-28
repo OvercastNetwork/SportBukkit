@@ -1,14 +1,14 @@
-From b13c8426bc5ad47cab978ca718db7f887c0d82b3 Mon Sep 17 00:00:00 2001
+From b21ac031db4970f85910f9b01b81789bf8866509 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Mar 2015 04:29:17 -0400
 Subject: [PATCH] Relative teleport API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 9d45d0b..c2cce51 100644
+index b99b217..9585645 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -669,6 +669,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -672,6 +672,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void a(double d0, double d1, double d2, float f, float f1, Set<PacketPlayOutPosition.EnumPlayerTeleportFlags> set) {
@@ -21,7 +21,7 @@ index 9d45d0b..c2cce51 100644
          // CraftBukkit start - Delegate to teleport(Location)
          Player player = this.getPlayer();
          Location from = player.getLocation();
-@@ -696,7 +702,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -699,7 +705,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
  
          Location to = new Location(this.getPlayer().getWorld(), x, y, z, yaw, pitch);
@@ -30,7 +30,7 @@ index 9d45d0b..c2cce51 100644
          this.server.getPluginManager().callEvent(event);
  
          if (event.isCancelled() || !to.equals(event.getTo())) {
-@@ -710,6 +716,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -713,6 +719,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
          }
  
          this.internalTeleport(d0, d1, d2, f, f1, set);
@@ -38,7 +38,7 @@ index 9d45d0b..c2cce51 100644
      }
  
      public void teleport(Location dest) {
-@@ -726,15 +733,15 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -729,15 +736,15 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
          }
  
          if(Double.isNaN(d0)) {

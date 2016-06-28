@@ -1,4 +1,4 @@
-From 6fe656b832d1eb0077059a817b9756b38ffacdf4 Mon Sep 17 00:00:00 2001
+From 5474fcd0a388d1af2e3b2f9543017a31a8f83be2 Mon Sep 17 00:00:00 2001
 From: Marcos Vives Del Sol <socram8888@gmail.com>
 Date: Sun, 28 Jul 2013 21:57:34 +0200
 Subject: [PATCH] Add getHostname to Player
@@ -17,10 +17,10 @@ index 01554b1..4794521 100644
  
      public EntityPlayer(MinecraftServer minecraftserver, WorldServer worldserver, GameProfile gameprofile, PlayerInteractManager playerinteractmanager) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 48f2e87..b125e05 100644
+index 6d5b6dd..80cd9f3 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -467,6 +467,8 @@ public abstract class PlayerList {
+@@ -469,6 +469,8 @@ public abstract class PlayerList {
          SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));

@@ -1,11 +1,11 @@
-From afd316656dd2a82849b035eb007a861cbe56edaf Mon Sep 17 00:00:00 2001
+From 98d35c9bcfd1008efe9083cd2359a8ed497b4c13 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 18 Jun 2016 08:18:33 -0400
 Subject: [PATCH] Block physics API
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index bbee823..07659dc 100644
+index b121686..478740a 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -377,6 +377,14 @@ public abstract class World implements IBlockAccess {
@@ -31,7 +31,7 @@ index bbee823..07659dc 100644
      public void e(BlockPosition blockposition, final Block block) {
          if (!this.isClientSide) {
              IBlockData iblockdata = this.getType(blockposition);
-@@ -2998,7 +3007,14 @@ public abstract class World implements IBlockAccess {
+@@ -3005,7 +3014,14 @@ public abstract class World implements IBlockAccess {
          while (iterator.hasNext()) {
              EnumDirection enumdirection = (EnumDirection) iterator.next();
              BlockPosition blockposition1 = blockposition.shift(enumdirection);
@@ -47,7 +47,7 @@ index bbee823..07659dc 100644
                  IBlockData iblockdata = this.getType(blockposition1);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index ffef4d1..0c64676 100644
+index 6431085..6759ac7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.CraftChunk;
@@ -58,7 +58,7 @@ index ffef4d1..0c64676 100644
  import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.util.BlockVector;
-@@ -526,4 +527,37 @@ public class CraftBlock implements Block {
+@@ -532,4 +533,37 @@ public class CraftBlock implements Block {
      public RayBlockIntersection rayTrace(Location start, double distance) {
          return rayTrace(start.toVector(), start.toVector().add(start.getDirection().multiply(distance)));
      }

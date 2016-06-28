@@ -1,4 +1,4 @@
-From 22c04b0e3bcb5f375a747ca13083fd6c63e5714d Mon Sep 17 00:00:00 2001
+From 732d1be19959b6c27002baa354f23e79a58da8e5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 03:50:47 -0500
 Subject: [PATCH] Fix exception playing particle effects
@@ -23,10 +23,10 @@ index 582d7bf..845245c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index ae83a67..4efa4ad 100644
+index 35a3d56..4e552fc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -912,7 +912,7 @@ public class CraftWorld implements World {
+@@ -864,7 +864,7 @@ public class CraftWorld implements World {
                  particleFullName.append('_').append(data);
              }
  

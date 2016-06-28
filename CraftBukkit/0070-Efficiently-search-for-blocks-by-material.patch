@@ -1,14 +1,14 @@
-From d0ded3cc962361eff75bb55abb9c999c39ca3992 Mon Sep 17 00:00:00 2001
+From b8a675ae17d4aeb7a6aa42ea21218c2aa694af2b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Feb 2015 04:58:46 -0500
 Subject: [PATCH] Efficiently search for blocks by material
 
 
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index 45794e9..118bb73 100644
+index ead421a..6dd72c1 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
-@@ -695,6 +695,7 @@ public class Chunk {
+@@ -697,6 +697,7 @@ public class Chunk {
          }
      }
  

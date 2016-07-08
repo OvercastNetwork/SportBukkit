@@ -1,11 +1,11 @@
-From a1dc6a602a2dbfbbc88758e9d913b33f242c6242 Mon Sep 17 00:00:00 2001
+From 4024f134e8e2f819cb765b8ef0def720cf1851bb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:58:08 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
-index f7f4ecb..fc74006 100644
+index 43516d4..800c4d4 100644
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
 @@ -17,6 +17,9 @@ import org.bukkit.craftbukkit.block.CraftBlockState;
@@ -18,7 +18,7 @@ index f7f4ecb..fc74006 100644
  // CraftBukkit end
  
  public final class ItemStack {
-@@ -279,6 +282,34 @@ public final class ItemStack {
+@@ -285,6 +288,34 @@ public final class ItemStack {
              }
          }
  

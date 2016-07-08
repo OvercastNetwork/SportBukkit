@@ -1,11 +1,11 @@
-From e88884feeb3c43ad910863832dca667859be3f8f Mon Sep 17 00:00:00 2001
+From 9c027b5a19e40b07e8afeaa401b8717268a3c1a0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:17 -0400
 Subject: [PATCH] Component support for signs
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index b3e760c..4f8abd8 100644
+index 3b9776d..5ad91d8 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -12,6 +12,9 @@ import java.util.Collections;
@@ -26,7 +26,7 @@ index b3e760c..4f8abd8 100644
  import org.bukkit.craftbukkit.util.CraftChatMessage;
  import org.bukkit.craftbukkit.util.LazyPlayerSet;
  import org.bukkit.craftbukkit.util.Waitable;
-@@ -2235,16 +2239,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2239,16 +2243,18 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              int x = packetplayinupdatesign.a().getX();
              int y = packetplayinupdatesign.a().getY();
              int z = packetplayinupdatesign.a().getZ();
@@ -173,7 +173,7 @@ index 42a6f9a..66c7578 100644
      public TileEntitySign getTileEntity() {
          return sign;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index efe590e..0ad8c03 100644
+index db6854c..6c65ad1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -57,6 +57,7 @@ import org.bukkit.craftbukkit.CraftWorld;

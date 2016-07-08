@@ -1,11 +1,11 @@
-From f9ee133cfb33f1b346142cc86b88704db9aabc52 Mon Sep 17 00:00:00 2001
+From 69b293733be8744dcdc6fc955feff50012766dff Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 25 Jan 2014 14:08:35 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 91c38ae..2816cd0 100644
+index 7a0249d..566c295 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -117,6 +117,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -21,7 +21,7 @@ index 91c38ae..2816cd0 100644
  
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
-@@ -512,48 +518,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -513,48 +519,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          this.isRunning = false;
      }
  

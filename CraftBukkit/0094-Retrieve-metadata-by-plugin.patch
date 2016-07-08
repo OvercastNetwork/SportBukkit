@@ -1,14 +1,14 @@
-From eab04640dc3482a96edf6543709b28a67b17f48e Mon Sep 17 00:00:00 2001
+From c9c64a3aaa6b0aef6001af904062f4d144839209 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 19 Jun 2015 15:02:55 -0400
 Subject: [PATCH] Retrieve metadata by plugin
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 51ce911..15bfe0a 100644
+index 911c50b..adfc521 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -1320,6 +1320,11 @@ public class CraftWorld implements World {
+@@ -1322,6 +1322,11 @@ public class CraftWorld implements World {
          server.getWorldMetadata().setMetadata(this, metadataKey, newMetadataValue);
      }
  
@@ -21,7 +21,7 @@ index 51ce911..15bfe0a 100644
          return server.getWorldMetadata().getMetadata(this, metadataKey);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index cb1b7a2..6431085 100644
+index fd92891..b69aff6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 @@ -491,6 +491,11 @@ public class CraftBlock implements Block {
@@ -54,7 +54,7 @@ index 0399325..97b75b7 100644
          requirePlaced();
          return chunk.getCraftWorld().getBlockMetadata().getMetadata(getBlock(), metadataKey);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index a21c32a..a946ee0 100644
+index 906b0e8..1fa6b59 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -406,6 +406,11 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -70,7 +70,7 @@ index a21c32a..a946ee0 100644
          return server.getEntityMetadata().getMetadata(this, metadataKey);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index b88cdf8..a160fdc 100644
+index fe89ded..29060bc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1465,6 +1465,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

@@ -1,11 +1,11 @@
-From dc415baaff22976783104d9811928219672828eb Mon Sep 17 00:00:00 2001
+From 5c8f19786622907ad9a6b3126e253cbfa768c4af Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 26 Jun 2016 01:57:17 -0400
 Subject: [PATCH] Item cooldown API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 529a7d0..546b3ae 100644
+index 49e9ae4..8c1f9a4 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -1923,6 +1923,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -17,10 +17,10 @@ index 529a7d0..546b3ae 100644
          return this.bW;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 0ad8c03..4937eff 100644
+index 6c65ad1..26af066 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2011,4 +2011,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2015,4 +2015,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public int getProtocolVersion() {
          return getHandle().protocolVersion;
      }

@@ -1,4 +1,4 @@
-From 6f1fe074835eaf4acc434b859e5496c139c45f49 Mon Sep 17 00:00:00 2001
+From addce6057e9bc6799e73d4a2409d431ba8b0f602 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
@@ -414,7 +414,7 @@ index acbf7a8..37f5d2c 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index d95eee1..92e03ac 100644
+index 9f9e68a..9b35fdf 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -60,6 +60,7 @@ import org.bukkit.inventory.CraftingInventory;
@@ -479,7 +479,7 @@ index d95eee1..92e03ac 100644
                  if (this.teleportPos != null) {
                      if (this.e - this.A > 20) {
                          this.A = this.e;
-@@ -2180,6 +2221,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2184,6 +2225,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void a(PacketPlayInKeepAlive packetplayinkeepalive) {
@@ -487,7 +487,7 @@ index d95eee1..92e03ac 100644
          if (packetplayinkeepalive.a() == this.f) {
              int i = (int) (this.e() - this.g);
  
-@@ -2188,6 +2230,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2192,6 +2234,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
      }
  
@@ -496,10 +496,10 @@ index d95eee1..92e03ac 100644
          return System.nanoTime() / 1000000L;
      }
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index 87405af..0336e05 100644
+index 688a753..adffde4 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
-@@ -1190,7 +1190,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
+@@ -1186,7 +1186,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
              EntityHuman entityhuman = (EntityHuman) iterator.next();
  
              if (entityhuman.e(d0, d1, d2) < 4096.0D) {
@@ -528,7 +528,7 @@ index 148a01d..a1baaf0 100644
          return this.configuration.getBoolean("settings.isolate-plugins", false);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index cbeac09..a9d9227 100644
+index d2e4514..1ed857f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -33,6 +33,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -585,7 +585,7 @@ index cbeac09..a9d9227 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4f14333..b37e06d 100644
+index c8d525c..9cf396e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
@@ -596,7 +596,7 @@ index 4f14333..b37e06d 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1898,6 +1899,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1902,6 +1903,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

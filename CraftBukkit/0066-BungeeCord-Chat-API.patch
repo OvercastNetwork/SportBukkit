@@ -1,4 +1,4 @@
-From ee197a1e37f41d17984b5aa6bd42a6c6c2ee4d52 Mon Sep 17 00:00:00 2001
+From b6760d6787ddaa169f514f3adcaefc1a8fc3a5aa Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 13:06:05 +1100
 Subject: [PATCH] BungeeCord Chat API
@@ -55,7 +55,7 @@ index c5147b6..c0e1199 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 62b4ea9..5701b49 100644
+index 453d734..3a97ea6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -127,6 +127,7 @@ import io.netty.buffer.Unpooled;
@@ -86,7 +86,7 @@ index 62b4ea9..5701b49 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 942aed8..84f203c 100644
+index 84f7d37..34cf5e9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -20,6 +20,7 @@ import java.util.Set;
@@ -97,7 +97,7 @@ index 942aed8..84f203c 100644
  
  import java.util.WeakHashMap;
  import java.util.Arrays;
-@@ -1734,4 +1735,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1738,4 +1739,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setLocale(String locale) {
          getHandle().locale = locale;
      }

@@ -1,4 +1,4 @@
-From a6e9ca7d5bc0cec06f42612fd141814dad946d21 Mon Sep 17 00:00:00 2001
+From 3d58e8d408ffddcadd3529ce2ec09893cd1b118e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 1 Jul 2015 12:42:37 -0400
 Subject: [PATCH] Block images
@@ -37,7 +37,7 @@ index beb934d..488d51d 100644
          return scoreboardManager;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 15bfe0a..8a5faa7 100644
+index adfc521..fe83a24 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -30,8 +30,12 @@ import org.bukkit.WorldBorder;
@@ -53,7 +53,7 @@ index 15bfe0a..8a5faa7 100644
  import org.bukkit.craftbukkit.block.CraftBlockState;
  import org.bukkit.craftbukkit.entity.*;
  import org.bukkit.craftbukkit.inventory.CraftItemStack;
-@@ -1539,4 +1543,19 @@ public class CraftWorld implements World {
+@@ -1541,4 +1545,19 @@ public class CraftWorld implements World {
              cps.unload(chunk);
          }
      }

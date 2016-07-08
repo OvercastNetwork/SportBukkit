@@ -1,11 +1,11 @@
-From 9661f2f4b2a6457dbc11fdc1fffb30a790d26d53 Mon Sep 17 00:00:00 2001
+From 8a2e9e1ba7fcaabe7b3d698eb676934990e0453f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 May 2015 14:30:20 -0400
 Subject: [PATCH] Block digging API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerInteractManager.java b/src/main/java/net/minecraft/server/PlayerInteractManager.java
-index 277fd53..6291603 100644
+index 8b57df3..3153e48 100644
 --- a/src/main/java/net/minecraft/server/PlayerInteractManager.java
 +++ b/src/main/java/net/minecraft/server/PlayerInteractManager.java
 @@ -14,9 +14,9 @@ public class PlayerInteractManager {
@@ -29,10 +29,10 @@ index 277fd53..6291603 100644
  
      private boolean c(BlockPosition blockposition) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4903447..aed4032 100644
+index 4df8b54..f5c8105 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1866,4 +1866,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1870,4 +1870,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                                                               java.util.EnumSet.allOf(PacketPlayOutPosition.EnumPlayerTeleportFlags.class),
                                                               cause);
      }
@@ -49,7 +49,7 @@ index 4903447..aed4032 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index fc6d8a0..e2bb219 100644
+index 99a736c..2c8986f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -270,6 +270,14 @@ public class CraftEventFactory {

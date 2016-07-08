@@ -1,4 +1,4 @@
-From bda817c518975a91b2d6b12b2448a6ecefd6adae Mon Sep 17 00:00:00 2001
+From 31fdf8f7ae7ddfa60a2d8d2060f25d724c61289e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -396,7 +396,7 @@ index dd40e98..a814ee1 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 4f8abd8..f2de712 100644
+index 5ad91d8..336882c 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1255,6 +1255,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -407,7 +407,7 @@ index 4f8abd8..f2de712 100644
                                  replacementItem.a(flagsItem.c());
                                  replacedMetadataPacket.b.set(i, replacementItem); // Clear invisibility
  
-@@ -2599,10 +2600,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2603,10 +2604,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                                  tileentitystructure.b(EnumBlockRotation.valueOf(s6));
                                  tileentitystructure.b(packetdataserializer.e(128));
                                  tileentitystructure.a(packetdataserializer.readBoolean());

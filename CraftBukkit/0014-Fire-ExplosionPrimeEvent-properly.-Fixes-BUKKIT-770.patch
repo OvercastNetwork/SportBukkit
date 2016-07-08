@@ -1,11 +1,11 @@
-From f1715069d6962aecc7dd5fbb68122502d1f62f29 Mon Sep 17 00:00:00 2001
+From 399ff39cbe341fe13ad30e0db6cd90afcb521d52 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index 863cba4..0e52dc1 100644
+index bfb27ed..25eabc0 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
 @@ -3,6 +3,7 @@ package net.minecraft.server;
@@ -90,9 +90,9 @@ index 863cba4..0e52dc1 100644
              if (itemstack.getItem() == Items.FLINT_AND_STEEL) {
                  itemstack.damage(1, entityhuman);
              } else if (!entityhuman.abilities.canInstantlyBuild) {
-@@ -76,7 +106,11 @@ public class BlockTNT extends Block {
- 
-             if (entityarrow.isBurning()) {
+@@ -81,7 +111,11 @@ public class BlockTNT extends Block {
+                 }
+                 // CraftBukkit end
                  this.a(world, blockposition, world.getType(blockposition).set(BlockTNT.EXPLODE, Boolean.valueOf(true)), entityarrow.shooter instanceof EntityLiving ? (EntityLiving) entityarrow.shooter : null);
 -                world.setAir(blockposition);
 +                // SportBukkit start - don't remove block if TNT priming is cancelled

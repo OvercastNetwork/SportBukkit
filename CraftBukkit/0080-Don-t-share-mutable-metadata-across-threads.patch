@@ -1,14 +1,14 @@
-From cc3c4fe948186d46bcefff2f41919b7120ca8e0d Mon Sep 17 00:00:00 2001
+From a4dd9ecdd23e1d95f36d342306fc491e1d09a445 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 20 Mar 2015 01:21:22 -0400
 Subject: [PATCH] Don't share mutable metadata across threads
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 47968a8..064c019 100644
+index 47968a8..286a90b 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
-@@ -288,5 +288,28 @@ public class DataWatcher {
+@@ -288,5 +288,35 @@ public class DataWatcher {
          public void a(boolean flag) {
              this.c = flag;
          }
@@ -16,10 +16,17 @@ index 47968a8..064c019 100644
 +        // SportBukkit start - Make an independent copy of the item
 +        public Item<T> deepCopy() {
 +            T value = this.b();
-+            if(value instanceof ItemStack) {
-+                // All the metadata types are immutable except ItemStack, which we have to clone
-+                value = (T) ((ItemStack) value).cloneItemStack();
++
++            // All the metadata types are immutable except Optional<ItemStack>, which we have to clone.
++            // We assign it to this local var so that it won't compile if the name/type of the DataWatcherSerializer changes.
++            final DataWatcherSerializer<com.google.common.base.Optional<ItemStack>> serializer = DataWatcherRegistry.f;
++            if(serializer.equals(this.a().b())) {
++                final com.google.common.base.Optional<ItemStack> item = (com.google.common.base.Optional<ItemStack>) value;
++                if(item.isPresent()) {
++                    value = (T) com.google.common.base.Optional.of(item.get().cloneItemStack());
++                }
 +            }
++
 +            final Item<T> copy = new Item<T>(this.a(), value);
 +            copy.a(this.c());
 +            return copy;

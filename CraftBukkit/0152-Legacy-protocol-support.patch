@@ -1,11 +1,11 @@
-From 31fdf8f7ae7ddfa60a2d8d2060f25d724c61289e Mon Sep 17 00:00:00 2001
+From 8e1d6ad391eca4ad4f84aa707b33464e8465d912 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 064c019..0c5ca19 100644
+index 286a90b..484d43e 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -15,6 +15,7 @@ import javax.annotation.Nullable;
@@ -45,9 +45,9 @@ index 064c019..0c5ca19 100644
          private final DataWatcherObject<T> a;
          private T b;
          private boolean c;
-@@ -297,6 +304,7 @@ public class DataWatcher {
-                 value = (T) ((ItemStack) value).cloneItemStack();
+@@ -304,6 +311,7 @@ public class DataWatcher {
              }
+ 
              final Item<T> copy = new Item<T>(this.a(), value);
 +            copy.entityClass = this.entityClass;
              copy.a(this.c());

@@ -1,4 +1,4 @@
-From e8063d9c9f61b7f2ddb9d3bad1f7d7c1c61b14c5 Mon Sep 17 00:00:00 2001
+From f9b4fb28dc55e316af66f6ad006dab52113f8b0f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:25 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -84,7 +84,7 @@ index 8c1f9a4..4d92cc8 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 336882c..61cdba3 100644
+index 336882c..d35de08 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -25,7 +25,9 @@ import java.util.concurrent.ExecutionException;
@@ -97,35 +97,54 @@ index 336882c..61cdba3 100644
  import org.bukkit.craftbukkit.entity.CraftPlayer;
  import org.bukkit.craftbukkit.event.CraftEventFactory;
  import org.bukkit.craftbukkit.inventory.CraftInventoryView;
-@@ -425,8 +427,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -154,6 +156,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+     private boolean justTeleported = false;
+     private boolean hasMoved; // Spigot
+ 
++    private Set<PoseFlag> lastPose = java.util.EnumSet.noneOf(PoseFlag.class); // SportBukkit
++
+     public CraftPlayer getPlayer() {
+         return (this.player == null) ? null : (CraftPlayer) this.player.getBukkitEntity();
+     }
+@@ -425,8 +429,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                      hasMoved = true;
                  }
                  // Spigot End
 -                Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
 -                Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
-+                EntityLocation from = new EntityLocation(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch, player.getVelocity(), player.getPoseFlags()); // Get the Player's previous Event location.
++                EntityLocation from = new EntityLocation(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch, player.getVelocity(), lastPose); // Get the Player's previous Event location.
 +                EntityLocation to = player.getEntityLocation(); // Start off the To location as the Players current location.
  
                  // If the packet contains movement information then we update the To location with the correct XYZ.
                  to.setX(packetplayinvehiclemove.getX());
-@@ -645,8 +647,14 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -448,6 +452,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                     this.lastPosZ = to.getZ();
+                     this.lastYaw = to.getYaw();
+                     this.lastPitch = to.getPitch();
++                    this.lastPose = to.poseFlags();
+ 
+                     // Skip the first time we do this
+                     if (true) { // Spigot - don't skip any move events
+@@ -645,8 +650,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                          this.player.setLocation(prevX, prevY, prevZ, prevYaw, prevPitch);
  
                          Player player = this.getPlayer();
 -                        Location from = new Location(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch); // Get the Players previous Event location.
 -                        Location to = player.getLocation().clone(); // Start off the To location as the Players current location.
-+                        EntityLocation from = new EntityLocation(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch, player.getVelocity(), player.getPoseFlags()); // Get the Players previous Event location.
++                        EntityLocation from = new EntityLocation(player.getWorld(), lastPosX, lastPosY, lastPosZ, lastYaw, lastPitch, player.getVelocity(), lastPose); // Get the Players previous Event location.
 +                        EntityLocation to = player.getEntityLocation(); // Start off the To location as the Players current location.
-+
-+                        if(packetplayinflying.a()) {
-+                            to.poseFlags().add(PoseFlag.GROUNDED);
-+                        } else {
-+                            to.poseFlags().remove(PoseFlag.GROUNDED);
-+                        }
  
                          // If the packet contains movement information then we update the To location with the correct XYZ.
                          if (packetplayinflying.hasPos) {
-@@ -1555,6 +1563,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -677,6 +682,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+                             this.lastPosZ = to.getZ();
+                             this.lastYaw = to.getYaw();
+                             this.lastPitch = to.getPitch();
++                            this.lastPose = to.poseFlags();
+ 
+                             // Skip the first time we do this
+                             if (from.getX() != Double.MAX_VALUE) {
+@@ -1555,6 +1561,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              case STOP_SNEAKING:
                  PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(this.getPlayer(), packetplayinentityaction.b() == PacketPlayInEntityAction.EnumPlayerAction.START_SNEAKING);
                  this.server.getPluginManager().callEvent(event);
@@ -133,7 +152,7 @@ index 336882c..61cdba3 100644
  
                  if (event.isCancelled()) {
                      return;
-@@ -1564,6 +1573,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1564,6 +1571,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              case STOP_SPRINTING:
                  PlayerToggleSprintEvent e2 = new PlayerToggleSprintEvent(this.getPlayer(), packetplayinentityaction.b() == PacketPlayInEntityAction.EnumPlayerAction.START_SPRINTING);
                  this.server.getPluginManager().callEvent(e2);
@@ -141,7 +160,7 @@ index 336882c..61cdba3 100644
  
                  if (e2.isCancelled()) {
                      return;
-@@ -2287,6 +2297,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2287,6 +2295,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
          if (this.player.abilities.canFly && this.player.abilities.isFlying != packetplayinabilities.isFlying()) {
              PlayerToggleFlightEvent event = new PlayerToggleFlightEvent(this.server.getPlayer(this.player), packetplayinabilities.isFlying());
              this.server.getPluginManager().callEvent(event);

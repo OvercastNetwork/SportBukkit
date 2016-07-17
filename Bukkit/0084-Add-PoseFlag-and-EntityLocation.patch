@@ -1,4 +1,4 @@
-From 3342deec039633541f1873d28b8c8cf71fe52ae7 Mon Sep 17 00:00:00 2001
+From c33fdcc97f5e28ff3e1e604992fe6e89dfbd1bc8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -6,10 +6,10 @@ Subject: [PATCH] Add PoseFlag and EntityLocation
 
 diff --git a/src/main/java/org/bukkit/EntityLocation.java b/src/main/java/org/bukkit/EntityLocation.java
 new file mode 100644
-index 0000000..f19f281
+index 0000000..3015e35
 --- /dev/null
 +++ b/src/main/java/org/bukkit/EntityLocation.java
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,124 @@
 +package org.bukkit;
 +
 +import java.util.Arrays;
@@ -64,8 +64,10 @@ index 0000000..f19f281
 +            return (EntityLocation) value;
 +        } else if(value instanceof Location) {
 +            return new EntityLocation((Location) value, defaults.velocity(), defaults.poseFlags());
-+        } else {
++        } else if(value != null) {
 +            return new EntityLocation(defaults.getWorld(), value, defaults.getYaw(), defaults.getPitch(), defaults.velocity(), defaults.poseFlags());
++        } else {
++            return null;
 +        }
 +    }
 +

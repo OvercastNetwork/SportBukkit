@@ -1,4 +1,4 @@
-From 7486a3cc45ba70e8f6020b8376d47a49500b32a3 Mon Sep 17 00:00:00 2001
+From 64e25576980ea2c4acd4392a6782337d7b106996 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] Yielding event handlers
@@ -112,7 +112,7 @@ index 6677e1b..009b772 100644
       * Any custom event that should not by synchronized with other events must
 diff --git a/src/main/java/org/bukkit/event/EventCallback.java b/src/main/java/org/bukkit/event/EventCallback.java
 new file mode 100644
-index 0000000..306fd4e
+index 0000000..0a6ba01
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/EventCallback.java
 @@ -0,0 +1,8 @@
@@ -121,11 +121,11 @@ index 0000000..306fd4e
 +/**
 + * Something that is called with an {@link Event}, has several uses.
 + */
-+public interface EventCallback {
-+    void callEvent(Event event) throws Exception;
++public interface EventCallback<T extends Event> {
++    void callEvent(T event) throws Exception;
 +}
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
-index d89b194..f54c901 100644
+index d89b194..94a8bef 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/PluginManager.java
 @@ -4,6 +4,7 @@ import java.io.File;
@@ -148,7 +148,7 @@ index d89b194..f54c901 100644
 +    /**
 +     * Call {@link #callEvent(Event, EventPriority, EventCallback)} with null priority.
 +     */
-+    void callEvent(Event event, EventCallback body) throws IllegalStateException;
++    <T extends Event> void callEvent(T event, EventCallback<? super T> body) throws IllegalStateException;
 +
 +    /**
 +     * Call {@link #callEvent(Event, EventPriority, EventCallback)} with a null body.

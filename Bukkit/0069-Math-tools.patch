@@ -1,4 +1,4 @@
-From 91ec8a542577d89146a9695533770f5154d4d613 Mon Sep 17 00:00:00 2001
+From 9b070d077912cb7e346f7c5ddc2ff7023ddd5c40 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Math tools
@@ -571,7 +571,7 @@ index 0000000..1fb2ad0
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
-index 00e6879..2864442 100644
+index 00e6879..21ef7cd 100644
 --- a/src/main/java/org/bukkit/util/Vector.java
 +++ b/src/main/java/org/bukkit/util/Vector.java
 @@ -3,6 +3,8 @@ package org.bukkit.util;
@@ -597,7 +597,21 @@ index 00e6879..2864442 100644
       * Construct the vector with provided float components.
       *
       * @param x X component
-@@ -406,6 +415,10 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -79,6 +88,13 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+         this.z = z;
+     }
+ 
++    /**
++     * Construct a copy of the given Vector
++     */
++    public Vector(Vector that) {
++        this(that.getX(), that.getY(), that.getZ());
++    }
++
+     @Override
+     public boolean isBlockZero() {
+         return x == 0d && y == 0d && z == 0d;
+@@ -406,6 +422,10 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
          return x >= min.x && x <= max.x && y >= min.y && y <= max.y && z >= min.z && z <= max.z;
      }
  
@@ -608,7 +622,7 @@ index 00e6879..2864442 100644
      /**
       * Returns whether this vector is within a sphere.
       *
-@@ -573,13 +586,25 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -573,13 +593,25 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
          return this;
      }
  
@@ -641,7 +655,7 @@ index 00e6879..2864442 100644
      @Override
      public boolean equals(Object obj) {
          if (!(obj instanceof Vector)) {
-@@ -587,8 +612,7 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -587,8 +619,7 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
          }
  
          Vector other = (Vector) obj;
@@ -651,7 +665,7 @@ index 00e6879..2864442 100644
      }
  
      /**
-@@ -727,4 +751,125 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -727,4 +758,125 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
  
          return new Vector(x, y, z);
      }

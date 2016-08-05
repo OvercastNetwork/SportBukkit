@@ -1,4 +1,4 @@
-From c33fdcc97f5e28ff3e1e604992fe6e89dfbd1bc8 Mon Sep 17 00:00:00 2001
+From 1542110a937158836332d82d54c232e1cefe9ec8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -360,10 +360,10 @@ index 0000000..d064568
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
-index 2864442..dc7525f 100644
+index 21ef7cd..7073f86 100644
 --- a/src/main/java/org/bukkit/util/Vector.java
 +++ b/src/main/java/org/bukkit/util/Vector.java
-@@ -754,6 +754,10 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
+@@ -761,6 +761,10 @@ public class Vector implements Cloneable, ConfigurationSerializable, BlockPositi
  
      // Construction
  

@@ -1,4 +1,4 @@
-From d868b3fa5b3f11d1218d0d9f32bfb83c5600455b Mon Sep 17 00:00:00 2001
+From cb0ff1592e60fbce9f2b8f26e7d10d9253bb5316 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:10:18 -0500
 Subject: [PATCH] Modernize potion API
@@ -61,7 +61,7 @@ index 6fe7b03..531d9f6 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
-index e29e00c..e456b43 100644
+index e29e00c..6e15cd8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
 @@ -9,9 +9,12 @@ import net.minecraft.server.NBTTagCompound;
@@ -77,7 +77,35 @@ index e29e00c..e456b43 100644
  import org.bukkit.potion.PotionData;
  import org.bukkit.potion.PotionEffect;
  import org.bukkit.potion.PotionEffectType;
-@@ -151,6 +154,19 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+@@ -32,9 +35,7 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+     static final ItemMetaKey ID = new ItemMetaKey("Id", "potion-id");
+     static final ItemMetaKey DEFAULT_POTION = new ItemMetaKey("Potion", "potion-type");
+ 
+-    // Having an initial "state" in ItemMeta seems bit dirty but the UNCRAFTABLE potion type
+-    // is treated as the empty form of the meta because it represents an empty potion with no effect
+-    private PotionData type = new PotionData(PotionType.UNCRAFTABLE, false, false);
++    private PotionData type = CraftPotionUtil.DEFAULT;
+     private List<PotionEffect> customEffects;
+ 
+     CraftMetaPotion(CraftMetaItem meta) {
+@@ -62,6 +63,7 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+             for (int i = 0; i < length; i++) {
+                 NBTTagCompound effect = list.get(i);
+                 PotionEffectType type = PotionEffectType.getById(effect.getByte(ID.NBT));
++                if(type == null) continue;
+                 int amp = effect.getByte(AMPLIFIER.NBT);
+                 int duration = effect.getInt(DURATION.NBT);
+                 boolean ambient = effect.getBoolean(AMBIENT.NBT);
+@@ -114,7 +116,7 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+     }
+ 
+     boolean isPotionEmpty() {
+-        return (type.getType() == PotionType.UNCRAFTABLE) && !(hasCustomEffects());
++        return type.getType() == CraftPotionUtil.DEFAULT.getType() && !hasCustomEffects();
+     }
+ 
+     @Override
+@@ -151,6 +153,19 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
          return type;
      }
  
@@ -97,6 +125,24 @@ index e29e00c..e456b43 100644
      public boolean hasCustomEffects() {
          return customEffects != null;
      }
+@@ -249,7 +264,7 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+     int applyHash() {
+         final int original;
+         int hash = original = super.applyHash();
+-        if (type.getType() != PotionType.UNCRAFTABLE) {
++        if (type.getType() != CraftPotionUtil.DEFAULT.getType()) {
+         	hash = 73 * hash + type.hashCode();
+         }
+         if (hasCustomEffects()) {
+@@ -279,7 +294,7 @@ class CraftMetaPotion extends CraftMetaItem implements PotionMeta {
+     @Override
+     Builder<String, Object> serialize(Builder<String, Object> builder) {
+         super.serialize(builder);
+-        if (type.getType() != PotionType.UNCRAFTABLE) {
++        if (type.getType() != CraftPotionUtil.DEFAULT.getType()) {
+             builder.put(DEFAULT_POTION.BUKKIT, CraftPotionUtil.fromBukkit(type));
+         }
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrew.java b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionBrew.java
 new file mode 100644
 index 0000000..be7b0d2
@@ -250,6 +296,129 @@ index 8ce39c6..cd4b85d 100644
      public String getName() {
          switch (getId()) {
          case 1:
+diff --git a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
+index 8483cd8..042fcf4 100644
+--- a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
++++ b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
+@@ -7,92 +7,44 @@ import com.google.common.collect.ImmutableBiMap;
+ import net.minecraft.server.MobEffect;
+ import net.minecraft.server.MobEffectList;
+ 
++import org.bukkit.Bukkit;
+ import org.bukkit.potion.PotionEffect;
+ import org.bukkit.potion.PotionEffectType;
+ import org.bukkit.potion.PotionType;
+ import org.bukkit.potion.PotionData;
++import org.bukkit.registry.Key;
+ 
+ public class CraftPotionUtil {
+ 
+-    private static final BiMap<PotionType, String> regular = ImmutableBiMap.<PotionType, String>builder()
+-            .put(PotionType.UNCRAFTABLE, "empty")
+-            .put(PotionType.WATER, "water")
+-            .put(PotionType.MUNDANE, "mundane")
+-            .put(PotionType.THICK, "thick")
+-            .put(PotionType.AWKWARD, "awkward")
+-            .put(PotionType.NIGHT_VISION, "night_vision")
+-            .put(PotionType.INVISIBILITY, "invisibility")
+-            .put(PotionType.JUMP, "leaping")
+-            .put(PotionType.FIRE_RESISTANCE, "fire_resistance")
+-            .put(PotionType.SPEED, "swiftness")
+-            .put(PotionType.SLOWNESS, "slowness")
+-            .put(PotionType.WATER_BREATHING, "water_breathing")
+-            .put(PotionType.INSTANT_HEAL, "healing")
+-            .put(PotionType.INSTANT_DAMAGE, "harming")
+-            .put(PotionType.POISON, "poison")
+-            .put(PotionType.REGEN, "regeneration")
+-            .put(PotionType.STRENGTH, "strength")
+-            .put(PotionType.WEAKNESS, "weakness")
+-            .put(PotionType.LUCK, "luck")
+-            .build();
+-    private static final BiMap<PotionType, String> upgradeable = ImmutableBiMap.<PotionType, String>builder()
+-            .put(PotionType.JUMP, "strong_leaping")
+-            .put(PotionType.SPEED, "strong_swiftness")
+-            .put(PotionType.INSTANT_HEAL, "strong_healing")
+-            .put(PotionType.INSTANT_DAMAGE, "strong_harming")
+-            .put(PotionType.POISON, "strong_poison")
+-            .put(PotionType.REGEN, "strong_regeneration")
+-            .put(PotionType.STRENGTH, "strong_strength")
+-            .build();
+-    private static final BiMap<PotionType, String> extendable = ImmutableBiMap.<PotionType, String>builder()
+-            .put(PotionType.NIGHT_VISION, "long_night_vision")
+-            .put(PotionType.INVISIBILITY, "long_invisibility")
+-            .put(PotionType.JUMP, "long_leaping")
+-            .put(PotionType.FIRE_RESISTANCE, "long_fire_resistance")
+-            .put(PotionType.SPEED, "long_swiftness")
+-            .put(PotionType.SLOWNESS, "long_slowness")
+-            .put(PotionType.WATER_BREATHING, "long_water_breathing")
+-            .put(PotionType.POISON, "long_poison")
+-            .put(PotionType.REGEN, "long_regeneration")
+-            .put(PotionType.STRENGTH, "long_strength")
+-            .put(PotionType.WEAKNESS, "long_weakness")
+-            .build();
++    // Matches the default returned by Mojang's registry
++    public static final PotionData DEFAULT = new PotionData(PotionType.WATER, false, false);
+ 
+-    public static String fromBukkit(PotionData data) {
+-        String type;
+-        if (data.isUpgraded()) {
+-            type = upgradeable.get(data.getType());
+-        } else if (data.isExtended()) {
+-            type = extendable.get(data.getType());
+-        } else {
+-            type = regular.get(data.getType());
++    private static BiMap<Key, PotionData> map;
++    private static BiMap<Key, PotionData> map() {
++        if(map == null) {
++            final ImmutableBiMap.Builder<Key, PotionData> builder = ImmutableBiMap.builder();
++            for(PotionType type : PotionType.values()) {
++                builder.put(type.baseKey(), new PotionData(type, false, false));
++                if(type.isExtendable()) {
++                    builder.put(type.longKey(), new PotionData(type, true, false));
++                }
++                if(type.isUpgradeable()) {
++                    builder.put(type.strongKey(), new PotionData(type, false, true));
++                }
++            }
++            map = builder.build();
+         }
+-        Preconditions.checkNotNull(type, "Unknown potion type from data " + data);
++        return map;
++    }
+ 
+-        return "minecraft:" + type;
++    public static String fromBukkit(PotionData data) {
++        return Preconditions.checkNotNull(map().inverse().get(data), "Unknown potion type from data %s", data).toString();
+     }
+ 
+-    public static PotionData toBukkit(String type) {
+-        if (type == null) {
+-            return new PotionData(PotionType.UNCRAFTABLE, false, false);
+-        }
+-        if (type.startsWith("minecraft:")) {
+-            type = type.substring(10);
+-        }
+-        PotionType potionType = null;
+-        potionType = extendable.inverse().get(type);
+-        if (potionType != null) {
+-            return new PotionData(potionType, true, false);
+-        }
+-        potionType = upgradeable.inverse().get(type);
+-        if (potionType != null) {
+-            return new PotionData(potionType, false, true);
+-        }
+-        potionType = regular.inverse().get(type);
+-        if (potionType != null) {
+-            return new PotionData(potionType, false, false);
+-        }
+-        return new PotionData(PotionType.UNCRAFTABLE, false, false);
++    public static PotionData toBukkit(String key) {
++        if (key == null) return DEFAULT;
++        final PotionData data = map().get(Bukkit.key(key));
++        return data != null ? data : DEFAULT;
+     }
+ 
+     public static MobEffect fromBukkit(PotionEffect effect) {
 -- 
 1.9.0
 

@@ -1,4 +1,4 @@
-From 9b070d077912cb7e346f7c5ddc2ff7023ddd5c40 Mon Sep 17 00:00:00 2001
+From 62298b06bf9e2d94d3fb948cb2157da75976b311 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Math tools
@@ -6,20 +6,21 @@ Subject: [PATCH] Math tools
 
 diff --git a/src/main/java/org/bukkit/util/Cuboid.java b/src/main/java/org/bukkit/util/Cuboid.java
 new file mode 100644
-index 0000000..4bb4209
+index 0000000..e4a94c8
 --- /dev/null
 +++ b/src/main/java/org/bukkit/util/Cuboid.java
-@@ -0,0 +1,305 @@
+@@ -0,0 +1,354 @@
 +package org.bukkit.util;
 +
++import java.util.Iterator;
 +import java.util.Random;
 +
 +public class Cuboid {
 +
-+    private final ImmutableVector min;
-+    private final ImmutableVector max;
++    private final ImVector min;
++    private final ImVector max;
 +
-+    private Cuboid(ImmutableVector min, ImmutableVector max) {
++    private Cuboid(ImVector min, ImVector max) {
 +        this.min = min;
 +        this.max = max;
 +    }
@@ -33,11 +34,11 @@ index 0000000..4bb4209
 +     * @return
 +     */
 +    public static Cuboid between(Vector min, Vector max) {
-+        return new Cuboid(ImmutableVector.getMinimum(min, max), ImmutableVector.getMaximum(min, max));
++        return new Cuboid(ImVector.getMinimum(min, max), ImVector.getMaximum(min, max));
 +    }
 +
 +    public static Cuboid fromMinAndSize(Vector min, Vector size) {
-+        return new Cuboid(ImmutableVector.copyOf(min), ImmutableVector.copyOf(min.plus(size)));
++        return new Cuboid(ImVector.copyOf(min), ImVector.copyOf(min.plus(size)));
 +    }
 +
 +    /**
@@ -61,8 +62,8 @@ index 0000000..4bb4209
 +    public static Cuboid unbounded() {
 +        return UNBOUNDED;
 +    }
-+    private static final Cuboid UNBOUNDED = new Cuboid(ImmutableVector.of(Double.NEGATIVE_INFINITY),
-+                                                       ImmutableVector.of(Double.POSITIVE_INFINITY));
++    private static final Cuboid UNBOUNDED = new Cuboid(ImVector.of(Double.NEGATIVE_INFINITY),
++                                                       ImVector.of(Double.POSITIVE_INFINITY));
 +
 +    /**
 +     * Return the inverse of the {@link #unbounded()} cuboid
@@ -70,8 +71,8 @@ index 0000000..4bb4209
 +    public static Cuboid empty() {
 +        return EMPTY;
 +    }
-+    private static final Cuboid EMPTY = new Cuboid(ImmutableVector.of(Double.POSITIVE_INFINITY),
-+                                                   ImmutableVector.of(Double.NEGATIVE_INFINITY));
++    private static final Cuboid EMPTY = new Cuboid(ImVector.of(Double.POSITIVE_INFINITY),
++                                                   ImVector.of(Double.NEGATIVE_INFINITY));
 +
 +    /**
 +     * Return the largest cuboid contained entirely within both of the given cuboids
@@ -82,8 +83,8 @@ index 0000000..4bb4209
 +        } else if(b.contains(a)) {
 +            return a;
 +        } else {
-+            return new Cuboid(ImmutableVector.getMaximum(a.min, b.min),
-+                              ImmutableVector.getMinimum(a.max, b.max));
++            return new Cuboid(ImVector.getMaximum(a.min, b.min),
++                              ImVector.getMinimum(a.max, b.max));
 +        }
 +    }
 +
@@ -99,12 +100,12 @@ index 0000000..4bb4209
 +     */
 +    public double intersectionDistance(Ray ray) {
 +        // Find the distances to both boundaries on each axis
-+        final ImmutableVector d1 = min.minus(ray.origin()).over(ray.normal());
-+        final ImmutableVector d2 = max.minus(ray.origin()).over(ray.normal());
++        final ImVector d1 = min.minus(ray.origin()).over(ray.normal());
++        final ImVector d2 = max.minus(ray.origin()).over(ray.normal());
 +
 +        // Sort the distances into near and far for each axis
-+        final ImmutableVector near = ImmutableVector.getMinimum(d1, d2);
-+        final ImmutableVector far = ImmutableVector.getMaximum(d1, d2);
++        final ImVector near = ImVector.getMinimum(d1, d2);
++        final ImVector far = ImVector.getMaximum(d1, d2);
 +
 +        // Last near point enters the cuboid
 +        // First far point exits the cuboid
@@ -120,7 +121,7 @@ index 0000000..4bb4209
 +     * or null if the ray does not intersect the cuboid. If the ray
 +     * originates inside the cuboid, the ray's origin point is returned.
 +     */
-+    public ImmutableVector intersect(Ray ray) {
++    public ImVector intersect(Ray ray) {
 +        final double distance = intersectionDistance(ray);
 +        if(distance == 0) {
 +            return ray.origin();
@@ -140,8 +141,8 @@ index 0000000..4bb4209
 +        } else if(b.contains(a)) {
 +            return b;
 +        } else {
-+            return new Cuboid(ImmutableVector.getMinimum(a.min, b.min),
-+                              ImmutableVector.getMaximum(a.max, b.max));
++            return new Cuboid(ImVector.getMinimum(a.min, b.min),
++                              ImVector.getMaximum(a.max, b.max));
 +        }
 +    }
 +
@@ -156,10 +157,10 @@ index 0000000..4bb4209
 +        boolean cx = subtracted.min.getX() < original.min.getX() && subtracted.max.getX() > original.max.getX();
 +        boolean cy = subtracted.min.getY() < original.min.getY() && subtracted.max.getY() > original.max.getY();
 +        boolean cz = subtracted.min.getZ() < original.min.getZ() && subtracted.max.getZ() > original.max.getZ();
-+        return new Cuboid(ImmutableVector.of(cy && cz ? Math.max(original.min.getX(), subtracted.min.getX()) : original.min.getX(),
++        return new Cuboid(ImVector.of(cy && cz ? Math.max(original.min.getX(), subtracted.min.getX()) : original.min.getX(),
 +                                             cz && cx ? Math.max(original.min.getY(), subtracted.min.getY()) : original.min.getY(),
 +                                             cx && cy ? Math.max(original.min.getZ(), subtracted.min.getZ()) : original.min.getZ()),
-+                          ImmutableVector.of(cy && cz ? Math.min(original.max.getX(), subtracted.max.getX()) : original.max.getX(),
++                          ImVector.of(cy && cz ? Math.min(original.max.getX(), subtracted.max.getX()) : original.max.getX(),
 +                                             cz && cx ? Math.min(original.max.getY(), subtracted.max.getY()) : original.max.getY(),
 +                                             cx && cy ? Math.min(original.max.getZ(), subtracted.max.getZ()) : original.max.getZ()));
 +    }
@@ -216,21 +217,21 @@ index 0000000..4bb4209
 +    /**
 +     * Return the minimum corner of this cuboid
 +     */
-+    public ImmutableVector minimum() {
++    public ImVector minimum() {
 +        return this.min;
 +    }
 +
 +    /**
 +     * Return the maximum corner of this cuboid
 +     */
-+    public ImmutableVector maximum() {
++    public ImVector maximum() {
 +        return this.max;
 +    }
 +
 +    /**
 +     * Return the dimensions of this cuboid
 +     */
-+    public ImmutableVector size() {
++    public ImVector size() {
 +        return max.minus(min);
 +    }
 +
@@ -238,29 +239,29 @@ index 0000000..4bb4209
 +     * Return the volume of this cuboid
 +     */
 +    public double volume() {
-+        final ImmutableVector size = size();
++        final ImVector size = size();
 +        return size.getX() * size.getY() * size.getZ();
 +    }
 +
 +    /**
 +     * Return the center point of this cuboid
 +     */
-+    public ImmutableVector center() {
++    public ImVector center() {
 +        return min.getMidpoint(max);
 +    }
 +
 +    /**
 +     * Return the eight corner points of this cuboid
 +     */
-+    public ImmutableVector[] vertices() {
-+        return new ImmutableVector[] {
++    public ImVector[] vertices() {
++        return new ImVector[] {
 +            min,
-+            ImmutableVector.of(min.getX(), min.getY(), max.getZ()),
-+            ImmutableVector.of(min.getX(), max.getY(), min.getZ()),
-+            ImmutableVector.of(min.getX(), max.getY(), max.getZ()),
-+            ImmutableVector.of(max.getX(), min.getY(), min.getZ()),
-+            ImmutableVector.of(max.getX(), min.getY(), max.getZ()),
-+            ImmutableVector.of(max.getX(), max.getY(), min.getZ()),
++            ImVector.of(min.getX(), min.getY(), max.getZ()),
++            ImVector.of(min.getX(), max.getY(), min.getZ()),
++            ImVector.of(min.getX(), max.getY(), max.getZ()),
++            ImVector.of(max.getX(), min.getY(), min.getZ()),
++            ImVector.of(max.getX(), min.getY(), max.getZ()),
++            ImVector.of(max.getX(), max.getY(), min.getZ()),
 +            max
 +        };
 +    }
@@ -273,9 +274,9 @@ index 0000000..4bb4209
 +     * components, so the range of possible coordinates includes the
 +     * lower bounds of the cuboid, but not the upper bounds.
 +     */
-+    public ImmutableVector randomPointInside(Random random) {
-+        final ImmutableVector size = size();
-+        return ImmutableVector.of(min.getX() + size.getX() * random.nextDouble(),
++    public ImVector randomPointInside(Random random) {
++        final ImVector size = size();
++        return ImVector.of(min.getX() + size.getX() * random.nextDouble(),
 +                                  min.getY() + size.getY() * random.nextDouble(),
 +                                  min.getZ() + size.getZ() * random.nextDouble());
 +    }
@@ -304,10 +305,58 @@ index 0000000..4bb4209
 +     *
 +     * This block will have coordinates one greater than {@link #maximumBlockInside()}.
 +     */
-+    public BlockVector maximumBlockOutside() {
++    public BlockVector minimumBlockOutside() {
 +        return new BlockVector((int) this.max.getX() + 0.5d,
 +                               (int) Math.max(0, Math.min(256, this.max.getY() + 0.5d)),
 +                               (int) this.max.getZ() + 0.5d);
++    }
++
++    /**
++     * Does the cuboid contain the center point of the given block?
++     */
++    public boolean containsBlock(BlockVector v) {
++        BlockVector min = this.minimumBlockInside();
++        BlockVector max = this.maximumBlockInside();
++        return min.getBlockX() <= v.getBlockX() && v.getBlockX() <= max.getBlockX() &&
++               min.getBlockY() <= v.getBlockY() && v.getBlockY() <= max.getBlockY() &&
++               min.getBlockZ() <= v.getBlockZ() && v.getBlockZ() <= max.getBlockZ();
++    }
++
++    public BlockVector blockSize() {
++        return this.minimumBlockOutside().subtract(this.minimumBlockInside()).toBlockVector();
++    }
++
++    public int blockVolume() {
++        BlockVector size = this.blockSize();
++        return (int) (size.getX() * size.getY() * size.getZ());
++    }
++
++    public BlockVector randomBlockInside(Random random) {
++        BlockVector min = this.minimumBlockInside();
++        BlockVector size = this.blockSize();
++        return new BlockVector(min.getX() + random.nextInt(size.getBlockX()),
++                               min.getY() + random.nextInt(size.getBlockY()),
++                               min.getZ() + random.nextInt(size.getBlockZ()));
++    }
++
++    /**
++     * Iterate over all the block locations within
++     * these bounds, in Z-major order.
++     */
++    public Iterator<BlockVector> blockPositionIterator() {
++        if(!this.isBlockFinite()) {
++            throw new UnsupportedOperationException("Cannot get all blocks from an infinite region");
++        }
++        return new CuboidBlockIterator(minimumBlockInside(), minimumBlockOutside());
++    }
++
++    public Iterable<BlockVector> blockPositions() {
++        return new Iterable<BlockVector>() {
++            @Override
++            public Iterator<BlockVector> iterator() {
++                return blockPositionIterator();
++            }
++        };
 +    }
 +
 +    @Override
@@ -315,52 +364,264 @@ index 0000000..4bb4209
 +        return getClass().getSimpleName() + "{min=[" + min.toString() + "],max=[" + max.toString() + "]}";
 +    }
 +}
-diff --git a/src/main/java/org/bukkit/util/ImmutableVector.java b/src/main/java/org/bukkit/util/ImmutableVector.java
+diff --git a/src/main/java/org/bukkit/util/CuboidBlockIterator.java b/src/main/java/org/bukkit/util/CuboidBlockIterator.java
 new file mode 100644
-index 0000000..5939cff
+index 0000000..35a0559
 --- /dev/null
-+++ b/src/main/java/org/bukkit/util/ImmutableVector.java
-@@ -0,0 +1,172 @@
++++ b/src/main/java/org/bukkit/util/CuboidBlockIterator.java
+@@ -0,0 +1,75 @@
 +package org.bukkit.util;
 +
-+public class ImmutableVector extends Vector {
++import java.util.Iterator;
++import java.util.NoSuchElementException;
 +
-+    private static final ImmutableVector ZERO = new ImmutableVector(0, 0, 0);
++import org.bukkit.util.BlockVector;
++import org.bukkit.util.ImBlockVector;
++import org.bukkit.util.Vector;
 +
-+    private ImmutableVector(double x, double y, double z) {
++/**
++ * Hybrid {@link BlockVector} and {@link Iterator} that iterates all block positions
++ * in a given cuboid volume. The object changes its own state while iterating, and
++ * returns itself from {@link #next()}. In this way, it avoids creating any objects
++ * while iterating. Attempts to mutate the object in any way besides the next() method
++ * will be punished severely.
++ *
++ * The boundaries given to the constructor must be in correct order, or the cuboid will
++ * be considered empty.
++ */
++public class CuboidBlockIterator extends ImBlockVector implements Iterator<BlockVector> {
++
++    private final int xMin, yMin;
++    private final int xMax, yMax, zMax;
++    private int xNext, yNext, zNext;
++    private boolean hasNext;
++
++    public CuboidBlockIterator(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
++        super(xMin, yMin, zMin);
++        this.xNext = this.xMin = xMin;
++        this.yNext = this.yMin = yMin;
++        this.zNext = zMin;
++        this.xMax = xMax;
++        this.yMax = yMax;
++        this.zMax = zMax;
++        this.hasNext = xMin < xMax && yMin < yMax && zMin < zMax;
++    }
++
++    public CuboidBlockIterator(Vector min, Vector max) {
++        this(min.getBlockX(), min.getBlockY(), min.getBlockZ(),
++             max.getBlockX(), max.getBlockY(), max.getBlockZ());
++    }
++
++    @Override
++    public boolean hasNext() {
++        return hasNext;
++    }
++
++    @Override
++    public ImBlockVector next() {
++        if(!hasNext) {
++            throw new NoSuchElementException();
++        }
++
++        x = xNext;
++        y = yNext;
++        z = zNext;
++
++        if(++xNext >= xMax) {
++            xNext = xMin;
++            if(++yNext >= yMax) {
++                yNext = yMin;
++                if(++zNext >= zMax) {
++                    hasNext = false;
++                }
++            }
++        }
++
++        return this;
++    }
++
++    @Override
++    public void remove() {
++        throw new UnsupportedOperationException();
++    }
++}
+diff --git a/src/main/java/org/bukkit/util/ImBlockVector.java b/src/main/java/org/bukkit/util/ImBlockVector.java
+new file mode 100644
+index 0000000..9d8a1d0
+--- /dev/null
++++ b/src/main/java/org/bukkit/util/ImBlockVector.java
+@@ -0,0 +1,119 @@
++package org.bukkit.util;
++
++import org.bukkit.block.Block;
++import org.bukkit.block.BlockState;
++
++/**
++ * Override all mutating methods of {@link BlockVector} and throw an {@link UnsupportedOperationException}.
++ * Subclasses can still access the component fields directly since they have protected access.
++ */
++public class ImBlockVector extends BlockVector {
++
++    public ImBlockVector() {
++    }
++
++    public ImBlockVector(Vector vec) {
++        super(vec);
++    }
++
++    public ImBlockVector(int x, int y, int z) {
 +        super(x, y, z);
 +    }
 +
-+    public static ImmutableVector of(double x, double y, double z) {
-+        return x == 0 && y == 0 && z == 0 ? ZERO : new ImmutableVector(x, y, z);
++    public ImBlockVector(double x, double y, double z) {
++        super(x, y, z);
 +    }
 +
-+    public static ImmutableVector of(double n) {
-+        return n == 0 ? ZERO : new ImmutableVector(n, n, n);
++    public ImBlockVector(float x, float y, float z) {
++        super(x, y, z);
++    }
++    
++    public boolean isBlockCorner() {
++        return getX() == getBlockX() &&
++               getY() == getBlockY() &&
++               getZ() == getBlockZ();
 +    }
 +
-+    public static ImmutableVector ofZero() {
++    public boolean isBlockCenter() {
++        return getX() == getBlockX() + 0.5 &&
++               getY() == getBlockY() + 0.5 &&
++               getZ() == getBlockZ() + 0.5;
++    }
++
++    public static ImBlockVector cornerOf(int x, int y, int z) {
++        return new Corner(x, y, z);
++    }
++
++    public static ImBlockVector cornerOf(Vector v) {
++        return v instanceof Corner ? (Corner) v
++                                   : new Corner(v.getBlockX(), v.getBlockY(), v.getBlockZ());
++    }
++
++    public static ImBlockVector cornerOf(Block block) {
++        return new Corner(block.getX(), block.getY(), block.getZ());
++    }
++
++    public static ImBlockVector cornerOf(BlockState block) {
++        return new Corner(block.getX(), block.getY(), block.getZ());
++    }
++
++    public static ImBlockVector centerOf(int x, int y, int z) {
++        return new Center(x, y, z);
++    }
++
++    public static ImBlockVector centerOf(Vector v) {
++        return v instanceof Center ? (Center) v
++                                   : new Center(v.getBlockX(), v.getBlockY(), v.getBlockZ());
++    }
++
++    public static ImBlockVector centerOf(Block block) {
++        return new Center(block.getX(), block.getY(), block.getZ());
++    }
++
++    public static ImBlockVector centerOf(BlockState block) {
++        return new Center(block.getX(), block.getY(), block.getZ());
++    }
++
++    private static class Corner extends ImBlockVector {
++        public Corner(int x, int y, int z) {
++            super((double) x, (double) y, (double) z);
++        }
++
++        @Override public boolean isBlockCorner() { return true; }
++        @Override public boolean isBlockCenter() { return false; }
++    }
++
++    private static class Center extends ImBlockVector {
++        Center(int x, int y, int z) {
++            super(x + 0.5, y + 0.5, z + 0.5);
++        }
++
++        @Override public boolean isBlockCorner() { return false; }
++        @Override public boolean isBlockCenter() { return true; }
++    }
++
++    protected RuntimeException ex() {
++        return new UnsupportedOperationException("This object is immutable");
++    }
++
++    @Override public Vector add(Vector vec) { throw ex(); }
++    @Override public Vector subtract(Vector vec) { throw ex(); }
++    @Override public Vector multiply(Vector vec) { throw ex(); }
++    @Override public Vector divide(Vector vec) { throw ex(); }
++    @Override public Vector multiply(int m) { throw ex(); }
++    @Override public Vector multiply(double m) { throw ex(); }
++    @Override public Vector multiply(float m) { throw ex(); }
++    @Override public Vector normalize() { throw ex(); }
++    @Override public Vector zero() { throw ex(); }
++    @Override public Vector crossProduct(Vector o) { throw ex(); }
++    @Override public Vector setX(int x) { throw ex(); }
++    @Override public Vector setX(double x) { throw ex(); }
++    @Override public Vector setX(float x) { throw ex(); }
++    @Override public Vector setY(int y) { throw ex(); }
++    @Override public Vector setY(double y) { throw ex(); }
++    @Override public Vector setY(float y) { throw ex(); }
++    @Override public Vector setZ(double z) { throw ex(); }
++    @Override public Vector setZ(int z) { throw ex(); }
++    @Override public Vector setZ(float z) { throw ex(); }
++    @Override public Vector copy(Vector vec) { throw ex(); }
++}
+diff --git a/src/main/java/org/bukkit/util/ImVector.java b/src/main/java/org/bukkit/util/ImVector.java
+new file mode 100644
+index 0000000..81cb902
+--- /dev/null
++++ b/src/main/java/org/bukkit/util/ImVector.java
+@@ -0,0 +1,178 @@
++package org.bukkit.util;
++
++/**
++ * An immutable {@link Vector}
++ *
++ * All the mutating methods inherited from {@link Vector}
++ * will throw an exception.
++ */
++public class ImVector extends Vector {
++
++    private static final ImVector ZERO = new ImVector(0, 0, 0);
++
++    private ImVector(double x, double y, double z) {
++        super(x, y, z);
++    }
++
++    public static ImVector of(double x, double y, double z) {
++        return x == 0 && y == 0 && z == 0 ? ZERO : new ImVector(x, y, z);
++    }
++
++    public static ImVector of(double n) {
++        return n == 0 ? ZERO : new ImVector(n, n, n);
++    }
++
++    public static ImVector ofZero() {
 +        return ZERO;
 +    }
 +
-+    public static ImmutableVector copyOf(Vector v) {
-+        return v instanceof ImmutableVector ? (ImmutableVector) v
-+                                            : new ImmutableVector(v.getX(), v.getY(), v.getZ());
++    public static ImVector copyOf(Vector v) {
++        return v instanceof ImVector ? (ImVector) v
++                                     : new ImVector(v.getX(), v.getY(), v.getZ());
 +    }
 +
-+    public static ImmutableVector getMinimum(Vector a, Vector b) {
++    public static ImVector getMinimum(Vector a, Vector b) {
 +        return of(Math.min(a.getX(), b.getX()),
 +                  Math.min(a.getY(), b.getY()),
 +                  Math.min(a.getZ(), b.getZ()));
 +    }
 +
-+    public static ImmutableVector getMaximum(Vector a, Vector b) {
++    public static ImVector getMaximum(Vector a, Vector b) {
 +        return of(Math.max(a.getX(), b.getX()),
 +                  Math.max(a.getY(), b.getY()),
 +                  Math.max(a.getZ(), b.getZ()));
 +    }
 +
-+    public static ImmutableVector min(Vector... a) {
++    public static ImVector min(Vector... a) {
 +        double x, y, z;
 +        x = y = z = Double.POSITIVE_INFINITY;
 +        for(Vector v : a) {
@@ -371,7 +632,7 @@ index 0000000..5939cff
 +        return of(x, y, z);
 +    }
 +
-+    public static ImmutableVector max(Vector... a) {
++    public static ImVector max(Vector... a) {
 +        double x, y, z;
 +        x = y = z = Double.NEGATIVE_INFINITY;
 +        for(Vector v : a) {
@@ -382,34 +643,34 @@ index 0000000..5939cff
 +        return of(x, y, z);
 +    }
 +
-+    public static ImmutableVector interpolate(Vector a, Vector b, double n) {
++    public static ImVector interpolate(Vector a, Vector b, double n) {
 +        return of(NumberConversions.interpolate(a.getX(), b.getX(), n),
 +                  NumberConversions.interpolate(a.getY(), b.getY(), n),
 +                  NumberConversions.interpolate(a.getZ(), b.getZ(), n));
 +    }
 +
 +    @Override
-+    public ImmutableVector plus(Vector v) {
++    public ImVector plus(Vector v) {
 +        return of(x + v.getX(), y + v.getY(), z + v.getZ());
 +    }
 +
 +    @Override
-+    public ImmutableVector plus(double x, double y, double z) {
++    public ImVector plus(double x, double y, double z) {
 +        return of(this.x + x, this.y + y, this.z + z);
 +    }
 +
 +    @Override
-+    public ImmutableVector minus(Vector v) {
++    public ImVector minus(Vector v) {
 +        return of(x - v.getX(), y - v.getY(), z - v.getZ());
 +    }
 +
 +    @Override
-+    public ImmutableVector minus(double x, double y, double z) {
++    public ImVector minus(double x, double y, double z) {
 +        return of(this.x - x, this.y - y, this.z - z);
 +    }
 +
 +    @Override
-+    public ImmutableVector times(double n) {
++    public ImVector times(double n) {
 +        if(n == 0) {
 +            return ZERO;
 +        } else if(n == 1) {
@@ -420,12 +681,12 @@ index 0000000..5939cff
 +    }
 +
 +    @Override
-+    public ImmutableVector times(Vector v) {
++    public ImVector times(Vector v) {
 +        return of(x * v.getX(), y * v.getY(), z * v.getZ());
 +    }
 +
 +    @Override
-+    public ImmutableVector over(double n) {
++    public ImVector over(double n) {
 +        if(Double.isInfinite(n)) {
 +            return ZERO;
 +        } else if(n == 1) {
@@ -436,24 +697,24 @@ index 0000000..5939cff
 +    }
 +
 +    @Override
-+    public ImmutableVector over(Vector v) {
++    public ImVector over(Vector v) {
 +        return of(x / v.getX(), y / v.getY(), z / v.getZ());
 +    }
 +
 +    @Override
-+    public ImmutableVector unit() {
++    public ImVector unit() {
 +        return over(length());
 +    }
 +
 +    @Override
-+    public ImmutableVector getCrossProduct(Vector v) {
++    public ImVector getCrossProduct(Vector v) {
 +        return of(this.y * v.z - v.y * this.z,
 +                  this.z * v.x - v.z * this.x,
 +                  this.x * v.y - v.x * this.y);
 +    }
 +
 +    @Override
-+    public ImmutableVector getMidpoint(Vector v) {
++    public ImVector getMidpoint(Vector v) {
 +        return of((x + v.getX()) / 2,
 +                  (y + v.getY()) / 2,
 +                  (z + v.getZ()) / 2);
@@ -524,7 +785,7 @@ index e6af9ec..c144b49 100644
  }
 diff --git a/src/main/java/org/bukkit/util/Ray.java b/src/main/java/org/bukkit/util/Ray.java
 new file mode 100644
-index 0000000..1fb2ad0
+index 0000000..be98068
 --- /dev/null
 +++ b/src/main/java/org/bukkit/util/Ray.java
 @@ -0,0 +1,42 @@
@@ -535,38 +796,38 @@ index 0000000..1fb2ad0
 +
 +public class Ray {
 +
-+    private final ImmutableVector origin;
-+    private final ImmutableVector normal;
++    private final ImVector origin;
++    private final ImVector normal;
 +
-+    private Ray(ImmutableVector origin, ImmutableVector normal) {
++    private Ray(ImVector origin, ImVector normal) {
 +        this.origin = origin;
 +        this.normal = normal;
 +    }
 +
 +    public static Ray fromOriginAndNormal(Vector origin, Vector normal) {
 +        Preconditions.checkArgument(!normal.isZero(), "Ray normal must have non-zero length");
-+        return new Ray(ImmutableVector.copyOf(origin), ImmutableVector.copyOf(normal.unit()));
++        return new Ray(ImVector.copyOf(origin), ImVector.copyOf(normal.unit()));
 +    }
 +
 +    public static Ray fromOriginAndTarget(Vector origin, Vector target) {
-+        final ImmutableVector normal = ImmutableVector.copyOf(target.minus(origin));
++        final ImVector normal = ImVector.copyOf(target.minus(origin));
 +        Preconditions.checkArgument(!normal.isZero(), "Ray target must be different from origin");
-+        return new Ray(ImmutableVector.copyOf(origin), normal.unit());
++        return new Ray(ImVector.copyOf(origin), normal.unit());
 +    }
 +
 +    public static Ray fromLocation(Location location) {
-+        return new Ray(ImmutableVector.copyOf(location), ImmutableVector.copyOf(location.getDirection()));
++        return new Ray(ImVector.copyOf(location), ImVector.copyOf(location.getDirection()));
 +    }
 +
-+    public ImmutableVector origin() {
++    public ImVector origin() {
 +        return origin;
 +    }
 +
-+    public ImmutableVector normal() {
++    public ImVector normal() {
 +        return normal;
 +    }
 +
-+    public ImmutableVector atDistance(double distance) {
++    public ImVector atDistance(double distance) {
 +        return origin.plus(normal.times(distance));
 +    }
 +}

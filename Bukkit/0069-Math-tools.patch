@@ -1,4 +1,4 @@
-From 62298b06bf9e2d94d3fb948cb2157da75976b311 Mon Sep 17 00:00:00 2001
+From 48ade1defe316946780b946bac7a5824ad38c875 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Math tools
@@ -6,10 +6,10 @@ Subject: [PATCH] Math tools
 
 diff --git a/src/main/java/org/bukkit/util/Cuboid.java b/src/main/java/org/bukkit/util/Cuboid.java
 new file mode 100644
-index 0000000..e4a94c8
+index 0000000..bee0e6d
 --- /dev/null
 +++ b/src/main/java/org/bukkit/util/Cuboid.java
-@@ -0,0 +1,354 @@
+@@ -0,0 +1,364 @@
 +package org.bukkit.util;
 +
 +import java.util.Iterator;
@@ -26,15 +26,25 @@ index 0000000..e4a94c8
 +    }
 +
 +    /**
++     * Create a minimal cuboid enclosing the given pair of points
++     *
++     * The relative order of the points on any axis does not matter.
++     */
++    public static Cuboid between(Vector a, Vector b) {
++        return new Cuboid(ImVector.getMinimum(a, b), ImVector.getMaximum(a, b));
++    }
++
++    /**
 +     * Create a cuboid with given minimum and maximum corners.
 +     *
-+     * The points are not checked
-+     * @param min
-+     * @param max
-+     * @return
++     * The coordinates are not sorted, so if any pair of components
++     * are out of order then the cuboid will have "negative" length
++     * on that axis.
++     *
++     * TODO: Reduce the allowed values to what is actually needed.
 +     */
-+    public static Cuboid between(Vector min, Vector max) {
-+        return new Cuboid(ImVector.getMinimum(min, max), ImVector.getMaximum(min, max));
++    public static Cuboid fromMinAndMax(Vector min, Vector max) {
++        return new Cuboid(ImVector.copyOf(min), ImVector.copyOf(max));
 +    }
 +
 +    public static Cuboid fromMinAndSize(Vector min, Vector size) {

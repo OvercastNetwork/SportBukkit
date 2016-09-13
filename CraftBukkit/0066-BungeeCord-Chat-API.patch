@@ -1,4 +1,4 @@
-From b6760d6787ddaa169f514f3adcaefc1a8fc3a5aa Mon Sep 17 00:00:00 2001
+From 079ce6334034b6655fcb271cc1281548d035d8ff Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 13:06:05 +1100
 Subject: [PATCH] BungeeCord Chat API
@@ -118,10 +118,10 @@ index 84f7d37..34cf5e9 100644
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/BungeeChatUtils.java b/src/main/java/org/bukkit/craftbukkit/util/BungeeChatUtils.java
 new file mode 100644
-index 0000000..dc0e6c8
+index 0000000..99c214f
 --- /dev/null
 +++ b/src/main/java/org/bukkit/craftbukkit/util/BungeeChatUtils.java
-@@ -0,0 +1,185 @@
+@@ -0,0 +1,187 @@
 +package org.bukkit.craftbukkit.util;
 +
 +import java.util.ArrayList;
@@ -274,6 +274,8 @@ index 0000000..dc0e6c8
 +    }
 +
 +    public static BaseComponent toBungee(IChatBaseComponent nms) {
++        if(nms == null) return new TextComponent();
++        
 +        final BaseComponent bungee;
 +        if(nms instanceof ChatComponentText) {
 +            bungee = new TextComponent(((ChatComponentText) nms).g());

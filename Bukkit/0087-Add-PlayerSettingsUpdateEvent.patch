@@ -1,0 +1,389 @@
+From 833531930d3243d7ed82e650878dedd8bdf9ebc1 Mon Sep 17 00:00:00 2001
+From: Electroid <electroidfilms@gmail.com>
+Date: Sat, 17 Sep 2016 13:35:14 -0700
+Subject: [PATCH] Add PlayerSettingsUpdateEvent
+
+
+diff --git a/src/main/java/org/bukkit/ChatVisibility.java b/src/main/java/org/bukkit/ChatVisibility.java
+new file mode 100644
+index 0000000..809b609
+--- /dev/null
++++ b/src/main/java/org/bukkit/ChatVisibility.java
+@@ -0,0 +1,23 @@
++package org.bukkit;
++
++/**
++ * Represents the chat preferences of a {@link org.bukkit.entity.Player}.
++ */
++public enum ChatVisibility {
++
++    /**
++     * Can use all chat features.
++     */
++    ENABLED,
++
++    /**
++     * Can only use command-related features.
++     */
++    COMMANDS_ONLY,
++
++    /**
++     * Cannot use any chat features.
++     */
++    HIDDEN
++
++}
+diff --git a/src/main/java/org/bukkit/PlayerSettings.java b/src/main/java/org/bukkit/PlayerSettings.java
+new file mode 100644
+index 0000000..b6cf262
+--- /dev/null
++++ b/src/main/java/org/bukkit/PlayerSettings.java
+@@ -0,0 +1,152 @@
++package org.bukkit;
++
++import com.google.common.collect.ImmutableSet;
++import org.apache.commons.lang.builder.EqualsBuilder;
++import org.apache.commons.lang.builder.HashCodeBuilder;
++import org.bukkit.entity.Player;
++import org.bukkit.inventory.MainHand;
++
++import java.util.Set;
++
++/**
++ * Various client-established settings of a {@link Player}.
++ */
++public class PlayerSettings {
++
++    private final String locale;
++    private final Integer renderDistance;
++    private final ChatVisibility chatVisibility;
++    private final Boolean chatColors;
++    private final ImmutableSet<Skin.Part> skinParts;
++    private final MainHand mainHand;
++
++    public PlayerSettings(String locale, Integer renderDistance, ChatVisibility chatVisibility, Boolean chatColors, Set<Skin.Part> skinParts, MainHand mainHand) {
++        this.locale = locale;
++        this.renderDistance = renderDistance;
++        this.chatVisibility = chatVisibility;
++        this.chatColors = chatColors;
++        this.skinParts = skinParts != null ? ImmutableSet.copyOf(skinParts) : null;
++        this.mainHand = mainHand;
++    }
++
++    /**
++     * Get the nullable, ISO-standard locale of the player.
++     * @return locale of the player.
++     */
++    public String getRawLocale() {
++        return locale;
++    }
++
++    /**
++     * Get the non-nullable, ISO-standard locale of the player.
++     *
++     * If {@link #getRawLocale()} evaluates to be null, the default
++     * result will be "en_US".
++     *
++     * @return locale of the player.
++     */
++    public String getLocale() {
++        final String raw = getRawLocale();
++        return raw != null ? raw : "en_US";
++    }
++
++    /**
++     * Get the number of chunks a player can see from their client.
++     * @return the number of chunks.
++     */
++    public Integer getRenderDistance() {
++        return renderDistance;
++    }
++
++    /**
++     * Get the type of chat visibility a player has.
++     * @return type of chat visibility.
++     */
++    public ChatVisibility getChatVisibility() {
++        return chatVisibility;
++    }
++
++    /**
++     * Get whether a player can see colors in chat messages.
++     * @return player can see colors in chat messages.
++     */
++    public Boolean getChatColors() {
++        return chatColors;
++    }
++
++    /**
++     * Get the parts of the skin the player wants to be rendered by others.
++     * @return parts of the skin.
++     */
++    public ImmutableSet<Skin.Part> getSkinParts() {
++        return skinParts;
++    }
++
++    /**
++     * Get the main hand preference of a player.
++     * @return main hand preference.
++     */
++    public MainHand getMainHand() {
++        return mainHand;
++    }
++
++    @Override
++    public boolean equals(Object o) {
++        if(this == o) return true;
++        if(o == null || getClass() != o.getClass()) return false;
++        PlayerSettings other = (PlayerSettings) o;
++        return new EqualsBuilder()
++                .append(renderDistance, other.renderDistance)
++                .append(chatColors, other.chatColors)
++                .append(locale, other.locale)
++                .append(chatVisibility, other.chatVisibility)
++                .append(skinParts, other.skinParts)
++                .append(mainHand, other.mainHand)
++                .isEquals();
++    }
++
++    @Override
++    public int hashCode() {
++        return new HashCodeBuilder(17, 37)
++                .append(locale)
++                .append(renderDistance)
++                .append(chatVisibility)
++                .append(chatColors)
++                .append(skinParts)
++                .append(mainHand)
++                .toHashCode();
++    }
++
++    /**
++     * Represents a delta-change from a previous player setting.
++     * - Any non-null fields will be replaced.
++     * - Any null fields will use the value from the old settings.
++     */
++    public static class Delta extends PlayerSettings {
++
++        public Delta(PlayerSettings old, String locale, Integer renderDistance, ChatVisibility chatVisibility, Boolean chatColors, Set<Skin.Part> skinParts, MainHand mainHand) {
++            super(
++                locale != null ? locale : old.getRawLocale(),
++                renderDistance != null ? renderDistance : old.getRenderDistance(),
++                chatVisibility != null ? chatVisibility : old.getChatVisibility(),
++                chatColors != null ? chatColors : old.getChatColors(),
++                skinParts != null ? skinParts : old.getSkinParts(),
++                mainHand != null ? mainHand : old.getMainHand()
++            );
++        }
++
++    }
++
++    /**
++     * Represents settings that have not been received from the player
++     * or have been manually cleared.
++     */
++    public static class Empty extends PlayerSettings {
++
++        public Empty() {
++            super(null, null, null, null, null, null);
++        }
++
++    }
++
++}
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index acad785..1786910 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -15,6 +15,7 @@ import org.bukkit.Material;
+ import org.bukkit.Note;
+ import org.bukkit.OfflinePlayer;
+ import org.bukkit.Particle;
++import org.bukkit.PlayerSettings;
+ import org.bukkit.Skin;
+ import org.bukkit.Sound;
+ import org.bukkit.Statistic;
+@@ -1643,4 +1644,28 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+      * If the given item type is not cooling down, 0 is returned.
+      */
+     float getRemainingItemCooldown(Material item);
++
++    /**
++     * Get the various client-established settings of this player.
++     *
++     * If the player has not sent these values to the server,
++     * each getter, with the exclusion of {@link #getLocale()},
++     * will return null.
++     *
++     * @return the player's client settings.
++     */
++    PlayerSettings getSettings();
++
++    /**
++     * Forcibly set the player's client-established settings.
++     *
++     * This is recommended if the server has previous knowledge
++     * of a player's settings (like being stored in a database).
++     *
++     * Unlike when the player sends the packet to the server,
++     * this method does not call {@link org.bukkit.event.player.PlayerSettingsUpdateEvent}.
++     *
++     * @param settings the new player settings.
++     */
++    void setSettings(PlayerSettings settings);
+ }
+diff --git a/src/main/java/org/bukkit/event/player/PlayerSettingsUpdateEvent.java b/src/main/java/org/bukkit/event/player/PlayerSettingsUpdateEvent.java
+new file mode 100644
+index 0000000..601b0ce
+--- /dev/null
++++ b/src/main/java/org/bukkit/event/player/PlayerSettingsUpdateEvent.java
+@@ -0,0 +1,122 @@
++package org.bukkit.event.player;
++
++import com.google.common.collect.ImmutableSet;
++import org.apache.commons.lang.builder.EqualsBuilder;
++import org.bukkit.ChatVisibility;
++import org.bukkit.PlayerSettings;
++import org.bukkit.Skin;
++import org.bukkit.entity.Player;
++import org.bukkit.event.HandlerList;
++import org.bukkit.inventory.MainHand;
++
++/**
++ * Called when a {@link Player} makes changes to their {@link PlayerSettings}.
++ *
++ * {@link PlayerLocaleChangeEvent}, {@link PlayerChangedMainHandEvent},
++ * and {@link PlayerSkinPartsChangeEvent} are also fired if their respective
++ * fields were changed.
++ *
++ */
++public class PlayerSettingsUpdateEvent extends PlayerEvent {
++
++    private final static HandlerList handlers = new HandlerList();
++
++    private final PlayerSettings old;
++    private final PlayerSettings current;
++
++    public PlayerSettingsUpdateEvent(Player who, PlayerSettings old, PlayerSettings current) {
++        super(who);
++        this.old = old;
++        this.current = current;
++    }
++
++    public boolean hasUpdated() {
++        return old != null;
++    }
++
++    public PlayerSettings getOldUpdate() {
++        return old;
++    }
++
++    public PlayerSettings getNewUpdate() {
++        return current;
++    }
++
++    public String getNewLocale() {
++        return getNewUpdate().getLocale();
++    }
++
++    public String getOldLocale() {
++        return hasUpdated() ? getOldUpdate().getLocale() : null;
++    }
++
++    public boolean didLocaleChange() {
++        return !new EqualsBuilder().append(getOldLocale(), getNewLocale()).isEquals();
++    }
++
++    public MainHand getNewMainHand() {
++        return getNewUpdate().getMainHand();
++    }
++
++    public MainHand getOldMainHand() {
++        return hasUpdated() ? getOldUpdate().getMainHand() : null;
++    }
++
++    public boolean didMainHandChange() {
++        return !new EqualsBuilder().append(getOldMainHand(), getNewMainHand()).isEquals();
++    }
++
++    public Integer getNewRenderDistance() {
++        return getNewUpdate().getRenderDistance();
++    }
++
++    public Integer getOldRenderDistance() {
++        return hasUpdated() ? getOldUpdate().getRenderDistance() : null;
++    }
++
++    public boolean didRenderDistanceChange() {
++        return !new EqualsBuilder().append(getOldRenderDistance(), getNewRenderDistance()).isEquals();
++    }
++
++    public ChatVisibility getNewChatVisibility() {
++        return getNewUpdate().getChatVisibility();
++    }
++
++    public ChatVisibility getOldChatVisibility() {
++        return hasUpdated() ? getOldUpdate().getChatVisibility() : null;
++    }
++
++    public boolean didChatVisibilityChange() {
++        return !new EqualsBuilder().append(getOldChatVisibility(), getNewChatVisibility()).isEquals();
++    }
++
++    public Boolean getNewChatColors() {
++        return getNewUpdate().getChatColors();
++    }
++
++    public Boolean getOldChatColors() {
++        return hasUpdated() ? getOldUpdate().getChatColors() : null;
++    }
++
++    public boolean didChatColorsChange() {
++        return !new EqualsBuilder().append(getOldChatColors(), getNewChatColors()).isEquals();
++    }
++
++    public ImmutableSet<Skin.Part> getNewSkinParts() {
++        return getNewUpdate().getSkinParts();
++    }
++
++    public ImmutableSet<Skin.Part> getOldSkinParts() {
++        return hasUpdated() ? getOldUpdate().getSkinParts() : null;
++    }
++
++    public boolean didSkinPartsChange() {
++        return !new EqualsBuilder().append(getOldSkinParts(), getNewSkinParts()).isEquals();
++    }
++
++    @Override
++    public HandlerList getHandlers() {
++        return handlers;
++    }
++
++}
+diff --git a/src/main/java/org/bukkit/util/EnumUtils.java b/src/main/java/org/bukkit/util/EnumUtils.java
+index d064568..7cb4c29 100644
+--- a/src/main/java/org/bukkit/util/EnumUtils.java
++++ b/src/main/java/org/bukkit/util/EnumUtils.java
+@@ -19,4 +19,19 @@ public final class EnumUtils {
+         copy.addAll(set);
+         return copy;
+     }
++
++    /**
++     * Transform one enum to another enum type based on {@link Enum#ordinal()}.
++     */
++    public static <F extends Enum<F>, T extends Enum<T>> T transform(F from, Class<T> to, T def) {
++        final T[] constants = to.getEnumConstants();
++        if(from != null && from.getClass().getEnumConstants().length == constants.length) {
++            return constants[from.ordinal()];
++        }
++        return def;
++    }
++
++    public static <F extends Enum<F>, T extends Enum<T>> T transform(F from, Class<T> to) {
++        return transform(from, to, null);
++    }
+ }
+-- 
+2.9.0
+

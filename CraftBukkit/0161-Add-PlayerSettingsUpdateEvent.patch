@@ -1,0 +1,298 @@
+From 6af904d2a94beedfb6498870cf593030be2c04cc Mon Sep 17 00:00:00 2001
+From: Electroid <electroidfilms@gmail.com>
+Date: Sat, 17 Sep 2016 13:31:16 -0700
+Subject: [PATCH] Add PlayerSettingsUpdateEvent
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 5da5a49..374c081 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -23,23 +23,20 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
+ import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.craftbukkit.inventory.CraftItemStack;
+ import org.bukkit.event.inventory.InventoryType;
+-import org.bukkit.event.player.PlayerChangedMainHandEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+-import org.bukkit.inventory.MainHand;
+ // CraftBukkit end
+ 
+ // SportBukkit start
+-import org.bukkit.craftbukkit.util.Skins;
+-import org.bukkit.event.player.PlayerSkinPartsChangeEvent;
++import org.bukkit.PlayerSettings;
+ import org.bukkit.event.player.PlayerKnockbackEvent;
+ import org.bukkit.event.player.PlayerVelocityEvent;
++import org.bukkit.util.EnumUtils;
+ import org.bukkit.util.Vector;
+ // SportBukkit end
+ 
+ public class EntityPlayer extends EntityHuman implements ICrafting {
+ 
+     private static final Logger bS = LogManager.getLogger();
+-    public String locale = null; // SportBukkit - make public and default to null
+     public PlayerConnection playerConnection;
+     public final MinecraftServer server;
+     public final PlayerInteractManager playerInteractManager;
+@@ -58,8 +55,6 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+     private boolean ce = true;
+     public int lastSentExp = -99999999;
+     public int invulnerableTicks = 60;
+-    private EntityHuman.EnumChatVisibility ch;
+-    private boolean ci = true;
+     private long cj = System.currentTimeMillis();
+     private Entity ck;
+     public boolean worldChangeInvuln;
+@@ -1225,39 +1220,19 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         return s;
+     }
+ 
+-    public void a(PacketPlayInSettings packetplayinsettings) {
+-        // CraftBukkit start
+-        if (getMainHand() != packetplayinsettings.getMainHand()) {
+-            PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(getBukkitEntity(), getMainHand() == EnumMainHand.LEFT ? MainHand.LEFT : MainHand.RIGHT);
+-            this.server.server.getPluginManager().callEvent(event);
+-        }
+-        // CraftBukkit end
+-        String oldLocale = this.locale; // SportBukkit
+-        this.locale = packetplayinsettings.a();
+-        // SportBukkit start - add PlayerLocaleChangeEvent
+-        // Since the field is initialized to null, this event should always fire the first time the packet is received
+-        if (!this.locale.equals(oldLocale)) {
+-            CraftEventFactory.callPlayerLocaleChangeEvent(this, oldLocale, this.locale);
+-        }
+-        // SportBukkit end
++    // SportBukkit start - store player settings
++    public PlayerSettings settings = new PlayerSettings.Empty();
+ 
+-        this.ch = packetplayinsettings.c();
+-        this.ci = packetplayinsettings.d();
+-        // this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e())); SportBukkit - move this below
+-        this.getDataWatcher().set(EntityPlayer.bs, Byte.valueOf((byte) (packetplayinsettings.getMainHand() == EnumMainHand.LEFT ? 0 : 1)));
+-
+-        // SportBukkit start - skin parts event
+-        int skinFlags = datawatcher.get(EntityPlayer.br);
+-        if(skinFlags != packetplayinsettings.e()) {
+-            this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e()));
+-            Bukkit.getPluginManager().callEvent(new PlayerSkinPartsChangeEvent(this.getBukkitEntity(), Skins.partsFromFlags(skinFlags)));
+-        }
+-        // SportBukkit end
++    public void a(PacketPlayInSettings packet) {
++        getDataWatcher().set(EntityPlayer.bs, Byte.valueOf((byte) (packet.getMainHand() == EnumMainHand.LEFT ? 0 : 1)));
++        getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packet.getSkinFlags()));
++        settings = CraftEventFactory.callPlayerSettingsUpdateEvent(this, packet.getLocale(), packet.getRenderDistance(), packet.getChatVisibility(), packet.getChatColors(), packet.getSkinFlags(), packet.getMainHand(), settings);
+     }
+ 
+     public EntityHuman.EnumChatVisibility getChatFlags() {
+-        return this.ch;
++        return EnumUtils.transform(settings.getChatVisibility(), EnumChatVisibility.class);
+     }
++    // SportBukkit end
+ 
+     public void setResourcePack(String s, String s1) {
+         this.playerConnection.sendPacket(new PacketPlayOutResourcePackSend(s, s1));
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInSettings.java b/src/main/java/net/minecraft/server/PacketPlayInSettings.java
+new file mode 100644
+index 0000000..62ffbd7
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayInSettings.java
+@@ -0,0 +1,79 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayInSettings implements Packet<PacketListenerPlayIn> {
++
++    private String a;
++    private int b;
++    private EntityHuman.EnumChatVisibility c;
++    private boolean d;
++    private int e;
++    private EnumMainHand f;
++
++    public PacketPlayInSettings() {}
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.e(7);
++        this.b = packetdataserializer.readByte();
++        this.c = (EntityHuman.EnumChatVisibility) packetdataserializer.a(EntityHuman.EnumChatVisibility.class);
++        this.d = packetdataserializer.readBoolean();
++        this.e = packetdataserializer.readUnsignedByte();
++        this.f = (EnumMainHand) packetdataserializer.a(EnumMainHand.class);
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a(this.a);
++        packetdataserializer.writeByte(this.b);
++        packetdataserializer.a((Enum) this.c);
++        packetdataserializer.writeBoolean(this.d);
++        packetdataserializer.writeByte(this.e);
++        packetdataserializer.a((Enum) this.f);
++    }
++
++    public void a(PacketListenerPlayIn packetlistenerplayin) {
++        packetlistenerplayin.a(this);
++    }
++
++    public String a() {
++        return this.a;
++    }
++
++    public EntityHuman.EnumChatVisibility c() {
++        return this.c;
++    }
++
++    public boolean d() {
++        return this.d;
++    }
++
++    public int e() {
++        return this.e;
++    }
++
++    public EnumMainHand getMainHand() {
++        return this.f;
++    }
++
++    // SportBukkit - start
++    public String getLocale() {
++        return a;
++    }
++
++    public int getRenderDistance() {
++        return b;
++    }
++
++    public EntityHuman.EnumChatVisibility getChatVisibility() {
++        return c;
++    }
++
++    public boolean getChatColors() {
++        return d;
++    }
++
++    public int getSkinFlags() {
++        return e;
++    }
++    // SportBukkit - end
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c287fe7..a90c01f 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -67,6 +67,7 @@ import org.bukkit.entity.Player;
+ import org.bukkit.event.player.PlayerGameModeChangeEvent;
+ import org.bukkit.event.player.PlayerRegisterChannelEvent;
+ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
++import org.bukkit.event.player.PlayerSettingsUpdateEvent;
+ import org.bukkit.event.player.PlayerTeleportEvent;
+ import org.bukkit.event.player.PlayerUnregisterChannelEvent;
+ import org.bukkit.inventory.InventoryView.Property;
+@@ -1840,16 +1841,27 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return getHandle().hostname;
+     }
+ 
++    // SportBukkit start - player settings
++    @Override
++    public PlayerSettings getSettings() {
++        return getHandle().settings;
++    }
++
++    @Override
++    public void setSettings(PlayerSettings settings) {
++        getHandle().settings = settings;
++    }
++
+     @Override
+     public String getLocale() {
+-        final String locale = getHandle().locale;
+-        return locale != null ? locale : "en_US";
++        return getSettings().getLocale();
+     }
+ 
+     @Override
+     public void setLocale(String locale) {
+-        getHandle().locale = locale;
++        setSettings(new PlayerSettings.Delta(getSettings(), locale, null, null, null, null, null));
+     }
++    // SportBukkit end
+ 
+     @Override
+     public java.util.Locale getCurrentLocale() {
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+index 1f6916f..a3cc07a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
+@@ -6,6 +6,7 @@ import java.util.ArrayList;
+ import java.util.EnumMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Set;
+ 
+ import com.google.common.base.Function;
+ import com.google.common.base.Functions;
+@@ -13,11 +14,14 @@ import com.google.common.base.Functions;
+ import net.minecraft.server.*;
+ 
+ import org.bukkit.Bukkit;
++import org.bukkit.ChatVisibility;
+ import org.bukkit.EntityLocation;
+ import org.bukkit.Location;
+ import org.bukkit.Material;
++import org.bukkit.PlayerSettings;
+ import org.bukkit.PoseFlag;
+ import org.bukkit.Server;
++import org.bukkit.Skin;
+ import org.bukkit.Statistic.Type;
+ import org.bukkit.block.Block;
+ import org.bukkit.block.BlockFace;
+@@ -35,6 +39,7 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
+ import org.bukkit.craftbukkit.inventory.CraftMetaBook;
+ import org.bukkit.craftbukkit.util.CraftDamageSource;
+ import org.bukkit.craftbukkit.util.CraftMagicNumbers;
++import org.bukkit.craftbukkit.util.Skins;
+ import org.bukkit.entity.AreaEffectCloud;
+ import org.bukkit.entity.Arrow;
+ import org.bukkit.entity.Creeper;
+@@ -65,7 +70,10 @@ import org.bukkit.event.player.*;
+ import org.bukkit.event.server.ServerListPingEvent;
+ import org.bukkit.inventory.EquipmentSlot;
+ import org.bukkit.inventory.InventoryView;
++import org.bukkit.inventory.MainHand;
+ import org.bukkit.inventory.meta.BookMeta;
++import org.bukkit.plugin.PluginManager;
++import org.bukkit.util.EnumUtils;
+ 
+ public class CraftEventFactory {
+     public static final DamageSource MELTING = CraftDamageSource.copyOf(DamageSource.BURN);
+@@ -1053,11 +1061,23 @@ public class CraftEventFactory {
+         return event;
+     }
+ 
+-    public static PlayerLocaleChangeEvent callPlayerLocaleChangeEvent(EntityHuman who, String oldLocale, String newLocale) {
++    public static PlayerSettings callPlayerSettingsUpdateEvent(EntityHuman who, String locale, int renderDistance, EntityHuman.EnumChatVisibility nmsChatVisibility, boolean chatColors, int skinFlags, EnumMainHand nmsMainHand, PlayerSettings old) {
+         Player player = (Player) who.getBukkitEntity();
+-        PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(player, oldLocale, newLocale);
+-        Bukkit.getPluginManager().callEvent(event);
+-        return event;
++        ChatVisibility chatVisibility = EnumUtils.transform(nmsChatVisibility, ChatVisibility.class);
++        MainHand mainHand = EnumUtils.transform(nmsMainHand, MainHand.class);
++        Set<Skin.Part> skinParts = Skins.partsFromFlags(skinFlags);
++        PlayerSettings current = new PlayerSettings(locale, renderDistance, chatVisibility, chatColors, skinParts, mainHand);
++        // Only call the event if there are changes from the previous settings.
++        if(!current.equals(old)) {
++            PlayerSettingsUpdateEvent event = new PlayerSettingsUpdateEvent(player, old, current);
++            PluginManager manager = player.getServer().getPluginManager();
++            manager.callEvent(event);
++            // Handle calling other sub-events for specific changes
++            if(event.didLocaleChange()) manager.callEvent(new PlayerLocaleChangeEvent(player, event.getOldLocale(), event.getNewLocale()));
++            if(event.didMainHandChange()) manager.callEvent(new PlayerChangedMainHandEvent(player, event.getNewMainHand()));
++            if(event.didSkinPartsChange()) manager.callEvent(new PlayerSkinPartsChangeEvent(player, event.getNewSkinParts()));
++        }
++        return current;
+     }
+ 
+     public static BlockPistonEvent callBlockPistonEvent(final World world, BlockPosition pos, EnumDirection facing, boolean extending) {
+-- 
+2.9.0
+

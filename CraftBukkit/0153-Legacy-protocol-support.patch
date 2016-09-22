@@ -1,4 +1,4 @@
-From 88abe75bf328579c90a33f98b71d74c7c7c02905 Mon Sep 17 00:00:00 2001
+From c17f7e134a571c259d70440d4856168a3dcf340c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -396,10 +396,10 @@ index dd40e98..a814ee1 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 5ad91d8..336882c 100644
+index dee4207..f4b8c85 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1255,6 +1255,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1259,6 +1259,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                                  replacedMetadataPacket.a = metadataPacket.a;
                                  replacedMetadataPacket.b = new ArrayList(metadataPacket.b);
                                  final DataWatcher.Item replacementItem = new DataWatcher.Item(flagsItem.a(), (byte) (entityFlags & ~0x20));
@@ -407,7 +407,7 @@ index 5ad91d8..336882c 100644
                                  replacementItem.a(flagsItem.c());
                                  replacedMetadataPacket.b.set(i, replacementItem); // Clear invisibility
  
-@@ -2603,10 +2604,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2607,10 +2608,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                                  tileentitystructure.b(EnumBlockRotation.valueOf(s6));
                                  tileentitystructure.b(packetdataserializer.e(128));
                                  tileentitystructure.a(packetdataserializer.readBoolean());

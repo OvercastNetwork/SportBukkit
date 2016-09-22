@@ -1,4 +1,4 @@
-From 251be46f891b316f11e99b3d079459c50c623557 Mon Sep 17 00:00:00 2001
+From eee1b42a6a14cd78a16284b8598620f14a48b2c2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 May 2016 03:31:16 -0400
 Subject: [PATCH] Enqueue play packets during login
@@ -17,10 +17,10 @@ index 0fb442e..9ffbfbd 100644
          return this.m;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 8e18b37..3b9776d 100644
+index 8e18b37..f81efe0 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -106,10 +106,26 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -106,10 +106,30 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
  
      boolean clientOnGround; // SportBukkit - only set by client
  
@@ -29,6 +29,10 @@ index 8e18b37..3b9776d 100644
 +    public void activate() {
 +        if(networkManager.getPacketListener() == this) return;
 +        networkManager.setPacketListener(this);
++    }
++
++    public void sendInitialPackets() {
++        if(networkManager.getPacketListener() != this) return;
 +        while(!initialPackets.isEmpty()) {
 +            final Packet<?> packet = initialPackets.remove();
 +            try {
@@ -48,7 +52,7 @@ index 8e18b37..3b9776d 100644
          this.player = entityplayer;
          entityplayer.playerConnection = this;
  
-@@ -1142,6 +1158,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1142,6 +1162,13 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
      }
  
      public void sendPacket(final Packet<?> packet) {
@@ -63,7 +67,7 @@ index 8e18b37..3b9776d 100644
  
          if (packet instanceof PacketPlayOutChat) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index d3a071a..ca80a08 100644
+index d3a071a..1e991c9 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -130,7 +130,11 @@ public abstract class PlayerList {
@@ -79,7 +83,18 @@ index d3a071a..ca80a08 100644
  
          playerconnection.sendPacket(new PacketPlayOutLogin(entityplayer.getId(), entityplayer.playerInteractManager.getGameMode(), worlddata.isHardcore(), worldserver.worldProvider.getDimensionManager().getDimensionID(), worldserver.getDifficulty(), this.getMaxPlayers(), worlddata.getType(), worldserver.getGameRules().getBoolean("reducedDebugInfo")));
          entityplayer.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
-@@ -477,6 +481,7 @@ public abstract class PlayerList {
+@@ -223,6 +227,10 @@ public abstract class PlayerList {
+         entityplayer.syncInventory();
+         // CraftBukkit - Moved from above, added world
+         PlayerList.f.info(entityplayer.getName() + "[" + s1 + "] logged in with entity id " + entityplayer.getId() + " at ([" + entityplayer.world.worldData.getName() + "] " + String.format("%.1f", entityplayer.locX) + ", " + String.format("%.1f", entityplayer.locY) + ", " + String.format("%.1f", entityplayer.locZ) + ")");
++
++        // SportBukkit - Send packets that were queued before activation.
++        // Doing this as late as possible maximizes the number of things that will work properly.
++        playerconnection.sendInitialPackets();
+     }
+ 
+     public void sendScoreboard(ScoreboardServer scoreboardserver, EntityPlayer entityplayer) {
+@@ -477,6 +485,7 @@ public abstract class PlayerList {
          SocketAddress socketaddress = loginlistener.networkManager.getSocketAddress();
  
          EntityPlayer entity = new EntityPlayer(server, server.getWorldServer(0), gameprofile, new PlayerInteractManager(server.getWorldServer(0)));

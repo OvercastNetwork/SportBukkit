@@ -1,4 +1,4 @@
-From a07bd474486c7f104668967899fdfe2c6929005f Mon Sep 17 00:00:00 2001
+From d357aff26385b3b531999ee3a82079dda0c49140 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:25 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -169,7 +169,7 @@ index f4b8c85..368648d 100644
                  this.player.abilities.isFlying = packetplayinabilities.isFlying(); // Actually set the player's flying status
              } else {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 1e991c9..9970a32 100644
+index a4819c8..14d177e 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager;
@@ -188,7 +188,7 @@ index 1e991c9..9970a32 100644
  import org.bukkit.craftbukkit.util.CraftChatMessage;
  import org.bukkit.entity.Player;
  import org.bukkit.event.player.PlayerChangedWorldEvent;
-@@ -708,6 +710,7 @@ public abstract class PlayerList {
+@@ -709,6 +711,7 @@ public abstract class PlayerList {
              this.savePlayerFile(entityplayer);
          }
          // CraftBukkit end

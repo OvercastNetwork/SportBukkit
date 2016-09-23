@@ -1,11 +1,11 @@
-From f688b008fdb84358f4b47d86c4d37fc830469bb3 Mon Sep 17 00:00:00 2001
+From 976d4006c3367c8473e7bf5615cdf5f30b94253f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
 
 
 diff --git a/pom.xml b/pom.xml
-index 9f30447..d539fe0 100644
+index fa9abd5..8b7a12e 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -95,11 +95,9 @@
@@ -213,7 +213,7 @@ index 7bdc809..0d21654 100644
       * Returns the folder that the plugin data's files are located in. The
       * folder may not yet exist.
 diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
-index c82928e..989776d 100644
+index b93569f..e4eddfb 100644
 --- a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
 +++ b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
 @@ -174,7 +174,7 @@ import com.google.common.collect.ImmutableSet;
@@ -226,20 +226,26 @@ index c82928e..989776d 100644
          @Override
          protected Yaml initialValue() {
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
-index e5638d5..d89b194 100644
+index e5638d5..15f6218 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/PluginManager.java
-@@ -12,7 +12,7 @@ import org.bukkit.permissions.Permission;
+@@ -8,11 +8,13 @@ import org.bukkit.event.EventPriority;
+ import org.bukkit.event.Listener;
+ import org.bukkit.permissions.Permissible;
+ import org.bukkit.permissions.Permission;
++import tc.oc.minecraft.api.event.EventBus;
++import tc.oc.minecraft.api.plugin.PluginFinder;
+ 
  /**
   * Handles all plugin management from the Server
   */
 -public interface PluginManager {
-+public interface PluginManager extends tc.oc.minecraft.api.plugin.PluginManager {
++public interface PluginManager extends PluginFinder, EventBus {
  
      /**
       * Registers the specified plugin loader
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index d5f52be..80e187d 100644
+index 89b40f2..c4adbd8 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -365,6 +365,11 @@ public final class SimplePluginManager implements PluginManager {

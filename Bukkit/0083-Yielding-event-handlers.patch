@@ -1,4 +1,4 @@
-From 64e25576980ea2c4acd4392a6782337d7b106996 Mon Sep 17 00:00:00 2001
+From 042d2c820832f08515391663c16e24a5fb1f3812 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] Yielding event handlers
@@ -125,7 +125,7 @@ index 0000000..0a6ba01
 +    void callEvent(T event) throws Exception;
 +}
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
-index d89b194..94a8bef 100644
+index 15f6218..3332fdf 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/PluginManager.java
 @@ -4,6 +4,7 @@ import java.io.File;
@@ -136,7 +136,7 @@ index d89b194..94a8bef 100644
  import org.bukkit.event.EventPriority;
  import org.bukkit.event.Listener;
  import org.bukkit.permissions.Permissible;
-@@ -93,16 +94,101 @@ public interface PluginManager extends tc.oc.minecraft.api.plugin.PluginManager
+@@ -95,16 +96,101 @@ public interface PluginManager extends PluginFinder, EventBus {
      public void clearPlugins();
  
      /**

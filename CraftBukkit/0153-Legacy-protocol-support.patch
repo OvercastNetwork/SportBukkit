@@ -1,4 +1,4 @@
-From c17f7e134a571c259d70440d4856168a3dcf340c Mon Sep 17 00:00:00 2001
+From 44285de0a3b6cd8d6b8e69b0a32745bda6241ebd Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 May 2016 23:40:38 -0400
 Subject: [PATCH] Legacy protocol support
@@ -422,10 +422,10 @@ index dee4207..f4b8c85 100644
  
                                  if (b1 == 2) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a1baaf0..b475eb5 100644
+index 3cbd48e..e29c414 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1814,6 +1814,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1820,6 +1820,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      @Override
      public Set<Integer> getProtocolVersions() {

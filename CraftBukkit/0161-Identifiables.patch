@@ -1,0 +1,165 @@
+From 2c2b2e29852e6d4c99ec6f128250d164c5f14499 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 6 Oct 2016 02:46:40 -0400
+Subject: [PATCH] Identifiables
+
+
+diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
+index 1ef4b31..7c7095b 100644
+--- a/src/main/java/net/minecraft/server/LoginListener.java
++++ b/src/main/java/net/minecraft/server/LoginListener.java
+@@ -208,10 +208,9 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+ 
+     void callPreLoginEvent() {
+         String playerName = i.getName();
+-        java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress();
+-        java.util.UUID uniqueId = i.getId();
+         final org.bukkit.craftbukkit.CraftServer server = LoginListener.this.server.server;
+-        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
++        final org.bukkit.craftbukkit.CraftConnectedPlayer player = new org.bukkit.craftbukkit.CraftConnectedPlayer(server, i, (java.net.InetSocketAddress) networkManager.getSocketAddress());
++        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(player);
+ 
+         if(this.disconnectReason != null) {
+             asyncEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_VERIFY, this.disconnectReason);
+@@ -221,7 +220,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+         this.preLoginEventFired = true;
+ 
+         if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
+-            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
++            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(player);
+             if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
+                 event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
+             }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftConnectedPlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftConnectedPlayer.java
+new file mode 100644
+index 0000000..fd8ab3f
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/CraftConnectedPlayer.java
+@@ -0,0 +1,21 @@
++package org.bukkit.craftbukkit;
++
++import java.net.InetSocketAddress;
++
++import com.mojang.authlib.GameProfile;
++import org.bukkit.ConnectedPlayer;
++
++public class CraftConnectedPlayer extends CraftOfflinePlayer implements ConnectedPlayer {
++
++    private final InetSocketAddress address;
++
++    public CraftConnectedPlayer(CraftServer server, GameProfile profile, InetSocketAddress address) {
++        super(server, profile);
++        this.address = address;
++    }
++
++    @Override
++    public InetSocketAddress getAddress() {
++        return address;
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+index b4ca640..8a55609 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -149,18 +149,25 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+         return getClass().getSimpleName() + "[UUID=" + profile.getId() + "]";
+     }
+ 
++    @Override
++    public OfflinePlayer getOfflinePlayer() {
++        return this;
++    }
++
+     public Player getPlayer() {
+         return server.getPlayer(getUniqueId());
+     }
+ 
+     @Override
+     public boolean equals(Object obj) {
++        if(this == obj) return true;
++
+         if (obj == null || !(obj instanceof OfflinePlayer)) {
+             return false;
+         }
+ 
+         OfflinePlayer other = (OfflinePlayer) obj;
+-        if ((this.getUniqueId() == null) || (other.getUniqueId() == null)) {
++        if (this.getUniqueId() == null || other.getUniqueId() == null) {
+             return false;
+         }
+ 
+@@ -169,9 +176,7 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+ 
+     @Override
+     public int hashCode() {
+-        int hash = 5;
+-        hash = 97 * hash + (this.getUniqueId() != null ? this.getUniqueId().hashCode() : 0);
+-        return hash;
++        return this.getUniqueId() != null ? this.getUniqueId().hashCode() : 0;
+     }
+ 
+     private NBTTagCompound getData() {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index c287fe7..9bc915b 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -88,7 +88,6 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     private final ConversationTracker conversationTracker = new ConversationTracker();
+     private final Set<String> channels = new HashSet<String>();
+     private final Set<UUID> hiddenPlayers = new HashSet<UUID>();
+-    private int hash = 0;
+     private double health = 20;
+     private boolean scaledHealth = false;
+     private double healthScale = 20;
+@@ -477,6 +476,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public boolean equals(Object obj) {
++        if(this == obj) return true;
++
+         if (!(obj instanceof OfflinePlayer)) {
+             return false;
+         }
+@@ -485,14 +486,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+             return false;
+         }
+ 
+-        boolean uuidEquals = this.getUniqueId().equals(other.getUniqueId());
+-        boolean idEquals = true;
+-
+-        if (other instanceof CraftPlayer) {
+-            idEquals = this.getEntityId() == ((CraftPlayer) other).getEntityId();
+-        }
+-
+-        return uuidEquals && idEquals;
++        return this.getUniqueId().equals(other.getUniqueId());
+     }
+ 
+     @Override
+@@ -1319,6 +1313,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+     }
+ 
+     @Override
++    public OfflinePlayer getOfflinePlayer() {
++        return server.getOfflinePlayer(getHandle().getProfile());
++    }
++
++    @Override
+     public Player getPlayer() {
+         return this;
+     }
+@@ -1339,10 +1338,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public int hashCode() {
+-        if (hash == 0 || hash == 485) {
+-            hash = 97 * 5 + (this.getUniqueId() != null ? this.getUniqueId().hashCode() : 0);
+-        }
+-        return hash;
++        return this.getUniqueId() != null ? this.getUniqueId().hashCode() : 0;
+     }
+ 
+     @Override
+-- 
+1.9.0
+

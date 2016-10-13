@@ -1,0 +1,35 @@
+From 79a075f0090c3d2709259c045c9547e03ac8dabf Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 12 Apr 2014 22:42:11 -0400
+Subject: [PATCH] Fix BlockFromToEvents firing when flow is obstructed
+
+
+diff --git a/src/main/java/net/minecraft/server/BlockFlowing.java b/src/main/java/net/minecraft/server/BlockFlowing.java
+index c0f4961..df9b4b9 100644
+--- a/src/main/java/net/minecraft/server/BlockFlowing.java
++++ b/src/main/java/net/minecraft/server/BlockFlowing.java
+@@ -135,13 +135,15 @@ public class BlockFlowing extends BlockFluids {
+                 EnumDirection enumdirection1 = (EnumDirection) iterator1.next();
+ 
+                 // CraftBukkit start
+-                BlockFromToEvent event = new BlockFromToEvent(source, org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(enumdirection1));
+-                if (server != null) {
+-                    server.getPluginManager().callEvent(event);
+-                }
++                if(this.h(world, blockposition.shift(enumdirection1), world.getType(blockposition.shift(enumdirection1)))) {
++                    BlockFromToEvent event = new BlockFromToEvent(source, org.bukkit.craftbukkit.block.CraftBlock.notchToBlockFace(enumdirection1));
++                    if (server != null) {
++                        server.getPluginManager().callEvent(event);
++                    }
+ 
+-                if (!event.isCancelled()) {
+-                    this.flow(world, blockposition.shift(enumdirection1), world.getType(blockposition.shift(enumdirection1)), k);
++                    if (!event.isCancelled()) {
++                        this.flow(world, blockposition.shift(enumdirection1), world.getType(blockposition.shift(enumdirection1)), k);
++                    }
+                 }
+                 // CraftBukkit end
+             }
+-- 
+1.9.0
+

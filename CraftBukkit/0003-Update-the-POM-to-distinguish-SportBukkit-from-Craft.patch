@@ -1,11 +1,11 @@
-From 144a5c8c54ac8e7279f2c2bbeb57cad3d6356182 Mon Sep 17 00:00:00 2001
+From 7e394a27604ae96f8e70351376d6e69a891c1e1d Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index c868c79..e8590af 100644
+index c868c79..5f8ffa8 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,28 +1,38 @@
@@ -31,8 +31,10 @@ index c868c79..e8590af 100644
 -        <buildtag.prefix>git-Bukkit-</buildtag.prefix>
 +        <buildtag.prefix>git-SportBukkit-</buildtag.prefix>
          <buildtag.suffix></buildtag.suffix>
-         <maven.compiler.source>1.6</maven.compiler.source>
-         <maven.compiler.target>1.6</maven.compiler.target>
+-        <maven.compiler.source>1.6</maven.compiler.source>
+-        <maven.compiler.target>1.6</maven.compiler.target>
++        <maven.compiler.source>1.8</maven.compiler.source>
++        <maven.compiler.target>1.8</maven.compiler.target>
      </properties>
  
 +    <distributionManagement>
@@ -72,6 +74,17 @@ index c868c79..e8590af 100644
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
+@@ -151,8 +171,8 @@
+                 <configuration>
+                     <signature>
+                         <groupId>org.codehaus.mojo.signature</groupId>
+-                        <artifactId>java16</artifactId>
+-                        <version>1.1</version>
++                        <artifactId>java18</artifactId>
++                        <version>1.0</version>
+                     </signature>
+                 </configuration>
+             </plugin>
 @@ -184,17 +204,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>

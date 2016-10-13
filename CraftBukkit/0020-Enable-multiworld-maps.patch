@@ -1,0 +1,63 @@
+From 74b038d2222707984a0d325772db5ae7f89267a0 Mon Sep 17 00:00:00 2001
+From: mrapple <tony@oc.tc>
+Date: Tue, 13 Nov 2012 19:38:11 -0600
+Subject: [PATCH] Enable multiworld maps
+
+
+diff --git a/src/main/java/net/minecraft/server/ItemMapEmpty.java b/src/main/java/net/minecraft/server/ItemMapEmpty.java
+index 9c9656b..f0bdfad 100644
+--- a/src/main/java/net/minecraft/server/ItemMapEmpty.java
++++ b/src/main/java/net/minecraft/server/ItemMapEmpty.java
+@@ -7,12 +7,11 @@ public class ItemMapEmpty extends ItemWorldMapBase {
+     }
+ 
+     public InteractionResultWrapper<ItemStack> a(ItemStack itemstack, World world, EntityHuman entityhuman, EnumHand enumhand) {
+-        World worldMain = world.getServer().getServer().worlds.get(0); // CraftBukkit - store reference to primary world
+-        ItemStack itemstack1 = new ItemStack(Items.FILLED_MAP, 1, worldMain.b("map")); // CraftBukkit - use primary world for maps
++        ItemStack itemstack1 = new ItemStack(Items.FILLED_MAP, 1, world.b("map"));
+         String s = "map_" + itemstack1.getData();
+         WorldMap worldmap = new WorldMap(s);
+ 
+-        worldMain.a(s, (PersistentBase) worldmap); // CraftBukkit
++        world.a(s, (PersistentBase) worldmap); // SportBukkit - multiworld maps
+         worldmap.scale = 0;
+         worldmap.a(entityhuman.locX, entityhuman.locZ, worldmap.scale);
+         worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - use bukkit dimension
+diff --git a/src/main/java/net/minecraft/server/ItemWorldMap.java b/src/main/java/net/minecraft/server/ItemWorldMap.java
+index 0f0c5cc..e9fee9f 100644
+--- a/src/main/java/net/minecraft/server/ItemWorldMap.java
++++ b/src/main/java/net/minecraft/server/ItemWorldMap.java
+@@ -17,19 +17,18 @@ public class ItemWorldMap extends ItemWorldMapBase {
+     }
+ 
+     public WorldMap getSavedMap(ItemStack itemstack, World world) {
+-        World worldMain = world.getServer().getServer().worlds.get(0); // CraftBukkit - store reference to primary world
+         String s = "map_" + itemstack.getData();
+-        WorldMap worldmap = (WorldMap) worldMain.a(WorldMap.class, s); // CraftBukkit - use primary world for maps
++        WorldMap worldmap = (WorldMap) world.a(WorldMap.class, s);
+ 
+         if (worldmap == null && !world.isClientSide) {
+-            itemstack.setData(worldMain.b("map")); // CraftBukkit - use primary world for maps
++            itemstack.setData(world.b("map"));
+             s = "map_" + itemstack.getData();
+             worldmap = new WorldMap(s);
+             worldmap.scale = 3;
+             worldmap.a((double) world.getWorldData().b(), (double) world.getWorldData().d(), worldmap.scale);
+             worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - fixes Bukkit multiworld maps
+             worldmap.c();
+-            worldMain.a(s, (PersistentBase) worldmap); // CraftBukkit - use primary world for maps
++            world.a(s, (PersistentBase) worldmap);
+ 
+             // CraftBukkit start
+             MapInitializeEvent event = new MapInitializeEvent(worldmap.mapView);
+@@ -209,7 +208,6 @@ public class ItemWorldMap extends ItemWorldMapBase {
+     protected static void a(ItemStack itemstack, World world, int i) {
+         WorldMap worldmap = Items.FILLED_MAP.getSavedMap(itemstack, world);
+ 
+-        world = world.getServer().getServer().worlds.get(0); // CraftBukkit - use primary world for maps
+         itemstack.setData(world.b("map"));
+         WorldMap worldmap1 = new WorldMap("map_" + itemstack.getData());
+ 
+-- 
+1.9.0
+

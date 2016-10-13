@@ -1,14 +1,14 @@
-From 5366c6c3c486c76c0ec5354ef3526c34526fb192 Mon Sep 17 00:00:00 2001
+From 604a5611fb94347f0935723a69a9f771d43016aa Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Dec 2013 23:16:10 -0600
 Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
 
 
 diff --git a/pom.xml b/pom.xml
-index 653b01f..e054cf6 100644
+index 653b01f..ad48e9b 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -3,20 +3,13 @@
+@@ -3,36 +3,34 @@
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
  
@@ -32,8 +32,10 @@ index 653b01f..e054cf6 100644
 +    <url>https://oc.tc</url>
  
      <properties>
-         <maven.compiler.source>1.6</maven.compiler.source>
-@@ -24,15 +17,20 @@
+-        <maven.compiler.source>1.6</maven.compiler.source>
+-        <maven.compiler.target>1.6</maven.compiler.target>
++        <maven.compiler.source>1.8</maven.compiler.source>
++        <maven.compiler.target>1.8</maven.compiler.target>
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
      </properties>
  

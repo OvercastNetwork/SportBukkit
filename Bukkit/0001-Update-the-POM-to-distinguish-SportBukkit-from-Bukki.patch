@@ -1,11 +1,11 @@
-From 0eeff8e74a53862482e32f748c3503514e62b595 Mon Sep 17 00:00:00 2001
+From ab2311b68f4c787c772521a302f250ef56983d2c Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 10 Dec 2013 23:16:10 -0600
 Subject: [PATCH] Update the POM to distinguish SportBukkit from Bukkit
 
 
 diff --git a/pom.xml b/pom.xml
-index 653b01f..6a66f9a 100644
+index 653b01f..c8177f2 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -3,36 +3,34 @@
@@ -61,15 +61,17 @@ index 653b01f..6a66f9a 100644
          </snapshotRepository>
      </distributionManagement>
  
-@@ -135,7 +133,7 @@
+@@ -135,8 +133,8 @@
                  <configuration>
                      <signature>
                          <groupId>org.codehaus.mojo.signature</groupId>
 -                        <artifactId>java16</artifactId>
+-                        <version>1.1</version>
 +                        <artifactId>java18</artifactId>
-                         <version>1.1</version>
++                        <version>1.0</version>
                      </signature>
                  </configuration>
+             </plugin>
 -- 
 1.9.0
 

@@ -1,0 +1,28 @@
+From aec80e909e9c9658ca999c98a45c64bcf97428e3 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 4 Mar 2016 04:18:12 -0500
+Subject: [PATCH] Multi-trade API
+
+
+diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
+index be7c365..d14d875 100644
+--- a/src/main/java/org/bukkit/entity/HumanEntity.java
++++ b/src/main/java/org/bukkit/entity/HumanEntity.java
+@@ -118,6 +118,14 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+     public InventoryView openMerchant(Villager trader, boolean force);
+ 
+     /**
++     * Makes a copy of the given villager's current trading offers and opens
++     * a trading window for this player, allowing them to interact with those
++     * offers, without affecting the villager's state, or any other players who
++     * might be trading with the villager.
++     */
++    public InventoryView openMerchantCopy(Villager trader);
++
++    /**
+      * Force-closes the currently open inventory view for this player, if any.
+      */
+     public void closeInventory();
+-- 
+1.9.0
+

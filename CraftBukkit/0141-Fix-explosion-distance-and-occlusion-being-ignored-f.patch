@@ -1,0 +1,23 @@
+From 816e7ac24975e4224af1e20fa726a0bb99bcf59f Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 29 Mar 2016 18:52:47 -0400
+Subject: [PATCH] Fix explosion distance and occlusion being ignored for
+ non-living entities
+
+
+diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
+index 37f5d2c..04178b5 100644
+--- a/src/main/java/net/minecraft/server/Explosion.java
++++ b/src/main/java/net/minecraft/server/Explosion.java
+@@ -135,7 +135,7 @@ public class Explosion {
+                             continue;
+                         }
+                         // CraftBukkit end
+-                        double d14 = 1.0D;
++                        double d14 = d13; // SportBukkit - fix calculations above being thrown away for non-living entities
+ 
+                         if (entity instanceof EntityLiving) {
+                             d14 = EnchantmentProtection.a((EntityLiving) entity, d13);
+-- 
+1.9.0
+

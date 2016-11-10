@@ -1,0 +1,24 @@
+From 89f9f5310ea911bda2a1902cb5bff123107256be Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 26 Jun 2016 19:18:01 -0400
+Subject: [PATCH] Add armorToughness attribute
+
+
+diff --git a/src/main/java/org/bukkit/attribute/Attribute.java b/src/main/java/org/bukkit/attribute/Attribute.java
+index 719fe93..0a71a35 100644
+--- a/src/main/java/org/bukkit/attribute/Attribute.java
++++ b/src/main/java/org/bukkit/attribute/Attribute.java
+@@ -37,6 +37,10 @@ public enum Attribute {
+      */
+     GENERIC_ARMOR("generic.armor"),
+     /**
++     * Armor bonus of an Entity.
++     */
++    GENERIC_ARMOR_TOUGHNESS("generic.armorToughness"),
++    /**
+      * Luck bonus of an Entity.
+      */
+     GENERIC_LUCK("generic.luck"),
+-- 
+1.9.0
+

@@ -1,4 +1,4 @@
-From d74ee87a9949d7b7ccf4cf675acc33f55afc78d0 Mon Sep 17 00:00:00 2001
+From 90ee3491749b0251bce5f613e04a6570e0e7bb27 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
@@ -3860,7 +3860,7 @@ index 0000000..1f01e30
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Coarse.java b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 new file mode 100644
-index 0000000..b8bf9c3
+index 0000000..ae12726
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 @@ -0,0 +1,267 @@
@@ -3937,7 +3937,7 @@ index 0000000..b8bf9c3
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v.isCoarse() && coarseEquals(v);
++        return v != null && v.isCoarse() && coarseEquals(v);
 +    }
 +
 +    @Override
@@ -4133,7 +4133,7 @@ index 0000000..b8bf9c3
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Fine.java b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 new file mode 100644
-index 0000000..b125a37
+index 0000000..2004d4d
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 @@ -0,0 +1,232 @@
@@ -4210,7 +4210,7 @@ index 0000000..b125a37
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v.isFine() && fineEquals(v);
++        return v != null && v.isFine() && fineEquals(v);
 +    }
 +
 +    @Override
@@ -5459,7 +5459,7 @@ index 0000000..93f613e
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/BlockVector.java b/src/main/java/org/bukkit/util/BlockVector.java
-index bdf8f6d..a156a9b 100644
+index bdf8f6d..cc2b700 100644
 --- a/src/main/java/org/bukkit/util/BlockVector.java
 +++ b/src/main/java/org/bukkit/util/BlockVector.java
 @@ -2,6 +2,7 @@ package org.bukkit.util;
@@ -5540,7 +5540,7 @@ index bdf8f6d..a156a9b 100644
 +
 +    @Override
 +    public boolean equals(Vec3 v) {
-+        return v.isCoarse() && coarseEquals(v);
++        return v != null && v.isCoarse() && coarseEquals(v);
      }
  
      /**

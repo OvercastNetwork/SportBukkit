@@ -1,16 +1,16 @@
-From 62e8fb435fb38cc467915ade4d3af8ef227b8d02 Mon Sep 17 00:00:00 2001
+From b453667ee789779e2dff25cff0f7934a701d18fd Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 26 May 2013 18:43:56 -0700
 Subject: [PATCH] Add PlayerSpawnEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemMonsterEgg.java b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-index 6317cba..0deb567 100644
+index 69caabb..2d6ed91 100644
 --- a/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 +++ b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-@@ -3,6 +3,12 @@ package net.minecraft.server;
- import java.util.UUID;
+@@ -6,6 +6,12 @@ import java.util.UUID;
  import javax.annotation.Nullable;
+ import org.apache.commons.lang3.StringUtils;
  
 +// CraftBukkit start
 +import org.bukkit.craftbukkit.entity.CraftEntity;
@@ -21,9 +21,9 @@ index 6317cba..0deb567 100644
  public class ItemMonsterEgg extends Item {
  
      public ItemMonsterEgg() {
-@@ -54,6 +60,30 @@ public class ItemMonsterEgg extends Item {
- 
-             Entity entity = a(world, h(itemstack), (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + d0, (double) blockposition.getZ() + 0.5D);
+@@ -55,6 +61,30 @@ public class ItemMonsterEgg extends Item {
+             double d0 = this.a(world, blockposition1);
+             Entity entity = a(world, h(itemstack), (double) blockposition1.getX() + 0.5D, (double) blockposition1.getY() + d0, (double) blockposition1.getZ() + 0.5D);
  
 +            // SportBukkit start - fire event
 +            if (entity != null) {

@@ -1,14 +1,14 @@
-From 502077b84ea0f2e9fd4015ced193296c7f102af5 Mon Sep 17 00:00:00 2001
+From a7debe51a57a6f6abf01120b3d298ddef0b2fcd9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index a5cbe04..dfea131 100644
+index 1780c4e..e1bbfe4 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
-@@ -68,6 +68,12 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -72,6 +72,12 @@ public class LoginListener implements PacketLoginInListener, ITickable {
      }
  
      public void disconnect(String s) {
@@ -21,7 +21,7 @@ index a5cbe04..dfea131 100644
          try {
              LoginListener.c.info("Disconnecting {}: {}", new Object[] { this.d(), s});
              ChatComponentText chatcomponenttext = new ChatComponentText(s);
-@@ -81,9 +87,11 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -85,9 +91,11 @@ public class LoginListener implements PacketLoginInListener, ITickable {
      }
  
      public void b() {
@@ -33,7 +33,7 @@ index a5cbe04..dfea131 100644
  
          // CraftBukkit start - fire PlayerLoginEvent
          EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, hostname);
-@@ -133,7 +141,15 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -137,7 +145,15 @@ public class LoginListener implements PacketLoginInListener, ITickable {
              this.g = LoginListener.EnumProtocolState.KEY;
              this.networkManager.sendPacket(new PacketLoginOutEncryptionBegin("", this.server.O().getPublic(), this.e));
          } else {
@@ -50,9 +50,9 @@ index a5cbe04..dfea131 100644
          }
  
      }
-@@ -157,49 +173,11 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -161,49 +177,11 @@ public class LoginListener implements PacketLoginInListener, ITickable {
  
-                         LoginListener.this.i = LoginListener.this.server.ay().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s);
+                         LoginListener.this.i = LoginListener.this.server.az().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s, this.a());
                          if (LoginListener.this.i != null) {
 -                            // CraftBukkit start - fire PlayerPreLoginEvent
 -                            if (!networkManager.isConnected()) {
@@ -102,7 +102,7 @@ index a5cbe04..dfea131 100644
                          } else {
                              LoginListener.this.disconnect("Failed to verify username!");
                              LoginListener.c.error("Username \'{}\' tried to join with an invalid session", new Object[] { gameprofile.getName()});
-@@ -208,7 +186,6 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -212,7 +190,6 @@ public class LoginListener implements PacketLoginInListener, ITickable {
                          if (LoginListener.this.server.R()) {
                              LoginListener.c.warn("Authentication servers are down but will let them in anyway!");
                              LoginListener.this.i = LoginListener.this.a(gameprofile);
@@ -110,14 +110,16 @@ index a5cbe04..dfea131 100644
                          } else {
                              LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
                              LoginListener.c.error("Couldn\'t verify username because servers are unavailable");
-@@ -219,12 +196,64 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -223,7 +200,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
                          server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
                          // CraftBukkit end
                      }
 -
 +                    callPreLoginEvent(); // SportBukkit
                  }
-             }).start();
+ 
+                 @Nullable
+@@ -236,6 +213,58 @@ public class LoginListener implements PacketLoginInListener, ITickable {
          }
      }
  

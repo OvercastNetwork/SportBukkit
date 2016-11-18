@@ -1,4 +1,4 @@
-From 599285f68788bc73c54fe866f9a50b68c52d4d78 Mon Sep 17 00:00:00 2001
+From 8127c91bd145caa503be63e611c69ad5b354e884 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 4 Apr 2013 21:36:54 -0500
 Subject: [PATCH] Fix invalid player death messages
@@ -6,10 +6,10 @@ Subject: [PATCH] Fix invalid player death messages
 This bug affects the /kill command and any plugin that sets a player's health to zero
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 2474aa3..01554b1 100644
+index 2a1f4f7..4df19fa 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
-@@ -403,7 +403,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -393,7 +393,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              }
          }
  
@@ -18,14 +18,13 @@ index 2474aa3..01554b1 100644
  
          String deathmessage = chatmessage.toPlainText();
          org.bukkit.event.entity.PlayerDeathEvent event = CraftEventFactory.callPlayerDeathEvent(this, loot, deathmessage, keepInventory);
-@@ -457,7 +457,8 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -439,7 +439,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
  
-         EntityLiving entityliving = this.bZ();
+         EntityLiving entityliving = this.ca();
  
 -        if (entityliving != null) {
-+        // CraftBukkit - can't have a combat tracked killer with a generic damage source
-+        if (entityliving != null && damagesource != DamageSource.GENERIC) {
-             EntityTypes.MonsterEggInfo entitytypes_monsteregginfo = (EntityTypes.MonsterEggInfo) EntityTypes.eggInfo.get(EntityTypes.b((Entity) entityliving));
++        if (entityliving != null && damagesource != DamageSource.GENERIC) { // SportBukkit - can't have a combat tracked killer with a generic damage source
+             EntityTypes.MonsterEggInfo entitytypes_monsteregginfo = (EntityTypes.MonsterEggInfo) EntityTypes.eggInfo.get(EntityTypes.a((Entity) entityliving));
  
              if (entitytypes_monsteregginfo != null) {
 -- 

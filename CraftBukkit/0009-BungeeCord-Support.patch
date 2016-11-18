@@ -1,4 +1,4 @@
-From 22e8f4712232ceeb42774434fddddd626bf123f8 Mon Sep 17 00:00:00 2001
+From b97cc8d049f1c2404523a9cd62bc15c23b9b8d04 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Sat, 13 Apr 2013 10:50:21 -0700
 Subject: [PATCH] BungeeCord Support
@@ -7,7 +7,7 @@ Subject: [PATCH] BungeeCord Support
 - Ported from Spigot
 
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index 77bba1f..e1059f3 100644
+index ec03fe5..ad9483c 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -71,6 +71,28 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -40,10 +40,10 @@ index 77bba1f..e1059f3 100644
              }
              break;
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index dfea131..b132c49 100644
+index e1bbfe4..ef64729 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
-@@ -144,7 +144,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -148,7 +148,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
              // SportBukkit start - call pre-login event in offline mode
              new Thread("User Authenticator #" + LoginListener.b.incrementAndGet()) {
                  public void run() {
@@ -52,7 +52,7 @@ index dfea131..b132c49 100644
                      LoginListener.c.info("UUID (offline) of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
                      callPreLoginEvent();
                  }
-@@ -252,6 +252,22 @@ public class LoginListener implements PacketLoginInListener, ITickable {
+@@ -263,6 +263,22 @@ public class LoginListener implements PacketLoginInListener, ITickable {
  
          this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
      }
@@ -76,7 +76,7 @@ index dfea131..b132c49 100644
  
      protected GameProfile a(GameProfile gameprofile) {
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index da6efc7..f46c87f 100644
+index 9e0e057..7ff82c1 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -65,7 +65,11 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
@@ -106,10 +106,10 @@ index 1cb9d60..295f43d 100644
          this.d = EnumProtocol.a(packetdataserializer.g());
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a1b5b22..a36b917 100644
+index 5bbb7bd..9a792c4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -168,6 +168,8 @@ public final class CraftServer implements Server {
+@@ -169,6 +169,8 @@ public final class CraftServer implements Server {
      private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
      private final List<CraftPlayer> playerView;
      public int reloadCount;
@@ -118,7 +118,7 @@ index a1b5b22..a36b917 100644
  
      private final class BooleanWrapper {
          private boolean value = true;
-@@ -241,6 +243,7 @@ public final class CraftServer implements Server {
+@@ -242,6 +244,7 @@ public final class CraftServer implements Server {
          }
  
          saveCommandsConfig();

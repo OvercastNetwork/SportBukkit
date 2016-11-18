@@ -1,11 +1,11 @@
-From 27f55de64e34c30b2763883ba2cb3d50c174ae8d Mon Sep 17 00:00:00 2001
+From e71cd4b2830c85bd78dbb9c99e8a8a1fd1615c0d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
-index 60b882e..7352b70 100644
+index 623785d..539d167 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java
 +++ b/src/main/java/net/minecraft/server/DispenserRegistry.java
 @@ -230,7 +230,7 @@ public class DispenserRegistry {
@@ -26,7 +26,7 @@ index 60b882e..7352b70 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 48e6efd..f5068ff 100644
+index 2c36674..cd5007c 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,8 @@ import org.bukkit.block.BlockFace;
@@ -38,15 +38,15 @@ index 48e6efd..f5068ff 100644
  import org.bukkit.event.entity.EntityCombustByEntityEvent;
  import org.bukkit.event.entity.EntityDespawnInVoidEvent;
  import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-@@ -107,6 +109,7 @@ public abstract class Entity implements ICommandListener {
+@@ -108,6 +110,7 @@ public abstract class Entity implements ICommandListener {
+     protected Random random;
      public int ticksLived;
-     public int maxFireTicks;
      public int fireTicks;
 +    public boolean wasOnFire; // SportBukkit - to detect when the fire goes out
      public boolean inWater;
      public int noDamageTicks;
      protected boolean justCreated;
-@@ -394,24 +397,25 @@ public abstract class Entity implements ICommandListener {
+@@ -400,24 +403,25 @@ public abstract class Entity implements ICommandListener {
  
      protected void burnFromLava() {
          if (!this.fireProof) {
@@ -88,13 +88,19 @@ index 48e6efd..f5068ff 100644
                  }
                  return;
              }
-@@ -764,22 +768,34 @@ public abstract class Entity implements ICommandListener {
+@@ -783,19 +787,33 @@ public abstract class Entity implements ICommandListener {
  
              boolean flag2 = this.ai();
  
 -            if (this.world.f(this.getBoundingBox().shrink(0.001D))) {
 -                this.burn(1);
-+            // CraftBukkit start - get the location of the fire block
+-                if (!flag2) {
+-                    ++this.fireTicks;
+-                    if (this.fireTicks == 0) {
+-                        // CraftBukkit start
+-                        EntityCombustEvent event = new org.bukkit.event.entity.EntityCombustByBlockEvent(null, getBukkitEntity(), 8);
+-                        world.getServer().getPluginManager().callEvent(event);
++            // SportBukkit start - get the location of the fire block
 +            Vec3D firePos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D), Material.FIRE);
 +            if (firePos != null) {
 +                org.bukkit.block.Block fireBlock = this.bukkitEntity.getWorld().getBlockAt((int) firePos.x, (int) firePos.y, (int) firePos.z);
@@ -104,16 +110,9 @@ index 48e6efd..f5068ff 100644
 +                } finally {
 +                    CraftEventFactory.blockDamage = null;
 +                }
-+
-                 if (!flag2) {
--                    ++this.fireTicks;
--                    // CraftBukkit start - Not on fire yet
--                    if (this.fireTicks <= 0) { // Only throw events on the first combust, otherwise it spams
--                        EntityCombustEvent event = new org.bukkit.event.entity.EntityCombustByBlockEvent(null, getBukkitEntity(), 8);
--                        world.getServer().getPluginManager().callEvent(event);
--
+ 
 -                        if (!event.isCancelled()) {
--                            setOnFire(event.getDuration());
++                if (!flag2) {
 +                    EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(fireBlock, this.getBukkitEntity(), 8);
 +                    this.world.getServer().getPluginManager().callEvent(event);
 +
@@ -126,41 +125,38 @@ index 48e6efd..f5068ff 100644
 +                        // be fired every tick, thus we cannot avoid "spamming" it.
 +                        ++this.fireTicks;
 +                        if (this.fireTicks == 0) {
-+                            this.setOnFire(event.getDuration());
+                             this.setOnFire(event.getDuration());
                          }
--                    } else {
 -                        // CraftBukkit end
--                        this.setOnFire(8);
++                        // SportBukkit end
                      }
-+            // CraftBukkit end
                  }
              } else if (this.fireTicks <= 0) {
-                 this.fireTicks = -this.maxFireTicks;
-@@ -790,6 +806,15 @@ public abstract class Entity implements ICommandListener {
-                 this.fireTicks = -this.maxFireTicks;
+@@ -807,6 +825,15 @@ public abstract class Entity implements ICommandListener {
+                 this.fireTicks = -this.getMaxFireTicks();
              }
  
-+            // CraftBukkit start
++            // SportBukkit start
 +            if(this.fireTicks > 0) {
 +                this.wasOnFire = true;
 +            } else if(this.wasOnFire && this.fireTicks <= 0) {
 +                this.wasOnFire = false;
 +                this.world.getServer().getPluginManager().callEvent(new EntityExtinguishEvent(this.getBukkitEntity()));
 +            }
-+            // CraftBukkit end
++            // SportBukkit end
 +
              this.world.methodProfiler.b();
          }
      }
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index a5a4171..327676d 100644
+index 00fe2e9..ed7b0b8 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1742,6 +1742,38 @@ public abstract class World implements IBlockAccess {
+@@ -1764,6 +1764,38 @@ public abstract class World implements IBlockAccess {
          return false;
      }
  
-+    // CraftBukkit start
++    // SportBukkit start
 +    public Vec3D getLargestBlockIntersection(AxisAlignedBB aabb, Material material) {
 +        int xMin = MathHelper.floor(aabb.a);
 +        int xMax = MathHelper.floor(aabb.d + 1.0D);
@@ -190,13 +186,13 @@ index a5a4171..327676d 100644
 +
 +        return block;
 +    }
-+    // CraftBukkit end
++    // SportBukkit end
 +
-     public boolean b(AxisAlignedBB axisalignedbb, Material material) {
-         int i = MathHelper.floor(axisalignedbb.a);
-         int j = MathHelper.f(axisalignedbb.d);
+     public Explosion explode(@Nullable Entity entity, double d0, double d1, double d2, float f, boolean flag) {
+         return this.createExplosion(entity, d0, d1, d2, f, false, flag);
+     }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 2c3d95d..8213c69 100644
+index 950a9ae..f6618e0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -483,18 +483,16 @@ public class CraftEventFactory {

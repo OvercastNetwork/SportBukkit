@@ -1,23 +1,23 @@
-From ee1591f0948ddec031129b6a0dfda29c4753af2c Mon Sep 17 00:00:00 2001
+From ea4b31d45c7cf4e6377e037229b73d5ffa19eb75 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 4794521..8bd8105 100644
+index bf35375..29b20ec 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -28,7 +28,7 @@ import org.bukkit.inventory.MainHand;
  public class EntityPlayer extends EntityHuman implements ICrafting {
  
-     private static final Logger bS = LogManager.getLogger();
+     private static final Logger bR = LogManager.getLogger();
 -    private String locale = "en_US";
 +    public String locale = null; // SportBukkit - make public and default to null
      public PlayerConnection playerConnection;
      public final MinecraftServer server;
      public final PlayerInteractManager playerInteractManager;
-@@ -1058,7 +1058,15 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+@@ -1045,7 +1045,15 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
              this.server.server.getPluginManager().callEvent(event);
          }
          // CraftBukkit end
@@ -30,11 +30,11 @@ index 4794521..8bd8105 100644
 +        }
 +        // SportBukkit end
 +
-         this.ch = packetplayinsettings.c();
-         this.ci = packetplayinsettings.d();
-         this.getDataWatcher().set(EntityPlayer.br, Byte.valueOf((byte) packetplayinsettings.e()));
+         this.cg = packetplayinsettings.c();
+         this.ch = packetplayinsettings.d();
+         this.getDataWatcher().set(EntityPlayer.bq, Byte.valueOf((byte) packetplayinsettings.e()));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 99838c1..5bde740 100644
+index 766cb94..141328e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1462,4 +1462,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -54,10 +54,10 @@ index 99838c1..5bde740 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 5a879ed..2c3d95d 100644
+index 96f23f2..950a9ae 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -652,7 +652,7 @@ public class CraftEventFactory {
+@@ -654,7 +654,7 @@ public class CraftEventFactory {
          if (!event.isCancelled()) {
              state.update(true);
          }
@@ -66,7 +66,7 @@ index 5a879ed..2c3d95d 100644
          return !event.isCancelled();
      }
  
-@@ -1027,4 +1027,11 @@ public class CraftEventFactory {
+@@ -1029,4 +1029,11 @@ public class CraftEventFactory {
          child.world.getServer().getPluginManager().callEvent(event);
          return event;
      }

@@ -1,14 +1,14 @@
-From c35408f1793e1c4f25c27f4930ef9348a4362561 Mon Sep 17 00:00:00 2001
+From 11e2bec65822973ecc7cf5dacf29245fb1104dd5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 08:28:39 -0500
 Subject: [PATCH] Fix TNT physics
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 4e2b632..5e18321 100644
+index 6851c66..19dedad 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -968,7 +968,7 @@ public abstract class Entity implements ICommandListener {
+@@ -987,7 +987,7 @@ public abstract class Entity implements ICommandListener {
          return this.inWater;
      }
  
@@ -18,10 +18,10 @@ index 4e2b632..5e18321 100644
              this.inWater = false;
          } else if (this.world.a(this.getBoundingBox().grow(0.0D, -0.4000000059604645D, 0.0D).shrink(0.001D), Material.WATER, this)) {
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index b4354ab..de844e7 100644
+index 0ede960..b165ce8 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-@@ -78,6 +78,43 @@ public class EntityTNTPrimed extends Entity {
+@@ -80,6 +80,43 @@ public class EntityTNTPrimed extends Entity {
  
      }
  
@@ -65,7 +65,7 @@ index b4354ab..de844e7 100644
      private void explode() {
          // CraftBukkit start
          // float f = 4.0F;
-@@ -102,7 +139,7 @@ public class EntityTNTPrimed extends Entity {
+@@ -105,7 +142,7 @@ public class EntityTNTPrimed extends Entity {
      }
  
      public float getHeadHeight() {
@@ -75,10 +75,10 @@ index b4354ab..de844e7 100644
  
      public void setFuseTicks(int i) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 3a97ea6..81ec94b 100644
+index 7c839ed..c47f32c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -609,6 +609,11 @@ public final class CraftServer implements Server {
+@@ -610,6 +610,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

@@ -1,17 +1,17 @@
-From e803c14b6c771e9eeeac7cfdd83a977b6e8f4aa1 Mon Sep 17 00:00:00 2001
+From b13838458d913b0227fe8b79e782724bd44b1481 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Thu, 17 Apr 2014 19:56:31 -0500
 Subject: [PATCH] Make ticksFlown in EntityFireworks public
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
-index 1227b00..d150cff 100644
+index d8fb786..f83f67b 100644
 --- a/src/main/java/net/minecraft/server/EntityFireworks.java
 +++ b/src/main/java/net/minecraft/server/EntityFireworks.java
-@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
+@@ -3,7 +3,7 @@ package net.minecraft.server;
  public class EntityFireworks extends Entity {
  
-     public static final DataWatcherObject<Optional<ItemStack>> FIREWORK_ITEM = DataWatcher.a(EntityFireworks.class, DataWatcherRegistry.f);
+     public static final DataWatcherObject<ItemStack> FIREWORK_ITEM = DataWatcher.a(EntityFireworks.class, DataWatcherRegistry.f);
 -    private int ticksFlown;
 +    public int ticksFlown; // SportBukkit - private -> public
      public int expectedLifespan;

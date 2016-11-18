@@ -1,22 +1,22 @@
-From d0c844cd03a9d4c2847139ce609da8847eb5c8fb Mon Sep 17 00:00:00 2001
+From 11d2dcdd59b9b3732ca46e6752ab54a8a5504a02 Mon Sep 17 00:00:00 2001
 From: Chad Waters <authorblues@gmail.com>
 Date: Thu, 2 Aug 2012 16:47:02 -0700
 Subject: [PATCH] Fire ExplosionPrimeEvent properly. Fixes BUKKIT-770
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockTNT.java b/src/main/java/net/minecraft/server/BlockTNT.java
-index bfb27ed..25eabc0 100644
+index 6b6aa89..6f8dec8 100644
 --- a/src/main/java/net/minecraft/server/BlockTNT.java
 +++ b/src/main/java/net/minecraft/server/BlockTNT.java
-@@ -3,6 +3,7 @@ package net.minecraft.server;
- import javax.annotation.Nullable;
+@@ -1,6 +1,7 @@
+ package net.minecraft.server;
  
  public class BlockTNT extends Block {
 +    private boolean isPrimed = false; // SportBukkit
  
      public static final BlockStateBoolean EXPLODE = BlockStateBoolean.of("explode");
  
-@@ -16,7 +17,11 @@ public class BlockTNT extends Block {
+@@ -14,7 +15,11 @@ public class BlockTNT extends Block {
          super.onPlace(world, blockposition, iblockdata);
          if (world.isBlockIndirectlyPowered(blockposition)) {
              this.postBreak(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)));
@@ -29,8 +29,8 @@ index bfb27ed..25eabc0 100644
          }
  
      }
-@@ -24,7 +29,11 @@ public class BlockTNT extends Block {
-     public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block) {
+@@ -22,7 +27,11 @@ public class BlockTNT extends Block {
+     public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block, BlockPosition blockposition1) {
          if (world.isBlockIndirectlyPowered(blockposition)) {
              this.postBreak(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)));
 -            world.setAir(blockposition);
@@ -42,7 +42,7 @@ index bfb27ed..25eabc0 100644
          }
  
      }
-@@ -33,8 +42,18 @@ public class BlockTNT extends Block {
+@@ -31,8 +40,18 @@ public class BlockTNT extends Block {
          if (!world.isClientSide) {
              EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), explosion.getSource());
  
@@ -63,7 +63,7 @@ index bfb27ed..25eabc0 100644
          }
      }
  
-@@ -47,6 +66,13 @@ public class BlockTNT extends Block {
+@@ -45,6 +64,13 @@ public class BlockTNT extends Block {
              if (((Boolean) iblockdata.get(BlockTNT.EXPLODE)).booleanValue()) {
                  EntityTNTPrimed entitytntprimed = new EntityTNTPrimed(world, (double) ((float) blockposition.getX() + 0.5F), (double) blockposition.getY(), (double) ((float) blockposition.getZ() + 0.5F), entityliving);
  
@@ -75,11 +75,11 @@ index bfb27ed..25eabc0 100644
 +                // SportBukkit end
 +
                  world.addEntity(entitytntprimed);
-                 world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gz, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                 world.a((EntityHuman) null, entitytntprimed.locX, entitytntprimed.locY, entitytntprimed.locZ, SoundEffects.gV, SoundCategory.BLOCKS, 1.0F, 1.0F);
              }
 @@ -57,7 +83,11 @@ public class BlockTNT extends Block {
-     public boolean interact(World world, BlockPosition blockposition, IBlockData iblockdata, EntityHuman entityhuman, EnumHand enumhand, @Nullable ItemStack itemstack, EnumDirection enumdirection, float f, float f1, float f2) {
-         if (itemstack != null && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
+ 
+         if (!itemstack.isEmpty() && (itemstack.getItem() == Items.FLINT_AND_STEEL || itemstack.getItem() == Items.FIRE_CHARGE)) {
              this.a(world, blockposition, iblockdata.set(BlockTNT.EXPLODE, Boolean.valueOf(true)), (EntityLiving) entityhuman);
 -            world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 11);
 +            // SportBukkit start - don't remove block if TNT priming is cancelled
@@ -104,14 +104,14 @@ index bfb27ed..25eabc0 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityCreeper.java b/src/main/java/net/minecraft/server/EntityCreeper.java
-index 1624680..dbb9169 100644
+index f04f5bb..11c8b24 100644
 --- a/src/main/java/net/minecraft/server/EntityCreeper.java
 +++ b/src/main/java/net/minecraft/server/EntityCreeper.java
-@@ -101,7 +101,16 @@ public class EntityCreeper extends EntityMonster {
-             int i = this.df();
+@@ -103,7 +103,16 @@ public class EntityCreeper extends EntityMonster {
+             int i = this.di();
  
              if (i > 0 && this.fuseTicks == 0) {
--                this.a(SoundEffects.at, 1.0F, 0.5F);
+-                this.a(SoundEffects.av, 1.0F, 0.5F);
 +                // SportBukkit start - fire ExplosionPrimeEvent
 +                ExplosionPrimeEvent event = new ExplosionPrimeEvent(this.getBukkitEntity(), this.explosionRadius * (this.isPowered() ? 2.0F : 1.0F), false);
 +                this.world.getServer().getPluginManager().callEvent(event);
@@ -119,14 +119,14 @@ index 1624680..dbb9169 100644
 +                if (event.isCancelled()) {
 +                    i = 0;
 +                } else {
-+                    this.a(SoundEffects.at, 1.0F, 0.5F);
++                    this.a(SoundEffects.av, 1.0F, 0.5F);
 +                }
 +                // SportBukkit end
              }
  
              this.fuseTicks += i;
 diff --git a/src/main/java/net/minecraft/server/EntityLargeFireball.java b/src/main/java/net/minecraft/server/EntityLargeFireball.java
-index b25ed1a..0ff37de 100644
+index 8326d33..1d1b80e 100644
 --- a/src/main/java/net/minecraft/server/EntityLargeFireball.java
 +++ b/src/main/java/net/minecraft/server/EntityLargeFireball.java
 @@ -23,15 +23,9 @@ public class EntityLargeFireball extends EntityFireball {
@@ -148,18 +148,17 @@ index b25ed1a..0ff37de 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityTNTPrimed.java b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-index fc7d581..b4354ab 100644
+index 8f0c54c..0ede960 100644
 --- a/src/main/java/net/minecraft/server/EntityTNTPrimed.java
 +++ b/src/main/java/net/minecraft/server/EntityTNTPrimed.java
-@@ -83,13 +83,9 @@ public class EntityTNTPrimed extends Entity {
+@@ -85,12 +85,9 @@ public class EntityTNTPrimed extends Entity {
          // float f = 4.0F;
  
          org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
-+        org.bukkit.entity.Explosive explosive = (org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this);
- 
 -        ExplosionPrimeEvent event = new ExplosionPrimeEvent((org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this));
 -        server.getPluginManager().callEvent(event);
--
++        org.bukkit.entity.Explosive explosive = (org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this);
+ 
 -        if (!event.isCancelled()) {
 -            this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, event.getRadius(), event.getFire(), true);
 -        }

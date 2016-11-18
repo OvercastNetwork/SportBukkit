@@ -1,16 +1,16 @@
-From 7b0769faff5cc1316db332ed7c92ba8f69cff010 Mon Sep 17 00:00:00 2001
+From 49f44815af47a0c0a9bc193a70f2456f9a633a81 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 30 Apr 2014 17:37:27 -0500
 Subject: [PATCH] Disable resource leak detector
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1511a3d..1542a4e 100644
+index 86d2abb..10c2dc8 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -131,6 +131,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
-         this.W = gameprofilerepository;
-         this.X = usercache;
+         this.X = gameprofilerepository;
+         this.Y = usercache;
          // this.universe = file; // CraftBukkit
 +
 +        // SportBukkit - disable netty's resource leak detection

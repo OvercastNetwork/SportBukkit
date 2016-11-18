@@ -1,24 +1,24 @@
-From d6a054be360e52c20916c9f1a47667e8131edddb Mon Sep 17 00:00:00 2001
+From 623746bcfd32864335ac4f2a7fb0c6bd90dfe9ba Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 14 Feb 2015 08:18:51 -0500
 Subject: [PATCH] Add invis override API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index f5068ff..4e2b632 100644
+index cd5007c..6851c66 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -115,7 +115,7 @@ public abstract class Entity implements ICommandListener {
+@@ -116,7 +116,7 @@ public abstract class Entity implements ICommandListener {
      protected boolean justCreated;
      protected boolean fireProof;
      protected DataWatcher datawatcher;
--    protected static final DataWatcherObject<Byte> aa = DataWatcher.a(Entity.class, DataWatcherRegistry.a);
-+    protected static final DataWatcherObject<Byte> aa = DataWatcher.a(Entity.class, DataWatcherRegistry.a); public static final DataWatcherObject<Byte> FLAGS = aa; // SportBukkit - add public alias
+-    protected static final DataWatcherObject<Byte> Z = DataWatcher.a(Entity.class, DataWatcherRegistry.a);
++    protected static final DataWatcherObject<Byte> Z = DataWatcher.a(Entity.class, DataWatcherRegistry.a); public static final DataWatcherObject<Byte> FLAGS = Z; // SportBukkit - add public alias
      private static final DataWatcherObject<Integer> az = DataWatcher.a(Entity.class, DataWatcherRegistry.b);
      private static final DataWatcherObject<String> aA = DataWatcher.a(Entity.class, DataWatcherRegistry.d);
      private static final DataWatcherObject<Boolean> aB = DataWatcher.a(Entity.class, DataWatcherRegistry.h);
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
-index 54b7f71..9dd7df7 100644
+index fdf19d1..872bdd8 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutEntityMetadata.java
 @@ -5,8 +5,10 @@ import java.util.List;
@@ -35,10 +35,10 @@ index 54b7f71..9dd7df7 100644
      public PacketPlayOutEntityMetadata() {}
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 26bce87..8bf8fd6 100644
+index 8d9fc97..d36900d 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
-@@ -1159,6 +1159,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1135,6 +1135,31 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
                  }
              }
  
@@ -71,7 +71,7 @@ index 26bce87..8bf8fd6 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c2311b2..12dabc2 100644
+index 7df450a..1d0c195 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -85,6 +85,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

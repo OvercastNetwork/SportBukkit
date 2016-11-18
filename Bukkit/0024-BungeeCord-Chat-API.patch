@@ -1,11 +1,11 @@
-From 70d4743de12872c5a56731ef8e1e623d29f359e9 Mon Sep 17 00:00:00 2001
+From c1edab914a8837a72d32d653de181f4b4316a552 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 12:59:14 +1100
 Subject: [PATCH] BungeeCord Chat API
 
 
 diff --git a/pom.xml b/pom.xml
-index 2a6241c..dbf7670 100644
+index 2a6241c..d943f8d 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -81,6 +81,14 @@
@@ -15,7 +15,7 @@ index 2a6241c..dbf7670 100644
 +        <dependency>
 +            <groupId>net.md-5</groupId>
 +            <artifactId>bungeecord-chat</artifactId>
-+            <version>1.8-SNAPSHOT</version>
++            <version>1.11-SNAPSHOT</version>
 +            <type>jar</type>
 +            <scope>compile</scope>
 +        </dependency>

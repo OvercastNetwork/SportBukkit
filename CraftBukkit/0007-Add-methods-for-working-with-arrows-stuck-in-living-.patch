@@ -1,31 +1,31 @@
-From f9ecd41a3058df1a0fb35e80992251fe952c4b44 Mon Sep 17 00:00:00 2001
+From 8fb652e8a82dbfaa6fe517d7bdac4628876d54e4 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 85e8d3d..6424ec5 100644
+index 5436c67..135bd30 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1293,10 +1293,12 @@ public abstract class EntityLiving extends Entity {
+@@ -1362,10 +1362,12 @@ public abstract class EntityLiving extends Entity {
          return (float) this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
      }
  
-+    public int getArrowsStuck() { return cb(); } // SportBukkit - alias for next method
-     public final int cb() {
-         return ((Integer) this.datawatcher.get(EntityLiving.h)).intValue();
++    public int getArrowsStuck() { return cc(); } // SportBukkit - alias for next method
+     public final int cc() {
+         return ((Integer) this.datawatcher.get(EntityLiving.bq)).intValue();
      }
  
 +    public void setArrowsStuck(int arrows) { f(arrows); } // SportBukkit - alias for next method
      public final void f(int i) {
-         this.datawatcher.set(EntityLiving.h, Integer.valueOf(i));
+         this.datawatcher.set(EntityLiving.bq, Integer.valueOf(i));
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index e662e4a..aad4ce6 100644
+index 4641e3d..19d946b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-@@ -550,4 +550,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
+@@ -556,4 +556,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
      public boolean isCollidable() {
          return getHandle().collides;
      }

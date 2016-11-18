@@ -1,14 +1,14 @@
-From d4fece1af0b903912d939b95b2f265e56150b735 Mon Sep 17 00:00:00 2001
+From c9f2f2a589f4717a5d3391c766464d8f892c2056 Mon Sep 17 00:00:00 2001
 From: md_5 <md_5@live.com.au>
 Date: Thu, 4 Jul 2013 10:11:46 +1000
 Subject: [PATCH] Colour Console Messages
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 227b2d0..11f4131 100644
+index 4309a6e..3acfbcb 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1045,7 +1045,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1048,7 +1048,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
      }
  
      public void sendMessage(IChatBaseComponent ichatbasecomponent) {

@@ -1,11 +1,11 @@
-From 61460498847b431620ca1337cfab30e98458933f Mon Sep 17 00:00:00 2001
+From bc600f68aaf2455c118323b7ef2a82ea0eb958d1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Feb 2015 03:39:46 -0500
 Subject: [PATCH] Add setting to disable skull fetching
 
 
 diff --git a/src/main/java/net/minecraft/server/TileEntitySkull.java b/src/main/java/net/minecraft/server/TileEntitySkull.java
-index 4ae6796..83dd379 100644
+index 6e91a22..a225ee7 100644
 --- a/src/main/java/net/minecraft/server/TileEntitySkull.java
 +++ b/src/main/java/net/minecraft/server/TileEntitySkull.java
 @@ -115,7 +115,13 @@ public class TileEntitySkull extends TileEntity implements ITickable {
@@ -24,10 +24,10 @@ index 4ae6796..83dd379 100644
  
                      return gameprofile1;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 073e5aa..c1d5c52 100644
+index 46cc2be..8047834 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -581,6 +581,11 @@ public final class CraftServer implements Server {
+@@ -582,6 +582,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

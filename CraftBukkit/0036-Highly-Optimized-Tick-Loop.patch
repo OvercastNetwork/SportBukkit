@@ -1,65 +1,73 @@
-From 2daadc02db35172381b1b8ac184ea6b576ee186d Mon Sep 17 00:00:00 2001
+From a136883f7d72bd8dac02496687f92da72f8e66c0 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 25 Jan 2014 14:08:35 +1100
 Subject: [PATCH] Highly Optimized Tick Loop
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7a0249d..566c295 100644
+index 424ffd9..1dde098 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -117,6 +117,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -102,6 +102,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+     private long Z;
+     protected final Queue<FutureTask<?>> j = Queues.newArrayDeque();
+     private Thread serverThread;
++    void setLastTickStart(long millis) { ab = millis; } // SportBukkit - alias
+     private long ab = aw();
+ 
+     // CraftBukkit start
+@@ -116,6 +117,12 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
      public java.util.Queue<Runnable> processQueue = new java.util.concurrent.ConcurrentLinkedQueue<Runnable>();
      public int autosavePeriod;
      // CraftBukkit end
-+    // Spigot start
++    // SportBukkit start
 +    private static final int TPS = 20;
 +    private static final int TICK_TIME = 1000000000 / TPS;
 +    private static final int SAMPLE_INTERVAL = 100;
 +    public final double[] recentTps = new double[ 3 ];
-+    // Spigot end
++    // SportBukkit end
  
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
-@@ -513,48 +519,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -516,48 +523,50 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          this.isRunning = false;
      }
  
-+    // Spigot Start
++    // SportBukkit Start
 +    private static double calcTps(double avg, double exp, double tps)
 +    {
 +        return ( avg * exp ) + ( tps * ( 1 - exp ) );
 +    }
-+    // Spigot End
++    // SportBukkit End
 +
      public void run() {
          try {
              if (this.init()) {
--                this.aa = av();
+-                this.ab = aw();
 -                long i = 0L;
 -
                  this.q.setMOTD(new ChatComponentText(this.motd));
-                 this.q.setServerInfo(new ServerPing.ServerData("1.10.2", 210));
+                 this.q.setServerInfo(new ServerPing.ServerData("1.11", 315));
                  this.a(this.q);
  
-+                // Spigot start
++                // SportBukkit start
 +                Arrays.fill( recentTps, 20 );
 +                long lastTick = System.nanoTime(), catchupTime = 0, curTime, wait, tickSection = lastTick;
                  while (this.isRunning) {
--                    long j = av();
--                    long k = j - this.aa;
+-                    long j = aw();
+-                    long k = j - this.ab;
 -
--                    if (k > 2000L && this.aa - this.Q >= 15000L) {
+-                    if (k > 2000L && this.ab - this.R >= 15000L) {
 -                        if (server.getWarnOnOverload()) // CraftBukkit
 -                        MinecraftServer.LOGGER.warn("Can\'t keep up! Did the system time change, or is the server overloaded? Running {}ms behind, skipping {} tick(s)", new Object[] { Long.valueOf(k), Long.valueOf(k / 50L)});
 -                        k = 2000L;
--                        this.Q = this.aa;
+-                        this.R = this.ab;
 -                    }
 -
 -                    if (k < 0L) {
 -                        MinecraftServer.LOGGER.warn("Time ran backwards! Did the system time change?");
 -                        k = 0L;
-+                    this.aa = av();
++                    setLastTickStart(realTimeMillis());
 +
 +                    curTime = System.nanoTime();
 +                    wait = TICK_TIME - (curTime - lastTick) - catchupTime;
@@ -72,7 +80,7 @@ index 7a0249d..566c295 100644
                      }
  
 -                    i += k;
--                    this.aa = j;
+-                    this.ab = j;
 -                    if (this.worlds.get(0).everyoneDeeplySleeping()) { // CraftBukkit
 -                        this.C();
 -                        i = 0L;
@@ -93,13 +101,29 @@ index 7a0249d..566c295 100644
 +                    lastTick = curTime;
  
 -                    Thread.sleep(Math.max(1L, 50L - i));
-+                    this.C();
-                     this.P = true;
++                    this.runTick();
+                     this.Q = true;
                  }
-+                // Spigot end
++                // SportBukkit end
              } else {
                  this.a((CrashReport) null);
              }
+@@ -636,6 +645,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+ 
+     public void B() {}
+ 
++    protected void runTick() throws ExceptionWorldConflict { C(); } // SportBukkit - alias
+     protected void C() throws ExceptionWorldConflict { // CraftBukkit - added throws
+         long i = System.nanoTime();
+ 
+@@ -1347,6 +1357,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+         return this.e;
+     }
+ 
++    public static long realTimeMillis() { return aw(); } // SportBukkit - alias
+     public static long aw() {
+         return System.currentTimeMillis();
+     }
 -- 
 1.9.0
 

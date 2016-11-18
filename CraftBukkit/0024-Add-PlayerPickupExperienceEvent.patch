@@ -1,26 +1,26 @@
-From 66831e050b67a36d85327751ea50e264fd48304f Mon Sep 17 00:00:00 2001
+From ae705030d80744b8de067c4b5bbcf495edb56009 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
-index e8162b2..faee42f 100644
+index 9da8ae4..d8290d7 100644
 --- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -161,6 +161,7 @@ public class EntityExperienceOrb extends Entity {
          if (!this.world.isClientSide) {
-             if (this.c == 0 && entityhuman.bA == 0) {
-                 entityhuman.bA = 2;
+             if (this.c == 0 && entityhuman.bz == 0) {
+                 entityhuman.bz = 2;
 +                if(org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerPickupExperienceEvent((EntityPlayer) entityhuman, this).isCancelled()) return; // SportBukkit - fire event
-                 this.world.a((EntityHuman) null, entityhuman.locX, entityhuman.locY, entityhuman.locZ, SoundEffects.bk, SoundCategory.PLAYERS, 0.1F, 0.5F * ((this.random.nextFloat() - this.random.nextFloat()) * 0.7F + 1.8F));
                  entityhuman.receive(this, 1);
-                 ItemStack itemstack = EnchantmentManager.b(Enchantments.A, (EntityLiving) entityhuman);
+                 ItemStack itemstack = EnchantmentManager.b(Enchantments.B, (EntityLiving) entityhuman);
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index a42ecf3..5a879ed 100644
+index 3d3ea63..96f23f2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-@@ -939,6 +939,13 @@ public class CraftEventFactory {
+@@ -941,6 +941,13 @@ public class CraftEventFactory {
          return event;
      }
  

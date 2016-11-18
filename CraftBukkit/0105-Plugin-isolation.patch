@@ -1,0 +1,25 @@
+From 71b7e502dba2182de10150f69d1a7dc9d4564fec Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 8 Sep 2015 15:49:30 -0400
+Subject: [PATCH] Plugin isolation
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 6a6b455..f6447dc 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -631,6 +631,11 @@ public final class CraftServer implements Server {
+     }
+ 
+     @Override
++    public boolean getIsolatePlugins() {
++        return this.configuration.getBoolean("settings.isolate-plugins", false);
++    }
++
++    @Override
+     public int getTicksPerAnimalSpawns() {
+         return this.configuration.getInt("ticks-per.animal-spawns");
+     }
+-- 
+1.9.0
+

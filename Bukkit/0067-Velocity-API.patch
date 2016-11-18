@@ -1,14 +1,14 @@
-From 266133a0be38cac731524d9c28d69c97558a2638 Mon Sep 17 00:00:00 2001
+From 46dc97792cf83a00d685e7afc96b2d3b554e691a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index d0af33f..f912ad8 100644
+index 9850a7c..8a09db0 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -390,6 +390,13 @@ public final class Bukkit {
+@@ -391,6 +391,13 @@ public final class Bukkit {
      }
  
      /**
@@ -149,7 +149,7 @@ index 0000000..7411633
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-index 69d2fce..e761fa2 100644
+index 69d2fce..9005c9c 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 @@ -6,16 +6,18 @@ import org.bukkit.event.HandlerList;
@@ -198,7 +198,7 @@ index 69d2fce..e761fa2 100644
 -     */
      public void setVelocity(Vector velocity) {
 -        this.velocity = velocity;
-+        velocity.set(velocity);
++        this.velocity.set(velocity);
      }
  
      @Override

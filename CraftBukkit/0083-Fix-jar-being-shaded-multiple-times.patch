@@ -1,0 +1,21 @@
+From 347fdf67284a4d104d9c8ee3faf317c9fc3466ae Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Thu, 30 Apr 2015 22:42:34 -0400
+Subject: [PATCH] Fix jar being shaded multiple times
+
+
+diff --git a/pom.xml b/pom.xml
+index c9e3e59..532bebf 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -124,6 +124,7 @@
+                 <artifactId>maven-jar-plugin</artifactId>
+                 <version>3.0.2</version>
+                 <configuration>
++                    <forceCreation>true</forceCreation> <!-- Required to prevent shading the jar multiple times -->
+                     <archive>
+                         <manifestEntries>
+                             <Main-Class>org.bukkit.craftbukkit.Main</Main-Class>
+-- 
+1.9.0
+

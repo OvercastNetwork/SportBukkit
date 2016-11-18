@@ -1,4 +1,4 @@
-From 8df877d19b65df63c849d83224e4a9ff7b78862f Mon Sep 17 00:00:00 2001
+From 0150a2fc654eb35f1457fd018e9eecd82b033f6f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 10 Oct 2016 04:53:27 -0400
 Subject: [PATCH] Block images
@@ -1317,7 +1317,7 @@ index 0000000..287c095
 +}
 diff --git a/src/test/java/org/bukkit/block/BlockFaceTest.java b/src/test/java/org/bukkit/block/BlockFaceTest.java
 new file mode 100644
-index 0000000..09aa433
+index 0000000..023f7db
 --- /dev/null
 +++ b/src/test/java/org/bukkit/block/BlockFaceTest.java
 @@ -0,0 +1,59 @@
@@ -1375,8 +1375,8 @@ index 0000000..09aa433
 +        assertEquals(BlockFace.EAST_SOUTH_EAST, BlockFace.byDirection(2, 0, 1));
 +
 +        for(BlockFace face : BlockFace.values()) {
-+            assertTrue(face.coarseEquals(face.direction()));
-+            assertEquals(face, BlockFace.byDirection(face.direction()));
++            assertTrue(face.coarseEquals(face.normal()));
++            assertEquals(face, BlockFace.byDirection(face.normal()));
 +        }
 +    }
 +}

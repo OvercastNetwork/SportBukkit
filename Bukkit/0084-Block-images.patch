@@ -1,4 +1,4 @@
-From 90ee3491749b0251bce5f613e04a6570e0e7bb27 Mon Sep 17 00:00:00 2001
+From cd2d4473fee22f94aee45bd352b2b635db005346 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
@@ -105,10 +105,10 @@ index 3015e35..41e6da8 100644
  
      public static EntityLocation copyOf(EntityLocation that) {
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index 8de167a..54ab2eb 100644
+index 8de167a..0d2cca2 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
-@@ -2,24 +2,34 @@ package org.bukkit;
+@@ -2,24 +2,45 @@ package org.bukkit;
  
  import java.util.HashMap;
  import java.util.Map;
@@ -116,6 +116,8 @@ index 8de167a..54ab2eb 100644
  
  import org.bukkit.block.Block;
  import org.bukkit.configuration.serialization.ConfigurationSerializable;
++import org.bukkit.geometry.Direction;
++import org.bukkit.geometry.Ray;
 +import org.bukkit.util.BlockVector;
  import org.bukkit.util.NumberConversions;
 -import static org.bukkit.util.NumberConversions.checkFinite;
@@ -144,10 +146,19 @@ index 8de167a..54ab2eb 100644
 +        this(world, position.fineX(), position.fineY(), position.fineZ(), yaw, pitch);
 +    }
 +
++    public Location(final World world, Vec3 position, Direction direction) {
++        this(world, position.fineX(), position.fineY(), position.fineZ(), direction.yawDegrees(), direction.pitchDegrees());
++    }
++
++    public Location(final World world, Ray ray) {
++        this(world, ray.origin().fineX(), ray.origin().fineY(), ray.origin().fineZ(),
++             ray.direction().yawDegrees(), ray.direction().pitchDegrees());
++    }
++
      /**
       * Constructs a new Location with the given coordinates
       *
-@@ -44,9 +54,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -44,9 +65,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       */
      public Location(final World world, final double x, final double y, final double z, final float yaw, final float pitch) {
          this.world = world;
@@ -158,7 +169,7 @@ index 8de167a..54ab2eb 100644
          this.pitch = pitch;
          this.yaw = yaw;
      }
-@@ -87,13 +95,25 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -87,13 +106,25 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          return world.getBlockAt(this);
      }
  
@@ -185,7 +196,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -102,7 +122,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -102,7 +133,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return x-coordinate
       */
      public double getX() {
@@ -194,7 +205,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -112,7 +132,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -112,7 +143,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block X
       */
      public int getBlockX() {
@@ -203,7 +214,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -121,7 +141,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -121,7 +152,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @param y y-coordinate
       */
      public void setY(double y) {
@@ -212,7 +223,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -130,7 +150,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -130,7 +161,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return y-coordinate
       */
      public double getY() {
@@ -221,7 +232,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -140,7 +160,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -140,7 +171,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block y
       */
      public int getBlockY() {
@@ -230,7 +241,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -149,7 +169,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -149,7 +180,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @param z z-coordinate
       */
      public void setZ(double z) {
@@ -239,7 +250,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -158,7 +178,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -158,7 +189,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return z-coordinate
       */
      public double getZ() {
@@ -248,7 +259,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -168,7 +188,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -168,7 +199,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block z
       */
      public int getBlockZ() {
@@ -257,7 +268,22 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -310,11 +330,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -239,6 +270,14 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+         return pitch;
+     }
+ 
++    public Direction direction() {
++        return Direction.ofDegrees(yaw, pitch);
++    }
++
++    public Ray ray() {
++        return Ray.fromLocation(this);
++    }
++
+     /**
+      * Gets a unit-vector pointing in the direction that this Location is
+      * facing.
+@@ -310,11 +349,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
@@ -270,7 +296,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -325,9 +341,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -325,9 +360,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location add(Vector vec) {
@@ -281,7 +307,7 @@ index 8de167a..54ab2eb 100644
          return this;
      }
  
-@@ -341,9 +355,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -341,9 +374,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location add(double x, double y, double z) {
@@ -292,7 +318,7 @@ index 8de167a..54ab2eb 100644
          return this;
      }
  
-@@ -359,11 +371,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -359,11 +390,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
@@ -305,7 +331,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -374,9 +382,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -374,9 +401,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location subtract(Vector vec) {
@@ -316,7 +342,7 @@ index 8de167a..54ab2eb 100644
          return this;
      }
  
-@@ -391,9 +397,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -391,9 +416,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location subtract(double x, double y, double z) {
@@ -327,7 +353,7 @@ index 8de167a..54ab2eb 100644
          return this;
      }
  
-@@ -409,7 +413,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -409,7 +432,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the magnitude
       */
      public double length() {
@@ -336,7 +362,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -420,7 +424,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -420,7 +443,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the magnitude
       */
      public double lengthSquared() {
@@ -345,7 +371,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -455,8 +459,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -455,8 +478,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          } else if (o.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot measure distance between " + getWorld().getName() + " and " + o.getWorld().getName());
          }
@@ -355,7 +381,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -468,9 +471,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -468,9 +490,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location multiply(double m) {
@@ -366,7 +392,7 @@ index 8de167a..54ab2eb 100644
          return this;
      }
  
-@@ -489,9 +490,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -489,9 +509,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return this object
       */
      public Location copyLocation(Location loc) {
@@ -377,7 +403,7 @@ index 8de167a..54ab2eb 100644
          return copyAngles(loc);
      }
  
-@@ -502,59 +501,29 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -502,59 +520,29 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location zero() {
@@ -447,7 +473,7 @@ index 8de167a..54ab2eb 100644
      }
  
      /**
-@@ -564,37 +533,26 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -564,37 +552,26 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       *     Location
       */
      public Vector toVector() {
@@ -695,7 +721,7 @@ index ddd6c65..64af515 100644
       * Gets the x-coordinate of this block
       *
 diff --git a/src/main/java/org/bukkit/block/BlockFace.java b/src/main/java/org/bukkit/block/BlockFace.java
-index 58fb195..b81267e 100644
+index 58fb195..fe704f1 100644
 --- a/src/main/java/org/bukkit/block/BlockFace.java
 +++ b/src/main/java/org/bukkit/block/BlockFace.java
 @@ -1,43 +1,79 @@
@@ -779,7 +805,7 @@ index 58fb195..b81267e 100644
 +
 +    BlockFace(final int blockYaw, final BlockFace face1, final BlockFace face2) {
 +        this.blockYaw = blockYaw;
-+        this.direction = face1.direction().plus(face2.direction());
++        this.direction = face1.normal().plus(face2.normal());
 +    }
 +
 +    public boolean isHorizontal() {
@@ -808,7 +834,7 @@ index 58fb195..b81267e 100644
 +        return (blockYaw() + 8) * (360F / 16F) - 180F;
 +    }
 +
-+    public Vec3 direction() {
++    public Vec3 normal() {
 +        return direction;
      }
  
@@ -1969,10 +1995,10 @@ index 0000000..ef931bc
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Cuboid.java b/src/main/java/org/bukkit/geometry/Cuboid.java
 new file mode 100644
-index 0000000..9755f87
+index 0000000..ba64e92
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Cuboid.java
-@@ -0,0 +1,576 @@
+@@ -0,0 +1,589 @@
 +package org.bukkit.geometry;
 +
 +import java.util.Objects;
@@ -2017,32 +2043,14 @@ index 0000000..9755f87
 + *      - Trying to construct a cuboid with negative length in any axis
 + *      - Trying to construct a cuboid enclosing an empty set of points
 + */
-+public class Cuboid {
++public abstract class Cuboid implements Region {
 +
-+    private final ImVector min;
-+    private final ImVector max;
++    protected final ImVector min;
++    protected final ImVector max;
 +
-+    private Cuboid(Vec3 min, Vec3 max) {
++    Cuboid(Vec3 min, Vec3 max) {
 +        this.min = ImVector.copyOf(min);
 +        this.max = ImVector.copyOf(max);
-+    }
-+
-+    @Override
-+    public String toString() {
-+        return getClass().getSimpleName() + "{min=[" + min.toString() + "],max=[" + max.toString() + "]}";
-+    }
-+
-+    @Override
-+    public int hashCode() {
-+        return Objects.hash(min, max);
-+    }
-+
-+    @Override
-+    public boolean equals(Object obj) {
-+        if(this == obj) return true;
-+        if(!(obj instanceof Cuboid)) return false;
-+        final Cuboid that = (Cuboid) obj;
-+        return min.equals(that.min) && max.equals(that.max);
 +    }
 +
 +    /**
@@ -2052,7 +2060,7 @@ index 0000000..9755f87
 +     */
 +    public static Cuboid between(Vec3 a, Vec3 b) {
 +        if(a.anyNaN() || b.anyNaN()) return empty();
-+        return new Cuboid(a.minimum(b), a.maximum(b));
++        return new NonEmptyCuboid(a.minimum(b), a.maximum(b));
 +    }
 +
 +    /**
@@ -2061,7 +2069,7 @@ index 0000000..9755f87
 +    public static Cuboid fromMinAndSize(Vec3 min, Vec3 size) {
 +        if(min.anyNaN() || size.anyNaN() ||
 +           size.fineX() < 0 || size.fineY() < 0 || size.fineZ() < 0) return empty();
-+        return new Cuboid(min, min.plus(size));
++        return new NonEmptyCuboid(min, min.plus(size));
 +    }
 +
 +    /**
@@ -2086,16 +2094,14 @@ index 0000000..9755f87
 +     * Return the cuboid that is unbounded in all directions
 +     */
 +    public static Cuboid unbounded() {
-+        return UNBOUNDED;
++        return NonEmptyCuboid.UNBOUNDED;
 +    }
-+    private static final Cuboid UNBOUNDED = new Cuboid(ImVector.of(Double.NEGATIVE_INFINITY),
-+                                                       ImVector.of(Double.POSITIVE_INFINITY));
 +
 +    /**
 +     * Return the inverse of the {@link #unbounded()} cuboid
 +     */
 +    public static Cuboid empty() {
-+        return Empty.INSTANCE;
++        return EmptyCuboid.INSTANCE;
 +    }
 +
 +    /**
@@ -2107,9 +2113,191 @@ index 0000000..9755f87
 +        } else if(b.contains(a)) {
 +            return a;
 +        } else {
-+            return new Cuboid(a.min.maximum(b.min),
-+                              a.max.minimum(b.max));
++            return between(a.min.maximum(b.min),
++                           a.max.minimum(b.max));
 +        }
++    }
++
++    /**
++     * Return the smallest cuboid containing both of the given cuboids
++     */
++    public static Cuboid union(Cuboid a, Cuboid b) {
++        if(a.contains(b)) {
++            return a;
++        } else if(b.contains(a)) {
++            return b;
++        } else {
++            return between(a.min.minimum(b.min),
++                           a.max.maximum(b.max));
++        }
++    }
++
++    /**
++     * Return the smallest cuboid containing the given original cuboid, after subtracting the other given cuboid.
++     */
++    public static Cuboid complement(Cuboid original, Cuboid subtracted) {
++        // The booleans reflect if the subtracted set contains the
++        // original set on each axis. The final bounds for each axis
++        // are then the minimum of the two sets, if the other two axes
++        // are containing, otherwise the bounds of the original set.
++        boolean cx = subtracted.min.fineX() < original.min.fineX() && subtracted.max.fineX() > original.max.fineX();
++        boolean cy = subtracted.min.fineY() < original.min.fineY() && subtracted.max.fineY() > original.max.fineY();
++        boolean cz = subtracted.min.fineZ() < original.min.fineZ() && subtracted.max.fineZ() > original.max.fineZ();
++        return between(ImVector.of(cy && cz ? Math.max(original.min.fineX(), subtracted.min.fineX()) : original.min.fineX(),
++                                   cz && cx ? Math.max(original.min.fineY(), subtracted.min.fineY()) : original.min.fineY(),
++                                   cx && cy ? Math.max(original.min.fineZ(), subtracted.min.fineZ()) : original.min.fineZ()),
++                       ImVector.of(cy && cz ? Math.min(original.max.fineX(), subtracted.max.fineX()) : original.max.fineX(),
++                                   cz && cx ? Math.min(original.max.fineY(), subtracted.max.fineY()) : original.max.fineY(),
++                                   cx && cy ? Math.min(original.max.fineZ(), subtracted.max.fineZ()) : original.max.fineZ()));
++    }
++
++    @Override
++    public Cuboid bounds() {
++        return this;
++    }
++
++    /**
++     * Return the distance from the origin of the given ray to the point
++     * where it first intersects this cuboid. If the ray originates inside
++     * the cuboid, zero is returned.
++     *
++     * If the ray does not intersect the cuboid, but the line of the ray does
++     * intersect (behind the ray's origin), then a negative distance is returned.
++     *
++     * In any other case, NaN is returned.
++     */
++    public abstract double intersectionDistance(Ray ray);
++
++    /**
++     * Return the point at which the given ray enters this cuboid,
++     * or null if the ray does not intersect the cuboid. If the ray
++     * originates inside the cuboid, the ray's origin point is returned.
++     */
++    public abstract ImVector intersect(Ray ray);
++
++
++    /**
++     * Construct a cuboid by translating this cuboid by the given offset
++     */
++    public abstract Cuboid translate(Vec3 offset);
++
++    public abstract Cuboid transform(Transform transform);
++
++    /**
++     * Does this cuboid fully enclose the given cuboid?
++     */
++    public abstract boolean contains(Cuboid cuboid);
++
++    /**
++     * Return the minimum corner of this cuboid
++     */
++    public ImVector minimum() {
++        return min;
++    }
++
++    /**
++     * Return the maximum corner of this cuboid
++     */
++    public ImVector maximum() {
++        return max;
++    }
++
++    /**
++     * Return the dimensions of this cuboid
++     */
++    public ImVector size() {
++        return max.minus(min);
++    }
++
++    public double volume() {
++        final ImVector size = size();
++        return size.fineX() * size.fineY() * size.fineZ();
++    }
++
++    /**
++     * Return the center point of this cuboid
++     */
++    public ImVector center() {
++        return ImVector.copyOf(min.midway(max));
++    }
++
++    /**
++     * Return the eight corner points of this cuboid
++     */
++    public ImVector[] vertices() {
++        return new ImVector[] {
++            min,
++            ImVector.of(min.fineX(), min.fineY(), max.fineZ()),
++            ImVector.of(min.fineX(), max.fineY(), min.fineZ()),
++            ImVector.of(min.fineX(), max.fineY(), max.fineZ()),
++            ImVector.of(max.fineX(), min.fineY(), min.fineZ()),
++            ImVector.of(max.fineX(), min.fineY(), max.fineZ()),
++            ImVector.of(max.fineX(), max.fineY(), min.fineZ()),
++            max
++        };
++    }
++
++    /**
++     * Generate an evenly distributed random point inside this cuboid,
++     * using the given source of random numbers.
++     *
++     * {@link Random#nextDouble()} is used to choose the individual
++     * components, so the range of possible coordinates includes the
++     * lower bounds of the cuboid, but not the upper bounds.
++     *
++     * @throws ArithmeticException if the cuboid is unbounded
++     */
++    public abstract ImVector randomPointInside(Random random);
++
++    /**
++     * Return the lowest block with a center point inside this cuboid
++     */
++    public abstract Vec3 minimumBlockInside();
++
++    /**
++     * Return the highest block with a center point inside this cuboid
++     */
++    public abstract Vec3 maximumBlockInside();
++
++    /**
++     * Return the lowest block with a center point that is greater,
++     * on all axes, than any point in the cuboid.
++     *
++     * This block will have coordinates one greater than {@link #maximumBlockInside()}.
++     */
++    public abstract Vec3 minimumBlockOutside();
++
++    /**
++     * Return number of blocks on each axis with center points inside this cuboid.
++     */
++    public abstract Vec3 blockSize();
++}
++
++class NonEmptyCuboid extends Cuboid {
++
++    static final Cuboid UNBOUNDED = new NonEmptyCuboid(ImVector.of(Double.NEGATIVE_INFINITY),
++                                                       ImVector.of(Double.POSITIVE_INFINITY));
++
++    public NonEmptyCuboid(Vec3 min, Vec3 max) {
++        super(min, max);
++    }
++
++    @Override
++    public String toString() {
++        return getClass().getSimpleName() + "{min=[" + min.toString() + "],max=[" + max.toString() + "]}";
++    }
++
++    @Override
++    public int hashCode() {
++        return Objects.hash(min, max);
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if(this == obj) return true;
++        if(!(obj instanceof Cuboid)) return false;
++        final Cuboid that = (Cuboid) obj;
++        return min.equals(that.minimum()) && max.equals(that.max);
 +    }
 +
 +    /**
@@ -2157,110 +2345,31 @@ index 0000000..9755f87
 +    }
 +
 +    /**
-+     * Return the smallest cuboid containing both of the given cuboids
-+     */
-+    public static Cuboid union(Cuboid a, Cuboid b) {
-+        if(a.contains(b)) {
-+            return a;
-+        } else if(b.contains(a)) {
-+            return b;
-+        } else {
-+            return new Cuboid(a.min.minimum(b.min),
-+                              a.max.maximum(b.max));
-+        }
-+    }
-+
-+    /**
-+     * Return the smallest cuboid containing the given original cuboid, after subtracting the other given cuboid.
-+     */
-+    public static Cuboid complement(Cuboid original, Cuboid subtracted) {
-+        // The booleans reflect if the subtracted set contains the
-+        // original set on each axis. The final bounds for each axis
-+        // are then the minimum of the two sets, if the other two axes
-+        // are containing, otherwise the bounds of the original set.
-+        boolean cx = subtracted.min.fineX() < original.min.fineX() && subtracted.max.fineX() > original.max.fineX();
-+        boolean cy = subtracted.min.fineY() < original.min.fineY() && subtracted.max.fineY() > original.max.fineY();
-+        boolean cz = subtracted.min.fineZ() < original.min.fineZ() && subtracted.max.fineZ() > original.max.fineZ();
-+        return new Cuboid(ImVector.of(cy && cz ? Math.max(original.min.fineX(), subtracted.min.fineX()) : original.min.fineX(),
-+                                      cz && cx ? Math.max(original.min.fineY(), subtracted.min.fineY()) : original.min.fineY(),
-+                                      cx && cy ? Math.max(original.min.fineZ(), subtracted.min.fineZ()) : original.min.fineZ()),
-+                          ImVector.of(cy && cz ? Math.min(original.max.fineX(), subtracted.max.fineX()) : original.max.fineX(),
-+                                      cz && cx ? Math.min(original.max.fineY(), subtracted.max.fineY()) : original.max.fineY(),
-+                                      cx && cy ? Math.min(original.max.fineZ(), subtracted.max.fineZ()) : original.max.fineZ()));
-+    }
-+
-+    /**
 +     * Construct a cuboid by translating this cuboid by the given offset
 +     */
 +    public Cuboid translate(Vec3 offset) {
-+        return offset.isZero() ? this : new Cuboid(min.plus(offset), max.plus(offset));
++        return offset.isZero() ? this : new NonEmptyCuboid(min.plus(offset), max.plus(offset));
 +    }
 +
 +    public Cuboid transform(Transform transform) {
-+        return transform.isIdentity() ? this : new Cuboid(transform.apply(min), transform.apply(max));
++        return transform.isIdentity() ? this : new NonEmptyCuboid(transform.apply(min), transform.apply(max));
 +    }
 +
-+    /**
-+     * Is this cuboid bounded on all axes?
-+     */
 +    public boolean isFinite() {
 +        return !(Double.isInfinite(min.fineX()) || Double.isInfinite(max.fineX()) ||
 +                 Double.isInfinite(min.fineY()) || Double.isInfinite(max.fineY()) ||
 +                 Double.isInfinite(min.fineZ()) || Double.isInfinite(max.fineZ()));
 +    }
 +
-+    /**
-+     * @throws ArithmeticException if this cuboid is unbounded
-+     */
-+    public void assertFinite() throws ArithmeticException {
-+        if(!isFinite()) {
-+            throw new ArithmeticException("Cuboid is unbounded");
-+        }
-+    }
-+
-+    /**
-+     * Does this cuboid contain a finite number of blocks?
-+     *
-+     * This is true if the cuboid is bounded on the horizontal axes.
-+     */
 +    public boolean isBlockFinite() {
 +        return !(Double.isInfinite(min.fineX()) || Double.isInfinite(max.fineX()) ||
 +                 Double.isInfinite(min.fineZ()) || Double.isInfinite(max.fineZ()));
 +    }
 +
-+    /**
-+     * @throws ArithmeticException unless this cuboid contains a finite number of blocks
-+     */
-+    public void assertBlockFinite() throws ArithmeticException {
-+        if(!isBlockFinite()) {
-+            throw new ArithmeticException("Cuboid is not block-bounded");
-+        }
-+    }
-+
-+    /**
-+     * Does this cuboid contain any points?
-+     *
-+     * This is true if and only if the minimum bound is less or equal to the maximum bound on all axes.
-+     *
-+     * Note that cuboids with zero volume may contain points.
-+     */
-+    public boolean isNonEmpty() {
-+        return true;
-+    }
-+
-+    /**
-+     * Does this cuboid contain no points?
-+     * @see #isNonEmpty()
-+     */
 +    public boolean isEmpty() {
 +        return false;
 +    }
 +
-+    public void assertNonEmpty() {}
-+
-+    /**
-+     * Does this cuboid contain the given point?
-+     */
 +    public boolean contains(Vec3 point) {
 +        return min.fineLessOrEqual(point) && max.fineGreaterOrEqual(point);
 +    }
@@ -2270,58 +2379,6 @@ index 0000000..9755f87
 +     */
 +    public boolean contains(Cuboid cuboid) {
 +        return cuboid.isEmpty() || (contains(cuboid.minimum()) && cuboid.contains(minimum()));
-+    }
-+
-+    /**
-+     * Return the minimum corner of this cuboid
-+     */
-+    public ImVector minimum() {
-+        return min;
-+    }
-+
-+    /**
-+     * Return the maximum corner of this cuboid
-+     */
-+    public ImVector maximum() {
-+        return max;
-+    }
-+
-+    /**
-+     * Return the dimensions of this cuboid
-+     */
-+    public ImVector size() {
-+        return max.minus(min);
-+    }
-+
-+    /**
-+     * Return the volume of this cuboid
-+     */
-+    public double volume() {
-+        final ImVector size = size();
-+        return size.fineX() * size.fineY() * size.fineZ();
-+    }
-+
-+    /**
-+     * Return the center point of this cuboid
-+     */
-+    public ImVector center() {
-+        return ImVector.copyOf(min.midway(max));
-+    }
-+
-+    /**
-+     * Return the eight corner points of this cuboid
-+     */
-+    public ImVector[] vertices() {
-+        return new ImVector[] {
-+            min,
-+            ImVector.of(min.fineX(), min.fineY(), max.fineZ()),
-+            ImVector.of(min.fineX(), max.fineY(), min.fineZ()),
-+            ImVector.of(min.fineX(), max.fineY(), max.fineZ()),
-+            ImVector.of(max.fineX(), min.fineY(), min.fineZ()),
-+            ImVector.of(max.fineX(), min.fineY(), max.fineZ()),
-+            ImVector.of(max.fineX(), max.fineY(), min.fineZ()),
-+            max
-+        };
 +    }
 +
 +    /**
@@ -2346,7 +2403,6 @@ index 0000000..9755f87
 +     * Return the lowest block with a center point inside this cuboid
 +     */
 +    public Vec3 minimumBlockInside() {
-+        assertNonEmpty();
 +        assertBlockFinite();
 +        return Bukkit.vectors().coarse(min.fineX() + 0.5d,
 +                                       NumberConversions.clamp(min.fineY(), 0, 256) + 0.5d,
@@ -2357,7 +2413,6 @@ index 0000000..9755f87
 +     * Return the highest block with a center point inside this cuboid
 +     */
 +    public Vec3 maximumBlockInside() {
-+        assertNonEmpty();
 +        assertBlockFinite();
 +        return Bukkit.vectors().coarse(max.fineX() - 0.5d,
 +                                       NumberConversions.clamp(max.fineY(), 0, 256) - 0.5d,
@@ -2371,16 +2426,12 @@ index 0000000..9755f87
 +     * This block will have coordinates one greater than {@link #maximumBlockInside()}.
 +     */
 +    public Vec3 minimumBlockOutside() {
-+        assertNonEmpty();
 +        assertBlockFinite();
 +        return Bukkit.vectors().coarse(max.fineX() + 0.5d,
 +                                       NumberConversions.clamp(max.fineY(), 0, 256) + 0.5d,
 +                                       max.fineZ() + 0.5d);
 +    }
 +
-+    /**
-+     * Does the cuboid contain the center point of the given block?
-+     */
 +    public boolean containsBlock(Vec3 v) {
 +        return v.coarseGreaterOrEqual(minimumBlockInside()) &&
 +               v.coarseLess(minimumBlockOutside());
@@ -2393,27 +2444,16 @@ index 0000000..9755f87
 +        return minimumBlockOutside().minus(minimumBlockInside());
 +    }
 +
-+    /**
-+     * Return the number of blocks with center points inside this cuboid.
-+     */
 +    public int blockVolume() {
 +        final Vec3 size = blockSize();
 +        if(size.coarseX() <= 0 || size.coarseY() <= 0 || size.coarseZ() <= 0) return 0;
 +        return size.coarseX() * size.coarseY() * size.coarseZ();
 +    }
 +
-+    /**
-+     * Does this cuboid contain the center point of any blocks?
-+     */
-+    public boolean containsBlocks() {
-+        return blockVolume() > 0;
++    public boolean isBlockEmpty() {
++        return blockVolume() <= 0;
 +    }
 +
-+    /**
-+     * Return a randomly chosen block with a center point inside this cuboid.
-+     *
-+     * @throws ArithmeticException if the cuboid contains no blocks
-+     */
 +    public Vec3 randomBlockInside(Random random) {
 +        final Vec3 size = blockSize();
 +        if(size.coarseX() <= 0 || size.coarseY() <= 0 || size.coarseZ() <= 0) {
@@ -2428,125 +2468,385 @@ index 0000000..9755f87
 +    public BlockRegion blockRegion() {
 +        return CuboidBlockRegion.fromMinAndSize(minimumBlockInside(), blockSize());
 +    }
++}
 +
-+    private static class Empty extends Cuboid {
++class EmptyCuboid extends Cuboid implements EmptyRegion {
 +
-+        static final Empty INSTANCE = new Empty();
++    static final EmptyCuboid INSTANCE = new EmptyCuboid();
 +
-+        Empty() {
-+            super(ImVector.ofNaN(), ImVector.ofNaN());
++    private EmptyCuboid() {
++        super(ImVector.ofNaN(), ImVector.ofNaN());
++    }
++
++    @Override
++    public int hashCode() {
++        return 0;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        return obj instanceof Region && ((Region) obj).isEmpty();
++    }
++
++    @Override
++    public double intersectionDistance(Ray ray) {
++        return Double.NaN;
++    }
++
++    @Override
++    public ImVector intersect(Ray ray) {
++        return null;
++    }
++
++    @Override
++    public Cuboid translate(Vec3 offset) {
++        return this;
++    }
++
++    @Override
++    public Cuboid transform(Transform transform) {
++        return this;
++    }
++
++    @Override
++    public boolean isFinite() {
++        return true;
++    }
++
++    @Override
++    public boolean isBlockFinite() {
++        return true;
++    }
++
++    @Override
++    public boolean isEmpty() {
++        return true;
++    }
++
++    @Override
++    public boolean isBlockEmpty() {
++        return true;
++    }
++
++    @Override
++    public boolean contains(Vec3 point) {
++        return false;
++    }
++
++    @Override
++    public boolean contains(Cuboid cuboid) {
++        return cuboid.isEmpty();
++    }
++
++    @Override
++    public ImVector size() {
++        return ImVector.ofZero();
++    }
++
++    @Override
++    public double volume() {
++        return 0;
++    }
++
++    @Override
++    public ImVector randomPointInside(Random random) {
++        return ImVector.ofNaN();
++    }
++
++    @Override
++    public boolean containsBlock(Vec3 v) {
++        return false;
++    }
++
++    @Override
++    public Vec3 blockSize() {
++        return ImVector.ofZero();
++    }
++
++    @Override
++    public int blockVolume() {
++        return 0;
++    }
++
++    @Override
++    public BlockRegion blockRegion() {
++        return BlockRegion.empty();
++    }
++
++    @Override
++    public Vec3 minimumBlockInside() {
++        throw new ArithmeticException("Region is empty");
++    }
++
++    @Override
++    public Vec3 maximumBlockInside() {
++        throw new ArithmeticException("Region is empty");
++    }
++
++    @Override
++    public Vec3 minimumBlockOutside() {
++        throw new ArithmeticException("Region is empty");
++    }
++}
+\ No newline at end of file
+diff --git a/src/main/java/org/bukkit/geometry/Direction.java b/src/main/java/org/bukkit/geometry/Direction.java
+new file mode 100644
+index 0000000..4b193c1
+--- /dev/null
++++ b/src/main/java/org/bukkit/geometry/Direction.java
+@@ -0,0 +1,79 @@
++package org.bukkit.geometry;
++
++import org.bukkit.Bukkit;
++
++public class Direction {
++
++    private static final double TWO_PI = Math.PI * 2, HALF_PI = Math.PI / 2;
++
++    private final double yaw, pitch;
++
++    private Direction(double yaw, double pitch) {
++        this.yaw = yaw;
++        this.pitch = pitch;
++    }
++
++    public double yaw() {
++        return yaw;
++    }
++
++    public double pitch() {
++        return pitch;
++    }
++
++    public float yawDegrees() {
++        return (float) Math.toDegrees(yaw);
++    }
++
++    public float pitchDegrees() {
++        return (float) Math.toDegrees(pitch);
++    }
++
++    public Vec3 toVector() {
++        final double cos = Math.cos(pitch);
++        return Bukkit.vectors().fine(
++            -cos * Math.sin(yaw),
++            -Math.sin(pitch),
++            cos * Math.cos(yaw)
++        );
++    }
++
++    public static Direction of(double yaw, double pitch) {
++        return new Direction((yaw + TWO_PI) % TWO_PI, pitch);
++    }
++
++    public static Direction ofDegrees(double yaw, double pitch) {
++        return of(Math.toRadians(yaw), Math.toRadians(pitch));
++    }
++
++    public static Direction fromVector(double x, double y, double z) {
++        if (x == 0 && z == 0) {
++            return new Direction(0, y > 0 ? -HALF_PI : HALF_PI);
 +        }
 +
-+        @Override
-+        public int hashCode() {
-+            return 0;
-+        }
++        final double xz = Math.sqrt(x * x + z * z);
++        return of(Math.atan2(-x, z), Math.atan(-y / xz));
++    }
 +
-+        @Override
-+        public boolean equals(Object obj) {
-+            return obj instanceof Empty;
-+        }
++    @Override
++    public int hashCode() {
++        return Double.hashCode(yaw) * 31 + Double.hashCode(pitch);
++    }
 +
-+        @Override
-+        public double intersectionDistance(Ray ray) {
-+            return Double.NaN;
-+        }
++    @Override
++    public boolean equals(Object obj) {
++        if(this == obj) return true;
++        if(!(obj instanceof Direction)) return false;
++        final Direction that = (Direction) obj;
++        return this.yaw == that.yaw() &&
++               this.pitch == that.pitch();
++    }
 +
-+        @Override
-+        public ImVector intersect(Ray ray) {
-+            return null;
-+        }
++    @Override
++    public String toString() {
++        return getClass().getSimpleName() +
++               "{yaw=" + yaw +
++               " pitch=" + pitch +
++               "}";
++    }
++}
+diff --git a/src/main/java/org/bukkit/geometry/EmptyRegion.java b/src/main/java/org/bukkit/geometry/EmptyRegion.java
+new file mode 100644
+index 0000000..578e718
+--- /dev/null
++++ b/src/main/java/org/bukkit/geometry/EmptyRegion.java
+@@ -0,0 +1,82 @@
++package org.bukkit.geometry;
 +
-+        @Override
-+        public Cuboid translate(Vec3 offset) {
-+            return this;
-+        }
++import java.util.Random;
 +
-+        @Override
-+        public Cuboid transform(Transform transform) {
-+            return this;
-+        }
++import org.bukkit.region.BlockRegion;
++import org.bukkit.util.ImVector;
 +
-+        @Override
-+        public boolean isFinite() {
-+            return true;
-+        }
++public interface EmptyRegion extends Region {
 +
-+        @Override
-+        public void assertFinite() {}
++    default int standardHashCode() {
++        return 0;
++    }
 +
-+        @Override
-+        public boolean isBlockFinite() {
-+            return true;
-+        }
++    default boolean standardEquals(Object obj) {
++        return obj instanceof Region && ((Region) obj).isEmpty();
++    }
 +
-+        @Override
-+        public void assertBlockFinite() {}
++    @Override
++    default boolean isEmpty() {
++        return true;
++    }
 +
-+        @Override
-+        public boolean isNonEmpty() {
-+            return false;
-+        }
++    @Override
++    default boolean isBlockEmpty() {
++        return true;
++    }
 +
-+        @Override
-+        public boolean isEmpty() {
-+            return true;
-+        }
++    @Override
++    default boolean isFinite() {
++        return true;
++    }
 +
-+        @Override
-+        public void assertNonEmpty() {
-+            throw new ArithmeticException("Cuboid is empty");
-+        }
++    @Override
++    default boolean isBlockFinite() {
++        return true;
++    }
 +
-+        @Override
-+        public boolean contains(Vec3 point) {
-+            return false;
-+        }
++    @Override
++    default double volume() {
++        return 0;
++    }
 +
-+        @Override
-+        public boolean contains(Cuboid cuboid) {
-+            return cuboid.isEmpty();
-+        }
++    @Override
++    default int blockVolume() {
++        return 0;
++    }
 +
-+        @Override
-+        public ImVector size() {
-+            return ImVector.ofZero();
-+        }
++    @Override
++    default boolean contains(Vec3 point) {
++        return false;
++    }
 +
-+        @Override
-+        public double volume() {
-+            return 0;
-+        }
++    @Override
++    default boolean containsBlock(Vec3 v) {
++        return false;
++    }
 +
-+        @Override
-+        public ImVector randomPointInside(Random random) {
-+            return ImVector.ofNaN();
-+        }
++    @Override
++    default Vec3 randomPointInside(Random random) {
++        return ImVector.ofNaN();
++    }
 +
-+        @Override
-+        public boolean containsBlock(Vec3 v) {
-+            return false;
-+        }
++    @Override
++    default Vec3 randomBlockInside(Random random) {
++        throw new ArithmeticException("Region is empty");
++    }
 +
-+        @Override
-+        public Vec3 blockSize() {
-+            return ImVector.ofZero();
-+        }
++    @Override
++    default Cuboid bounds() {
++        return Cuboid.empty();
++    }
 +
-+        @Override
-+        public int blockVolume() {
-+            return 0;
-+        }
++    @Override
++    default BlockRegion blockRegion() {
++        return BlockRegion.empty();
++    }
 +
-+        @Override
-+        public boolean containsBlocks() {
-+            return false;
-+        }
++    @Override
++    default Region transform(Transform transform) {
++        return this;
++    }
++}
+diff --git a/src/main/java/org/bukkit/geometry/Everywhere.java b/src/main/java/org/bukkit/geometry/Everywhere.java
+new file mode 100644
+index 0000000..1c535db
+--- /dev/null
++++ b/src/main/java/org/bukkit/geometry/Everywhere.java
+@@ -0,0 +1,81 @@
++package org.bukkit.geometry;
 +
-+        @Override
-+        public BlockRegion blockRegion() {
-+            return BlockRegion.empty();
-+        }
++import java.util.Random;
++
++import org.bukkit.region.BlockRegion;
++
++class Everywhere implements Region {
++
++    static final Everywhere INSTANCE = new Everywhere();
++
++    private Everywhere() {}
++
++    @Override
++    public boolean isEmpty() {
++        return false;
++    }
++
++    @Override
++    public boolean isBlockEmpty() {
++        return false;
++    }
++
++    @Override
++    public boolean isFinite() {
++        return false;
++    }
++
++    @Override
++    public boolean isBlockFinite() {
++        return false;
++    }
++
++    @Override
++    public double volume() {
++        return Double.POSITIVE_INFINITY;
++    }
++
++    @Override
++    public int blockVolume() throws ArithmeticException {
++        assertBlockFinite();
++        return 0;
++    }
++
++    @Override
++    public boolean contains(Vec3 point) {
++        return true;
++    }
++
++    @Override
++    public boolean containsBlock(Vec3 v) {
++        return true;
++    }
++
++    @Override
++    public Vec3 randomPointInside(Random random) throws ArithmeticException {
++        assertFinite();
++        return null;
++    }
++
++    @Override
++    public Vec3 randomBlockInside(Random random) throws ArithmeticException {
++        assertBlockFinite();
++        return null;
++    }
++
++    @Override
++    public Cuboid bounds() {
++        return Cuboid.unbounded();
++    }
++
++    @Override
++    public BlockRegion blockRegion() throws ArithmeticException {
++        assertBlockFinite();
++        return null;
++    }
++
++    @Override
++    public Region transform(Transform transform) {
++        return this;
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/geometry/IdentityTransform.java b/src/main/java/org/bukkit/geometry/IdentityTransform.java
@@ -3137,13 +3437,29 @@ index 0000000..62efc4a
 +        return divide(v.fineX(), v.fineY(), v.fineZ());
 +    }
 +}
+diff --git a/src/main/java/org/bukkit/geometry/Nowhere.java b/src/main/java/org/bukkit/geometry/Nowhere.java
+new file mode 100644
+index 0000000..ca7b26d
+--- /dev/null
++++ b/src/main/java/org/bukkit/geometry/Nowhere.java
+@@ -0,0 +1,8 @@
++package org.bukkit.geometry;
++
++class Nowhere implements EmptyRegion {
++
++    static final Nowhere INSTANCE = new Nowhere();
++
++    private Nowhere() {}
++}
 diff --git a/src/main/java/org/bukkit/geometry/Ray.java b/src/main/java/org/bukkit/geometry/Ray.java
 new file mode 100644
-index 0000000..5a4fc65
+index 0000000..ab0dfa4
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Ray.java
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,79 @@
 +package org.bukkit.geometry;
++
++import java.util.Objects;
 +
 +import com.google.common.base.Preconditions;
 +import org.bukkit.Location;
@@ -3156,22 +3472,26 @@ index 0000000..5a4fc65
 +
 +    private Ray(Vec3 origin, Vec3 normal) {
 +        this.origin = ImVector.copyOf(origin);
-+        this.normal = ImVector.copyOf(normal);
++        this.normal = ImVector.copyOf(normal.unit());
 +    }
 +
 +    public static Ray fromOriginAndNormal(Vec3 origin, Vec3 normal) {
 +        Preconditions.checkArgument(!normal.isZero(), "Ray normal must have non-zero length");
-+        return new Ray(origin.fineCopy(), normal.unit());
++        return new Ray(origin, normal);
 +    }
 +
 +    public static Ray fromOriginAndTarget(Vec3 origin, Vec3 target) {
 +        final Vec3 normal = target.minus(origin);
 +        Preconditions.checkArgument(!normal.isZero(), "Ray target must be different from origin");
-+        return new Ray(normal, normal.unit());
++        return new Ray(origin, normal);
++    }
++
++    public static Ray fromOriginAndDirection(Vec3 origin, Direction direction) {
++        return new Ray(origin, direction.toVector());
 +    }
 +
 +    public static Ray fromLocation(Location location) {
-+        return new Ray(location.toVector(), location.getDirection().fineCopy());
++        return new Ray(location.toVector(), location.getDirection());
 +    }
 +
 +    public ImVector origin() {
@@ -3182,8 +3502,172 @@ index 0000000..5a4fc65
 +        return normal;
 +    }
 +
++    public Direction direction() {
++        return normal.direction();
++    }
++
 +    public ImVector atDistance(double distance) {
 +        return origin.plus(normal.times(distance));
++    }
++
++    public Ray translate(Vec3 offset) {
++        return new Ray(origin.plus(offset), normal);
++    }
++
++    @Override
++    public int hashCode() {
++        return Objects.hash(origin, normal);
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        if(this == obj) return true;
++        if(!(obj instanceof Ray)) return false;
++        final Ray that = (Ray) obj;
++        return origin.equals(that.origin) &&
++               normal.equals(that.normal);
++    }
++
++    @Override
++    public String toString() {
++        return getClass().getSimpleName() +
++               "{origin=" + origin +
++               " normal=" + normal +
++               "}";
++    }
++}
+diff --git a/src/main/java/org/bukkit/geometry/Region.java b/src/main/java/org/bukkit/geometry/Region.java
+new file mode 100644
+index 0000000..8d203b2
+--- /dev/null
++++ b/src/main/java/org/bukkit/geometry/Region.java
+@@ -0,0 +1,128 @@
++package org.bukkit.geometry;
++
++import java.util.Random;
++
++import org.bukkit.region.BlockRegion;
++
++public interface Region {
++
++    /**
++     * Does this cuboid contain no points?
++     */
++    boolean isEmpty();
++
++    /**
++     * Does this region contain the center point of any blocks?
++     */
++    boolean isBlockEmpty();
++
++    /**
++     * Does this region have a finite volume?
++     */
++    boolean isFinite();
++
++    /**
++     * Does this region contain a finite number of blocks?
++     */
++    boolean isBlockFinite();
++
++    /**
++     * Return the volume of this region
++     */
++    double volume();
++
++    /**
++     * Return the number of blocks with center points inside this region.
++     */
++    int blockVolume() throws ArithmeticException;
++
++    /**
++     * Does this region contain the given point?
++     */
++    boolean contains(Vec3 point);
++
++    /**
++     * Does this region contain the center point of the given block?
++     */
++    boolean containsBlock(Vec3 v);
++
++    /**
++     * Generate an evenly distributed random point inside this region,
++     * using the given source of random numbers. If the region is empty,
++     * the NaN vector is returned.
++     *
++     * @throws ArithmeticException if this region is unbounded
++     */
++    Vec3 randomPointInside(Random random) throws ArithmeticException;
++
++    /**
++     * Return a randomly chosen block with a center point inside this region.
++     *
++     * @throws ArithmeticException if this region is block-empty or block-unbounded
++     */
++    Vec3 randomBlockInside(Random random) throws ArithmeticException;
++
++    /**
++     * Return a {@link Cuboid} that contains this entire region.
++     *
++     * Implementations should try to make the cuboid small,
++     * but it does not have to be minimal.
++     */
++    Cuboid bounds();
++
++    /**
++     * Return a {@link BlockRegion} of all the blocks with center points
++     * inside this region.
++     */
++    BlockRegion blockRegion() throws ArithmeticException;
++
++    Region transform(Transform transform);
++
++    /**
++     * @throws ArithmeticException if this region is unbounded
++     */
++    default void assertFinite() throws ArithmeticException {
++        if(!isFinite()) {
++            throw new ArithmeticException("Region is unbounded");
++        }
++    }
++
++    /**
++     * @throws ArithmeticException unless this region contains a finite number of blocks
++     */
++    default void assertBlockFinite() throws ArithmeticException {
++        if(!isBlockFinite()) {
++            throw new ArithmeticException("Region is not block-bounded");
++        }
++    }
++
++    /**
++     * @throws ArithmeticException if this region is empty
++     */
++    default void assertNonEmpty() throws ArithmeticException {
++        if(!isEmpty()) {
++            throw new ArithmeticException("Region is empty");
++        }
++    }
++
++    /**
++     * @throws ArithmeticException if this region contains no blocks
++     */
++    default void assertBlockNonEmpty() throws ArithmeticException {
++        if(!isEmpty()) {
++            throw new ArithmeticException("Region contains no blocks");
++        }
++    }
++
++    static Region everywhere() {
++        return Everywhere.INSTANCE;
++    }
++
++    static Region nowhere() {
++        return Nowhere.INSTANCE;
++    }
++
++    static Region empty() {
++        return Nowhere.INSTANCE;
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Transform.java b/src/main/java/org/bukkit/geometry/Transform.java
@@ -3260,10 +3744,10 @@ index 0000000..49fe0a3
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3.java b/src/main/java/org/bukkit/geometry/Vec3.java
 new file mode 100644
-index 0000000..1f01e30
+index 0000000..073c955
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3.java
-@@ -0,0 +1,594 @@
+@@ -0,0 +1,598 @@
 +package org.bukkit.geometry;
 +
 +import java.util.function.DoubleBinaryOperator;
@@ -3857,10 +4341,14 @@ index 0000000..1f01e30
 +                      (fineY() + v.fineY()) / 2D,
 +                      (fineZ() + v.fineZ()) / 2D);
 +    }
++
++    default Direction direction() {
++        return Direction.fromVector(fineX(), fineY(), fineZ());
++    }
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Coarse.java b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 new file mode 100644
-index 0000000..ae12726
+index 0000000..b8bf9c3
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 @@ -0,0 +1,267 @@
@@ -3937,7 +4425,7 @@ index 0000000..ae12726
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v != null && v.isCoarse() && coarseEquals(v);
++        return v.isCoarse() && coarseEquals(v);
 +    }
 +
 +    @Override
@@ -4133,7 +4621,7 @@ index 0000000..ae12726
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Fine.java b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 new file mode 100644
-index 0000000..2004d4d
+index 0000000..b125a37
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 @@ -0,0 +1,232 @@
@@ -4210,7 +4698,7 @@ index 0000000..2004d4d
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v != null && v.isFine() && fineEquals(v);
++        return v.isFine() && fineEquals(v);
 +    }
 +
 +    @Override

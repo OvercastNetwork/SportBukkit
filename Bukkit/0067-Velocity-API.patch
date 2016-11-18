@@ -1,11 +1,11 @@
-From ac090fd1a42edf9c4b0989403c782eca548816c0 Mon Sep 17 00:00:00 2001
+From 266133a0be38cac731524d9c28d69c97558a2638 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 654e075..27de76b 100644
+index d0af33f..f912ad8 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -390,6 +390,13 @@ public final class Bukkit {
@@ -23,7 +23,7 @@ index 654e075..27de76b 100644
       */
      public static boolean getIsolatePlugins() {
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 9af9317..c4ee119 100644
+index a5aacdb..e7a5c2a 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -303,6 +303,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
@@ -39,10 +39,10 @@ index 9af9317..c4ee119 100644
       */
      public boolean getIsolatePlugins();
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 0094607..cace5cb 100644
+index 100de93..756273d 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -52,6 +52,48 @@ public interface Entity extends Metadatable, CommandSender, Physical {
+@@ -54,6 +54,48 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
      public Vector getVelocity();
  
      /**

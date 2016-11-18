@@ -1,11 +1,11 @@
-From d6ee7efa0d302f3267ae9a024b39aa7cc19fd78c Mon Sep 17 00:00:00 2001
+From e9796f6a112cbcfb664aabb15b331faf60f4b616 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:45:13 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/org/bukkit/potion/Potion.java b/src/main/java/org/bukkit/potion/Potion.java
-index 28d24f6..ec3a5ab 100644
+index 7aa5a2d..ffe7630 100644
 --- a/src/main/java/org/bukkit/potion/Potion.java
 +++ b/src/main/java/org/bukkit/potion/Potion.java
 @@ -6,6 +6,7 @@ import org.apache.commons.lang.Validate;
@@ -16,7 +16,7 @@ index 28d24f6..ec3a5ab 100644
  import org.bukkit.inventory.meta.PotionMeta;
  
  /**
-@@ -321,7 +322,7 @@ public class Potion {
+@@ -271,7 +272,7 @@ public class Potion {
          }
          ItemStack itemStack = new ItemStack(material, amount);
          PotionMeta meta = (PotionMeta) itemStack.getItemMeta();
@@ -25,7 +25,7 @@ index 28d24f6..ec3a5ab 100644
          itemStack.setItemMeta(meta);
          return itemStack;
      }
-@@ -357,6 +358,7 @@ public class Potion {
+@@ -283,6 +284,7 @@ public class Potion {
      private static final int SPLASH_BIT = 0x4000;
      private static final int TIER_BIT = 0x20;
      private static final int TIER_SHIFT = 5;
@@ -33,7 +33,7 @@ index 28d24f6..ec3a5ab 100644
  
      /**
       *
-@@ -364,10 +366,22 @@ public class Potion {
+@@ -290,10 +292,22 @@ public class Potion {
       * @return the produced potion
       */
      public static Potion fromDamage(int damage) {
@@ -57,7 +57,7 @@ index 28d24f6..ec3a5ab 100644
                  break;
              case 1:
                  type = PotionType.REGEN;
-@@ -411,28 +425,29 @@ public class Potion {
+@@ -337,28 +351,29 @@ public class Potion {
              default:
                  type = PotionType.WATER;
          }

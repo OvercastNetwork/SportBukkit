@@ -1,11 +1,11 @@
-From 2314a76da8e5295809a31465405b8a08183ca7d1 Mon Sep 17 00:00:00 2001
+From ee2565cfee1716f4db44c1aa6f296737719abbc4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:08:23 -0500
 Subject: [PATCH] Modernize potion API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 1e44eff..654e075 100644
+index 8106235..d0af33f 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -36,6 +36,8 @@ import org.bukkit.permissions.Permissible;
@@ -17,7 +17,7 @@ index 1e44eff..654e075 100644
  import org.bukkit.registry.Key;
  import org.bukkit.scheduler.BukkitScheduler;
  import org.bukkit.scoreboard.ScoreboardManager;
-@@ -1293,4 +1295,12 @@ public final class Bukkit {
+@@ -1274,4 +1276,12 @@ public final class Bukkit {
      public static Key key(String id) {
          return runtime().key(id);
      }
@@ -52,17 +52,18 @@ index 732110a..9a3c7e2 100644
 +    PotionEffectRegistry potionEffectRegistry();
  }
 diff --git a/src/main/java/org/bukkit/inventory/meta/PotionMeta.java b/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
-index 2be09e2..9ca7aba 100644
+index d915125..2160d64 100644
 --- a/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
 +++ b/src/main/java/org/bukkit/inventory/meta/PotionMeta.java
-@@ -1,5 +1,6 @@
+@@ -1,6 +1,7 @@
  package org.bukkit.inventory.meta;
  
+ import org.bukkit.Color;
 +import org.bukkit.potion.PotionBrew;
  import org.bukkit.potion.PotionEffect;
  import org.bukkit.potion.PotionEffectType;
  import org.bukkit.potion.PotionData;
-@@ -26,6 +27,10 @@ public interface PotionMeta extends ItemMeta {
+@@ -27,6 +28,10 @@ public interface PotionMeta extends ItemMeta {
       */
      PotionData getBasePotionData();
  

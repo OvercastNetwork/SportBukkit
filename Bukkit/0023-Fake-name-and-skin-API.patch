@@ -1,11 +1,11 @@
-From 86e511bc580793cc854afe59c3f31ed2ef8bd502 Mon Sep 17 00:00:00 2001
+From d3dfad3ef7f8f04960587c3c1c81636e90a21eb0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 23 Jan 2014 00:17:31 -0500
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 22fac98..07e4f45 100644
+index e768aae..5721d0b 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -436,6 +436,27 @@ public final class Bukkit {
@@ -37,7 +37,7 @@ index 22fac98..07e4f45 100644
       *
       * @return a plugin manager for this Server instance
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e025854..af90603 100644
+index e1c7da0..b899e24 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -362,7 +362,22 @@ public interface Server extends PluginMessageRecipient {
@@ -147,10 +147,10 @@ index 0000000..5dc9cef
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/command/Command.java b/src/main/java/org/bukkit/command/Command.java
-index a02c28d..4e9c3ad 100644
+index 7adc6ee..322c063 100644
 --- a/src/main/java/org/bukkit/command/Command.java
 +++ b/src/main/java/org/bukkit/command/Command.java
-@@ -97,7 +97,7 @@ public abstract class Command {
+@@ -103,7 +103,7 @@ public abstract class Command {
  
          ArrayList<String> matchedPlayers = new ArrayList<String>();
          for (Player player : sender.getServer().getOnlinePlayers()) {
@@ -202,7 +202,7 @@ index 7b0a41c..466691f 100644
          // If a player is hidden from the sender pretend they are offline
          if (player == null || (sender instanceof Player && !((Player) sender).canSee(player))) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 3953424..f5c2a62 100644
+index 0f75d8c..656fba0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,6 +1,7 @@

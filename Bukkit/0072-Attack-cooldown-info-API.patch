@@ -1,14 +1,14 @@
-From 5564b85826748ed20217211b1b47cb2602204c69 Mon Sep 17 00:00:00 2001
+From a9f29ef8cbe34a1f56b4663c1d47936922c100c5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:08:56 -0400
 Subject: [PATCH] Attack cooldown info API
 
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index 2f420fe..90363a6 100644
+index 78e1272..a9278b2 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
-@@ -222,4 +222,21 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+@@ -230,4 +230,21 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
       *         random spawning and despawning near them.
       */
      public boolean getAffectsSpawning();

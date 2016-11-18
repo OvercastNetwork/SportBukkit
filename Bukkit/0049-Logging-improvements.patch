@@ -1,4 +1,4 @@
-From 3f0c21798c88a271780d34af9e6d6dba6fb4beea Mon Sep 17 00:00:00 2001
+From e5fca0ca4e44eba89348415be4a4e41932e28fa4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 10 Jul 2015 23:07:53 -0400
 Subject: [PATCH] Logging improvements
@@ -51,10 +51,10 @@ index f43c10b..f409a28 100644
  
      @Override
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
-index b1a412f..e3d6850 100644
+index 273d14b..9da6dc8 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
-@@ -328,7 +328,7 @@ public abstract class JavaPlugin extends PluginBase {
+@@ -290,7 +290,7 @@ public abstract class JavaPlugin extends PluginBase {
          this.dataFolder = dataFolder;
          this.classLoader = classLoader;
          this.configFile = new File(dataFolder, "config.yml");

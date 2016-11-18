@@ -1,14 +1,14 @@
-From 11f8dfe3ac2b30888f15e5649f728991b871ee4a Mon Sep 17 00:00:00 2001
+From af352ecdd9797490131d77c3e312a730ffe31740 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:00:35 -0400
 Subject: [PATCH] Entity bounding box API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index a26d236..1fa3059 100644
+index 5048bd6..84ecf0a 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -7,6 +7,7 @@ import org.bukkit.World;
+@@ -8,6 +8,7 @@ import org.bukkit.World;
  import org.bukkit.Physical;
  import org.bukkit.event.entity.EntityDamageEvent;
  import org.bukkit.metadata.Metadatable;
@@ -16,15 +16,15 @@ index a26d236..1fa3059 100644
  import org.bukkit.util.Vector;
  
  import java.util.List;
-@@ -474,4 +475,6 @@ public interface Entity extends Metadatable, CommandSender, Physical {
-      * @param gravity whether gravity should apply
+@@ -493,4 +494,6 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+      * @return true if the tag was successfully removed
       */
-     void setGravity(boolean gravity);
+     boolean removeScoreboardTag(String tag);
 +
 +    Cuboid getBoundingBox();
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 3fbf57d..e56194a 100644
+index 3a9f98d..3436902 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
 @@ -13,6 +13,7 @@ import org.bukkit.inventory.EntityEquipment;

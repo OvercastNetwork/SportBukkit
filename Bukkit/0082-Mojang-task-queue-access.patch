@@ -1,11 +1,11 @@
-From 4e228c7af41f1f01a3d76c6c9913e36f110c6a88 Mon Sep 17 00:00:00 2001
+From 218a54ea24226a85b1db9d742cad94c23d9a7b93 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 5 Aug 2016 09:52:58 -0400
 Subject: [PATCH] Mojang task queue access
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 27de76b..8a2e39b 100644
+index f912ad8..df85f1d 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
@@ -16,7 +16,7 @@ index 27de76b..8a2e39b 100644
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.ServicesManager;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -1310,4 +1311,12 @@ public final class Bukkit {
+@@ -1291,4 +1292,12 @@ public final class Bukkit {
      public static PotionEffectRegistry potionEffectRegistry() {
          return runtime().potionEffectRegistry();
      }
@@ -30,7 +30,7 @@ index 27de76b..8a2e39b 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index c4ee119..4ef7c39 100644
+index e7a5c2a..ae8e5f8 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
@@ -41,7 +41,7 @@ index c4ee119..4ef7c39 100644
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.ServicesManager;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -1058,4 +1059,26 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1041,4 +1042,26 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       * @param components the components to send
       */
      public void broadcast(net.md_5.bungee.api.chat.BaseComponent... components);

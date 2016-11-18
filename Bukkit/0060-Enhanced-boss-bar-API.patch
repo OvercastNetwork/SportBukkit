@@ -1,14 +1,14 @@
-From f7651902cdca6dbc863660106219a9f8b0263942 Mon Sep 17 00:00:00 2001
+From 2407729c05e0aa4f4505ac55f227023b0a48dbf5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 5 Mar 2016 01:41:34 -0500
 Subject: [PATCH] Enhanced boss bar API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index bf09333..4cb9d98 100644
+index be197fb..4cc8479 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -1235,7 +1235,7 @@ public final class Bukkit {
+@@ -1216,7 +1216,7 @@ public final class Bukkit {
       * @param flags an optional list of flags to set on the boss bar
       * @return the created boss bar
       */
@@ -18,10 +18,10 @@ index bf09333..4cb9d98 100644
      }
  
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index d8780af..0a1a635 100644
+index e3c2a8a..d95ccba 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1031,7 +1031,7 @@ public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.serv
+@@ -1014,7 +1014,7 @@ public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.serv
       * @param flags an optional list of flags to set on the boss bar
       * @return the created boss bar
       */

@@ -1,22 +1,22 @@
-From 3dd67b158650eb8438074dbb1f07eb61b4ac0ca0 Mon Sep 17 00:00:00 2001
+From 3b5c9dc223c9c8e3142a12ba64a08bc12c935d11 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 30 May 2015 06:53:57 -0400
 Subject: [PATCH] Add a non-deprecated constructor to EntityChangeBlockEvent
 
 
 diff --git a/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java b/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
-index 41be9ca..0262f87 100644
+index 9f69ded..849e57d 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
-@@ -6,6 +6,7 @@ import org.bukkit.entity.Entity;
- import org.bukkit.entity.LivingEntity;
+@@ -5,6 +5,7 @@ import org.bukkit.block.Block;
+ import org.bukkit.entity.Entity;
  import org.bukkit.event.Cancellable;
  import org.bukkit.event.HandlerList;
 +import org.bukkit.material.MaterialData;
  
  /**
   * Called when any Entity, excluding players, changes a block.
-@@ -14,8 +15,18 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
+@@ -13,8 +14,18 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
      private static final HandlerList handlers = new HandlerList();
      private final Block block;
      private boolean cancel;
@@ -37,16 +37,7 @@ index 41be9ca..0262f87 100644
  
      /**
       *
-@@ -27,7 +38,7 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
-      */
-     @Deprecated
-     public EntityChangeBlockEvent(final LivingEntity what, final Block block, final Material to) {
--        this (what, block, to, (byte) 0);
-+        this(what, block, new MaterialData(to));
-     }
- 
-     /**
-@@ -40,11 +51,7 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
+@@ -26,11 +37,7 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
       */
      @Deprecated
      public EntityChangeBlockEvent(final Entity what, final Block block, final Material to, final byte data) {
@@ -59,7 +50,7 @@ index 41be9ca..0262f87 100644
      }
  
      /**
-@@ -64,13 +71,17 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
+@@ -50,13 +57,17 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
          this.cancel = cancel;
      }
  
@@ -78,7 +69,7 @@ index 41be9ca..0262f87 100644
      }
  
      /**
-@@ -81,7 +92,7 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
+@@ -67,7 +78,7 @@ public class EntityChangeBlockEvent extends EntityEvent implements Cancellable {
       */
      @Deprecated
      public byte getData() {

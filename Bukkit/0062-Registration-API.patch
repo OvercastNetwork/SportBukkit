@@ -1,11 +1,11 @@
-From 2602b259ad3b1939bd27706c71117d054d728190 Mon Sep 17 00:00:00 2001
+From 2d24c887ec9a7578f1bfe607c22363eb4a3fdf82 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:07:43 -0500
 Subject: [PATCH] Registration API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 4cb9d98..1e44eff 100644
+index 4cc8479..8106235 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -36,6 +36,7 @@ import org.bukkit.permissions.Permissible;
@@ -58,7 +58,7 @@ index 4cb9d98..1e44eff 100644
          Bukkit.server = server;
          server.getLogger().info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");
      }
-@@ -1124,7 +1144,7 @@ public final class Bukkit {
+@@ -1105,7 +1125,7 @@ public final class Bukkit {
       * @see ItemFactory
       */
      public static ItemFactory getItemFactory() {
@@ -67,7 +67,7 @@ index 4cb9d98..1e44eff 100644
      }
  
      /**
-@@ -1214,12 +1234,12 @@ public final class Bukkit {
+@@ -1195,12 +1215,12 @@ public final class Bukkit {
  
      /**
       * Create a ChunkData for use in a generator.
@@ -83,7 +83,7 @@ index 4cb9d98..1e44eff 100644
       */
      public static ChunkGenerator.ChunkData createChunkData(World world) {
          return server.createChunkData(world);
-@@ -1265,4 +1285,12 @@ public final class Bukkit {
+@@ -1246,4 +1266,12 @@ public final class Bukkit {
      public static void broadcast(net.md_5.bungee.api.chat.BaseComponent... components) {
          server.broadcast(components);
      }
@@ -129,7 +129,7 @@ index 0000000..732110a
 +
 +}
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 0a1a635..9af9317 100644
+index d95ccba..a5aacdb 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -51,7 +51,7 @@ import org.bukkit.inventory.meta.ItemMeta;

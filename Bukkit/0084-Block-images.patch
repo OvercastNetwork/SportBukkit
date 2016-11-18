@@ -1,11 +1,11 @@
-From cd2d4473fee22f94aee45bd352b2b635db005346 Mon Sep 17 00:00:00 2001
+From 8b7f43538e6b7b371a1499c3080ca5d8568250c8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 8a2e39b..6a03fca 100644
+index df85f1d..64591fd 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -32,6 +32,7 @@ import org.bukkit.inventory.InventoryHolder;
@@ -24,7 +24,7 @@ index 8a2e39b..6a03fca 100644
  
  /**
   * Represents the Bukkit core, for version and Server singleton handling
-@@ -1304,6 +1306,9 @@ public final class Bukkit {
+@@ -1285,6 +1287,9 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -522,10 +522,10 @@ index 8de167a..0d2cca2 100644
  		data.put("yaw", this.yaw);
  		data.put("pitch", this.pitch);
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 4ef7c39..7ab510d 100644
+index ae8e5f8..59e3ca6 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1018,12 +1018,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1001,12 +1001,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
  
      /**
       * Create a ChunkData for use in a generator.
@@ -542,7 +542,7 @@ index 4ef7c39..7ab510d 100644
      public ChunkGenerator.ChunkData createChunkData(World world);
  
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 14d768d..559ecba 100644
+index ebc8c46..275fd60 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -1,12 +1,20 @@
@@ -603,10 +603,10 @@ index 14d768d..559ecba 100644
 +    Predicate<Vec3> hasMaterialAt(Set<MaterialData> materials);
 +
 +    /**
-      * Gets the highest non-air coordinate at the given coordinates
+      * Gets the y coordinate of the lowest block at this position such that the
+      * block and all blocks above it are transparent for lighting purposes.
       *
-      * @param x X-coordinate of the blocks
-@@ -134,6 +168,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -139,6 +173,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public Chunk getChunkAt(int x, int z);
  
@@ -617,7 +617,7 @@ index 14d768d..559ecba 100644
      /**
       * Gets the {@link Chunk} at the given {@link Location}
       *
-@@ -876,6 +914,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -881,6 +919,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      Biome getBiome(int x, int z);
  
@@ -628,7 +628,7 @@ index 14d768d..559ecba 100644
      /**
       * Sets the biome for the given block coordinates
       *
-@@ -885,6 +927,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -890,6 +932,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      void setBiome(int x, int z, Biome bio);
  
@@ -639,7 +639,7 @@ index 14d768d..559ecba 100644
      /**
       * Gets the temperature for the given block coordinates.
       * <p>
-@@ -897,6 +943,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -902,6 +948,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public double getTemperature(int x, int z);
  
@@ -650,7 +650,7 @@ index 14d768d..559ecba 100644
      /**
       * Gets the humidity for the given block coordinates.
       * <p>
-@@ -909,6 +959,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -914,6 +964,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public double getHumidity(int x, int z);
  
@@ -661,7 +661,7 @@ index 14d768d..559ecba 100644
      /**
       * Gets the maximum height of this world.
       * <p>
-@@ -1441,6 +1495,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -1446,6 +1500,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
  
@@ -1274,10 +1274,10 @@ index 0000000..db43c72
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index fa44c2f..c18adb2 100644
+index a477b48..b06e8b2 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -9,7 +9,7 @@ import org.bukkit.World;
+@@ -10,7 +10,7 @@ import org.bukkit.World;
  import org.bukkit.Physical;
  import org.bukkit.event.entity.EntityDamageEvent;
  import org.bukkit.metadata.Metadatable;
@@ -1287,7 +1287,7 @@ index fa44c2f..c18adb2 100644
  
  import java.util.List;
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index e56194a..485ccb1 100644
+index 3436902..e5c6f97 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
 @@ -13,7 +13,7 @@ import org.bukkit.inventory.EntityEquipment;

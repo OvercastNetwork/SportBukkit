@@ -1,4 +1,4 @@
-From c0b0dc89768bee791173ed97457ef15de11ea85a Mon Sep 17 00:00:00 2001
+From 9d0645fb8025aac9243b2fcb12d83fcc11b771c1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 9 Dec 2014 05:23:05 -0500
 Subject: [PATCH] EventException knows the source Event
@@ -86,10 +86,10 @@ index 84638e8..aef8d49 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 2118771..900c562 100644
+index df613b0..885f8ae 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -299,9 +299,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -295,9 +295,9 @@ public final class JavaPluginLoader implements PluginLoader {
                          }
                          method.invoke(listener, event);
                      } catch (InvocationTargetException ex) {

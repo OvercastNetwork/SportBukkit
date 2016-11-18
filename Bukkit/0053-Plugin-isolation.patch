@@ -1,11 +1,11 @@
-From d2e032ed8408e812009f2947fb2658fe5ee33b90 Mon Sep 17 00:00:00 2001
+From c38e4e2b8607760b3f38243c65428f235bc5b7f8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 29 May 2015 01:08:37 -0400
 Subject: [PATCH] Plugin isolation
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 8bfd5c5..bf09333 100644
+index 5e27985..be197fb 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -368,6 +368,13 @@ public final class Bukkit {
@@ -23,7 +23,7 @@ index 8bfd5c5..bf09333 100644
       * <p>
       * <b>Example Usage:</b>
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 9448ae9..1c259d6 100644
+index 16d18d2..7393148 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -303,6 +303,11 @@ public interface Server extends PluginMessageRecipient {
@@ -195,22 +195,25 @@ index dc71961..89b40f2 100644
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 900c562..6cb69ba 100644
+index 885f8ae..6cb69ba 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -10,8 +10,11 @@ import java.util.Arrays;
+@@ -9,10 +9,12 @@ import java.lang.reflect.Method;
+ import java.util.Arrays;
  import java.util.HashMap;
  import java.util.HashSet;
- import java.util.LinkedHashMap;
+-import java.util.List;
++import java.util.LinkedHashMap;
 +import java.util.LinkedHashSet;
  import java.util.Map;
  import java.util.Set;
+-import java.util.concurrent.CopyOnWriteArrayList;
 +import java.util.concurrent.locks.ReadWriteLock;
 +import java.util.concurrent.locks.ReentrantReadWriteLock;
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
  import java.util.logging.Level;
-@@ -21,8 +24,6 @@ import org.apache.commons.lang.Validate;
+@@ -22,8 +24,6 @@ import org.apache.commons.lang.Validate;
  import org.bukkit.Server;
  import org.bukkit.Warning;
  import org.bukkit.Warning.WarningState;
@@ -219,24 +222,23 @@ index 900c562..6cb69ba 100644
  import org.bukkit.event.Event;
  import org.bukkit.event.EventException;
  import org.bukkit.event.EventHandler;
-@@ -47,8 +48,8 @@ import org.yaml.snakeyaml.error.YAMLException;
+@@ -48,8 +48,8 @@ import org.yaml.snakeyaml.error.YAMLException;
  public final class JavaPluginLoader implements PluginLoader {
      final Server server;
      private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
 -    private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
--    private final Map<String, PluginClassLoader> loaders = new LinkedHashMap<String, PluginClassLoader>();
+-    private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
 +    final Map<String, PluginClassLoader> loaders = new LinkedHashMap<String, PluginClassLoader>();
 +    final ReadWriteLock loaderLock = new ReentrantReadWriteLock();
  
      /**
       * This class was not meant to be constructed explicitly
-@@ -113,29 +114,50 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -114,26 +114,50 @@ public final class JavaPluginLoader implements PluginLoader {
              ));
          }
  
 -        for (final String pluginName : description.getDepend()) {
--            if (loaders == null) {
--                throw new UnknownDependencyException(pluginName);
+-            Plugin current = server.getPluginManager().getPlugin(pluginName);
 +        Set<PluginClassLoader> dependencies = new LinkedHashSet<PluginClassLoader>();
 +        loaderLock.readLock().lock();
 +        try {
@@ -247,8 +249,7 @@ index 900c562..6cb69ba 100644
 +                    throw new UnknownDependencyException(pluginName);
 +                }
 +                dependencies.add(current);
-             }
--            PluginClassLoader current = loaders.get(pluginName);
++            }
  
 -            if (current == null) {
 -                throw new UnknownDependencyException(pluginName);
@@ -272,7 +273,7 @@ index 900c562..6cb69ba 100644
              throw new InvalidPluginException(ex);
          }
  
--        loaders.put(description.getName(), loader);
+-        loaders.add(loader);
 +        loaderLock.writeLock().lock();
 +        try {
 +            loaders.put(description.getName(), loader);
@@ -292,7 +293,7 @@ index 900c562..6cb69ba 100644
      }
  
      public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
-@@ -180,51 +202,6 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -178,49 +202,6 @@ public final class JavaPluginLoader implements PluginLoader {
          return fileFilters.clone();
      }
  
@@ -302,9 +303,7 @@ index 900c562..6cb69ba 100644
 -        if (cachedClass != null) {
 -            return cachedClass;
 -        } else {
--            for (String current : loaders.keySet()) {
--                PluginClassLoader loader = loaders.get(current);
--
+-            for (PluginClassLoader loader : loaders) {
 -                try {
 -                    cachedClass = loader.findClass(name, false);
 -                } catch (ClassNotFoundException cnfe) {}
@@ -344,12 +343,16 @@ index 900c562..6cb69ba 100644
      public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, final Plugin plugin) {
          Validate.notNull(plugin, "Plugin can not be null");
          Validate.notNull(listener, "Listener can not be null");
-@@ -324,8 +301,13 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -318,11 +299,15 @@ public final class JavaPluginLoader implements PluginLoader {
  
-             String pluginName = jPlugin.getDescription().getName();
+             JavaPlugin jPlugin = (JavaPlugin) plugin;
  
--            if (!loaders.containsKey(pluginName)) {
--                loaders.put(pluginName, (PluginClassLoader) jPlugin.getClassLoader());
+-            PluginClassLoader pluginLoader = (PluginClassLoader) jPlugin.getClassLoader();
++            String pluginName = jPlugin.getDescription().getName();
+ 
+-            if (!loaders.contains(pluginLoader)) {
+-                loaders.add(pluginLoader);
+-                server.getLogger().log(Level.WARNING, "Enabled plugin with unregistered PluginClassLoader " + plugin.getDescription().getFullName());
 +            loaderLock.writeLock().lock();
 +            try {
 +                if (!loaders.containsKey(pluginName)) {
@@ -360,11 +363,15 @@ index 900c562..6cb69ba 100644
              }
  
              try {
-@@ -358,14 +340,21 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -355,14 +340,21 @@ public final class JavaPluginLoader implements PluginLoader {
                  server.getLogger().log(Level.SEVERE, "Error occurred while disabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
              }
  
--            loaders.remove(jPlugin.getDescription().getName());
+-            if (cloader instanceof PluginClassLoader) {
+-                PluginClassLoader loader = (PluginClassLoader) cloader;
+-                loaders.remove(loader);
+-
+-                Set<String> names = loader.getClasses();
 +            loaderLock.writeLock().lock();
 +            try {
 +                loaders.remove(jPlugin.getDescription().getName());
@@ -372,12 +379,9 @@ index 900c562..6cb69ba 100644
 +                loaderLock.writeLock().unlock();
 +            }
  
-             if (cloader instanceof PluginClassLoader) {
--                PluginClassLoader loader = (PluginClassLoader) cloader;
--                Set<String> names = loader.getClasses();
--
 -                for (String name : names) {
 -                    removeClass(name);
++            if (cloader instanceof PluginClassLoader) {
 +                loaderLock.readLock().lock();
 +                try {
 +                    for(PluginClassLoader other : loaders.values()) {

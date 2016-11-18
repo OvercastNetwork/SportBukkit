@@ -1,4 +1,4 @@
-From 07a8d4e1d314ac08d1d69291489b431ae50fa74d Mon Sep 17 00:00:00 2001
+From 1e43a9efda3fc3bc812ae7eab988a7db2baa2eb3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 03:39:45 -0400
 Subject: [PATCH] Action event interfaces
@@ -125,7 +125,7 @@ index d80e00e..77f36df 100644
       * Gets if the block is set to instantly break when damaged by the player.
       *
 diff --git a/src/main/java/org/bukkit/event/block/BlockIgniteEvent.java b/src/main/java/org/bukkit/event/block/BlockIgniteEvent.java
-index 5ea8b07..7f4e9b3 100644
+index 3c85866..1518281 100644
 --- a/src/main/java/org/bukkit/event/block/BlockIgniteEvent.java
 +++ b/src/main/java/org/bukkit/event/block/BlockIgniteEvent.java
 @@ -4,6 +4,7 @@ import org.bukkit.block.Block;
@@ -145,7 +145,7 @@ index 5ea8b07..7f4e9b3 100644
      private static final HandlerList handlers = new HandlerList();
      private final IgniteCause cause;
      private final Entity ignitingEntity;
-@@ -70,6 +71,11 @@ public class BlockIgniteEvent extends BlockEvent implements Cancellable {
+@@ -65,6 +66,11 @@ public class BlockIgniteEvent extends BlockEvent implements Cancellable {
          return null;
      }
  
@@ -343,10 +343,10 @@ index 0000000..6e806f9
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java b/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
-index 0262f87..aa8751a 100644
+index 849e57d..93e5d52 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityChangeBlockEvent.java
-@@ -11,7 +11,7 @@ import org.bukkit.material.MaterialData;
+@@ -10,7 +10,7 @@ import org.bukkit.material.MaterialData;
  /**
   * Called when any Entity, excluding players, changes a block.
   */
@@ -397,7 +397,7 @@ index 286c206..abf9b8d 100644
      private final List<BlockState> blocks;
      private boolean cancelled = false;
 diff --git a/src/main/java/org/bukkit/event/entity/EntityDamageByEntityEvent.java b/src/main/java/org/bukkit/event/entity/EntityDamageByEntityEvent.java
-index 49e74c3..0b1c59d 100644
+index f121786..cd7e3cd 100644
 --- a/src/main/java/org/bukkit/event/entity/EntityDamageByEntityEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/EntityDamageByEntityEvent.java
 @@ -4,11 +4,12 @@ import java.util.Map;
@@ -414,7 +414,7 @@ index 49e74c3..0b1c59d 100644
      private final Entity damager;
  
      @Deprecated
-@@ -35,4 +36,9 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
+@@ -30,4 +31,9 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
      public Entity getDamager() {
          return damager;
      }
@@ -579,10 +579,10 @@ index 6b7d13f..580513c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java b/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
-index 21ebab6..8ccdb81 100644
+index 1794913..7804707 100644
 --- a/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
-@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
+@@ -7,7 +7,7 @@ import org.bukkit.entity.AbstractHorse;
  /**
   * Called when a horse jumps.
   */
@@ -592,7 +592,7 @@ index 21ebab6..8ccdb81 100644
      private boolean cancelled;
      private float power;
 @@ -34,6 +34,11 @@ public class HorseJumpEvent extends EntityEvent implements Cancellable {
-         return (Horse) entity;
+         return (AbstractHorse) entity;
      }
  
 +    @Override
@@ -1056,7 +1056,7 @@ index 4b5075b..89ac3bb 100644
      private final Egg egg;
      private boolean hatching;
 diff --git a/src/main/java/org/bukkit/event/player/PlayerFishEvent.java b/src/main/java/org/bukkit/event/player/PlayerFishEvent.java
-index 4d6b29a..945ef89 100644
+index 72eebe9..2696ed4 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerFishEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerFishEvent.java
 @@ -9,7 +9,7 @@ import org.bukkit.event.HandlerList;

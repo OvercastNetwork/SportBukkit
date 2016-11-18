@@ -1,4 +1,4 @@
-From eeb831a5aa04ead4c014f5baec831f4f1b167a94 Mon Sep 17 00:00:00 2001
+From 263c834a84811e00a35021fd95e7b4dd359bd008 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 01:08:40 -0400
 Subject: [PATCH] Physical interface
@@ -51,7 +51,7 @@ index 0000000..24a58ff
 +    World getWorld();
 +}
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index bd6d4d0..14d768d 100644
+index dfbaf2b..ebc8c46 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -13,7 +13,6 @@ import org.bukkit.block.Block;
@@ -114,23 +114,23 @@ index 911a4d1..7899117 100644
      /**
       * Gets the block represented by this BlockState
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 5b70f94..0094607 100644
+index 759e3f0..100de93 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -4,6 +4,7 @@ import org.bukkit.Location;
- import org.bukkit.EntityEffect;
+@@ -5,6 +5,7 @@ import org.bukkit.EntityEffect;
+ import org.bukkit.Nameable;
  import org.bukkit.Server;
  import org.bukkit.World;
 +import org.bukkit.Physical;
  import org.bukkit.event.entity.EntityDamageEvent;
  import org.bukkit.metadata.Metadatable;
  import org.bukkit.util.Vector;
-@@ -16,7 +17,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+@@ -18,7 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  /**
   * Represents a base entity in the world
   */
--public interface Entity extends Metadatable, CommandSender {
-+public interface Entity extends Metadatable, CommandSender, Physical {
+-public interface Entity extends Metadatable, CommandSender, Nameable {
++public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
  
      /**
       * Gets the entity's current position
@@ -518,7 +518,7 @@ index 9c06a3d..6e128ba 100644
      /**
       * Get the object's inventory.
 diff --git a/src/main/java/org/bukkit/map/MapView.java b/src/main/java/org/bukkit/map/MapView.java
-index 65c4159..e0bb2a6 100644
+index 18a9936..c1bbd57 100644
 --- a/src/main/java/org/bukkit/map/MapView.java
 +++ b/src/main/java/org/bukkit/map/MapView.java
 @@ -2,11 +2,12 @@ package org.bukkit.map;

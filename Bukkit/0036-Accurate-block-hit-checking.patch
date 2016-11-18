@@ -1,11 +1,11 @@
-From 2a638b0456a0a7bd20c1ecaeab180d7e83c5a576 Mon Sep 17 00:00:00 2001
+From 0f74c5b626a45fa2ff13ade3a3fa7199e0e84eb1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:00:58 -0400
 Subject: [PATCH] Accurate block hit checking
 
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 09d5d00..bd6d4d0 100644
+index 7c3c731..dfbaf2b 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
@@ -16,7 +16,7 @@ index 09d5d00..bd6d4d0 100644
  import org.bukkit.util.Vector;
  
  /**
-@@ -106,6 +107,26 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -111,6 +112,26 @@ public interface World extends PluginMessageRecipient, Metadatable {
      public Block getHighestBlockAt(Location location);
  
      /**

@@ -1,14 +1,14 @@
-From 6e9ae26a6850d953a647b8f00d72ab8157dfe244 Mon Sep 17 00:00:00 2001
+From 72889f764010c5be625bfde824334086b54bebc8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:12:10 -0700
 Subject: [PATCH] Affects spawning API
 
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index d14d875..2f420fe 100644
+index 6ed5e79..78e1272 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
-@@ -209,4 +209,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
+@@ -217,4 +217,17 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
       * @return Experience required to level up
       */
      public int getExpToLevel();

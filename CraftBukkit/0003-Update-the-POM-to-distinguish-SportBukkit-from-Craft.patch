@@ -1,14 +1,14 @@
-From 7e394a27604ae96f8e70351376d6e69a891c1e1d Mon Sep 17 00:00:00 2001
+From c79fb7f0324dc6ab43538b8e8012d95a2c149987 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index c868c79..5f8ffa8 100644
+index e92f283..c9e3e59 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -1,28 +1,38 @@
+@@ -1,29 +1,39 @@
  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
@@ -17,7 +17,7 @@ index c868c79..5f8ffa8 100644
 +    <groupId>tc.oc</groupId>
 +    <artifactId>sportbukkit</artifactId>
      <packaging>jar</packaging>
-     <version>1.10.2-R0.1-SNAPSHOT</version>
+     <version>1.11-R0.1-SNAPSHOT</version>
 -    <name>CraftBukkit</name>
 -    <url>http://www.bukkit.org</url>
 +    <name>SportBukkit</name>
@@ -26,11 +26,12 @@ index c868c79..5f8ffa8 100644
      <properties>
          <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
          <api.version>unknown</api.version>
-         <minecraft.version>1.10.2</minecraft.version>
--        <minecraft_version>1_10_R1</minecraft_version>
+         <minecraft.version>1.11</minecraft.version>
+-        <minecraft_version>1_11_R1</minecraft_version>
 -        <buildtag.prefix>git-Bukkit-</buildtag.prefix>
 +        <buildtag.prefix>git-SportBukkit-</buildtag.prefix>
          <buildtag.suffix></buildtag.suffix>
+         <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
 -        <maven.compiler.source>1.6</maven.compiler.source>
 -        <maven.compiler.target>1.6</maven.compiler.target>
 +        <maven.compiler.source>1.8</maven.compiler.source>
@@ -57,8 +58,8 @@ index c868c79..5f8ffa8 100644
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -56,6 +66,16 @@
-             <version>5.1.37</version>
+@@ -57,6 +67,16 @@
+             <version>5.1.39</version>
              <scope>compile</scope>
          </dependency>
 +        <dependency>
@@ -74,7 +75,7 @@ index c868c79..5f8ffa8 100644
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
-@@ -151,8 +171,8 @@
+@@ -152,8 +172,8 @@
                  <configuration>
                      <signature>
                          <groupId>org.codehaus.mojo.signature</groupId>
@@ -85,7 +86,7 @@ index c868c79..5f8ffa8 100644
                      </signature>
                  </configuration>
              </plugin>
-@@ -184,17 +204,6 @@
+@@ -185,17 +205,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>
                                  </relocation>
@@ -101,8 +102,8 @@ index c868c79..5f8ffa8 100644
 -                                    <shadedPattern>net.minecraft.server.v${minecraft_version}</shadedPattern>
 -                                </relocation>
                              </relocations>
-                         </configuration>
-                     </execution>
+                             <transformers>
+                                 <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
 -- 
 1.9.0
 

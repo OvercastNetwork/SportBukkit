@@ -38,4 +38,9 @@ This is roughly the process used to rebase SportBukkit to an updated upstream Cr
   Assuming there have been upstream changes, many of these patches will fail and you will need to resolve the conflicts.
 * For each conflict, one of the repos `build/Bukkit` or `build/CraftBukkit` will be in a `git am` session, waiting on conflict resolution.
   Use the standard git merge process to resolve the conflict, and type `git am --continue` to continue applying patches.
-* 
+* Along the way, you can run `rebuild-patches.sh` to capture your progress in the patch files.
+  You should delete all the patches before regenerating them, so that renamed/renumbered patches get cleaned up properly.
+* When you get to the end of the Bukkit patches, rebuild them and then run `apply-sb-patches.sh` again to continue with the CraftBukkit patches.
+* The first CraftBukkit patch is strictly for importing NMS files verbatim. To recreate this patch, just copy the latest NMS version of each file
+  in the patch from `work/nms-src` to `build/CraftBukkit/src/main/java`. This patch should *always* be updated, even if there are no merge conflicts.
+* The second CraftBukkit patch is strictly for fixing decompile errors. This patch should only make minimal changes to the files in the first patch to make them compile.

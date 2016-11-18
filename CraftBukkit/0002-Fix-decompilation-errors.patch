@@ -1,14 +1,14 @@
-From 7c614a7d895dd6810a0a0e5d4c0dd356e879317e Mon Sep 17 00:00:00 2001
+From 289fd2e7ff55ccc8a17107f5e91045f6f1f4d6e8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
 
 
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index 8603d83..b241977 100644
+index 5cea6f1..73577fc 100644
 --- a/src/main/java/net/minecraft/server/BlockPosition.java
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
-@@ -130,7 +130,7 @@ public class BlockPosition extends BaseBlockPosition {
+@@ -147,7 +147,7 @@ public class BlockPosition extends BaseBlockPosition {
          return new BlockPosition(j, k, l);
      }
  
@@ -17,7 +17,7 @@ index 8603d83..b241977 100644
          final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
          final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
  
-@@ -178,7 +178,7 @@ public class BlockPosition extends BaseBlockPosition {
+@@ -195,7 +195,7 @@ public class BlockPosition extends BaseBlockPosition {
          return this;
      }
  
@@ -41,10 +41,10 @@ index 737035b..5886e4c 100644
 +    SportBukkit */
  }
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index accb5d3..85b07a0 100644
+index 18341fa..0c78880 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
-@@ -34,7 +34,7 @@ public class Item {
+@@ -33,7 +33,7 @@ public class Item {
      private String name;
  
      public static int getId(Item item) {
@@ -89,10 +89,10 @@ index a79fa01..dd53ee7 100644
      }
  }
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
-index 2b23a5d..35f6c5c 100644
+index c67cb54..458b4da 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
-@@ -16,7 +16,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
+@@ -17,7 +17,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
          this.action = PacketPlayInUseEntity.EnumEntityUseAction.ATTACK;
      }
  
@@ -101,7 +101,7 @@ index 2b23a5d..35f6c5c 100644
          this.a = packetdataserializer.g();
          this.action = (PacketPlayInUseEntity.EnumEntityUseAction) packetdataserializer.a(PacketPlayInUseEntity.EnumEntityUseAction.class);
          if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
-@@ -29,7 +29,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
+@@ -30,7 +30,7 @@ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
  
      }
  
@@ -123,11 +123,24 @@ index 736015c..030f02f 100644
          packetdataserializer.a((Enum) this.b);
          packetdataserializer.writeInt(this.c);
          packetdataserializer.writeInt(this.d);
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
+index 6c86341..c0d0ba5 100644
+--- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
++++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
+@@ -26,7 +26,7 @@ public class PacketPlayOutSpawnEntityLiving implements Packet<PacketListenerPlay
+     public PacketPlayOutSpawnEntityLiving(EntityLiving entityliving) {
+         this.a = entityliving.getId();
+         this.b = entityliving.getUniqueID();
+-        this.c = EntityTypes.b.a((Object) entityliving.getClass());
++        this.c = EntityTypes.b.a(entityliving.getClass()); // SportBukkit - fix decomp
+         this.d = entityliving.locX;
+         this.e = entityliving.locY;
+         this.f = entityliving.locZ;
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 3219734..71638d7 100644
+index 04ea4cc..36b81e7 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -733,7 +733,7 @@ public abstract class PlayerList {
+@@ -731,7 +731,7 @@ public abstract class PlayerList {
  
      public void f(EntityPlayer entityplayer) {
          GameProfile gameprofile = entityplayer.getProfile();
@@ -137,7 +150,7 @@ index 3219734..71638d7 100644
          i = this.server.R() && this.server.worldServer[0].getWorldData().u() ? 4 : i;
          i = this.t ? 4 : i;
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index 9d0d206..66613e2 100644
+index 07016aa..e565e2f 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
 @@ -58,8 +58,10 @@ public class ServerConnection {
@@ -162,6 +175,59 @@ index 9d0d206..66613e2 100644
                                  public void operationComplete(Future<? super Void> future) throws Exception {
                                      networkmanager.close(chatcomponenttext);
                                  }
+diff --git a/src/main/java/net/minecraft/server/SoundEffectType.java b/src/main/java/net/minecraft/server/SoundEffectType.java
+index 219653c..7470d69 100644
+--- a/src/main/java/net/minecraft/server/SoundEffectType.java
++++ b/src/main/java/net/minecraft/server/SoundEffectType.java
+@@ -11,7 +11,7 @@ public class SoundEffectType {
+     public static final SoundEffectType g = new SoundEffectType(1.0F, 1.0F, SoundEffects.ai, SoundEffects.am, SoundEffects.al, SoundEffects.ak, SoundEffects.aj);
+     public static final SoundEffectType h = new SoundEffectType(1.0F, 1.0F, SoundEffects.fm, SoundEffects.fq, SoundEffects.fp, SoundEffects.fo, SoundEffects.fn);
+     public static final SoundEffectType i = new SoundEffectType(1.0F, 1.0F, SoundEffects.gt, SoundEffects.gx, SoundEffects.gw, SoundEffects.gv, SoundEffects.gu);
+-    public static final SoundEffectType j = new SoundEffectType(1.0F, 1.0F, SoundEffects.dl, SoundEffects.dp, SoundEffects.do, SoundEffects.dn, SoundEffects.dm);
++    public static final SoundEffectType j = new SoundEffectType(1.0F, 1.0F, SoundEffects.dl, SoundEffects.dp, SoundEffects.BLOCK_LADDER_PLACE, SoundEffects.dn, SoundEffects.dm); // SportBukkit - fix decomp
+     public static final SoundEffectType k = new SoundEffectType(0.3F, 1.0F, SoundEffects.b, SoundEffects.h, SoundEffects.g, SoundEffects.e, SoundEffects.d);
+     public static final SoundEffectType l = new SoundEffectType(1.0F, 1.0F, SoundEffects.fY, SoundEffects.gg, SoundEffects.ge, SoundEffects.gb, SoundEffects.ga);
+     public final float m;
+diff --git a/src/main/java/net/minecraft/server/SoundEffects.java b/src/main/java/net/minecraft/server/SoundEffects.java
+index 2cafa4c..66b37ca 100644
+--- a/src/main/java/net/minecraft/server/SoundEffects.java
++++ b/src/main/java/net/minecraft/server/SoundEffects.java
+@@ -224,7 +224,7 @@ public class SoundEffects {
+     public static final SoundEffect dl;
+     public static final SoundEffect dm;
+     public static final SoundEffect dn;
+-    public static final SoundEffect do;
++    public static final SoundEffect BLOCK_LADDER_PLACE; // SportBukkit - fix decomp
+     public static final SoundEffect dp;
+     public static final SoundEffect dq;
+     public static final SoundEffect dr;
+@@ -475,7 +475,7 @@ public class SoundEffects {
+     public static final SoundEffect ic;
+     public static final SoundEffect id;
+     public static final SoundEffect ie;
+-    public static final SoundEffect if;
++    public static final SoundEffect ENTITY_ZOMBIE_ATTACK_DOOR_WOOD; // SportBukkit - fix decomp
+     public static final SoundEffect ig;
+     public static final SoundEffect ih;
+     public static final SoundEffect ii;
+@@ -732,7 +732,7 @@ public class SoundEffects {
+             dl = a("block.ladder.break");
+             dm = a("block.ladder.fall");
+             dn = a("block.ladder.hit");
+-            do = a("block.ladder.place");
++            BLOCK_LADDER_PLACE = a("block.ladder.place"); // SportBukkit - fix decomp
+             dp = a("block.ladder.step");
+             dq = a("block.lava.ambient");
+             dr = a("block.lava.extinguish");
+@@ -983,7 +983,7 @@ public class SoundEffects {
+             ic = a("block.wood_pressureplate.click_on");
+             id = a("block.wood.step");
+             ie = a("entity.zombie.ambient");
+-            if = a("entity.zombie.attack_door_wood");
++            ENTITY_ZOMBIE_ATTACK_DOOR_WOOD = a("entity.zombie.attack_door_wood"); // SportBukkit - fix decomp
+             ig = a("entity.zombie.attack_iron_door");
+             ih = a("entity.zombie.break_door_wood");
+             ii = a("entity.zombie.death");
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
 index 85085d5..be2f4c1 100644
 --- a/src/main/java/net/minecraft/server/WhiteList.java

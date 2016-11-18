@@ -1,11 +1,11 @@
-From 218a54ea24226a85b1db9d742cad94c23d9a7b93 Mon Sep 17 00:00:00 2001
+From e06692ba9e8a7d6f465c9244505da8e44cdf2794 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 5 Aug 2016 09:52:58 -0400
 Subject: [PATCH] Mojang task queue access
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index f912ad8..df85f1d 100644
+index 8a09db0..93558be 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
@@ -16,7 +16,7 @@ index f912ad8..df85f1d 100644
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.ServicesManager;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -1291,4 +1292,12 @@ public final class Bukkit {
+@@ -1294,4 +1295,12 @@ public final class Bukkit {
      public static PotionEffectRegistry potionEffectRegistry() {
          return runtime().potionEffectRegistry();
      }

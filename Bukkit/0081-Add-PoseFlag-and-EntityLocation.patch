@@ -1,4 +1,4 @@
-From e972a07e9181cfb3dd9eef7529bf88b9fe3040f1 Mon Sep 17 00:00:00 2001
+From df134838ff3074ed6f0d6a5207d66d4cb54b9cf4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -6,10 +6,10 @@ Subject: [PATCH] Add PoseFlag and EntityLocation
 
 diff --git a/src/main/java/org/bukkit/EntityLocation.java b/src/main/java/org/bukkit/EntityLocation.java
 new file mode 100644
-index 0000000..3015e35
+index 0000000..41e6da8
 --- /dev/null
 +++ b/src/main/java/org/bukkit/EntityLocation.java
-@@ -0,0 +1,124 @@
+@@ -0,0 +1,120 @@
 +package org.bukkit;
 +
 +import java.util.Arrays;
@@ -59,20 +59,16 @@ index 0000000..3015e35
 +        this(world, x, y, z, yaw, pitch, new Vector(), EnumSet.noneOf(PoseFlag.class));
 +    }
 +
-+    public static EntityLocation coerce(Vector value, EntityLocation defaults) {
++    public static EntityLocation coerce(Location value, EntityLocation defaults) {
 +        if(value instanceof EntityLocation) {
 +            return (EntityLocation) value;
-+        } else if(value instanceof Location) {
-+            return new EntityLocation((Location) value, defaults.velocity(), defaults.poseFlags());
-+        } else if(value != null) {
-+            return new EntityLocation(defaults.getWorld(), value, defaults.getYaw(), defaults.getPitch(), defaults.velocity(), defaults.poseFlags());
 +        } else {
-+            return null;
++            return new EntityLocation(value, defaults.velocity(), defaults.poseFlags());
 +        }
 +    }
 +
 +    public static EntityLocation copyOf(Location location, Vector velocity, Set<PoseFlag> poseFlags) {
-+        return new EntityLocation(location, Vector.copyOf(velocity), EnumUtils.copySet(PoseFlag.class, poseFlags));
++        return new EntityLocation(location, new Vector(velocity), EnumUtils.copySet(PoseFlag.class, poseFlags));
 +    }
 +
 +    public static EntityLocation copyOf(EntityLocation that) {
@@ -134,38 +130,6 @@ index 0000000..3015e35
 +        return copyOf(this);
 +    }
 +}
-diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index cd7ac2f..8de167a 100644
---- a/src/main/java/org/bukkit/Location.java
-+++ b/src/main/java/org/bukkit/Location.java
-@@ -475,6 +475,27 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
-     }
- 
-     /**
-+     * Copy yaw and pitch from the given {@link Location} to this one.
-+     * @return this object
-+     */
-+    public Location copyAngles(Location loc) {
-+        this.yaw = loc.getYaw();
-+        this.pitch = loc.getPitch();
-+        return this;
-+    }
-+
-+    /**
-+     * Copy position and angles from the given {@link Location} to this one.
-+     * @return this object
-+     */
-+    public Location copyLocation(Location loc) {
-+        this.x = loc.getX();
-+        this.y = loc.getY();
-+        this.z = loc.getZ();
-+        return copyAngles(loc);
-+    }
-+
-+    /**
-      * Zero this location's components. Not world-aware.
-      *
-      * @see Vector
 diff --git a/src/main/java/org/bukkit/PoseFlag.java b/src/main/java/org/bukkit/PoseFlag.java
 new file mode 100644
 index 0000000..4d8fbee
@@ -214,7 +178,7 @@ index 0000000..4d8fbee
 +    RIDING;
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 84ecf0a..a477b48 100644
+index dfb542b..35e3af9 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -1,8 +1,10 @@

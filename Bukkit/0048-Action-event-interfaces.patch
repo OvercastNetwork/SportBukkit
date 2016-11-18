@@ -1,4 +1,4 @@
-From 1e43a9efda3fc3bc812ae7eab988a7db2baa2eb3 Mon Sep 17 00:00:00 2001
+From 4e826c5e61546a6e88fefd060713db0ff1edfec7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 03:39:45 -0400
 Subject: [PATCH] Action event interfaces
@@ -579,7 +579,7 @@ index 6b7d13f..580513c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java b/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
-index 1794913..7804707 100644
+index 1794913..7efc20f 100644
 --- a/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/HorseJumpEvent.java
 @@ -7,7 +7,7 @@ import org.bukkit.entity.AbstractHorse;
@@ -596,7 +596,7 @@ index 1794913..7804707 100644
      }
  
 +    @Override
-+    public Horse getActor() {
++    public AbstractHorse getActor() {
 +        return getEntity();
 +    }
 +

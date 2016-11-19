@@ -1,4 +1,4 @@
-From 0baf71ab5c8a9b3563c6c0d1780c61c642cc20db Mon Sep 17 00:00:00 2001
+From 1470d042336c6bf492529e3692be55696749c99d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -53,7 +53,7 @@ index d79352b..3ed0f11 100644
          Player player = entity.getBukkitEntity();
          PlayerLoginEvent event = new PlayerLoginEvent(player, hostname, ((java.net.InetSocketAddress) socketaddress).getAddress());
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f6447dc..90ec26f 100644
+index f6447dc..9027433 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -118,6 +118,7 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
@@ -91,7 +91,7 @@ index f6447dc..90ec26f 100644
 +
 +    @Override
 +    public Set<Integer> getProtocolVersions() {
-+        return ImmutableSet.of(210);
++        return ImmutableSet.of(315);
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java b/src/main/java/org/bukkit/craftbukkit/command/ProxiedNativeCommandSender.java

@@ -1,11 +1,11 @@
-From 8e815c7fa0e2deeb2029600aa08e8307ba348f48 Mon Sep 17 00:00:00 2001
+From 0189645375454b657729ce0672ac81cdfa523c76 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 19 Jun 2015 15:02:55 -0400
 Subject: [PATCH] Retrieve metadata by plugin
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 74a831c..c46cb9e 100644
+index 9f77f78..27cc463 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -1355,6 +1355,11 @@ public class CraftWorld implements World {
@@ -70,10 +70,10 @@ index c7bb351..20f1733 100644
          return server.getEntityMetadata().getMetadata(this, metadataKey);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 8d3c4b8..9e45662 100644
+index fa470d5..1ec9835 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1465,6 +1465,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1485,6 +1485,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

@@ -1,4 +1,4 @@
-From cbcded1a9bbba147c1e1696c39a27c32871a2467 Mon Sep 17 00:00:00 2001
+From 75526d9a85be97c7b6125d6e3bb30f81a94ac3bf Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:25 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -85,7 +85,7 @@ index b48aaa7..900e4fb 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 5bffd06..25c2c80 100644
+index 9f73b37..b4bbf9d 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -24,7 +24,9 @@ import java.util.concurrent.ExecutionException;
@@ -326,7 +326,7 @@ index 21e8f0d..24fec34 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 1a9e784..249cfbf 100644
+index 820802d..6cedc36 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
@@ -337,7 +337,7 @@ index 1a9e784..249cfbf 100644
  import java.util.HashSet;
  import java.util.LinkedHashMap;
  import java.util.List;
-@@ -2025,4 +2026,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2045,4 +2046,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public float getRemainingItemCooldown(Material item) {
          return getHandle().getItemCooldown().a(CraftMagicNumbers.getItem(item), 0F);
      }

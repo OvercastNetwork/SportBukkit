@@ -1,4 +1,4 @@
-From 5edd18ff1a0b65f47a5b1c61d96207953b80ae5d Mon Sep 17 00:00:00 2001
+From de8258ea56c6c727b97ff787e6924a79f24f7418 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -248,7 +248,7 @@ index ba7dc49..d9cb0ca 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index c14840a..7c3c731 100644
+index 8dd254a..3a7d5c5 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -13,6 +13,7 @@ import org.bukkit.block.Block;
@@ -305,10 +305,10 @@ index c14840a..7c3c731 100644
       * including valid biome data. Used for representing an ungenerated chunk,
       * or for fetching only biome data without loading a chunk.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 73816a0..bc29a6c 100644
+index 4fa46f0..9ab646a 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -276,6 +276,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -321,6 +321,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       */
      public <T> void playEffect(Location loc, Effect effect, T data);
  

@@ -1,4 +1,4 @@
-From 244789d3ea1565656ffb8bdc6e16d72f33994c8d Mon Sep 17 00:00:00 2001
+From d106e179ecf3d7962dfef47ef2b895849fa60f35 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
@@ -70,7 +70,7 @@ index ae8e5f8..59e3ca6 100644
      public ChunkGenerator.ChunkData createChunkData(World world);
  
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index ebc8c46..275fd60 100644
+index 9bfc8ff..25914e2 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -1,12 +1,20 @@
@@ -189,7 +189,7 @@ index ebc8c46..275fd60 100644
      /**
       * Gets the maximum height of this world.
       * <p>
-@@ -1446,6 +1500,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -1474,6 +1528,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
  

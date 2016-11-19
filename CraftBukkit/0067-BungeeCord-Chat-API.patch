@@ -1,4 +1,4 @@
-From 6c3ec582271b7f380f6fdb47107c74a780f7bcc7 Mon Sep 17 00:00:00 2001
+From 36e15a29b461dc8378dcca0b7ed1a2efb9915bed Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 13:06:05 +1100
 Subject: [PATCH] BungeeCord Chat API
@@ -86,7 +86,7 @@ index 98bb6c9..7c839ed 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index eaa35f1..24a9316 100644
+index 75658da..322a34c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -20,6 +20,7 @@ import java.util.Set;
@@ -97,7 +97,7 @@ index eaa35f1..24a9316 100644
  
  import java.util.WeakHashMap;
  import java.util.Arrays;
-@@ -1738,4 +1739,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1758,4 +1759,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public void setLocale(String locale) {
          getHandle().locale = locale;
      }

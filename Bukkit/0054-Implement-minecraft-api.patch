@@ -1,14 +1,14 @@
-From 322104ae78e0f2f963c02dd83eb72476fdb27b74 Mon Sep 17 00:00:00 2001
+From f427204e68d566387d1ed31700bba83d950d018f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
 
 
 diff --git a/pom.xml b/pom.xml
-index 2bee305..9889476 100644
+index 91f8160..b790c9c 100644
 --- a/pom.xml
 +++ b/pom.xml
-@@ -83,10 +83,8 @@
+@@ -84,10 +84,8 @@
          </dependency>
          <dependency>
              <groupId>tc.oc</groupId>
@@ -161,10 +161,10 @@ index 1f4c8ce..f032374 100644
          Object val = get(path, null);
          if (val != null) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 375b9f7..e96c740 100644
+index 41a4bd5..72cf253 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -28,7 +28,7 @@ import org.bukkit.util.RayBlockIntersection;
+@@ -29,7 +29,7 @@ import org.bukkit.util.RayBlockIntersection;
  /**
   * Represents a player, connected or not
   */

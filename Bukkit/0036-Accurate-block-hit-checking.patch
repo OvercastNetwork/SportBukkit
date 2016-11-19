@@ -1,11 +1,11 @@
-From 0f74c5b626a45fa2ff13ade3a3fa7199e0e84eb1 Mon Sep 17 00:00:00 2001
+From 46fabef82493ebbcc3eeaf2dac638fb7f844074a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:00:58 -0400
 Subject: [PATCH] Accurate block hit checking
 
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 7c3c731..dfbaf2b 100644
+index 3a7d5c5..4579c6e 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
@@ -77,10 +77,10 @@ index 235c15b..fe32537 100644
 +    RayBlockIntersection rayTrace(Location start, double distance);
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index fcff8bc..375b9f7 100644
+index 6631867..41a4bd5 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -23,6 +23,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
+@@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
  import org.bukkit.map.MapView;
  import org.bukkit.plugin.messaging.PluginMessageRecipient;
  import org.bukkit.scoreboard.Scoreboard;
@@ -88,7 +88,7 @@ index fcff8bc..375b9f7 100644
  
  /**
   * Represents a player, connected or not
-@@ -1559,4 +1560,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1604,4 +1605,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * or null if they are not digging any block.
       */
      public org.bukkit.block.Block getDiggingBlock();

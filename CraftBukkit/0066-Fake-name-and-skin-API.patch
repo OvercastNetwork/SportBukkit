@@ -1,4 +1,4 @@
-From d0948937c181bce8c4b82c755b2ef687b5b7f422 Mon Sep 17 00:00:00 2001
+From a27925ff08208df7c3b5c07c567b02255464edcd Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
@@ -111,7 +111,7 @@ index d8ec504..3e57fde 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index cf6e1ca..8d9fc97 100644
+index ff6d648..de6fc5c 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
@@ -402,7 +402,7 @@ index 3817675..75c428b 100644
          return true;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 66dd908..eaa35f1 100644
+index dfc8f90..75658da 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1,5 +1,6 @@
@@ -715,7 +715,7 @@ index 66dd908..eaa35f1 100644
      public String getDisplayName() {
          return getHandle().displayName;
      }
-@@ -948,7 +1212,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -968,7 +1232,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          EntityTracker tracker = ((WorldServer) entity.world).tracker;
          EntityPlayer other = ((CraftPlayer) player).getHandle();
  
@@ -724,7 +724,7 @@ index 66dd908..eaa35f1 100644
  
          EntityTrackerEntry entry = (EntityTrackerEntry) tracker.trackedEntities.get(other.getId());
          if (entry != null && !entry.trackedPlayers.contains(getHandle())) {
-@@ -1179,6 +1443,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1199,6 +1463,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      public void disconnect(String reason) {

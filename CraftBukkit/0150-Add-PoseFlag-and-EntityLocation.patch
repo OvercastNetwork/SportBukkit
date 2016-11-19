@@ -1,4 +1,4 @@
-From addf880de5aabfdc8aaef2d47d31086bd9a8f088 Mon Sep 17 00:00:00 2001
+From cbcded1a9bbba147c1e1696c39a27c32871a2467 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:25 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -85,7 +85,7 @@ index b48aaa7..900e4fb 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 7f57376..2abaa32 100644
+index 5bffd06..25c2c80 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -24,7 +24,9 @@ import java.util.concurrent.ExecutionException;
@@ -145,7 +145,7 @@ index 7f57376..2abaa32 100644
  
                              // Skip the first time we do this
                              if (from.getX() != Double.MAX_VALUE) {
-@@ -1535,6 +1541,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1534,6 +1540,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              case STOP_SNEAKING:
                  PlayerToggleSneakEvent event = new PlayerToggleSneakEvent(this.getPlayer(), packetplayinentityaction.b() == PacketPlayInEntityAction.EnumPlayerAction.START_SNEAKING);
                  this.server.getPluginManager().callEvent(event);
@@ -153,7 +153,7 @@ index 7f57376..2abaa32 100644
  
                  if (event.isCancelled()) {
                      return;
-@@ -1544,6 +1551,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -1543,6 +1550,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
              case STOP_SPRINTING:
                  PlayerToggleSprintEvent e2 = new PlayerToggleSprintEvent(this.getPlayer(), packetplayinentityaction.b() == PacketPlayInEntityAction.EnumPlayerAction.START_SPRINTING);
                  this.server.getPluginManager().callEvent(e2);
@@ -161,7 +161,7 @@ index 7f57376..2abaa32 100644
  
                  if (e2.isCancelled()) {
                      return;
-@@ -2262,6 +2270,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
+@@ -2261,6 +2269,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
          if (this.player.abilities.canFly && this.player.abilities.isFlying != packetplayinabilities.isFlying()) {
              PlayerToggleFlightEvent event = new PlayerToggleFlightEvent(this.server.getPlayer(this.player), packetplayinabilities.isFlying());
              this.server.getPluginManager().callEvent(event);

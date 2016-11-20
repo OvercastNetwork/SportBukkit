@@ -1,4 +1,4 @@
-From 289fd2e7ff55ccc8a17107f5e91045f6f1f4d6e8 Mon Sep 17 00:00:00 2001
+From df497b8853639fd363de02739759e34f406d06d0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -26,6 +26,19 @@ index 5cea6f1..73577fc 100644
          final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
          final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
  
+diff --git a/src/main/java/net/minecraft/server/EnumProtocol.java b/src/main/java/net/minecraft/server/EnumProtocol.java
+index 6e35b48..2f18f1e 100644
+--- a/src/main/java/net/minecraft/server/EnumProtocol.java
++++ b/src/main/java/net/minecraft/server/EnumProtocol.java
+@@ -152,7 +152,7 @@ public enum EnumProtocol {
+     }
+ 
+     protected EnumProtocol a(EnumProtocolDirection enumprotocoldirection, Class<? extends Packet<?>> oclass) {
+-        Object object = (BiMap) this.h.get(enumprotocoldirection);
++        BiMap<Integer, Class<? extends Packet<?>>> object = (BiMap) this.h.get(enumprotocoldirection); // SportBukkit - fix decomp error
+ 
+         if (object == null) {
+             object = HashBiMap.create();
 diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
 index 737035b..5886e4c 100644
 --- a/src/main/java/net/minecraft/server/GameProfileBanList.java

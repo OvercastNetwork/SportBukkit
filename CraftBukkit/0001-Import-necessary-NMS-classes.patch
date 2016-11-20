@@ -1,4 +1,4 @@
-From 772c6ccd20a15bbc8679309993a22bbad3093408 Mon Sep 17 00:00:00 2001
+From c00647a0590b1bed39a1662663918c8748e2d13b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -1278,6 +1278,1189 @@ index 0000000..201f560
 +        DataConverterPotionId.a[125] = "minecraft:long_water_breathing";
 +        DataConverterPotionId.a[126] = "minecraft:long_invisibility";
 +        DataConverterPotionId.a[127] = null;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/EntityHorse.java b/src/main/java/net/minecraft/server/EntityHorse.java
+new file mode 100644
+index 0000000..1d54dcc
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/EntityHorse.java
+@@ -0,0 +1,281 @@
++package net.minecraft.server;
++
++import java.util.UUID;
++import javax.annotation.Nullable;
++
++public class EntityHorse extends EntityHorseAbstract {
++
++    private static final UUID bG = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
++    private static final DataWatcherObject<Integer> bH = DataWatcher.a(EntityHorse.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Integer> bI = DataWatcher.a(EntityHorse.class, DataWatcherRegistry.b);
++    private static final String[] bJ = new String[] { "textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png"};
++    private static final String[] bK = new String[] { "hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
++    private static final String[] bL = new String[] { null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
++    private static final String[] bM = new String[] { "", "wo_", "wmo", "wdo", "bdo"};
++    private String bN;
++    private final String[] bO = new String[3];
++
++    public EntityHorse(World world) {
++        super(world);
++    }
++
++    protected void i() {
++        super.i();
++        this.datawatcher.register(EntityHorse.bH, Integer.valueOf(0));
++        this.datawatcher.register(EntityHorse.bI, Integer.valueOf(EnumHorseArmor.NONE.a()));
++    }
++
++    public static void b(DataConverterManager dataconvertermanager) {
++        EntityHorseAbstract.c(dataconvertermanager, EntityHorse.class);
++        dataconvertermanager.a(DataConverterTypes.ENTITY, (DataInspector) (new DataInspectorItem(EntityHorse.class, new String[] { "ArmorItem"})));
++    }
++
++    public void b(NBTTagCompound nbttagcompound) {
++        super.b(nbttagcompound);
++        nbttagcompound.setInt("Variant", this.getVariant());
++        if (!this.inventoryChest.getItem(1).isEmpty()) {
++            nbttagcompound.set("ArmorItem", this.inventoryChest.getItem(1).save(new NBTTagCompound()));
++        }
++
++    }
++
++    public void a(NBTTagCompound nbttagcompound) {
++        super.a(nbttagcompound);
++        this.setVariant(nbttagcompound.getInt("Variant"));
++        if (nbttagcompound.hasKeyOfType("ArmorItem", 10)) {
++            ItemStack itemstack = new ItemStack(nbttagcompound.getCompound("ArmorItem"));
++
++            if (!itemstack.isEmpty() && EnumHorseArmor.b(itemstack.getItem())) {
++                this.inventoryChest.setItem(1, itemstack);
++            }
++        }
++
++        this.dy();
++    }
++
++    public void setVariant(int i) {
++        this.datawatcher.set(EntityHorse.bH, Integer.valueOf(i));
++        this.dM();
++    }
++
++    public int getVariant() {
++        return ((Integer) this.datawatcher.get(EntityHorse.bH)).intValue();
++    }
++
++    private void dM() {
++        this.bN = null;
++    }
++
++    protected void dy() {
++        super.dy();
++        this.g(this.inventoryChest.getItem(1));
++    }
++
++    public void g(ItemStack itemstack) {
++        EnumHorseArmor enumhorsearmor = EnumHorseArmor.a(itemstack);
++
++        this.datawatcher.set(EntityHorse.bI, Integer.valueOf(enumhorsearmor.a()));
++        this.dM();
++        if (!this.world.isClientSide) {
++            this.getAttributeInstance(GenericAttributes.g).b(EntityHorse.bG);
++            int i = enumhorsearmor.c();
++
++            if (i != 0) {
++                this.getAttributeInstance(GenericAttributes.g).b((new AttributeModifier(EntityHorse.bG, "Horse armor bonus", (double) i, 0)).a(false));
++            }
++        }
++
++    }
++
++    public EnumHorseArmor dL() {
++        return EnumHorseArmor.a(((Integer) this.datawatcher.get(EntityHorse.bI)).intValue());
++    }
++
++    public void a(IInventory iinventory) {
++        EnumHorseArmor enumhorsearmor = this.dL();
++
++        super.a(iinventory);
++        EnumHorseArmor enumhorsearmor1 = this.dL();
++
++        if (this.ticksLived > 20 && enumhorsearmor != enumhorsearmor1 && enumhorsearmor1 != EnumHorseArmor.NONE) {
++            this.a(SoundEffects.cB, 0.5F, 1.0F);
++        }
++
++    }
++
++    protected void a(SoundEffectType soundeffecttype) {
++        super.a(soundeffecttype);
++        if (this.random.nextInt(10) == 0) {
++            this.a(SoundEffects.cC, soundeffecttype.a() * 0.6F, soundeffecttype.b());
++        }
++
++    }
++
++    protected void initAttributes() {
++        super.initAttributes();
++        this.getAttributeInstance(GenericAttributes.maxHealth).setValue((double) this.dH());
++        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(this.dJ());
++        this.getAttributeInstance(EntityHorse.attributeJumpStrength).setValue(this.dI());
++    }
++
++    public void A_() {
++        super.A_();
++        if (this.world.isClientSide && this.datawatcher.a()) {
++            this.datawatcher.e();
++            this.dM();
++        }
++
++    }
++
++    protected SoundEffect G() {
++        super.G();
++        return SoundEffects.cz;
++    }
++
++    protected SoundEffect bX() {
++        super.bX();
++        return SoundEffects.cD;
++    }
++
++    protected SoundEffect bW() {
++        super.bW();
++        return SoundEffects.cG;
++    }
++
++    protected SoundEffect dj() {
++        super.dj();
++        return SoundEffects.cA;
++    }
++
++    protected MinecraftKey J() {
++        return LootTables.G;
++    }
++
++    public boolean a(EntityHuman entityhuman, EnumHand enumhand) {
++        ItemStack itemstack = entityhuman.b(enumhand);
++        boolean flag = !itemstack.isEmpty();
++
++        if (flag && itemstack.getItem() == Items.SPAWN_EGG) {
++            return super.a(entityhuman, enumhand);
++        } else {
++            if (!this.isBaby()) {
++                if (this.isTamed() && entityhuman.isSneaking()) {
++                    this.f(entityhuman);
++                    return true;
++                }
++
++                if (this.isVehicle()) {
++                    return super.a(entityhuman, enumhand);
++                }
++            }
++
++            if (flag) {
++                if (this.b(entityhuman, itemstack)) {
++                    if (!entityhuman.abilities.canInstantlyBuild) {
++                        itemstack.subtract(1);
++                    }
++
++                    return true;
++                }
++
++                if (itemstack.a(entityhuman, (EntityLiving) this, enumhand)) {
++                    return true;
++                }
++
++                if (!this.isTamed()) {
++                    this.dF();
++                    return true;
++                }
++
++                boolean flag1 = EnumHorseArmor.a(itemstack) != EnumHorseArmor.NONE;
++                boolean flag2 = !this.isBaby() && !this.dB() && itemstack.getItem() == Items.SADDLE;
++
++                if (flag1 || flag2) {
++                    this.f(entityhuman);
++                    return true;
++                }
++            }
++
++            if (this.isBaby()) {
++                return super.a(entityhuman, enumhand);
++            } else {
++                this.g(entityhuman);
++                return true;
++            }
++        }
++    }
++
++    public boolean mate(EntityAnimal entityanimal) {
++        return entityanimal == this ? false : (!(entityanimal instanceof EntityHorseDonkey) && !(entityanimal instanceof EntityHorse) ? false : this.dG() && ((EntityHorseAbstract) entityanimal).dG());
++    }
++
++    public EntityAgeable createChild(EntityAgeable entityageable) {
++        Object object;
++
++        if (entityageable instanceof EntityHorseDonkey) {
++            object = new EntityHorseMule(this.world);
++        } else {
++            EntityHorse entityhorse = (EntityHorse) entityageable;
++
++            object = new EntityHorse(this.world);
++            int i = this.random.nextInt(9);
++            int j;
++
++            if (i < 4) {
++                j = this.getVariant() & 255;
++            } else if (i < 8) {
++                j = entityhorse.getVariant() & 255;
++            } else {
++                j = this.random.nextInt(7);
++            }
++
++            int k = this.random.nextInt(5);
++
++            if (k < 2) {
++                j |= this.getVariant() & '\uff00';
++            } else if (k < 4) {
++                j |= entityhorse.getVariant() & '\uff00';
++            } else {
++                j |= this.random.nextInt(5) << 8 & '\uff00';
++            }
++
++            ((EntityHorse) object).setVariant(j);
++        }
++
++        this.a(entityageable, (EntityHorseAbstract) object);
++        return (EntityAgeable) object;
++    }
++
++    public boolean dK() {
++        return true;
++    }
++
++    public boolean f(ItemStack itemstack) {
++        return EnumHorseArmor.b(itemstack.getItem());
++    }
++
++    @Nullable
++    public GroupDataEntity prepare(DifficultyDamageScaler difficultydamagescaler, @Nullable GroupDataEntity groupdataentity) {
++        Object object = super.prepare(difficultydamagescaler, groupdataentity);
++        int i;
++
++        if (object instanceof EntityHorse.a) {
++            i = ((EntityHorse.a) object).a;
++        } else {
++            i = this.random.nextInt(7);
++            object = new EntityHorse.a(i);
++        }
++
++        this.setVariant(i | this.random.nextInt(5) << 8);
++        return (GroupDataEntity) object;
++    }
++
++    public static class a implements GroupDataEntity {
++
++        public int a;
++
++        public a(int i) {
++            this.a = i;
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java b/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java
+new file mode 100644
+index 0000000..22aa68d
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java
+@@ -0,0 +1,192 @@
++package net.minecraft.server;
++
++public abstract class EntityHorseChestedAbstract extends EntityHorseAbstract {
++
++    private static final DataWatcherObject<Boolean> bG = DataWatcher.a(EntityHorseChestedAbstract.class, DataWatcherRegistry.h);
++
++    public EntityHorseChestedAbstract(World world) {
++        super(world);
++        this.bE = false;
++    }
++
++    protected void i() {
++        super.i();
++        this.datawatcher.register(EntityHorseChestedAbstract.bG, Boolean.valueOf(false));
++    }
++
++    protected void initAttributes() {
++        super.initAttributes();
++        this.getAttributeInstance(GenericAttributes.maxHealth).setValue((double) this.dH());
++        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.17499999701976776D);
++        this.getAttributeInstance(EntityHorseChestedAbstract.attributeJumpStrength).setValue(0.5D);
++    }
++
++    public boolean isCarryingChest() {
++        return ((Boolean) this.datawatcher.get(EntityHorseChestedAbstract.bG)).booleanValue();
++    }
++
++    public void setCarryingChest(boolean flag) {
++        this.datawatcher.set(EntityHorseChestedAbstract.bG, Boolean.valueOf(flag));
++    }
++
++    protected int di() {
++        return this.isCarryingChest() ? 17 : super.di();
++    }
++
++    public double ay() {
++        return super.ay() - 0.25D;
++    }
++
++    protected SoundEffect dj() {
++        super.dj();
++        return SoundEffects.aA;
++    }
++
++    public void die(DamageSource damagesource) {
++        super.die(damagesource);
++        if (this.isCarryingChest()) {
++            if (!this.world.isClientSide) {
++                this.a(Item.getItemOf(Blocks.CHEST), 1);
++            }
++
++            this.setCarryingChest(false);
++        }
++
++    }
++
++    public static void b(DataConverterManager dataconvertermanager, Class<?> oclass) {
++        EntityHorseAbstract.c(dataconvertermanager, oclass);
++        dataconvertermanager.a(DataConverterTypes.ENTITY, (DataInspector) (new DataInspectorItemList(oclass, new String[] { "Items"})));
++    }
++
++    public void b(NBTTagCompound nbttagcompound) {
++        super.b(nbttagcompound);
++        nbttagcompound.setBoolean("ChestedHorse", this.isCarryingChest());
++        if (this.isCarryingChest()) {
++            NBTTagList nbttaglist = new NBTTagList();
++
++            for (int i = 2; i < this.inventoryChest.getSize(); ++i) {
++                ItemStack itemstack = this.inventoryChest.getItem(i);
++
++                if (!itemstack.isEmpty()) {
++                    NBTTagCompound nbttagcompound1 = new NBTTagCompound();
++
++                    nbttagcompound1.setByte("Slot", (byte) i);
++                    itemstack.save(nbttagcompound1);
++                    nbttaglist.add(nbttagcompound1);
++                }
++            }
++
++            nbttagcompound.set("Items", nbttaglist);
++        }
++
++    }
++
++    public void a(NBTTagCompound nbttagcompound) {
++        super.a(nbttagcompound);
++        this.setCarryingChest(nbttagcompound.getBoolean("ChestedHorse"));
++        if (this.isCarryingChest()) {
++            NBTTagList nbttaglist = nbttagcompound.getList("Items", 10);
++
++            this.dx();
++
++            for (int i = 0; i < nbttaglist.size(); ++i) {
++                NBTTagCompound nbttagcompound1 = nbttaglist.get(i);
++                int j = nbttagcompound1.getByte("Slot") & 255;
++
++                if (j >= 2 && j < this.inventoryChest.getSize()) {
++                    this.inventoryChest.setItem(j, new ItemStack(nbttagcompound1));
++                }
++            }
++        }
++
++        this.dy();
++    }
++
++    public boolean c(int i, ItemStack itemstack) {
++        if (i == 499) {
++            if (this.isCarryingChest() && itemstack.isEmpty()) {
++                this.setCarryingChest(false);
++                this.dx();
++                return true;
++            }
++
++            if (!this.isCarryingChest() && itemstack.getItem() == Item.getItemOf(Blocks.CHEST)) {
++                this.setCarryingChest(true);
++                this.dx();
++                return true;
++            }
++        }
++
++        return super.c(i, itemstack);
++    }
++
++    public boolean a(EntityHuman entityhuman, EnumHand enumhand) {
++        ItemStack itemstack = entityhuman.b(enumhand);
++
++        if (itemstack.getItem() == Items.SPAWN_EGG) {
++            return super.a(entityhuman, enumhand);
++        } else {
++            if (!this.isBaby()) {
++                if (this.isTamed() && entityhuman.isSneaking()) {
++                    this.f(entityhuman);
++                    return true;
++                }
++
++                if (this.isVehicle()) {
++                    return super.a(entityhuman, enumhand);
++                }
++            }
++
++            if (!itemstack.isEmpty()) {
++                boolean flag = this.b(entityhuman, itemstack);
++
++                if (!flag && !this.isTamed()) {
++                    if (itemstack.a(entityhuman, (EntityLiving) this, enumhand)) {
++                        return true;
++                    }
++
++                    this.dF();
++                    return true;
++                }
++
++                if (!flag && !this.isCarryingChest() && itemstack.getItem() == Item.getItemOf(Blocks.CHEST)) {
++                    this.setCarryingChest(true);
++                    this.dk();
++                    flag = true;
++                    this.dx();
++                }
++
++                if (!flag && !this.isBaby() && !this.dB() && itemstack.getItem() == Items.SADDLE) {
++                    this.f(entityhuman);
++                    return true;
++                }
++
++                if (flag) {
++                    if (!entityhuman.abilities.canInstantlyBuild) {
++                        itemstack.subtract(1);
++                    }
++
++                    return true;
++                }
++            }
++
++            if (this.isBaby()) {
++                return super.a(entityhuman, enumhand);
++            } else if (itemstack.a(entityhuman, (EntityLiving) this, enumhand)) {
++                return true;
++            } else {
++                this.g(entityhuman);
++                return true;
++            }
++        }
++    }
++
++    protected void dk() {
++        this.a(SoundEffects.aB, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
++    }
++
++    public int dl() {
++        return 5;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/EntityLlama.java b/src/main/java/net/minecraft/server/EntityLlama.java
+new file mode 100644
+index 0000000..53476e0
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/EntityLlama.java
+@@ -0,0 +1,450 @@
++package net.minecraft.server;
++
++import com.google.common.base.Predicate;
++import java.util.Iterator;
++import javax.annotation.Nullable;
++
++public class EntityLlama extends EntityHorseChestedAbstract implements IRangedEntity {
++
++    private static final DataWatcherObject<Integer> bG = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Integer> bH = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Integer> bI = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
++    private boolean bJ;
++    @Nullable
++    private EntityLlama bK;
++    @Nullable
++    private EntityLlama bL;
++
++    public EntityLlama(World world) {
++        super(world);
++        this.setSize(0.9F, 1.87F);
++    }
++
++    private void p(int i) {
++        this.datawatcher.set(EntityLlama.bG, Integer.valueOf(Math.max(1, Math.min(5, i))));
++    }
++
++    private void dT() {
++        int i = this.random.nextFloat() < 0.04F ? 5 : 3;
++
++        this.p(1 + this.random.nextInt(i));
++    }
++
++    public int dL() {
++        return ((Integer) this.datawatcher.get(EntityLlama.bG)).intValue();
++    }
++
++    public void b(NBTTagCompound nbttagcompound) {
++        super.b(nbttagcompound);
++        nbttagcompound.setInt("Variant", this.getVariant());
++        nbttagcompound.setInt("Strength", this.dL());
++        if (!this.inventoryChest.getItem(1).isEmpty()) {
++            nbttagcompound.set("DecorItem", this.inventoryChest.getItem(1).save(new NBTTagCompound()));
++        }
++
++    }
++
++    public void a(NBTTagCompound nbttagcompound) {
++        this.p(nbttagcompound.getInt("Strength"));
++        super.a(nbttagcompound);
++        this.setVariant(nbttagcompound.getInt("Variant"));
++        if (nbttagcompound.hasKeyOfType("DecorItem", 10)) {
++            this.inventoryChest.setItem(1, new ItemStack(nbttagcompound.getCompound("DecorItem")));
++        }
++
++        this.dy();
++    }
++
++    protected void r() {
++        this.goalSelector.a(0, new PathfinderGoalFloat(this));
++        this.goalSelector.a(1, new PathfinderGoalTame(this, 1.2D));
++        this.goalSelector.a(2, new PathfinderGoalLlamaFollow(this, 2.0999999046325684D));
++        this.goalSelector.a(3, new PathfinderGoalArrowAttack(this, 1.25D, 40, 20.0F));
++        this.goalSelector.a(3, new PathfinderGoalPanic(this, 1.2D));
++        this.goalSelector.a(4, new PathfinderGoalBreed(this, 1.0D));
++        this.goalSelector.a(5, new PathfinderGoalFollowParent(this, 1.0D));
++        this.goalSelector.a(6, new PathfinderGoalRandomStrollLand(this, 0.7D));
++        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 6.0F));
++        this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
++        this.targetSelector.a(1, new EntityLlama.c(this));
++        this.targetSelector.a(2, new EntityLlama.a(this));
++    }
++
++    protected void initAttributes() {
++        super.initAttributes();
++        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(40.0D);
++    }
++
++    protected void i() {
++        super.i();
++        this.datawatcher.register(EntityLlama.bG, Integer.valueOf(0));
++        this.datawatcher.register(EntityLlama.bH, Integer.valueOf(-1));
++        this.datawatcher.register(EntityLlama.bI, Integer.valueOf(0));
++    }
++
++    public int getVariant() {
++        return MathHelper.clamp(((Integer) this.datawatcher.get(EntityLlama.bI)).intValue(), 0, 3);
++    }
++
++    public void setVariant(int i) {
++        this.datawatcher.set(EntityLlama.bI, Integer.valueOf(i));
++    }
++
++    protected int di() {
++        return this.isCarryingChest() ? 2 + 3 * this.dl() : super.di();
++    }
++
++    public void k(Entity entity) {
++        if (this.w(entity)) {
++            float f = MathHelper.cos(this.aN * 0.017453292F);
++            float f1 = MathHelper.sin(this.aN * 0.017453292F);
++            float f2 = 0.3F;
++
++            entity.setPosition(this.locX + (double) (0.3F * f1), this.locY + this.ay() + entity.ax(), this.locZ - (double) (0.3F * f));
++        }
++    }
++
++    public double ay() {
++        return (double) this.length * 0.67D;
++    }
++
++    public boolean cR() {
++        return false;
++    }
++
++    protected boolean b(EntityHuman entityhuman, ItemStack itemstack) {
++        byte b0 = 0;
++        byte b1 = 0;
++        float f = 0.0F;
++        boolean flag = false;
++        Item item = itemstack.getItem();
++
++        if (item == Items.WHEAT) {
++            b0 = 10;
++            b1 = 3;
++            f = 2.0F;
++        } else if (item == Item.getItemOf(Blocks.HAY_BLOCK)) {
++            b0 = 90;
++            b1 = 6;
++            f = 10.0F;
++            if (this.isTamed() && this.getAge() == 0) {
++                flag = true;
++                this.c(entityhuman);
++            }
++        }
++
++        if (this.getHealth() < this.getMaxHealth() && f > 0.0F) {
++            this.heal(f);
++            flag = true;
++        }
++
++        if (this.isBaby() && b0 > 0) {
++            this.world.addParticle(EnumParticle.VILLAGER_HAPPY, this.locX + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, this.locY + 0.5D + (double) (this.random.nextFloat() * this.length), this.locZ + (double) (this.random.nextFloat() * this.width * 2.0F) - (double) this.width, 0.0D, 0.0D, 0.0D, new int[0]);
++            if (!this.world.isClientSide) {
++                this.setAge(b0);
++            }
++
++            flag = true;
++        }
++
++        if (b1 > 0 && (flag || !this.isTamed()) && this.getTemper() < this.getMaxDomestication()) {
++            flag = true;
++            if (!this.world.isClientSide) {
++                this.n(b1);
++            }
++        }
++
++        if (flag && !this.isSilent()) {
++            this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.dD, this.bC(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
++        }
++
++        return flag;
++    }
++
++    protected boolean isFrozen() {
++        return this.getHealth() <= 0.0F || this.dt();
++    }
++
++    @Nullable
++    public GroupDataEntity prepare(DifficultyDamageScaler difficultydamagescaler, @Nullable GroupDataEntity groupdataentity) {
++        Object object = super.prepare(difficultydamagescaler, groupdataentity);
++
++        this.dT();
++        int i;
++
++        if (object instanceof EntityLlama.b) {
++            i = ((EntityLlama.b) object).a;
++        } else {
++            i = this.random.nextInt(4);
++            object = new EntityLlama.b(i, null);
++        }
++
++        this.setVariant(i);
++        return (GroupDataEntity) object;
++    }
++
++    protected SoundEffect dj() {
++        return SoundEffects.dA;
++    }
++
++    protected SoundEffect G() {
++        return SoundEffects.dz;
++    }
++
++    protected SoundEffect bW() {
++        return SoundEffects.dE;
++    }
++
++    protected SoundEffect bX() {
++        return SoundEffects.dC;
++    }
++
++    protected void a(BlockPosition blockposition, Block block) {
++        this.a(SoundEffects.dG, 0.15F, 1.0F);
++    }
++
++    protected void dk() {
++        this.a(SoundEffects.dB, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
++    }
++
++    public void dF() {
++        SoundEffect soundeffect = this.dj();
++
++        if (soundeffect != null) {
++            this.a(soundeffect, this.ci(), this.cj());
++        }
++
++    }
++
++    @Nullable
++    protected MinecraftKey J() {
++        return LootTables.aw;
++    }
++
++    public int dl() {
++        return this.dL();
++    }
++
++    public boolean dK() {
++        return true;
++    }
++
++    public boolean f(ItemStack itemstack) {
++        return itemstack.getItem() == Item.getItemOf(Blocks.CARPET);
++    }
++
++    public boolean dA() {
++        return false;
++    }
++
++    public void a(IInventory iinventory) {
++        EnumColor enumcolor = this.dO();
++
++        super.a(iinventory);
++        EnumColor enumcolor1 = this.dO();
++
++        if (this.ticksLived > 20 && enumcolor1 != null && enumcolor1 != enumcolor) {
++            this.a(SoundEffects.dH, 0.5F, 1.0F);
++        }
++
++    }
++
++    protected void dy() {
++        if (!this.world.isClientSide) {
++            super.dy();
++            this.g(this.inventoryChest.getItem(1));
++        }
++    }
++
++    private void a(@Nullable EnumColor enumcolor) {
++        this.datawatcher.set(EntityLlama.bH, Integer.valueOf(enumcolor == null ? -1 : enumcolor.getColorIndex()));
++    }
++
++    private void g(ItemStack itemstack) {
++        if (this.f(itemstack)) {
++            this.a(EnumColor.fromColorIndex(itemstack.getData()));
++        } else {
++            this.a((EnumColor) null);
++        }
++
++    }
++
++    @Nullable
++    public EnumColor dO() {
++        int i = ((Integer) this.datawatcher.get(EntityLlama.bH)).intValue();
++
++        return i == -1 ? null : EnumColor.fromColorIndex(i);
++    }
++
++    public int getMaxDomestication() {
++        return 30;
++    }
++
++    public boolean mate(EntityAnimal entityanimal) {
++        return entityanimal != this && entityanimal instanceof EntityLlama && this.dG() && ((EntityLlama) entityanimal).dG();
++    }
++
++    public EntityLlama b(EntityAgeable entityageable) {
++        EntityLlama entityllama = new EntityLlama(this.world);
++
++        this.a(entityageable, (EntityHorseAbstract) entityllama);
++        EntityLlama entityllama1 = (EntityLlama) entityageable;
++        int i = this.random.nextInt(Math.max(this.dL(), entityllama1.dL())) + 1;
++
++        if (this.random.nextFloat() < 0.03F) {
++            ++i;
++        }
++
++        entityllama.p(i);
++        entityllama.setVariant(this.random.nextBoolean() ? this.getVariant() : entityllama1.getVariant());
++        return entityllama;
++    }
++
++    private void e(EntityLiving entityliving) {
++        EntityLlamaSpit entityllamaspit = new EntityLlamaSpit(this.world, this);
++        double d0 = entityliving.locX - this.locX;
++        double d1 = entityliving.getBoundingBox().b + (double) (entityliving.length / 3.0F) - entityllamaspit.locY;
++        double d2 = entityliving.locZ - this.locZ;
++        float f = MathHelper.sqrt(d0 * d0 + d2 * d2) * 0.2F;
++
++        entityllamaspit.shoot(d0, d1 + (double) f, d2, 1.5F, 10.0F);
++        this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, SoundEffects.dF, this.bC(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F);
++        this.world.addEntity(entityllamaspit);
++        this.bJ = true;
++    }
++
++    private void x(boolean flag) {
++        this.bJ = flag;
++    }
++
++    public void e(float f, float f1) {
++        int i = MathHelper.f((f * 0.5F - 3.0F) * f1);
++
++        if (i > 0) {
++            if (f >= 6.0F) {
++                this.damageEntity(DamageSource.FALL, (float) i);
++                if (this.isVehicle()) {
++                    Iterator iterator = this.by().iterator();
++
++                    while (iterator.hasNext()) {
++                        Entity entity = (Entity) iterator.next();
++
++                        entity.damageEntity(DamageSource.FALL, (float) i);
++                    }
++                }
++            }
++
++            IBlockData iblockdata = this.world.getType(new BlockPosition(this.locX, this.locY - 0.2D - (double) this.lastYaw, this.locZ));
++            Block block = iblockdata.getBlock();
++
++            if (iblockdata.getMaterial() != Material.AIR && !this.isSilent()) {
++                SoundEffectType soundeffecttype = block.getStepSound();
++
++                this.world.a((EntityHuman) null, this.locX, this.locY, this.locZ, soundeffecttype.d(), this.bC(), soundeffecttype.a() * 0.5F, soundeffecttype.b() * 0.75F);
++            }
++
++        }
++    }
++
++    public void dP() {
++        if (this.bK != null) {
++            this.bK.bL = null;
++        }
++
++        this.bK = null;
++    }
++
++    public void a(EntityLlama entityllama) {
++        this.bK = entityllama;
++        this.bK.bL = this;
++    }
++
++    public boolean dQ() {
++        return this.bL != null;
++    }
++
++    public boolean dR() {
++        return this.bK != null;
++    }
++
++    @Nullable
++    public EntityLlama dS() {
++        return this.bK;
++    }
++
++    protected double dg() {
++        return 2.0D;
++    }
++
++    protected void dD() {
++        if (!this.dR() && this.isBaby()) {
++            super.dD();
++        }
++
++    }
++
++    public boolean dE() {
++        return false;
++    }
++
++    public void a(EntityLiving entityliving, float f) {
++        this.e(entityliving);
++    }
++
++    public EntityAgeable createChild(EntityAgeable entityageable) {
++        return this.b(entityageable);
++    }
++
++    static class a extends PathfinderGoalNearestAttackableTarget<EntityWolf> {
++
++        public a(EntityLlama entityllama) {
++            super(entityllama, EntityWolf.class, 16, false, true, (Predicate) null);
++        }
++
++        public boolean a() {
++            if (super.a() && this.d != null && !((EntityWolf) this.d).isTamed()) {
++                return true;
++            } else {
++                this.e.setGoalTarget((EntityLiving) null);
++                return false;
++            }
++        }
++
++        protected double i() {
++            return super.i() * 0.25D;
++        }
++    }
++
++    static class c extends PathfinderGoalHurtByTarget {
++
++        public c(EntityLlama entityllama) {
++            super(entityllama, false, new Class[0]);
++        }
++
++        public boolean b() {
++            if (this.e instanceof EntityLlama) {
++                EntityLlama entityllama = (EntityLlama) this.e;
++
++                if (entityllama.bJ) {
++                    entityllama.x(false);
++                    return false;
++                }
++            }
++
++            return super.b();
++        }
++    }
++
++    static class b implements GroupDataEntity {
++
++        public int a;
++
++        private b(int i) {
++            this.a = i;
++        }
++
++        b(int i, Object object) {
++            this(i);
++        }
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/EnumProtocol.java b/src/main/java/net/minecraft/server/EnumProtocol.java
+new file mode 100644
+index 0000000..6e35b48
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/EnumProtocol.java
+@@ -0,0 +1,236 @@
++package net.minecraft.server;
++
++import com.google.common.collect.BiMap;
++import com.google.common.collect.HashBiMap;
++import com.google.common.collect.Maps;
++import java.util.Iterator;
++import java.util.Map;
++import javax.annotation.Nullable;
++import org.apache.logging.log4j.LogManager;
++
++public enum EnumProtocol {
++
++    HANDSHAKING(-1) {;
++        {
++            this.a(EnumProtocolDirection.SERVERBOUND, PacketHandshakingInSetProtocol.class);
++        }
++    }, PLAY(0) {;
++    {
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnEntity.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnEntityExperienceOrb.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnEntityWeather.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnEntityLiving.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnEntityPainting.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutNamedEntitySpawn.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutAnimation.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutStatistic.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutBlockBreakAnimation.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutTileEntityData.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutBlockAction.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutBlockChange.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutBoss.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutServerDifficulty.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutTabComplete.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutChat.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutMultiBlockChange.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutTransaction.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCloseWindow.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutOpenWindow.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutWindowItems.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutWindowData.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSetSlot.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSetCooldown.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCustomPayload.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCustomSoundEffect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutKickDisconnect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityStatus.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutExplosion.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUnloadChunk.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutGameStateChange.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutKeepAlive.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutMapChunk.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutWorldEvent.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutWorldParticles.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutLogin.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutMap.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntity.PacketPlayOutRelEntityMove.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntity.PacketPlayOutRelEntityMoveLook.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntity.PacketPlayOutEntityLook.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntity.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutVehicleMove.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutOpenSignEditor.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutAbilities.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCombatEvent.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutPlayerInfo.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutPosition.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutBed.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityDestroy.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutRemoveEntityEffect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutResourcePackSend.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutRespawn.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityHeadRotation.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutWorldBorder.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCamera.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutHeldItemSlot.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutScoreboardDisplayObjective.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityMetadata.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutAttachEntity.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityVelocity.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityEquipment.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutExperience.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUpdateHealth.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutScoreboardObjective.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutMount.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutScoreboardTeam.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutScoreboardScore.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnPosition.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUpdateTime.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutTitle.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutNamedSoundEffect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutPlayerListHeaderFooter.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCollect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityTeleport.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUpdateAttributes.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutEntityEffect.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInTeleportAccept.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInTabComplete.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInChat.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInClientCommand.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInSettings.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInTransaction.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInEnchantItem.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInWindowClick.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInCloseWindow.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInCustomPayload.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInUseEntity.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInKeepAlive.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInFlying.PacketPlayInPosition.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInFlying.PacketPlayInPositionLook.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInFlying.PacketPlayInLook.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInFlying.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInVehicleMove.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInBoatMove.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInAbilities.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInBlockDig.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInEntityAction.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInSteerVehicle.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInResourcePackStatus.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInHeldItemSlot.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInSetCreativeSlot.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInUpdateSign.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInArmAnimation.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInSpectate.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInUseItem.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketPlayInBlockPlace.class);
++    }
++}, STATUS(1) {;
++    {
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketStatusInStart.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketStatusOutServerInfo.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketStatusInPing.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketStatusOutPong.class);
++    }
++}, LOGIN(2) {;
++    {
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketLoginOutDisconnect.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketLoginOutEncryptionBegin.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketLoginOutSuccess.class);
++        this.a(EnumProtocolDirection.CLIENTBOUND, PacketLoginOutSetCompression.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketLoginInStart.class);
++        this.a(EnumProtocolDirection.SERVERBOUND, PacketLoginInEncryptionBegin.class);
++    }
++};
++
++    private static final EnumProtocol[] e = new EnumProtocol[4];
++    private static final Map<Class<? extends Packet<?>>, EnumProtocol> f = Maps.newHashMap();
++    private final int g;
++    private final Map<EnumProtocolDirection, BiMap<Integer, Class<? extends Packet<?>>>> h;
++
++    private EnumProtocol(int i) {
++        this.h = Maps.newEnumMap(EnumProtocolDirection.class);
++        this.g = i;
++    }
++
++    protected EnumProtocol a(EnumProtocolDirection enumprotocoldirection, Class<? extends Packet<?>> oclass) {
++        Object object = (BiMap) this.h.get(enumprotocoldirection);
++
++        if (object == null) {
++            object = HashBiMap.create();
++            this.h.put(enumprotocoldirection, object);
++        }
++
++        if (((BiMap) object).containsValue(oclass)) {
++            String s = enumprotocoldirection + " packet " + oclass + " is already known to ID " + ((BiMap) object).inverse().get(oclass);
++
++            LogManager.getLogger().fatal(s);
++            throw new IllegalArgumentException(s);
++        } else {
++            ((BiMap) object).put(Integer.valueOf(((BiMap) object).size()), oclass);
++            return this;
++        }
++    }
++
++    public Integer a(EnumProtocolDirection enumprotocoldirection, Packet<?> packet) {
++        return (Integer) ((BiMap) this.h.get(enumprotocoldirection)).inverse().get(packet.getClass());
++    }
++
++    @Nullable
++    public Packet<?> a(EnumProtocolDirection enumprotocoldirection, int i) throws IllegalAccessException, InstantiationException {
++        Class oclass = (Class) ((BiMap) this.h.get(enumprotocoldirection)).get(Integer.valueOf(i));
++
++        return oclass == null ? null : (Packet) oclass.newInstance();
++    }
++
++    public int a() {
++        return this.g;
++    }
++
++    public static EnumProtocol a(int i) {
++        return i >= -1 && i <= 2 ? EnumProtocol.e[i - -1] : null;
++    }
++
++    public static EnumProtocol a(Packet<?> packet) {
++        return (EnumProtocol) EnumProtocol.f.get(packet.getClass());
++    }
++
++    EnumProtocol(int i, Object object) {
++        this(i);
++    }
++
++    static {
++        EnumProtocol[] aenumprotocol = values();
++        int i = aenumprotocol.length;
++
++        for (int j = 0; j < i; ++j) {
++            EnumProtocol enumprotocol = aenumprotocol[j];
++            int k = enumprotocol.a();
++
++            if (k < -1 || k > 2) {
++                throw new Error("Invalid protocol ID " + Integer.toString(k));
++            }
++
++            EnumProtocol.e[k - -1] = enumprotocol;
++            Iterator iterator = enumprotocol.h.keySet().iterator();
++
++            while (iterator.hasNext()) {
++                EnumProtocolDirection enumprotocoldirection = (EnumProtocolDirection) iterator.next();
++
++                Class oclass;
++
++                for (Iterator iterator1 = ((BiMap) enumprotocol.h.get(enumprotocoldirection)).values().iterator(); iterator1.hasNext(); EnumProtocol.f.put(oclass, enumprotocol)) {
++                    oclass = (Class) iterator1.next();
++                    if (EnumProtocol.f.containsKey(oclass) && EnumProtocol.f.get(oclass) != enumprotocol) {
++                        throw new Error("Packet " + oclass + " is already assigned to protocol " + EnumProtocol.f.get(oclass) + " - can\'t reassign to " + enumprotocol);
++                    }
++
++                    try {
++                        oclass.newInstance();
++                    } catch (Throwable throwable) {
++                        throw new Error("Packet " + oclass + " fails instantiation checks! " + oclass);
++                    }
++                }
++            }
++        }
++
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
@@ -2601,6 +3784,73 @@ index 0000000..c67cb54
 +        private EnumEntityUseAction() {}
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseItem.java b/src/main/java/net/minecraft/server/PacketPlayInUseItem.java
+new file mode 100644
+index 0000000..bdcda81
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayInUseItem.java
+@@ -0,0 +1,61 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayInUseItem implements Packet<PacketListenerPlayIn> {
++
++    private BlockPosition a;
++    private EnumDirection b;
++    private EnumHand c;
++    private float d;
++    private float e;
++    private float f;
++
++    public PacketPlayInUseItem() {}
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.e();
++        this.b = (EnumDirection) packetdataserializer.a(EnumDirection.class);
++        this.c = (EnumHand) packetdataserializer.a(EnumHand.class);
++        this.d = packetdataserializer.readFloat();
++        this.e = packetdataserializer.readFloat();
++        this.f = packetdataserializer.readFloat();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a(this.a);
++        packetdataserializer.a((Enum) this.b);
++        packetdataserializer.a((Enum) this.c);
++        packetdataserializer.writeFloat(this.d);
++        packetdataserializer.writeFloat(this.e);
++        packetdataserializer.writeFloat(this.f);
++    }
++
++    public void a(PacketListenerPlayIn packetlistenerplayin) {
++        packetlistenerplayin.a(this);
++    }
++
++    public BlockPosition a() {
++        return this.a;
++    }
++
++    public EnumDirection b() {
++        return this.b;
++    }
++
++    public EnumHand c() {
++        return this.c;
++    }
++
++    public float d() {
++        return this.d;
++    }
++
++    public float e() {
++        return this.e;
++    }
++
++    public float f() {
++        return this.f;
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java b/src/main/java/net/minecraft/server/PacketPlayOutAttachEntity.java
 new file mode 100644
 index 0000000..9d23a64
@@ -2684,6 +3934,46 @@ index 0000000..24462f1
 +
 +    public byte c() {
 +        return this.b;
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCollect.java b/src/main/java/net/minecraft/server/PacketPlayOutCollect.java
+new file mode 100644
+index 0000000..1678628
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutCollect.java
+@@ -0,0 +1,34 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutCollect implements Packet<PacketListenerPlayOut> {
++
++    private int a;
++    private int b;
++    private int c;
++
++    public PacketPlayOutCollect() {}
++
++    public PacketPlayOutCollect(int i, int j, int k) {
++        this.a = i;
++        this.b = j;
++        this.c = k;
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.g();
++        this.b = packetdataserializer.g();
++        this.c = packetdataserializer.g();
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.d(this.a);
++        packetdataserializer.d(this.b);
++        packetdataserializer.d(this.c);
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java

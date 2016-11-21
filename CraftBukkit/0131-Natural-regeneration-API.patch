@@ -1,4 +1,4 @@
-From 396b59ed8129c1a561c97cba88724bd9a0458f68 Mon Sep 17 00:00:00 2001
+From 123fc5bea653142e592a7cfbd438bbfd10cb2a94 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 04:31:29 -0400
 Subject: [PATCH] Natural regeneration API
@@ -21,7 +21,7 @@ index af2b07a..9bb5c5b 100644
      public boolean affectsSpawning = true;
  
 diff --git a/src/main/java/net/minecraft/server/FoodMetaData.java b/src/main/java/net/minecraft/server/FoodMetaData.java
-index b5fd8e8..8307b36 100644
+index b5fd8e8..58a6d4d 100644
 --- a/src/main/java/net/minecraft/server/FoodMetaData.java
 +++ b/src/main/java/net/minecraft/server/FoodMetaData.java
 @@ -60,7 +60,7 @@ public class FoodMetaData {
@@ -38,7 +38,7 @@ index b5fd8e8..8307b36 100644
                  this.foodTickTimer = 0;
              }
 -        } else if (flag && this.foodLevel >= 18 && entityhuman.db()) {
-+        } else if (flag && this.foodLevel >= 18 && entityhuman.db() && entityhuman.fastNaturalRegeneration) { // SportBukkit - check regen flag
++        } else if (flag && this.foodLevel >= 18 && entityhuman.db() && entityhuman.slowNaturalRegeneration) { // SportBukkit - check regen flag
              ++this.foodTickTimer;
              if (this.foodTickTimer >= 80) {
                  entityhuman.heal(1.0F, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.SATIATED); // CraftBukkit - added RegainReason

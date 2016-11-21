@@ -1,4 +1,4 @@
-From 506fce619721d40967fc3e070f56a0467028eb2e Mon Sep 17 00:00:00 2001
+From cbd6eea33ac9e00ea14f555bb714ab0c1ca1f06b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:11 -0500
 Subject: [PATCH] Geometry API
@@ -3220,10 +3220,10 @@ index 0000000..49fe0a3
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3.java b/src/main/java/org/bukkit/geometry/Vec3.java
 new file mode 100644
-index 0000000..073c955
+index 0000000..0921461
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3.java
-@@ -0,0 +1,598 @@
+@@ -0,0 +1,602 @@
 +package org.bukkit.geometry;
 +
 +import java.util.function.DoubleBinaryOperator;
@@ -3370,13 +3370,15 @@ index 0000000..073c955
 +    }
 +
 +    default boolean fineEquals(Vec3 v) {
-+        return fineX() == v.fineX() &&
++        return v != null &&
++               fineX() == v.fineX() &&
 +               fineY() == v.fineY() &&
 +               fineZ() == v.fineZ();
 +    }
 +
 +    default boolean coarseEquals(Vec3 v) {
-+        return coarseX() == v.coarseX() &&
++        return v != null &&
++               coarseX() == v.coarseX() &&
 +               coarseY() == v.coarseY() &&
 +               coarseZ() == v.coarseZ();
 +    }
@@ -3387,6 +3389,8 @@ index 0000000..073c955
 +     * See the notes about equality in the {@link Vec3} documentation.
 +     */
 +    default boolean equals(Vec3 v) {
++        if(v == null) return false;
++
 +        if(isFine()) {
 +            return v.isFine() && fineEquals(v);
 +        } else {
@@ -3824,7 +3828,7 @@ index 0000000..073c955
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Coarse.java b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 new file mode 100644
-index 0000000..b8bf9c3
+index 0000000..ae12726
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Coarse.java
 @@ -0,0 +1,267 @@
@@ -3901,7 +3905,7 @@ index 0000000..b8bf9c3
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v.isCoarse() && coarseEquals(v);
++        return v != null && v.isCoarse() && coarseEquals(v);
 +    }
 +
 +    @Override
@@ -4097,7 +4101,7 @@ index 0000000..b8bf9c3
 +}
 diff --git a/src/main/java/org/bukkit/geometry/Vec3Fine.java b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 new file mode 100644
-index 0000000..b125a37
+index 0000000..2004d4d
 --- /dev/null
 +++ b/src/main/java/org/bukkit/geometry/Vec3Fine.java
 @@ -0,0 +1,232 @@
@@ -4174,7 +4178,7 @@ index 0000000..b125a37
 +
 +    @Override
 +    default boolean equals(Vec3 v) {
-+        return v.isFine() && fineEquals(v);
++        return v != null && v.isFine() && fineEquals(v);
 +    }
 +
 +    @Override

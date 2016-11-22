@@ -1,4 +1,4 @@
-From 4492d80855b4b1640f52bdba48219b5352b91e33 Mon Sep 17 00:00:00 2001
+From dad382c48facf9019706507ce9c79f87329c47b1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 20 Nov 2016 09:44:03 -0500
 Subject: [PATCH] Legacy protocol support
@@ -56,7 +56,7 @@ index 1e1cf62..d330c6a 100644
          this.a(CreativeModeTab.c);
          this.y(this.blockStateList.getBlockData().set(BlockShulkerBox.a, EnumDirection.UP));
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 235dffe..ed1794b 100644
+index 235dffe..56b32abf 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -16,12 +16,17 @@ import org.apache.commons.lang3.ObjectUtils;
@@ -118,19 +118,23 @@ index 235dffe..ed1794b 100644
          } catch (Throwable throwable) {
              CrashReport crashreport = CrashReport.a(throwable, "Getting synched entity data");
              CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Synched entity data");
-@@ -213,6 +221,11 @@ public class DataWatcher {
+@@ -213,6 +221,15 @@ public class DataWatcher {
      }
  
      private static <T> void a(PacketDataSerializer packetdataserializer, DataWatcher.Item<T> datawatcher_item) throws IOException {
 +        // SportBukkit start - protocol translation
-+        ((MetadataKey<T>) datawatcher_item.a()).send(packetdataserializer, datawatcher_item);
-+        if(true) return;
++        // Note that ALL keys in SB are MetadataKeys, but we do this check in case some plugins use DWO.
++        // Such plugins may want to consider using MetadataKey in order to support translation.
++        if(datawatcher_item.key() instanceof MetadataKey) {
++            ((MetadataKey<T>) datawatcher_item.key()).send(packetdataserializer, datawatcher_item);
++            return;
++        }
 +        // SportBukkit end
 +
          DataWatcherObject datawatcherobject = datawatcher_item.a();
          int i = DataWatcherRegistry.b(datawatcherobject.b());
  
-@@ -248,7 +261,7 @@ public class DataWatcher {
+@@ -248,7 +265,7 @@ public class DataWatcher {
                  throw new DecoderException("Unknown serializer type " + i);
              }
  
@@ -139,7 +143,7 @@ index 235dffe..ed1794b 100644
          }
  
          return arraylist;
-@@ -274,11 +287,16 @@ public class DataWatcher {
+@@ -274,11 +291,16 @@ public class DataWatcher {
  
      public static class Item<T> {
  
@@ -159,7 +163,7 @@ index 235dffe..ed1794b 100644
              this.a = datawatcherobject;
              this.b = t0;
              this.c = true;
-@@ -306,14 +324,14 @@ public class DataWatcher {
+@@ -306,14 +328,14 @@ public class DataWatcher {
  
          // SportBukkit start - Make an independent copy of the item
          public Item<T> deepCopy() {

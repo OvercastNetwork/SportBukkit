@@ -1,4 +1,4 @@
-From df134838ff3074ed6f0d6a5207d66d4cb54b9cf4 Mon Sep 17 00:00:00 2001
+From e6a0e7e041e09a9ff206b69dc4b642d8877b59f3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -214,10 +214,10 @@ index dfb542b..35e3af9 100644
       *
       * @param velocity New velocity to travel with
 diff --git a/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java b/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
-index 7687667..9445a7c 100644
+index 7687667..b587a5a 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
-@@ -1,6 +1,7 @@
+@@ -1,24 +1,35 @@
  package org.bukkit.event.player;
  
  import com.google.common.base.Preconditions;
@@ -225,7 +225,13 @@ index 7687667..9445a7c 100644
  import org.bukkit.Location;
  import org.bukkit.entity.Player;
  import org.bukkit.event.Cancellable;
-@@ -12,15 +13,21 @@ import org.bukkit.event.HandlerList;
+ import org.bukkit.event.HandlerList;
+ 
++import static com.google.common.base.Preconditions.checkNotNull;
++
+ /**
+  * Holds information for player movement events
+  */
  public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
      private static final HandlerList handlers = new HandlerList();
      private boolean cancel = false;
@@ -237,20 +243,22 @@ index 7687667..9445a7c 100644
 -    public PlayerMoveEvent(final Player player, final Location from, final Location to) {
 +    public PlayerMoveEvent(final Player player, final EntityLocation from, final EntityLocation to) {
          super(player);
-         this.from = from;
-         this.to = to;
-     }
- 
-+    public PlayerMoveEvent(final Player player, final Location from, final Location to) {
-+        this(player,
-+             EntityLocation.coerce(from, player.getEntityLocation()),
-+             EntityLocation.coerce(to, player.getEntityLocation()));
+-        this.from = from;
+-        this.to = to;
++        this.from = checkNotNull(from);
++        this.to = checkNotNull(to);
 +    }
 +
++    public PlayerMoveEvent(final Player player, final Location from, final Location to) {
++        this(
++            player,
++            EntityLocation.coerce(from, player.getEntityLocation()),
++            EntityLocation.coerce(to, player.getEntityLocation())
++        );
+     }
+ 
      /**
-      * Gets the cancellation state of this event. A cancelled event will not
-      * be executed in the server, but will still pass to other plugins
-@@ -58,6 +65,10 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
+@@ -58,6 +69,10 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
          return from;
      }
  
@@ -261,7 +269,7 @@ index 7687667..9445a7c 100644
      /**
       * Sets the location to mark as where the player moved from
       *
-@@ -65,7 +76,7 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
+@@ -65,7 +80,7 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
       */
      public void setFrom(Location from) {
          validateLocation(from);
@@ -270,7 +278,7 @@ index 7687667..9445a7c 100644
      }
  
      /**
-@@ -77,6 +88,10 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
+@@ -77,6 +92,10 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
          return to;
      }
  
@@ -281,7 +289,7 @@ index 7687667..9445a7c 100644
      /**
       * Sets the location that this player will move to
       *
-@@ -84,7 +99,7 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
+@@ -84,7 +103,7 @@ public class PlayerMoveEvent extends PlayerActionBase implements Cancellable {
       */
      public void setTo(Location to) {
          validateLocation(to);
@@ -290,6 +298,50 @@ index 7687667..9445a7c 100644
      }
  
      private void validateLocation(Location loc) {
+diff --git a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
+index 93752f7..e2b31d7 100644
+--- a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
++++ b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
+@@ -1,5 +1,7 @@
+ package org.bukkit.event.player;
+ 
++import javax.annotation.Nullable;
++
+ import org.bukkit.Location;
+ import org.bukkit.TravelAgent;
+ import org.bukkit.entity.Player;
+@@ -9,6 +11,11 @@ import org.bukkit.event.HandlerList;
+  * Called when a player is about to teleport because it is in contact with a
+  * portal.
+  * <p>
++ * The player will exit the portal at the {@link #getTo()} location, which can
++ * be altered by event handlers through {@link #setTo(Location)}. If the portal
++ * is not going to teleport the player, then {@link #getTo()} will be the same
++ * as {@link #getFrom()}, and the event will be initially set to cancelled.
++ * <p>
+  * For other entities see {@link org.bukkit.event.entity.EntityPortalEvent}
+  */
+ public class PlayerPortalEvent extends PlayerTeleportEvent {
+@@ -16,14 +23,14 @@ public class PlayerPortalEvent extends PlayerTeleportEvent {
+     protected boolean useTravelAgent = true;
+     protected TravelAgent travelAgent;
+ 
+-    public PlayerPortalEvent(final Player player, final Location from, final Location to, final TravelAgent pta) {
+-        super(player, from, to);
+-        this.travelAgent = pta;
++    public PlayerPortalEvent(final Player player, final Location from, final @Nullable Location to, final TravelAgent pta) {
++        this(player, from, to, pta, TeleportCause.UNKNOWN);
+     }
+ 
+-    public PlayerPortalEvent(Player player, Location from, Location to, TravelAgent pta, TeleportCause cause) {
+-        super(player, from, to, cause);
++    public PlayerPortalEvent(Player player, Location from, @Nullable Location to, TravelAgent pta, TeleportCause cause) {
++        super(player, from, to != null ? to : from, cause);
+         this.travelAgent = pta;
++        setCancelled(to == null);
+     }
+ 
+     /**
 diff --git a/src/main/java/org/bukkit/util/EnumUtils.java b/src/main/java/org/bukkit/util/EnumUtils.java
 new file mode 100644
 index 0000000..d064568
@@ -318,6 +370,48 @@ index 0000000..d064568
 +        return copy;
 +    }
 +}
+diff --git a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java b/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
+index ef75e5a..1d88ffb 100644
+--- a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
++++ b/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
+@@ -9,9 +9,8 @@ import org.bukkit.event.EventPriority;
+ import org.bukkit.event.Listener;
+ import org.bukkit.event.block.BlockBreakEvent;
+ import org.bukkit.event.player.PlayerActionBase;
+-import org.bukkit.event.player.PlayerEvent;
++import org.bukkit.event.player.PlayerAnimationEvent;
+ import org.bukkit.event.player.PlayerInteractEvent;
+-import org.bukkit.event.player.PlayerMoveEvent;
+ import org.junit.Test;
+ 
+ public class TimedRegisteredListenerTest {
+@@ -25,7 +24,7 @@ public class TimedRegisteredListenerTest {
+         TestPlugin plugin = new TestPlugin("Test");
+ 
+         PlayerInteractEvent interactEvent = new PlayerInteractEvent(null, null, null, null, null);
+-        PlayerMoveEvent moveEvent = new PlayerMoveEvent(null, null, null);
++        PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(null);
+         BlockBreakEvent breakEvent = new BlockBreakEvent(null, null);
+ 
+         TimedRegisteredListener trl = new TimedRegisteredListener(listener, executor, EventPriority.NORMAL, plugin, false);
+@@ -37,7 +36,7 @@ public class TimedRegisteredListenerTest {
+         trl.callEvent(interactEvent);
+         assertThat(trl.getEventClass(), is((Object) PlayerInteractEvent.class));
+         // Ensure that the closest superclass of the two events is chosen
+-        trl.callEvent(moveEvent);
++        trl.callEvent(animationEvent);
+         assertThat(trl.getEventClass(), is((Object) PlayerActionBase.class));
+         // As above, so below
+         trl.callEvent(breakEvent);
+@@ -51,7 +50,7 @@ public class TimedRegisteredListenerTest {
+         trl.callEvent(breakEvent);
+         assertThat(trl.getEventClass(), is((Object) BlockBreakEvent.class));
+         // Test moving up the class hierarchy by more than one class at a time
+-        trl.callEvent(moveEvent);
++        trl.callEvent(animationEvent);
+         assertThat(trl.getEventClass(), is((Object) Event.class));
+     }
+ }
 -- 
 1.9.0
 

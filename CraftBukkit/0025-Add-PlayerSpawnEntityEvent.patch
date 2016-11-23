@@ -1,11 +1,11 @@
-From b453667ee789779e2dff25cff0f7934a701d18fd Mon Sep 17 00:00:00 2001
+From b8eb9a1c880d542571df21de15d26c92923f21ff Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Sun, 26 May 2013 18:43:56 -0700
 Subject: [PATCH] Add PlayerSpawnEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemMonsterEgg.java b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
-index 69caabb..2d6ed91 100644
+index 69caabb..1d9c418 100644
 --- a/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 +++ b/src/main/java/net/minecraft/server/ItemMonsterEgg.java
 @@ -6,6 +6,12 @@ import java.util.UUID;
@@ -21,14 +21,26 @@ index 69caabb..2d6ed91 100644
  public class ItemMonsterEgg extends Item {
  
      public ItemMonsterEgg() {
-@@ -55,6 +61,30 @@ public class ItemMonsterEgg extends Item {
+@@ -55,6 +61,42 @@ public class ItemMonsterEgg extends Item {
              double d0 = this.a(world, blockposition1);
              Entity entity = a(world, h(itemstack), (double) blockposition1.getX() + 0.5D, (double) blockposition1.getY() + d0, (double) blockposition1.getZ() + 0.5D);
  
 +            // SportBukkit start - fire event
 +            if (entity != null) {
 +                CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack);
-+                PlayerSpawnEntityEvent event = new PlayerSpawnEntityEvent((org.bukkit.entity.Player) entityhuman.getBukkitEntity(), entity.getBukkitEntity(), new org.bukkit.Location(world.getWorld(), (double) blockposition.getX() + 0.5D, (double) blockposition.getY() + d0, (double) blockposition.getZ() + 0.5D, MathHelper.g(world.random.nextFloat() * 360.0F), 0.0F), craftItem.clone());
++                PlayerSpawnEntityEvent event = new PlayerSpawnEntityEvent(
++                    (org.bukkit.entity.Player) entityhuman.getBukkitEntity(),
++                    entity.getBukkitEntity(),
++                    new org.bukkit.Location(
++                        world.getWorld(),
++                        (double) blockposition1.getX() + 0.5D,
++                        (double) blockposition1.getY() + d0,
++                        (double) blockposition1.getZ() + 0.5D,
++                        MathHelper.g(world.random.nextFloat() * 360.0F),
++                        0.0F
++                    ),
++                    craftItem.clone()
++                );
 +                world.getServer().getPluginManager().callEvent(event);
 +
 +                if (event.isCancelled()) {

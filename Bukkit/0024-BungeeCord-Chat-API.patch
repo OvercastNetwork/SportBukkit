@@ -1,4 +1,4 @@
-From 572a01b1729572c54f7bf37f54c1f6e5bd20041b Mon Sep 17 00:00:00 2001
+From b564fdfe039354469878224a3a59f66483c70124 Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 12:59:14 +1100
 Subject: [PATCH] BungeeCord Chat API
@@ -24,10 +24,10 @@ index 5c4a0c4..91f8160 100644
          <dependency>
              <groupId>junit</groupId>
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 5721d0b..8043416 100644
+index e483168..983a6cc 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -1180,4 +1180,22 @@ public final class Bukkit {
+@@ -1192,4 +1192,22 @@ public final class Bukkit {
      public static UnsafeValues getUnsafe() {
          return server.getUnsafe();
      }
@@ -51,10 +51,10 @@ index 5721d0b..8043416 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index b899e24..f46d868 100644
+index a6f2b10..e96f5f4 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -964,4 +964,18 @@ public interface Server extends PluginMessageRecipient {
+@@ -974,4 +974,18 @@ public interface Server extends PluginMessageRecipient {
       */
      @Deprecated
      UnsafeValues getUnsafe();

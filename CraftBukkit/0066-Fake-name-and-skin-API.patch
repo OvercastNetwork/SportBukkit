@@ -1,11 +1,11 @@
-From a27925ff08208df7c3b5c07c567b02255464edcd Mon Sep 17 00:00:00 2001
+From 067d5d65703f2d7b71334d85e2322c0f601da896 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 11 Feb 2014 22:12:50 -0600
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 8286ed3..38a2df3 100644
+index 2b33266..41bc28b 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -25,7 +25,7 @@ public abstract class EntityHuman extends EntityLiving {
@@ -111,7 +111,7 @@ index d8ec504..3e57fde 100644
          this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
          this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index ff6d648..de6fc5c 100644
+index 8a7a502..b7535b5 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -19,6 +19,8 @@ import org.apache.logging.log4j.Logger;
@@ -237,10 +237,10 @@ index d8848ce..d79352b 100644
          // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8047834..98bb6c9 100644
+index 763fc66..df7f9b3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -404,7 +404,7 @@ public final class CraftServer implements Server {
+@@ -406,7 +406,7 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -249,7 +249,7 @@ index 8047834..98bb6c9 100644
          Validate.notNull(name, "Name cannot be null");
  
          Player found = getPlayerExact(name);
-@@ -416,8 +416,8 @@ public final class CraftServer implements Server {
+@@ -418,8 +418,8 @@ public final class CraftServer implements Server {
          String lowerName = name.toLowerCase(java.util.Locale.ENGLISH);
          int delta = Integer.MAX_VALUE;
          for (Player player : getOnlinePlayers()) {
@@ -260,7 +260,7 @@ index 8047834..98bb6c9 100644
                  if (curDelta < delta) {
                      found = player;
                      delta = curDelta;
-@@ -430,11 +430,18 @@ public final class CraftServer implements Server {
+@@ -432,11 +432,18 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -282,7 +282,7 @@ index 8047834..98bb6c9 100644
      }
  
      @Override
-@@ -459,13 +466,13 @@ public final class CraftServer implements Server {
+@@ -461,13 +468,13 @@ public final class CraftServer implements Server {
  
      @Override
      @Deprecated
@@ -298,7 +298,7 @@ index 8047834..98bb6c9 100644
  
              if (partialName.equalsIgnoreCase(iterPlayerName)) {
                  // Exact match
-@@ -483,6 +490,21 @@ public final class CraftServer implements Server {
+@@ -485,6 +492,21 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -320,7 +320,7 @@ index 8047834..98bb6c9 100644
      public int getMaxPlayers() {
          return playerList.getMaxPlayers();
      }
-@@ -1613,8 +1635,8 @@ public final class CraftServer implements Server {
+@@ -1620,8 +1642,8 @@ public final class CraftServer implements Server {
          PlayerChatTabCompleteEvent event = new PlayerChatTabCompleteEvent(player, message, completions);
          String token = event.getLastToken();
          for (Player p : getOnlinePlayers()) {

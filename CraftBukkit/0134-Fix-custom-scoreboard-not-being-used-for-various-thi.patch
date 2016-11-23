@@ -1,0 +1,25 @@
+From 5cedce41f2d46b470d6283998100471002660e04 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 22 Mar 2016 20:59:02 -0400
+Subject: [PATCH] Fix custom scoreboard not being used for various things
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index d8b9b90..67c3cdb 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -1489,4 +1489,11 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         return (CraftPlayer) super.getBukkitEntity();
+     }
+     // CraftBukkit end
++
++    // SportBukkit start - use custom scoreboard
++    @Override
++    public Scoreboard getScoreboard() {
++        return getBukkitEntity().getScoreboard().getHandle();
++    }
++    // SportBukkit end
+ }
+-- 
+1.9.0
+

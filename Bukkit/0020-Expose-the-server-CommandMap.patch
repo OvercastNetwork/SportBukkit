@@ -1,11 +1,11 @@
-From 9a1ab33687aefc16998cf8a241ca863cdea18230 Mon Sep 17 00:00:00 2001
+From 1f06a6f2843418922fc37d47c5e1b8b2f9de319c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 29 Oct 2014 19:08:55 -0400
 Subject: [PATCH] Expose the server CommandMap
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 94fb63f..6c240e9 100644
+index 18441fd..b68d0f6 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -18,6 +18,7 @@ import org.bukkit.boss.BarFlag;
@@ -16,7 +16,7 @@ index 94fb63f..6c240e9 100644
  import org.bukkit.command.CommandSender;
  import org.bukkit.command.ConsoleCommandSender;
  import org.bukkit.command.PluginCommand;
-@@ -932,6 +933,13 @@ public final class Bukkit {
+@@ -944,6 +945,13 @@ public final class Bukkit {
      }
  
      /**
@@ -31,7 +31,7 @@ index 94fb63f..6c240e9 100644
       * chunk.
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 2f84460..37e30d6 100644
+index deae5a1..079e991 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -18,6 +18,7 @@ import org.bukkit.boss.BarFlag;
@@ -42,7 +42,7 @@ index 2f84460..37e30d6 100644
  import org.bukkit.command.CommandSender;
  import org.bukkit.command.ConsoleCommandSender;
  import org.bukkit.command.PluginCommand;
-@@ -713,6 +714,11 @@ public interface Server extends PluginMessageRecipient {
+@@ -714,6 +715,11 @@ public interface Server extends PluginMessageRecipient {
      public HelpMap getHelpMap();
  
      /**

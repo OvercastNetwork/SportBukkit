@@ -1,0 +1,39 @@
+From cb6cdf9e9fd2c5773292a227cc1105b80c86a67e Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 4 Mar 2016 04:18:19 -0500
+Subject: [PATCH] Multi-trade API
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+index d2bea7d..c86aec5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
+@@ -455,6 +455,25 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
+         return this.getHandle().activeContainer.getBukkitView();
+     }
+ 
++    @Override
++    public InventoryView openMerchantCopy(Villager trader) {
++        Preconditions.checkNotNull(trader, "villager cannot be null");
++
++        final EntityVillager original = ((CraftVillager) trader).getHandle();
++        final EntityVillager copy = new EntityVillager(original.getWorld());
++
++        final NBTTagCompound nbt = new NBTTagCompound();
++        original.b(nbt);
++        copy.a(nbt);
++
++        copy.dead = false;
++        copy.setAge(1);
++        copy.setTradingPlayer(getHandle());
++
++        getHandle().openTrade(copy);
++        return getHandle().activeContainer.getBukkitView();
++    }
++
+     public void closeInventory() {
+         getHandle().closeInventory();
+     }
+-- 
+1.9.0
+

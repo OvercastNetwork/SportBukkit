@@ -1,0 +1,30 @@
+From 438658f17db569c435c3ceb5734869e0ed6ab5eb Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 8 Mar 2016 01:46:12 -0500
+Subject: [PATCH] Fix missing dropper cases
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+index c086975..5940c7e 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
+@@ -101,6 +101,8 @@ public class CraftContainer extends Container {
+                 return "minecraft:furnace";
+             case DISPENSER:
+                 return "minecraft:dispenser";
++        case DROPPER:
++            return "minecraft:dropper";
+             case ENCHANTING:
+                 return "minecraft:enchanting_table";
+             case BREWING:
+@@ -125,6 +127,7 @@ public class CraftContainer extends Container {
+                 setupChest(top, bottom);
+                 break;
+             case DISPENSER:
++        case DROPPER:
+                 setupDispenser(top, bottom);
+                 break;
+             case FURNACE:
+-- 
+1.9.0
+

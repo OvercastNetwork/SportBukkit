@@ -1,14 +1,14 @@
-From 03e28f392ff41c857c8aff569dcb859a8f9db199 Mon Sep 17 00:00:00 2001
+From da0d68fc934332f528ce1d3298ddb57bbec0d536 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 23 Jan 2014 00:17:31 -0500
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index e768aae..5721d0b 100644
+index 748aa1a..e483168 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -436,6 +436,27 @@ public final class Bukkit {
+@@ -437,6 +437,27 @@ public final class Bukkit {
      }
  
      /**
@@ -37,10 +37,10 @@ index e768aae..5721d0b 100644
       *
       * @return a plugin manager for this Server instance
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index e1c7da0..b899e24 100644
+index fc02479..a6f2b10 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -362,7 +362,22 @@ public interface Server extends PluginMessageRecipient {
+@@ -363,7 +363,22 @@ public interface Server extends PluginMessageRecipient {
      public Player getPlayer(UUID id);
  
      /**

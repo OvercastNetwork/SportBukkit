@@ -1,4 +1,4 @@
-From 11e2bec65822973ecc7cf5dacf29245fb1104dd5 Mon Sep 17 00:00:00 2001
+From 9aa02497b1ccb523bc50881eeedf2b4b1873b31d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 08:28:39 -0500
 Subject: [PATCH] Fix TNT physics
@@ -75,10 +75,10 @@ index 0ede960..b165ce8 100644
  
      public void setFuseTicks(int i) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7c839ed..c47f32c 100644
+index a17b5a0..df5fe56 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -610,6 +610,11 @@ public final class CraftServer implements Server {
+@@ -612,6 +612,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

@@ -1,0 +1,43 @@
+From 27fecee925f5a879ee399b5a242cfb53e53481ee Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sun, 26 Jun 2016 01:57:07 -0400
+Subject: [PATCH] Item cooldown API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+index 0ab4a72..f57d4b1 100644
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -1663,5 +1663,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+ 
+     boolean hasUnackedVelocity();
+ 
++    /**
++     * Start a timed cooldown of the given item type for this player.
++     *
++     * Items of the given type will be unusable by this player for the
++     * duration of the cooldown, and any stacks of the item viewed by
++     * the player will show a progress indicator.
++     *
++     * Starting a cooldown for an item that is already cooling down will
++     * replace the existing cooldown.
++     *
++     * @param item     Item type to cooldown
++     * @param ticks    Ticks to cooldown for
++     */
++    void startItemCooldown(Material item, int ticks);
+ 
++    /**
++     * Return the fraction of time remaining on any current cooldown of
++     * the given item type for this player, relative to the initial
++     * duration of the cooldown.
++     *
++     * The returned value is always between 0 and 1 inclusive.
++     *
++     * If the given item type is not cooling down, 0 is returned.
++     */
++    float getRemainingItemCooldown(Material item);
+ }
+-- 
+1.9.0
+

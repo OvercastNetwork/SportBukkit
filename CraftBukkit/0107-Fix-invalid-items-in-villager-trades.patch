@@ -1,0 +1,30 @@
+From 4b669d6611fe4f2e76bc0f72878504023430ef70 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 4 Mar 2016 03:45:49 -0500
+Subject: [PATCH] Fix invalid items in villager trades
+
+
+diff --git a/src/main/java/net/minecraft/server/MerchantRecipe.java b/src/main/java/net/minecraft/server/MerchantRecipe.java
+index 67d311c..8fd5da8 100644
+--- a/src/main/java/net/minecraft/server/MerchantRecipe.java
++++ b/src/main/java/net/minecraft/server/MerchantRecipe.java
+@@ -101,6 +101,16 @@ public class MerchantRecipe {
+         NBTTagCompound nbttagcompound2 = nbttagcompound.getCompound("sell");
+ 
+         this.sellingItem = new ItemStack(nbttagcompound2);
++
++        // SportBukkit start - replace invalid items with barrier, to prevent NPE later
++        if(this.buyingItem1 == null) {
++            this.buyingItem1 = new ItemStack(Blocks.BARRIER, 1);
++        }
++        if(this.sellingItem == null) {
++            this.sellingItem = new ItemStack(Blocks.BARRIER, 1);
++        }
++        // SportBukkit end
++
+         if (nbttagcompound.hasKeyOfType("buyB", 10)) {
+             this.buyingItem2 = new ItemStack(nbttagcompound.getCompound("buyB"));
+         }
+-- 
+1.9.0
+

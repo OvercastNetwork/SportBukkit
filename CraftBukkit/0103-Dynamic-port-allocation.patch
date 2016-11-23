@@ -1,0 +1,121 @@
+From 9facf394c7b5004dd86a05831ec08ae8b7ca03ad Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 25 Aug 2015 05:30:20 -0400
+Subject: [PATCH] Dynamic port allocation
+
+
+diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
+index a9de6bc..830ec90 100644
+--- a/src/main/java/net/minecraft/server/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/DedicatedServer.java
+@@ -175,6 +175,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+ 
+             try {
+                 this.an().a(inetaddress, this.P());
++                // SportBukkit start
++                if(this.getServerConnection().getPort() != this.getConfiguredPort()) {
++                    DedicatedServer.LOGGER.info("Bound to port " + this.getServerConnection().getPort());
++                }
++                // SportBukkit end
+             } catch (IOException ioexception) {
+                 DedicatedServer.LOGGER.warn("**** FAILED TO BIND TO PORT!");
+                 DedicatedServer.LOGGER.warn("The exception was: {}", new Object[] { ioexception.toString()});
+@@ -442,9 +447,15 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+         return this.getServerIp();
+     }
+ 
++    // SportBukkit start - return dynamic port, if set, otherwise configured port
+     public int e_() {
+-        return this.P();
++        if(this.getServerConnection().getPort() != 0) {
++            return this.getServerConnection().getPort();
++        } else {
++            return this.getConfiguredPort();
++        }
+     }
++    // SportBukkit end
+ 
+     public String f_() {
+         return this.getMotd();
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index d121bea..45b0b97 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1083,6 +1083,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+         return this.I;
+     }
+ 
++    public int getConfiguredPort() { return this.P(); } // SportBukkit - alias for following method
+     public int P() {
+         return this.u;
+     }
+@@ -1313,6 +1314,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+ 
+     }
+ 
++    public ServerConnection getServerConnection() { return this.an(); } // SportBukkit - alias for following method
+     public ServerConnection an() {
+         return this.p;
+     }
+diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
+index 446842a..7847d05 100644
+--- a/src/main/java/net/minecraft/server/ServerConnection.java
++++ b/src/main/java/net/minecraft/server/ServerConnection.java
+@@ -64,6 +64,11 @@ public class ServerConnection {
+     private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
+     // SportBukkit end
+ 
++    // SportBukkit start
++    private int port;
++    public int getPort() { return port; }
++    // SportBukkit end
++
+     public ServerConnection(MinecraftServer minecraftserver) {
+         this.f = minecraftserver;
+         this.d = true;
+@@ -102,6 +107,8 @@ public class ServerConnection {
+                     networkmanager.setPacketListener(new HandshakeListener(ServerConnection.this.f, networkmanager));
+                 }
+             }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
++
++            this.port = ((java.net.InetSocketAddress) this.g.get(0).channel().localAddress()).getPort(); // SportBukkit
+         }
+     }
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 7962bb6..6ff4f6a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -514,12 +514,28 @@ public final class CraftServer implements Server {
+ 
+     // NOTE: These are dependent on the corresponding call in MinecraftServer
+     // so if that changes this will need to as well
++
+     @Override
+-    public int getPort() {
++    public int getConfiguredPort() {
+         return this.getConfigInt("server-port", 25565);
+     }
+ 
+     @Override
++    public int getBoundPort() {
++        return getHandle().getServer().getServerConnection().getPort();
++    }
++
++    @Override
++    public int getPort() {
++        int port = getBoundPort();
++        if(port > 0) {
++            return port;
++        } else {
++            return getConfiguredPort();
++        }
++    }
++
++    @Override
+     public int getViewDistance() {
+         return this.getConfigInt("view-distance", 10);
+     }
+-- 
+1.9.0
+

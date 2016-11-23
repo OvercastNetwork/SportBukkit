@@ -1,0 +1,131 @@
+From db2b313b9a41d50bc3615b9cf00f0b9aa7370ce0 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Fri, 22 May 2015 00:45:13 -0400
+Subject: [PATCH] Add CanDestroy and CanPlaceOn to ItemMeta
+
+
+diff --git a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
+index 92455ce..1e37a64 100644
+--- a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
++++ b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
+@@ -5,12 +5,14 @@ import java.util.List;
+ import java.util.Map;
+ import java.util.Set;
+ 
++import org.bukkit.Material;
+ import org.bukkit.attribute.Attribute;
+ import org.bukkit.attribute.AttributeModifier;
+ import org.bukkit.attribute.ItemAttributeModifier;
+ import org.bukkit.configuration.serialization.ConfigurationSerializable;
+ import org.bukkit.enchantments.Enchantment;
+ import org.bukkit.inventory.ItemFlag;
++import org.bukkit.util.ImmutableMaterialSet;
+ 
+ /**
+  * This type represents the storage mechanism for auxiliary item data.
+@@ -198,6 +200,18 @@ public interface ItemMeta extends Cloneable, ConfigurationSerializable {
+ 
+     void removeAttributeModifier(Attribute attribute, ItemAttributeModifier modifier);
+ 
++    ImmutableMaterialSet getCanDestroy();
++
++    void setCanDestroy(Collection<Material> materials);
++
++    void setCanDestroy(Material...materials);
++
++    ImmutableMaterialSet getCanPlaceOn();
++
++    void setCanPlaceOn(Collection<Material> materials);
++
++    void setCanPlaceOn(Material...materials);
++
+     @SuppressWarnings("javadoc")
+     ItemMeta clone();
+ }
+diff --git a/src/main/java/org/bukkit/util/ImmutableMaterialSet.java b/src/main/java/org/bukkit/util/ImmutableMaterialSet.java
+new file mode 100644
+index 0000000..a048988
+--- /dev/null
++++ b/src/main/java/org/bukkit/util/ImmutableMaterialSet.java
+@@ -0,0 +1,78 @@
++package org.bukkit.util;
++
++import java.util.Arrays;
++import java.util.Collection;
++import java.util.Collections;
++import java.util.EnumSet;
++import java.util.Set;
++
++import com.google.common.collect.ForwardingSet;
++import org.bukkit.Material;
++
++/**
++ * Highly efficient immutable container for {@link Material}s. Useful for sharing
++ * large material lists.
++ */
++public class ImmutableMaterialSet extends ForwardingSet<Material> {
++
++    private final Set<Material> materials;
++
++    private ImmutableMaterialSet(Set<Material> materials) {
++        this.materials = materials;
++    }
++
++    private static final ImmutableMaterialSet EMPTY = new ImmutableMaterialSet(Collections.<Material>emptySet());
++
++    public static ImmutableMaterialSet of(ImmutableMaterialSet materials) {
++        return materials;
++    }
++
++    public static ImmutableMaterialSet of() {
++        return EMPTY;
++    }
++
++    public static ImmutableMaterialSet of(Material...materials) {
++        return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(materials))));
++    }
++
++    public static ImmutableMaterialSet of(Collection<Material> materials) {
++        if(materials instanceof ImmutableMaterialSet) {
++            return (ImmutableMaterialSet) materials;
++        } else {
++            return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumSet.copyOf(materials)));
++        }
++    }
++
++    @Override
++    protected Set<Material> delegate() {
++        return materials;
++    }
++
++    public static Builder builder() {
++        return new Builder();
++    }
++
++    public static class Builder {
++        private final EnumSet<Material> materials = EnumSet.noneOf(Material.class);
++        private boolean built;
++
++        private void assertUnbuilt() {
++            if(built) throw new IllegalStateException("Already built");
++        }
++
++        public void add(Material material) {
++            assertUnbuilt();
++            materials.add(material);
++        }
++
++        public boolean isEmpty() {
++            assertUnbuilt();
++            return materials.isEmpty();
++        }
++
++        public ImmutableMaterialSet build() {
++            built = true;
++            return materials.isEmpty() ? EMPTY : new ImmutableMaterialSet(materials);
++        }
++    }
++}
+-- 
+1.9.0
+

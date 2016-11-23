@@ -1,0 +1,27 @@
+From e96b501db94e0c09dc80691da559970d8829789e Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 16 Mar 2016 22:03:58 -0400
+Subject: [PATCH] Fix incorrect getNoDamageTicks
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 8bb83a8..3d9d4a3 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1564,11 +1564,8 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     @Override
+     public int getNoDamageTicks() {
+-        if (getHandle().invulnerableTicks > 0) {
+-            return Math.max(getHandle().invulnerableTicks, getHandle().noDamageTicks);
+-        } else {
+-            return getHandle().noDamageTicks;
+-        }
++        return Math.max(getHandle().invulnerableTicks,
++                        Math.max(0, getHandle().noDamageTicks - getHandle().maxNoDamageTicks / 2));
+     }
+ 
+     @Override
+-- 
+1.9.0
+

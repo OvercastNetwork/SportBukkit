@@ -1,4 +1,4 @@
-From 18fd4a19f2af07b181ce60efd38a91bac0fe3388 Mon Sep 17 00:00:00 2001
+From 472cf595d0f3af2f6d5ac6c259fd00af0cebb57e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:11 -0500
 Subject: [PATCH] Geometry API
@@ -5757,6 +5757,34 @@ index e6af9ec..ff04e6a 100644
 +        return n < min ? min : n > max ? max : n;
 +    }
  }
+diff --git a/src/main/java/org/bukkit/util/RayBlockIntersection.java b/src/main/java/org/bukkit/util/RayBlockIntersection.java
+index b1ba1d8..f2c986c 100644
+--- a/src/main/java/org/bukkit/util/RayBlockIntersection.java
++++ b/src/main/java/org/bukkit/util/RayBlockIntersection.java
+@@ -2,6 +2,7 @@ package org.bukkit.util;
+ 
+ import org.bukkit.block.Block;
+ import org.bukkit.block.BlockFace;
++import org.bukkit.geometry.Vec3;
+ 
+ /**
+  * Result of a ray-block intersection test
+@@ -9,12 +10,12 @@ import org.bukkit.block.BlockFace;
+ public class RayBlockIntersection {
+     private final Block block;
+     private final BlockFace face;
+-    private final Vector position;
++    private final ImVector position;
+ 
+-    public RayBlockIntersection(Block block, BlockFace face, Vector position) {
++    public RayBlockIntersection(Block block, BlockFace face, Vec3 position) {
+         this.block = block;
+         this.face = face;
+-        this.position = position;
++        this.position = ImVector.copyOf(position);
+     }
+ 
+     /**
 diff --git a/src/main/java/org/bukkit/util/SetBase.java b/src/main/java/org/bukkit/util/SetBase.java
 new file mode 100644
 index 0000000..036df35

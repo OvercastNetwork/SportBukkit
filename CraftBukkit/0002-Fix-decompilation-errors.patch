@@ -1,4 +1,4 @@
-From df497b8853639fd363de02739759e34f406d06d0 Mon Sep 17 00:00:00 2001
+From 00bdb6edc962090f4c7f786d7344a623fb3778f8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
@@ -150,10 +150,10 @@ index 6c86341..c0d0ba5 100644
          this.e = entityliving.locY;
          this.f = entityliving.locZ;
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 04ea4cc..36b81e7 100644
+index 9c1d5ff..2978514 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -731,7 +731,7 @@ public abstract class PlayerList {
+@@ -734,7 +734,7 @@ public abstract class PlayerList {
  
      public void f(EntityPlayer entityplayer) {
          GameProfile gameprofile = entityplayer.getProfile();

@@ -1,11 +1,11 @@
-From 73ba7d76adb8ef11d9e5a8be04109b7deaf6b7e9 Mon Sep 17 00:00:00 2001
+From f22a641b55c264a28eda5603cf45d49eafca9b40 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 4 Apr 2015 23:17:52 -0400
 Subject: [PATCH] Complete resource pack API
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 73fa3af..816b24c 100644
+index 3276961..f73bdeb 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1025,7 +1025,10 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -21,7 +21,7 @@ index 73fa3af..816b24c 100644
      // CraftBukkit end
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index e330522..954d49e 100644
+index e73a126..7c220ee 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -61,6 +61,7 @@ import org.bukkit.entity.EntityType;
@@ -40,7 +40,7 @@ index e330522..954d49e 100644
  
      private final Map<CommandSender, String> fakeNames = new WeakHashMap<CommandSender, String>();
      private final Map<CommandSender, String> fakeDisplayNames = new WeakHashMap<CommandSender, String>();
-@@ -1408,9 +1410,30 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1410,9 +1412,30 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public void setResourcePack(String url) {

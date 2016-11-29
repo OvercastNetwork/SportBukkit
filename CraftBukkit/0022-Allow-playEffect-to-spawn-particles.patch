@@ -1,4 +1,4 @@
-From b52ca8c9dac432cab26a575687fdacd7cb478bc3 Mon Sep 17 00:00:00 2001
+From 6b3eae127ff5d6377e1218cd1be28fba21a81655 Mon Sep 17 00:00:00 2001
 From: thinkofdeath <purggames@gmail.com>
 Date: Fri, 12 Apr 2013 18:19:11 +0100
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -18,18 +18,10 @@ index 1672183..582d7bf 100644
              datavalue = 0;
          }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 3cbf09e..a0e86ee 100644
+index 3c2e97c..26a0a55 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -52,6 +52,7 @@ import org.bukkit.event.world.SpawnChangeEvent;
- import org.bukkit.generator.BlockPopulator;
- import org.bukkit.generator.ChunkGenerator;
- import org.bukkit.inventory.ItemStack;
-+import org.bukkit.material.MaterialData;
- import org.bukkit.metadata.MetadataValue;
- import org.bukkit.plugin.Plugin;
- import org.bukkit.plugin.messaging.StandardMessenger;
-@@ -809,6 +810,10 @@ public class CraftWorld implements World {
+@@ -810,6 +810,10 @@ public class CraftWorld implements World {
          playEffect(player.getLocation(), effect, data, 0);
      }
  
@@ -40,7 +32,7 @@ index 3cbf09e..a0e86ee 100644
      public void playEffect(Location location, Effect effect, int data) {
          playEffect(location, effect, data, 64);
      }
-@@ -824,16 +829,44 @@ public class CraftWorld implements World {
+@@ -825,16 +829,44 @@ public class CraftWorld implements World {
              Validate.isTrue(effect.getData() == null, "Wrong kind of data for this effect!");
          }
  
@@ -90,7 +82,7 @@ index 3cbf09e..a0e86ee 100644
          radius *= radius;
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ab638ba..31847cc 100644
+index 7c616c1..8480292 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -59,6 +59,7 @@ import org.bukkit.event.player.PlayerUnregisterChannelEvent;

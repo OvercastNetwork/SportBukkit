@@ -1,4 +1,4 @@
-From f85ff71e899c1ec8e2cb53cf3a1fa6e56783317b Mon Sep 17 00:00:00 2001
+From 1a8046772c1ffa5ea7fd6a409be3b133a12a50be Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
@@ -55,7 +55,7 @@ index 9a7767c..704a4fb 100644
          this.velocityChanged = true;
      }
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index e41d21e..2a1a489 100644
+index 0f2d434..249f11c 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -283,7 +283,7 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -179,7 +179,7 @@ index 7804eff..21bf1ad 100644
      public float getHeadRotation() {
          return this.aP;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index d0c9a9f..d8b9b90 100644
+index b8a3ca3..c8aa0f0 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,13 @@ import com.google.common.collect.Lists;
@@ -414,7 +414,7 @@ index 904bee8..ed18951 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 624963a..49c03fb 100644
+index 842cd33..96be1c6 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -59,6 +59,7 @@ import org.bukkit.inventory.CraftingInventory;
@@ -426,7 +426,7 @@ index 624963a..49c03fb 100644
  
  public class PlayerConnection implements PacketListenerPlayIn, ITickable {
 @@ -137,6 +138,36 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
-     private final static HashSet<Integer> invalidItems = new HashSet<Integer>(java.util.Arrays.asList(8, 9, 10, 11, 26, 34, 36, 43, 51, 52, 55, 59, 60, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 125, 127, 132, 140, 141, 142, 144)); // TODO: Check after every update.
+     private final static HashSet<Integer> invalidItems = new HashSet<Integer>(java.util.Arrays.asList(8, 9, 10, 11, 26, 34, 36, 43, 51, 52, 55, 59, 62, 63, 64, 68, 71, 74, 75, 83, 90, 92, 93, 94, 104, 105, 115, 117, 118, 119, 125, 127, 132, 140, 141, 142, 144)); // TODO: Check after every update.
      // CraftBukkit end
  
 +    // SportBukkit start - velocity prediction
@@ -528,7 +528,7 @@ index 1d0ceda..f43ec56 100644
          return this.configuration.getBoolean("settings.isolate-plugins", false);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 3f8569e..c27b4e1 100644
+index 04b5e94..995616e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -33,6 +33,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -574,7 +574,7 @@ index 3f8569e..c27b4e1 100644
      }
  
      public boolean isOnGround() {
-@@ -736,4 +757,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -739,4 +760,9 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          }
          return perm;
      }
@@ -585,7 +585,7 @@ index 3f8569e..c27b4e1 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 3d9d4a3..158f47a 100644
+index a7fef20..2465f4c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -76,6 +76,7 @@ import org.bukkit.plugin.Plugin;
@@ -596,7 +596,7 @@ index 3d9d4a3..158f47a 100644
  
  @DelegateDeserialization(CraftOfflinePlayer.class)
  public class CraftPlayer extends CraftHumanEntity implements Player {
-@@ -1922,6 +1923,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1924,6 +1925,26 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override

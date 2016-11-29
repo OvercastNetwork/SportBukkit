@@ -1,4 +1,4 @@
-From 5b75509613cfc061c4f929471eb1c0d02e63e870 Mon Sep 17 00:00:00 2001
+From 70c29da8726b4d4b720769113f01fb244e66562d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 10 Oct 2016 04:53:27 -0400
 Subject: [PATCH] Block images
@@ -54,7 +54,7 @@ index d73a58c..e56de6c 100644
          return scoreboardManager;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 16ec523..7f6aa36 100644
+index 8ea58be..fc5fede 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -11,6 +11,7 @@ import java.util.Iterator;
@@ -99,7 +99,7 @@ index 16ec523..7f6aa36 100644
      public int getBlockTypeIdAt(int x, int y, int z) {
          return CraftMagicNumbers.getId(world.getType(new BlockPosition(x, y, z)).getBlock());
      }
-@@ -1588,4 +1599,48 @@ public class CraftWorld implements World {
+@@ -1594,4 +1605,48 @@ public class CraftWorld implements World {
              cps.unload(chunk);
          }
      }
@@ -149,38 +149,18 @@ index 16ec523..7f6aa36 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-index 3eaf564..bc3584b 100644
+index 2d6e2d5..e601b4f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftBlock.java
-@@ -4,9 +4,24 @@ import java.util.ArrayList;
+@@ -4,6 +4,7 @@ import java.util.ArrayList;
  import java.util.Collection;
  import java.util.Collections;
  import java.util.List;
--
--import net.minecraft.server.*;
--
 +import java.util.Objects;
-+
-+import net.minecraft.server.BiomeBase;
-+import net.minecraft.server.BlockCocoa;
-+import net.minecraft.server.BlockPosition;
-+import net.minecraft.server.BlockRedstoneWire;
-+import net.minecraft.server.BlockTileEntity;
-+import net.minecraft.server.Blocks;
-+import net.minecraft.server.EnumDirection;
-+import net.minecraft.server.EnumSkyBlock;
-+import net.minecraft.server.GameProfileSerializer;
-+import net.minecraft.server.IBlockData;
-+import net.minecraft.server.Item;
-+import net.minecraft.server.MinecraftKey;
-+import net.minecraft.server.MovingObjectPosition;
-+import net.minecraft.server.NBTTagCompound;
-+import net.minecraft.server.TileEntitySkull;
-+import net.minecraft.server.Vec3D;
- import org.bukkit.Chunk;
- import org.bukkit.Location;
- import org.bukkit.Material;
-@@ -25,18 +40,19 @@ import org.bukkit.metadata.MetadataValue;
+ 
+ import net.minecraft.server.*;
+ 
+@@ -25,18 +26,19 @@ import org.bukkit.metadata.MetadataValue;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.util.BlockVector;
  import org.bukkit.util.RayBlockIntersection;
@@ -206,7 +186,7 @@ index 3eaf564..bc3584b 100644
          this.chunk = chunk;
      }
  
-@@ -52,16 +68,19 @@ public class CraftBlock implements Block {
+@@ -52,16 +54,19 @@ public class CraftBlock implements Block {
          return chunk.getWorld();
      }
  
@@ -230,7 +210,7 @@ index 3eaf564..bc3584b 100644
              loc.setYaw(0);
              loc.setPitch(0);
          }
-@@ -70,19 +89,19 @@ public class CraftBlock implements Block {
+@@ -70,19 +75,19 @@ public class CraftBlock implements Block {
      }
  
      public BlockVector getVector() {
@@ -254,7 +234,7 @@ index 3eaf564..bc3584b 100644
      }
  
      public Chunk getChunk() {
-@@ -103,17 +122,16 @@ public class CraftBlock implements Block {
+@@ -103,17 +108,16 @@ public class CraftBlock implements Block {
  
      private void setData(final byte data, int flag) {
          net.minecraft.server.World world = chunk.getHandle().getWorld();
@@ -274,7 +254,7 @@ index 3eaf564..bc3584b 100644
          return (byte) blockData.getBlock().toLegacyData(blockData);
      }
  
-@@ -137,7 +155,6 @@ public class CraftBlock implements Block {
+@@ -137,7 +141,6 @@ public class CraftBlock implements Block {
  
      public boolean setTypeIdAndData(final int type, final byte data, final boolean applyPhysics) {
          IBlockData blockData = getNMSBlock(type).fromLegacyData(data);
@@ -282,7 +262,7 @@ index 3eaf564..bc3584b 100644
  
          // SPIGOT-611: need to do this to prevent glitchiness. Easier to handle this here (like /setblock) than to fix weirdness in tile entity cleanup
          if (type != 0 && blockData.getBlock() instanceof BlockTileEntity && type != getTypeId()) {
-@@ -168,19 +185,19 @@ public class CraftBlock implements Block {
+@@ -168,19 +171,19 @@ public class CraftBlock implements Block {
      @Deprecated
      @Override
      public int getTypeId() {
@@ -306,7 +286,7 @@ index 3eaf564..bc3584b 100644
      }
  
  
-@@ -221,7 +238,7 @@ public class CraftBlock implements Block {
+@@ -221,7 +224,7 @@ public class CraftBlock implements Block {
  
      @Override
      public String toString() {
@@ -315,7 +295,7 @@ index 3eaf564..bc3584b 100644
      }
  
      public static BlockFace notchToBlockFace(EnumDirection notch) {
-@@ -332,11 +349,11 @@ public class CraftBlock implements Block {
+@@ -332,11 +335,11 @@ public class CraftBlock implements Block {
      }
  
      public Biome getBiome() {
@@ -329,7 +309,7 @@ index 3eaf564..bc3584b 100644
      }
  
      public static Biome biomeBaseToBiome(BiomeBase base) {
-@@ -356,19 +373,19 @@ public class CraftBlock implements Block {
+@@ -356,19 +359,19 @@ public class CraftBlock implements Block {
      }
  
      public double getTemperature() {
@@ -353,7 +333,7 @@ index 3eaf564..bc3584b 100644
      }
  
      @Override
-@@ -377,20 +394,20 @@ public class CraftBlock implements Block {
+@@ -377,20 +380,20 @@ public class CraftBlock implements Block {
          if (!(o instanceof CraftBlock)) return false;
          CraftBlock other = (CraftBlock) o;
  
@@ -378,7 +358,7 @@ index 3eaf564..bc3584b 100644
  
          Block relative = getRelative(face);
          if (relative.getType() == Material.REDSTONE_WIRE) {
-@@ -404,12 +421,12 @@ public class CraftBlock implements Block {
+@@ -404,12 +407,12 @@ public class CraftBlock implements Block {
          int power = 0;
          BlockRedstoneWire wire = Blocks.REDSTONE_WIRE;
          net.minecraft.server.World world = chunk.getHandle().getWorld();
@@ -397,7 +377,7 @@ index 3eaf564..bc3584b 100644
          return power > 0 ? power : (face == BlockFace.SELF ? isBlockIndirectlyPowered() : isBlockFaceIndirectlyPowered(face)) ? 15 : 0;
      }
  
-@@ -442,7 +459,7 @@ public class CraftBlock implements Block {
+@@ -442,7 +445,7 @@ public class CraftBlock implements Block {
          boolean result = false;
  
          if (block != null && block != Blocks.AIR) {
@@ -406,7 +386,7 @@ index 3eaf564..bc3584b 100644
              result = true;
          }
  
-@@ -472,7 +489,7 @@ public class CraftBlock implements Block {
+@@ -472,7 +475,7 @@ public class CraftBlock implements Block {
                      // Skulls are special, their data is based on the tile entity
                      if (Blocks.SKULL == block) {
                          net.minecraft.server.ItemStack nmsStack = new net.minecraft.server.ItemStack(item, 1, block.getDropData(data));
@@ -415,7 +395,7 @@ index 3eaf564..bc3584b 100644
  
                          if (tileentityskull.getSkullType() == 3 && tileentityskull.getGameProfile() != null) {
                              nmsStack.setTag(new NBTTagCompound());
-@@ -535,7 +552,7 @@ public class CraftBlock implements Block {
+@@ -535,7 +538,7 @@ public class CraftBlock implements Block {
  
          MovingObjectPosition hit = nms.a(getData0(),
                                           chunk.getCraftWorld().getHandle(),
@@ -424,7 +404,7 @@ index 3eaf564..bc3584b 100644
                                           new Vec3D(start.getX(), start.getY(), start.getZ()),
                                           new Vec3D(end.getX(), end.getY(), end.getZ()));
  
-@@ -562,7 +579,7 @@ public class CraftBlock implements Block {
+@@ -562,7 +565,7 @@ public class CraftBlock implements Block {
      }
  
      public BlockPosition nmsPosition() {

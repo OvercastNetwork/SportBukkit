@@ -1,4 +1,4 @@
-From de8258ea56c6c727b97ff787e6924a79f24f7418 Mon Sep 17 00:00:00 2001
+From b9c6388280b5d096a94cc9698d5d66ba397eb2df Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -248,18 +248,10 @@ index ba7dc49..d9cb0ca 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 8dd254a..3a7d5c5 100644
+index 02cad41..db29db8 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
- import org.bukkit.entity.*;
- import org.bukkit.generator.BlockPopulator;
- import org.bukkit.inventory.ItemStack;
-+import org.bukkit.material.MaterialData;
- import org.bukkit.metadata.Metadatable;
- import org.bukkit.plugin.messaging.PluginMessageRecipient;
- import org.bukkit.util.Vector;
-@@ -739,6 +740,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -756,6 +756,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
       * Plays an effect to all players within a default radius around a given
       * location.
       *
@@ -276,7 +268,7 @@ index 8dd254a..3a7d5c5 100644
       * @param location the {@link Location} around which players must be to
       *     hear the sound
       * @param effect the {@link Effect}
-@@ -782,6 +793,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -799,6 +809,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
      public <T> void playEffect(Location location, Effect effect, T data, int radius);
  
      /**

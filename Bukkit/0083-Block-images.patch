@@ -1,4 +1,4 @@
-From fb8e3a8ba81167e62c99a3a9f038ba4dc4780cc4 Mon Sep 17 00:00:00 2001
+From d042c322b82db91406f0527cd31ed6d6a7305540 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
@@ -70,7 +70,7 @@ index 6d47a61..deecc6e 100644
      public ChunkGenerator.ChunkData createChunkData(World world);
  
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 9bfc8ff..25914e2 100644
+index 0cb6b2d..f7fc037 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -1,12 +1,20 @@
@@ -145,7 +145,7 @@ index 9bfc8ff..25914e2 100644
      /**
       * Gets the {@link Chunk} at the given {@link Location}
       *
-@@ -881,6 +919,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -897,6 +935,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      Biome getBiome(int x, int z);
  
@@ -156,7 +156,7 @@ index 9bfc8ff..25914e2 100644
      /**
       * Sets the biome for the given block coordinates
       *
-@@ -890,6 +932,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -906,6 +948,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      void setBiome(int x, int z, Biome bio);
  
@@ -167,7 +167,7 @@ index 9bfc8ff..25914e2 100644
      /**
       * Gets the temperature for the given block coordinates.
       * <p>
-@@ -902,6 +948,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -918,6 +964,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public double getTemperature(int x, int z);
  
@@ -178,7 +178,7 @@ index 9bfc8ff..25914e2 100644
      /**
       * Gets the humidity for the given block coordinates.
       * <p>
-@@ -914,6 +964,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -930,6 +980,10 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public double getHumidity(int x, int z);
  
@@ -189,7 +189,7 @@ index 9bfc8ff..25914e2 100644
      /**
       * Gets the maximum height of this world.
       * <p>
-@@ -1474,6 +1528,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -1490,6 +1544,37 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       */
      public <T> void spawnParticle(Particle particle, double x, double y, double z, int count, double offsetX, double offsetY, double offsetZ, double extra, T data);
  

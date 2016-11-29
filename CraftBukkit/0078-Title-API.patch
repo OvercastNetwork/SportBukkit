@@ -1,4 +1,4 @@
-From 22781d8f766ef1a92d04a5e487a8b7e0031be959 Mon Sep 17 00:00:00 2001
+From bbdc9e3bf4b8f0fdb2db4ca7fc3bb5e93cada4bf Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Feb 2015 04:32:45 -0500
 Subject: [PATCH] Title API
@@ -43,10 +43,10 @@ index 7bcafa8..01c58fb 100644
  
          if (this.a == PacketPlayOutTitle.EnumTitleAction.TIMES) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 68cf25e..d002b96 100644
+index ddd9490..14595b1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1809,4 +1809,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1811,4 +1811,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.setPlayerListHeaderFooter(header == null ? null : new BaseComponent[]{ header },
                                         footer == null ? null : new BaseComponent[]{ footer });
      }

@@ -1,11 +1,11 @@
-From c75de4d2981a0ba920dc97d7af1a299396dd0ac7 Mon Sep 17 00:00:00 2001
+From 49c8c68abefd911bbc86f9e33eaaef495d900cac Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index bf35375..29b20ec 100644
+index 2057b04..236ac1b 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -28,7 +28,7 @@ import org.bukkit.inventory.MainHand;
@@ -34,10 +34,10 @@ index bf35375..29b20ec 100644
          this.ch = packetplayinsettings.d();
          this.getDataWatcher().set(EntityPlayer.bq, Byte.valueOf((byte) packetplayinsettings.e()));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c7c74d1..1e53a50 100644
+index 8d03b91..7fea249 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1482,4 +1482,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1484,4 +1484,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public String getHostname() {
          return getHandle().hostname;
      }
@@ -54,7 +54,7 @@ index c7c74d1..1e53a50 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 96f23f2..950a9ae 100644
+index deb2d7b..daa2ee3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -654,7 +654,7 @@ public class CraftEventFactory {

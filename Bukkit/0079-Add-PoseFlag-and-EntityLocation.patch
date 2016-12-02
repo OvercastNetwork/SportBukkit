@@ -1,4 +1,4 @@
-From 7f30e9630446da747fbb1ab62f4a0e9cc25b5a6e Mon Sep 17 00:00:00 2001
+From f5cb0b93c82ad4815b9074ea6a31364ea819b95d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation

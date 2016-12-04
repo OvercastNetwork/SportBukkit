@@ -1,4 +1,4 @@
-From 6505783da921525af49548b1ed1783c7014c267f Mon Sep 17 00:00:00 2001
+From 470f2318577703b1548768d5eed1c1967f1da147 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:57 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -178,16 +178,30 @@ index 62b019a..04b5e94 100644
          return getHandle().getName();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 8b1bcb2..7f3e7a1 100644
+index 8b1bcb2..8343ca8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1814,6 +1814,29 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -15,6 +15,7 @@ import java.util.Collection;
+ import java.util.HashSet;
+ import java.util.LinkedHashMap;
+ import java.util.List;
++import java.util.Locale;
+ import java.util.Map;
+ import java.util.Set;
+ import java.util.UUID;
+@@ -1814,6 +1815,35 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      }
  
      @Override
 +    public java.util.Locale getCurrentLocale() {
 +        try {
-+            return org.apache.commons.lang.LocaleUtils.toLocale(getLocale());
++            final String[] parts = getLocale().split("[-_]");
++            switch(parts.length) {
++                case 0: return java.util.Locale.US;
++                case 1: return new Locale(parts[0]);
++                case 2: return new Locale(parts[0], parts[1]);
++                default: return new Locale(parts[0], parts[1], parts[2]);
++            }
 +        } catch(IllegalArgumentException e) {
 +            return java.util.Locale.US;
 +        }
@@ -211,7 +225,7 @@ index 8b1bcb2..7f3e7a1 100644
      public void sendMessage(BaseComponent component) {
        sendMessage( new BaseComponent[] { component } );
      }
-@@ -1924,4 +1947,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1924,4 +1954,9 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids) {
          return getTargetedBlock(getBlockReach(), nonSolids, liquids);
      }

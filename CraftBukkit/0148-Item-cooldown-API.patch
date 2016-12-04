@@ -1,4 +1,4 @@
-From da0f9b66bf6b12658db662d5e19d53f0ef67243f Mon Sep 17 00:00:00 2001
+From d3ced33db5454526fb4a15cc03c84f53a823bb08 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 26 Jun 2016 01:57:17 -0400
 Subject: [PATCH] Item cooldown API
@@ -17,10 +17,10 @@ index 3528710..fe17a06 100644
          return this.bV;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 0d012f3..b1e72b6 100644
+index 7bf3747..079ed8a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2037,4 +2037,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2044,4 +2044,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
      public int getProtocolVersion() {
          return getHandle().protocolVersion;
      }

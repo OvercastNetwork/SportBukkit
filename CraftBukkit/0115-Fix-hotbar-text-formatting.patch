@@ -1,14 +1,14 @@
-From 168134130fe797ab4e441917dc4db5fdbf8ecf83 Mon Sep 17 00:00:00 2001
+From 51b54e4242bba2fd9c7b1abd4474901df4e67322 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 8 Mar 2016 04:34:03 -0500
 Subject: [PATCH] Fix hotbar text formatting
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 7f3e7a1..56a51a1 100644
+index 8343ca8..297236c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -20,11 +20,14 @@ import java.util.Set;
+@@ -21,11 +21,14 @@ import java.util.Set;
  import java.util.UUID;
  import java.util.logging.Level;
  import java.util.logging.Logger;
@@ -23,7 +23,7 @@ index 7f3e7a1..56a51a1 100644
  import net.minecraft.server.*;
  import net.minecraft.server.PacketPlayOutTitle.EnumTitleAction;
  
-@@ -1827,7 +1830,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -1834,7 +1837,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          if ( getHandle().playerConnection == null ) return;
  
          PacketPlayOutChat packet = new PacketPlayOutChat(null, (byte) position.ordinal());

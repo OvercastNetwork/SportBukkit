@@ -1,0 +1,80 @@
+From 25fdbb884cc03baa490ee467389878190df9c847 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 3 Dec 2016 23:46:01 -0500
+Subject: [PATCH] Pause entity API
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
+index a274c3b..0e8779d 100644
+--- a/src/main/java/net/minecraft/server/EntityLiving.java
++++ b/src/main/java/net/minecraft/server/EntityLiving.java
+@@ -543,6 +543,7 @@ public abstract class EntityLiving extends Entity {
+     }
+ 
+     protected void tickPotionEffects() {
++        if(!getBukkitEntity().isPaused()) { // SportBukkit - don't tick effects while paused
+         Iterator<MobEffectList> iterator = com.google.common.collect.ImmutableSet.copyOf(this.effects.keySet()).iterator(); // SportBukkit - copy to allow concurrent modification
+ 
+         while (iterator.hasNext()) {
+@@ -571,6 +572,7 @@ public abstract class EntityLiving extends Entity {
+                 this.a(mobeffect, false);
+             }
+         }
++        } // SportBukkit
+ 
+         if (this.updateEffects) {
+             if (!this.world.isClientSide) {
+diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
+index 1c88c1a..8f0dff4 100644
+--- a/src/main/java/net/minecraft/server/EntityPlayer.java
++++ b/src/main/java/net/minecraft/server/EntityPlayer.java
+@@ -1132,6 +1132,19 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
+         this.playerConnection.sendPacket(new PacketPlayOutRemoveEntityEffect(this.getId(), mobeffect.getMobEffect()));
+     }
+ 
++    // SportBukkit start - refresh effects while paused to keep time in sync
++    @Override
++    protected void tickPotionEffects() {
++        if(getBukkitEntity().isPaused() && ticksLived % 10 == 0) {
++            for(MobEffect effect : this.getEffects()) {
++                this.playerConnection.sendPacket(new PacketPlayOutEntityEffect(this.getId(), effect));
++            }
++        }
++        super.tickPotionEffects();
++
++    }
++    // SportBukkit end
++
+     public void enderTeleportTo(double d0, double d1, double d2) {
+         this.playerConnection.a(d0, d1, d2, this.yaw, this.pitch);
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+index 967c073..325e9ee 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -45,6 +45,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+     protected Entity entity;
+     private EntityDamageEvent lastDamageEvent;
+     private float knockbackReduction;
++    private boolean paused = false;
+ 
+     public CraftEntity(final CraftServer server, final Entity entity) {
+         this.server = server;
+@@ -850,4 +851,14 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+         return Cuboid.between(ImVector.of(bb.a, bb.b, bb.c),
+                               ImVector.of(bb.d, bb.e, bb.f));
+     }
++
++    @Override
++    public void setPaused(boolean paused) {
++        this.paused = paused;
++    }
++
++    @Override
++    public boolean isPaused() {
++        return paused;
++    }
+ }
+-- 
+1.9.0
+

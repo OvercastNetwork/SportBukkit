@@ -1,0 +1,35 @@
+From 1ee62c0de0aff63bea53be4e37c7ac6cbc60b724 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 3 Dec 2016 23:45:45 -0500
+Subject: [PATCH] Pause entity API
+
+
+diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
+index 6a1b1f3..4496d40 100644
+--- a/src/main/java/org/bukkit/entity/Entity.java
++++ b/src/main/java/org/bukkit/entity/Entity.java
+@@ -506,4 +506,21 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+     boolean removeScoreboardTag(String tag);
+ 
+     Cuboid getBoundingBox();
++
++    /**
++     * Pause/unpause this entity.
++     *
++     * Pausing an entity prevents various dynamic properties from advancing.
++     * The set of affected properties may expand in the future.
++     *
++     * Currently, only potion effect durations are affected.
++     */
++    void setPaused(boolean paused);
++
++    /**
++     * Is this entity paused?
++     *
++     * @see #setPaused
++     */
++    boolean isPaused();
+ }
+-- 
+1.9.0
+

@@ -1,0 +1,33 @@
+From 59a6e6b92c7588837ccbce5268e513697a7a6596 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 7 Dec 2016 04:29:15 -0500
+Subject: [PATCH] FallingBlock form block flag
+
+
+diff --git a/src/main/java/org/bukkit/entity/FallingBlock.java b/src/main/java/org/bukkit/entity/FallingBlock.java
+index bc56fa2..4ff5c06 100644
+--- a/src/main/java/org/bukkit/entity/FallingBlock.java
++++ b/src/main/java/org/bukkit/entity/FallingBlock.java
+@@ -59,4 +59,19 @@ public interface FallingBlock extends Entity {
+      * @param hurtEntities whether entities will be damaged by this block.
+      */
+     void setHurtEntities(boolean hurtEntities);
++
++    /**
++     * Can this entity form a block when it lands?
++     */
++    boolean canFormBlock();
++
++    /**
++     * Allow or prevent this entity from forming a block when it lands.
++     *
++     * If this is false, the entity will just disappear when it lands.
++     * If true, it may form a block if other circumstances permit it.
++     *
++     * This is initially true by default.
++     */
++    void setFormBlock(boolean formBlock);
+ }
+-- 
+1.9.0
+

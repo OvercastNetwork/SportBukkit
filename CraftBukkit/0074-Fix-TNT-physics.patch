@@ -1,14 +1,14 @@
-From 9aa02497b1ccb523bc50881eeedf2b4b1873b31d Mon Sep 17 00:00:00 2001
+From 3ef2d3d27d8f11d1f31775801937a6e5e501392c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 08:28:39 -0500
 Subject: [PATCH] Fix TNT physics
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 6851c66..19dedad 100644
+index 3f1f65c..ade172a 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -987,7 +987,7 @@ public abstract class Entity implements ICommandListener {
+@@ -989,7 +989,7 @@ public abstract class Entity implements ICommandListener {
          return this.inWater;
      }
  

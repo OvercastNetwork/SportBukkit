@@ -1,14 +1,14 @@
-From f362449c3e0d397512447120abc6fc621af7e5ab Mon Sep 17 00:00:00 2001
+From e9514c1dcaf916df9060a67f7ad1dcefb7d87faf Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:42:17 -0400
 Subject: [PATCH] Multi-passenger API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 704a4fb..71da135 100644
+index a697e31..23694bf 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1779,6 +1779,7 @@ public abstract class Entity implements ICommandListener {
+@@ -1787,6 +1787,7 @@ public abstract class Entity implements ICommandListener {
          return this.j <= 0;
      }
  
@@ -16,7 +16,7 @@ index 704a4fb..71da135 100644
      public void az() {
          for (int i = this.passengers.size() - 1; i >= 0; --i) {
              ((Entity) this.passengers.get(i)).stopRiding();
-@@ -2621,6 +2622,7 @@ public abstract class Entity implements ICommandListener {
+@@ -2629,6 +2630,7 @@ public abstract class Entity implements ICommandListener {
          return null;
      }
  

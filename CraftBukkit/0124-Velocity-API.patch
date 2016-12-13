@@ -1,14 +1,14 @@
-From 85166b15e1d2fa3b007540e6e7219e9aaaeb45ad Mon Sep 17 00:00:00 2001
+From 9756319cdb0075e1913855d30509ccf485458073 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 9a7767c..704a4fb 100644
+index bdc7f0d..a697e31 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
-@@ -1243,13 +1243,41 @@ public abstract class Entity implements ICommandListener {
+@@ -1251,13 +1251,41 @@ public abstract class Entity implements ICommandListener {
          }
      }
  

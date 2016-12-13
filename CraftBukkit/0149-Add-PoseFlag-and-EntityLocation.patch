@@ -1,11 +1,11 @@
-From 34a9b92d27a6762e084efd8744c1befb6f33b630 Mon Sep 17 00:00:00 2001
+From e0e1e54ebd48ee189609204fae9bb2aa1c5a2909 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:25 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 1f6df61..6c4fc38 100644
+index fb679d9..fbf92be 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -17,12 +17,15 @@ import org.apache.logging.log4j.Logger;
@@ -24,7 +24,7 @@ index 1f6df61..6c4fc38 100644
  import org.bukkit.entity.Vehicle;
  import org.bukkit.event.entity.EntityExtinguishEvent;
  import org.bukkit.event.entity.EntityCombustByBlockEvent;
-@@ -1776,6 +1779,12 @@ public abstract class Entity implements ICommandListener {
+@@ -1784,6 +1787,12 @@ public abstract class Entity implements ICommandListener {
                           getBukkitEntity()
                  );
                  Bukkit.getPluginManager().callEvent(event);
@@ -37,7 +37,7 @@ index 1f6df61..6c4fc38 100644
                  CraftEntity craftn = (CraftEntity) getBukkitEntity().getVehicle();
                  Entity n = craftn == null ? null : craftn.getHandle();
                  if (event.isCancelled() || n != orig) {
-@@ -1816,6 +1825,9 @@ public abstract class Entity implements ICommandListener {
+@@ -1824,6 +1833,9 @@ public abstract class Entity implements ICommandListener {
                          (LivingEntity) getBukkitEntity()
                  );
                  Bukkit.getPluginManager().callEvent(event);

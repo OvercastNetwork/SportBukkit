@@ -1,4 +1,4 @@
-From e71cd4b2830c85bd78dbb9c99e8a8a1fd1615c0d Mon Sep 17 00:00:00 2001
+From 797eaad89b0b8aa423bc186721858dbb0da1ec8b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
@@ -26,7 +26,7 @@ index 623785d..539d167 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 2c36674..cd5007c 100644
+index 2c36674..7709d84 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,8 @@ import org.bukkit.block.BlockFace;
@@ -46,15 +46,31 @@ index 2c36674..cd5007c 100644
      public boolean inWater;
      public int noDamageTicks;
      protected boolean justCreated;
-@@ -400,24 +403,25 @@ public abstract class Entity implements ICommandListener {
+@@ -370,8 +373,11 @@ public abstract class Entity implements ICommandListener {
+             }
+         }
  
-     protected void burnFromLava() {
+-        if (this.ao()) {
+-            this.burnFromLava();
++        // SportBukkit start - pass position
++        final BlockPosition lavaPos = insideLavaBlockPosition();
++        if (lavaPos != null) {
++            this.burnFromLava(lavaPos);
++            // SportBukkit end
+             this.fallDistance *= 0.5F;
+         }
+ 
+@@ -398,26 +404,26 @@ public abstract class Entity implements ICommandListener {
+         return 1;
+     }
+ 
+-    protected void burnFromLava() {
++    protected void burnFromLava(BlockPosition lavaPos) { // SportBukkit - add position
          if (!this.fireProof) {
 -            this.damageEntity(DamageSource.LAVA, 4.0F);
 -
              // CraftBukkit start - Fallen in lava TODO: this event spams!
-+            Vec3D lavaPos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D), Material.LAVA);
-+            org.bukkit.block.Block lavaBlock = lavaPos == null ? null : this.world.getWorld().getBlockAt((int) lavaPos.x, (int) lavaPos.y, (int) lavaPos.z);
++            org.bukkit.block.Block lavaBlock = this.world.getWorld().getBlockAt(lavaPos.getX(), lavaPos.getY(), lavaPos.getZ());
 +            try {
 +                CraftEventFactory.blockDamage = lavaBlock;
 +                this.damageEntity(DamageSource.LAVA, 4);
@@ -88,7 +104,7 @@ index 2c36674..cd5007c 100644
                  }
                  return;
              }
-@@ -783,19 +787,33 @@ public abstract class Entity implements ICommandListener {
+@@ -783,19 +789,33 @@ public abstract class Entity implements ICommandListener {
  
              boolean flag2 = this.ai();
  
@@ -101,9 +117,9 @@ index 2c36674..cd5007c 100644
 -                        EntityCombustEvent event = new org.bukkit.event.entity.EntityCombustByBlockEvent(null, getBukkitEntity(), 8);
 -                        world.getServer().getPluginManager().callEvent(event);
 +            // SportBukkit start - get the location of the fire block
-+            Vec3D firePos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D), Material.FIRE);
++            final BlockPosition firePos = this.world.getLargestBlockIntersection(this.boundingBox.shrink(0.001D), Material.FIRE);
 +            if (firePos != null) {
-+                org.bukkit.block.Block fireBlock = this.bukkitEntity.getWorld().getBlockAt((int) firePos.x, (int) firePos.y, (int) firePos.z);
++                org.bukkit.block.Block fireBlock = this.bukkitEntity.getWorld().getBlockAt(firePos.getX(), firePos.getY(), firePos.getZ());
 +                try {
 +                    CraftEventFactory.blockDamage = fireBlock;
 +                    this.burn(1);
@@ -132,7 +148,7 @@ index 2c36674..cd5007c 100644
                      }
                  }
              } else if (this.fireTicks <= 0) {
-@@ -807,6 +825,15 @@ public abstract class Entity implements ICommandListener {
+@@ -807,6 +827,15 @@ public abstract class Entity implements ICommandListener {
                  this.fireTicks = -this.getMaxFireTicks();
              }
  
@@ -148,43 +164,59 @@ index 2c36674..cd5007c 100644
              this.world.methodProfiler.b();
          }
      }
+@@ -1050,6 +1079,12 @@ public abstract class Entity implements ICommandListener {
+         return this.world.a(this.getBoundingBox().grow(-0.10000000149011612D, -0.4000000059604645D, -0.10000000149011612D), Material.LAVA);
+     }
+ 
++    // SportBukkit start
++    public @Nullable BlockPosition insideLavaBlockPosition() {
++        return this.world.getLargestBlockIntersection(this.getBoundingBox().grow(-0.1, -0.4, -0.1), Material.LAVA);
++    }
++    // SportBukkit end
++
+     public void a(float f, float f1, float f2) {
+         float f3 = f * f + f1 * f1;
+ 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 00fe2e9..ed7b0b8 100644
+index 00fe2e9..c95ff89 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -1764,6 +1764,38 @@ public abstract class World implements IBlockAccess {
+@@ -1764,6 +1764,41 @@ public abstract class World implements IBlockAccess {
          return false;
      }
  
 +    // SportBukkit start
-+    public Vec3D getLargestBlockIntersection(AxisAlignedBB aabb, Material material) {
++    public @Nullable BlockPosition getLargestBlockIntersection(AxisAlignedBB aabb, Material material) {
 +        int xMin = MathHelper.floor(aabb.a);
-+        int xMax = MathHelper.floor(aabb.d + 1.0D);
++        int xMax = MathHelper.f(aabb.d); // this is ceil(), make sure it matches the method above!
 +        int yMin = MathHelper.floor(aabb.b);
-+        int yMax = MathHelper.floor(aabb.e + 1.0D);
++        int yMax = MathHelper.f(aabb.e);
 +        int zMin = MathHelper.floor(aabb.c);
-+        int zMax = MathHelper.floor(aabb.f + 1.0D);
++        int zMax = MathHelper.f(aabb.f);
 +
++        final BlockPosition.MutableBlockPosition pos = new BlockPosition.MutableBlockPosition(0, 0, 0);
 +        double maxVolume = 0;
-+        Vec3D block = null;
++        int xBlock = 0, yBlock = 0, zBlock = 0;
 +
 +        for (int x = xMin; x < xMax; ++x) {
 +            for (int y = yMin; y < yMax; ++y) {
 +                for (int z = zMin; z < zMax; ++z) {
-+                    IBlockData type = this.getType(new BlockPosition(x, y, z));
-+                    if (material == type.getBlock().material) {
-+                        AxisAlignedBB i = new AxisAlignedBB(x, x+1, y, y+1, z, z+1).a(aabb);
-+                        double volume = (i.d - i.a) * (i.e - i.b) * (i.f - i.c);
++                    final IBlockData type = this.getType(pos.c(x, y, z));
++                    if (material.equals(type.getBlock().material)) {
++                        final double volume = (Math.min(aabb.d, x + 1) - Math.max(aabb.a, x)) *
++                                              (Math.min(aabb.e, y + 1) - Math.max(aabb.b, y)) *
++                                              (Math.min(aabb.f, z + 1) - Math.max(aabb.c, z));
 +                        if(volume > maxVolume) {
 +                            maxVolume = volume;
-+                            block = new Vec3D(x, y, z);
++                            xBlock = x; yBlock = y; zBlock = z;
++                            if(maxVolume >= 1) return new BlockPosition(x, y, z);
 +                        }
 +                    }
 +                }
 +            }
 +        }
 +
-+        return block;
++        return maxVolume > 0 ? new BlockPosition(xBlock, yBlock, zBlock) : null;
 +    }
 +    // SportBukkit end
 +
@@ -192,7 +224,7 @@ index 00fe2e9..ed7b0b8 100644
          return this.createExplosion(entity, d0, d1, d2, f, false, flag);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 950a9ae..f6618e0 100644
+index daa2ee3..37fafb9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -483,18 +483,16 @@ public class CraftEventFactory {

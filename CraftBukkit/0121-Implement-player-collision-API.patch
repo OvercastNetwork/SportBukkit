@@ -1,11 +1,11 @@
-From 85804c7ca04dfa64d636776e53ad1a8d34659ed9 Mon Sep 17 00:00:00 2001
+From ec6a6f602dd9c1f7da86a6c3867faaa7355f7cdb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:54:44 -0700
 Subject: [PATCH] Implement player collision API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 19dedad..9a7767c 100644
+index ade172a..bdc7f0d 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -66,7 +66,7 @@ public abstract class Entity implements ICommandListener {
@@ -17,7 +17,7 @@ index 19dedad..9a7767c 100644
      public final List<Entity> passengers;
      protected int j;
      private Entity au;
-@@ -1207,6 +1207,7 @@ public abstract class Entity implements ICommandListener {
+@@ -1215,6 +1215,7 @@ public abstract class Entity implements ICommandListener {
      public void d(EntityHuman entityhuman) {}
  
      public void collide(Entity entity) {

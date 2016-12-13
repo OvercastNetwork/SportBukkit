@@ -1,4 +1,4 @@
-From 6561411975aafb6b3711494a16ed678972e79d2a Mon Sep 17 00:00:00 2001
+From 85e9f3025755a4bc084625cb028cd5cf9954a3fa Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 2 Aug 2012 17:27:40 -0700
 Subject: [PATCH] Implement the affectsSpawning API
@@ -111,10 +111,10 @@ index 5dc4735..31a82cd 100644
                                                          biomebase_biomemeta = worldserver.a(enumcreaturetype, (BlockPosition) blockposition_mutableblockposition);
                                                          if (biomebase_biomemeta == null) {
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index c8bcb77..b921bca 100644
+index 28515e9..51879ff 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
-@@ -2630,6 +2630,16 @@ public abstract class World implements IBlockAccess {
+@@ -2633,6 +2633,16 @@ public abstract class World implements IBlockAccess {
          return this.a(d0, d1, d2, d3, predicate);
      }
  
@@ -131,7 +131,7 @@ index c8bcb77..b921bca 100644
      @Nullable
      public EntityHuman a(double d0, double d1, double d2, double d3, Predicate<Entity> predicate) {
          double d4 = -1.0D;
-@@ -2657,9 +2667,17 @@ public abstract class World implements IBlockAccess {
+@@ -2660,9 +2670,17 @@ public abstract class World implements IBlockAccess {
      }
  
      public boolean isPlayerNearby(double d0, double d1, double d2, double d3) {

@@ -1,4 +1,4 @@
-From 77ae9399a55a1f9763fe7c1ad50158aa453355a0 Mon Sep 17 00:00:00 2001
+From 146e3a4894f4757417a001558a764e014eed4899 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
@@ -1220,7 +1220,7 @@ index 0000000..bd0a7be
 +}
 diff --git a/src/main/java/org/bukkit/event/SimpleEventBus.java b/src/main/java/org/bukkit/event/SimpleEventBus.java
 new file mode 100644
-index 0000000..5d1149d
+index 0000000..e978052
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/SimpleEventBus.java
 @@ -0,0 +1,126 @@
@@ -1272,7 +1272,7 @@ index 0000000..5d1149d
 +            }
 +            callEvent0(event, priority, body);
 +        } else {
-+            synchronized(this) {
++            synchronized(lock) {
 +                callEvent0(event, priority, body);
 +            }
 +        }

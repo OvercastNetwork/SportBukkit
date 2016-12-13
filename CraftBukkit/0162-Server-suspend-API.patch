@@ -1,4 +1,4 @@
-From 8ef38c8d3b07956c87ac5619f3028fbcb52bccd9 Mon Sep 17 00:00:00 2001
+From 33d9a7bce1be9e6f5200aa86a4aaf8c6509c772e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:28:26 -0500
 Subject: [PATCH] Server suspend API
@@ -25,7 +25,7 @@ index ece5a7c..87f710d 100644
  
      // SportBukkit start
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5656f57..835dae4 100644
+index 5656f57..6ab133a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -51,6 +51,9 @@ import org.bukkit.craftbukkit.Main;
@@ -52,7 +52,7 @@ index 5656f57..835dae4 100644
      public MinecraftServer(OptionSet options, Proxy proxy, DataConverterManager dataconvertermanager, YggdrasilAuthenticationService yggdrasilauthenticationservice, MinecraftSessionService minecraftsessionservice, GameProfileRepository gameprofilerepository, UserCache usercache) {
          this.e = proxy;
          this.V = yggdrasilauthenticationservice;
-@@ -534,9 +544,75 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -534,9 +544,83 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
      public void safeShutdown() {
          this.isRunning = false;
@@ -73,7 +73,9 @@ index 5656f57..835dae4 100644
 +
 +        if(suspended.compareAndSet(!suspend, suspend)) {
 +            if(!isMainThread() && !suspend) {
-+                serverThread.interrupt();
++                synchronized(suspended) {
++                    suspended.notifyAll();
++                }
 +            }
 +            return true;
 +        }
@@ -100,10 +102,12 @@ index 5656f57..835dae4 100644
 +
 +                while(isSuspended()) {
 +                    processTasks(); // Empty the task queue
-+                    if(isSuspended()) { // Check suspended state again, in case a task resumed
-+                        try { Thread.sleep(Long.MAX_VALUE); }
-+                        catch(InterruptedException ignored) {}
-+                        interruptions++;
++                    synchronized(suspended) {
++                        if(isSuspended()) { // Check suspended state again, in case a task resumed
++                            try { suspended.wait(); }
++                            catch(InterruptedException ignored) {}
++                            interruptions++;
++                        }
 +                    }
 +                }
 +
@@ -120,8 +124,12 @@ index 5656f57..835dae4 100644
 +    }
 +
 +    public void interrupt() {
-+        if(!isMainThread() && suspended.get()) {
-+            serverThread.interrupt();
++        if(!isMainThread()) {
++            synchronized(suspended) {
++                if(suspended.get()) {
++                    suspended.notifyAll();
++                }
++            }
 +        }
      }
  
@@ -129,7 +137,7 @@ index 5656f57..835dae4 100644
      private static double calcTps(double avg, double exp, double tps)
      {
          return ( avg * exp ) + ( tps * ( 1 - exp ) );
-@@ -552,18 +628,22 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -552,18 +636,22 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
                  // SportBukkit start
                  Arrays.fill( recentTps, 20 );
@@ -158,7 +166,7 @@ index 5656f57..835dae4 100644
                      }
  
                      if ( MinecraftServer.currentTick++ % SAMPLE_INTERVAL == 0 )
-@@ -718,6 +798,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -718,6 +806,8 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
          // SportBukkit start - don't lock the task queue while running tasks
          processTasks();
@@ -167,7 +175,7 @@ index 5656f57..835dae4 100644
          /*
          synchronized (this.j) {
              while (!this.j.isEmpty()) {
-@@ -1467,6 +1549,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1467,6 +1557,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
              synchronized (this.j) {
                  this.j.add(listenablefuturetask);
@@ -175,7 +183,7 @@ index 5656f57..835dae4 100644
                  return listenablefuturetask;
              }
          } else {
-@@ -1500,6 +1583,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1500,6 +1591,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                  taskQueue.addLast(task);
              }
          }

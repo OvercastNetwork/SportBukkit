@@ -1,4 +1,4 @@
-From 146e3a4894f4757417a001558a764e014eed4899 Mon Sep 17 00:00:00 2001
+From 890cd84648c3311513c84d255d20de6916518671 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
@@ -1220,10 +1220,10 @@ index 0000000..bd0a7be
 +}
 diff --git a/src/main/java/org/bukkit/event/SimpleEventBus.java b/src/main/java/org/bukkit/event/SimpleEventBus.java
 new file mode 100644
-index 0000000..e978052
+index 0000000..6d57ff4
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/SimpleEventBus.java
-@@ -0,0 +1,126 @@
+@@ -0,0 +1,122 @@
 +package org.bukkit.event;
 +
 +import javax.annotation.Nullable;
@@ -1240,10 +1240,6 @@ index 0000000..e978052
 +    public SimpleEventBus(@Nullable Thread primaryThread, @Nullable Object lock) {
 +        this.primaryThread = primaryThread != null ? primaryThread : Thread.currentThread();
 +        this.lock = lock != null ? lock : new Object();
-+    }
-+
-+    public Object lock() {
-+        return lock;
 +    }
 +
 +    @Override
@@ -2269,10 +2265,10 @@ index 2d84032..152010a 100644
      public static Server getInstance() {
 diff --git a/src/test/java/org/bukkit/event/EventBusTest.java b/src/test/java/org/bukkit/event/EventBusTest.java
 new file mode 100644
-index 0000000..89e75b5
+index 0000000..b545894
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventBusTest.java
-@@ -0,0 +1,284 @@
+@@ -0,0 +1,285 @@
 +package org.bukkit.event;
 +
 +import java.util.ArrayList;
@@ -2295,13 +2291,14 @@ index 0000000..89e75b5
 +    static class Oops extends Exception {}
 +
 +    ExceptionHandler exceptionHandler = new TestExceptionHandler();
++    Object lock;
 +    SimpleEventBus bus;
 +    List<String> flow;
 +
 +    @Before
 +    public void setUp() throws Exception {
++        bus = new SimpleEventBus(Thread.currentThread(), lock = new Object());
 +        flow = new ArrayList<>();
-+        bus = new SimpleEventBus();
 +    }
 +
 +    @After
@@ -2355,7 +2352,7 @@ index 0000000..89e75b5
 +    @Test
 +    public void asyncEventHoldingLockThrows() throws Throwable {
 +        TestThread.join(() -> {
-+            synchronized(bus.lock()) {
++            synchronized(lock) {
 +                assertThrows(IllegalStateException.class, () ->
 +                    bus.callEvent(new TestEvent(true))
 +                );

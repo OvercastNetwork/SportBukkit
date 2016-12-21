@@ -1,14 +1,14 @@
-From e813c7a9ca6af67159f73392d4999051c423015e Mon Sep 17 00:00:00 2001
+From 9e48e5ca90251ea9b1e5faee7b839c647c8796ae Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 7 Dec 2016 04:08:39 -0500
 Subject: [PATCH] More ways to spawn FallingBlocks
 
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index f7fc037..3fd2a53 100644
+index 64e41f6..25593df 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -773,7 +773,25 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -792,7 +792,25 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       * @throws IllegalArgumentException if {@link Location} or {@link
       *     MaterialData} are null or {@link Material} of the {@link MaterialData} is not a block
       */
@@ -35,7 +35,7 @@ index f7fc037..3fd2a53 100644
  
      /**
       * Spawn a {@link FallingBlock} entity at the given {@link Location} of
-@@ -792,7 +810,12 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -811,7 +829,12 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       * @deprecated Magic value
       */
      @Deprecated
@@ -49,7 +49,7 @@ index f7fc037..3fd2a53 100644
  
      /**
       * Spawn a {@link FallingBlock} entity at the given {@link Location} of
-@@ -808,7 +831,12 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
+@@ -827,7 +850,12 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
       * @deprecated Magic value
       */
      @Deprecated

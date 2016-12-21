@@ -1,14 +1,14 @@
-From 99e0cce8de080a28eaa8f48c0ad8a0a0c6477f34 Mon Sep 17 00:00:00 2001
+From 54229e10d04948b52a09b5897db99bd967f1dc44 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Feb 2015 04:32:26 -0500
 Subject: [PATCH] Title API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 0e05376..8ee4444 100644
+index 1372718..3bee52b 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1514,4 +1514,57 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1529,4 +1529,57 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @param footer content for the bottom of the player list
       */
      public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent header, net.md_5.bungee.api.chat.BaseComponent footer);

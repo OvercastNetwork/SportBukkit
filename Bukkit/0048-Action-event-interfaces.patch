@@ -1,4 +1,4 @@
-From 0d2f7d095b4affd8141441c54067ed3b9eb967e6 Mon Sep 17 00:00:00 2001
+From 7312feed1f7b941819a769db4600b610d78fbc33 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 03:39:45 -0400
 Subject: [PATCH] Action event interfaces
@@ -665,10 +665,10 @@ index b4d0f3c..5bf8590 100644
          return getEntity().getWorld();
      }
 diff --git a/src/main/java/org/bukkit/event/entity/ProjectileHitEvent.java b/src/main/java/org/bukkit/event/entity/ProjectileHitEvent.java
-index 5bcc294..f794b7c 100644
+index 35f4148..50b53ad 100644
 --- a/src/main/java/org/bukkit/event/entity/ProjectileHitEvent.java
 +++ b/src/main/java/org/bukkit/event/entity/ProjectileHitEvent.java
-@@ -7,7 +7,7 @@ import org.bukkit.event.HandlerList;
+@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
  /**
   * Called when a projectile hits an object
   */
@@ -676,8 +676,8 @@ index 5bcc294..f794b7c 100644
 +public class ProjectileHitEvent extends EntityActionBase {
      private static final HandlerList handlers = new HandlerList();
      private final Entity hitEntity;
- 
-@@ -35,6 +35,11 @@ public class ProjectileHitEvent extends EntityEvent {
+     private final Block hitBlock;
+@@ -55,6 +55,11 @@ public class ProjectileHitEvent extends EntityEvent {
      }
  
      @Override

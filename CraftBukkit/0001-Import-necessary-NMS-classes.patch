@@ -1,4 +1,4 @@
-From 53e6d69407a478d4ab12e50f9a7bf664dd6b593b Mon Sep 17 00:00:00 2001
+From d5931f202861c009d4eb9db2aaf2abfea3f26d14 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -87,254 +87,12 @@ index 0000000..dcdae99
 +
 +    public void b(World world, BlockPosition blockposition) {}
 +}
-diff --git a/src/main/java/net/minecraft/server/BlockFluids.java b/src/main/java/net/minecraft/server/BlockFluids.java
-new file mode 100644
-index 0000000..e072a44
---- /dev/null
-+++ b/src/main/java/net/minecraft/server/BlockFluids.java
-@@ -0,0 +1,236 @@
-+package net.minecraft.server;
-+
-+import java.util.Iterator;
-+import java.util.Random;
-+import javax.annotation.Nullable;
-+
-+public abstract class BlockFluids extends Block {
-+
-+    public static final BlockStateInteger LEVEL = BlockStateInteger.of("level", 0, 15);
-+
-+    protected BlockFluids(Material material) {
-+        super(material);
-+        this.y(this.blockStateList.getBlockData().set(BlockFluids.LEVEL, Integer.valueOf(0)));
-+        this.a(true);
-+    }
-+
-+    public AxisAlignedBB b(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        return BlockFluids.j;
-+    }
-+
-+    @Nullable
-+    public AxisAlignedBB a(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        return BlockFluids.k;
-+    }
-+
-+    public boolean b(IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        return this.material != Material.LAVA;
-+    }
-+
-+    public static float e(int i) {
-+        if (i >= 8) {
-+            i = 0;
-+        }
-+
-+        return (float) (i + 1) / 9.0F;
-+    }
-+
-+    protected int i(IBlockData iblockdata) {
-+        return iblockdata.getMaterial() == this.material ? ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue() : -1;
-+    }
-+
-+    protected int z(IBlockData iblockdata) {
-+        int i = this.i(iblockdata);
-+
-+        return i >= 8 ? 0 : i;
-+    }
-+
-+    public boolean c(IBlockData iblockdata) {
-+        return false;
-+    }
-+
-+    public boolean b(IBlockData iblockdata) {
-+        return false;
-+    }
-+
-+    public boolean a(IBlockData iblockdata, boolean flag) {
-+        return flag && ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue() == 0;
-+    }
-+
-+    public boolean a(IBlockAccess iblockaccess, BlockPosition blockposition, EnumDirection enumdirection) {
-+        Material material = iblockaccess.getType(blockposition).getMaterial();
-+
-+        return material == this.material ? false : (enumdirection == EnumDirection.UP ? true : (material == Material.ICE ? false : super.a(iblockaccess, blockposition, enumdirection)));
-+    }
-+
-+    public EnumRenderType a(IBlockData iblockdata) {
-+        return EnumRenderType.LIQUID;
-+    }
-+
-+    public Item getDropType(IBlockData iblockdata, Random random, int i) {
-+        return Items.a;
-+    }
-+
-+    public int a(Random random) {
-+        return 0;
-+    }
-+
-+    protected Vec3D a(IBlockAccess iblockaccess, BlockPosition blockposition, IBlockData iblockdata) {
-+        double d0 = 0.0D;
-+        double d1 = 0.0D;
-+        double d2 = 0.0D;
-+        int i = this.z(iblockdata);
-+        BlockPosition.PooledBlockPosition blockposition_pooledblockposition = BlockPosition.PooledBlockPosition.s();
-+        Iterator iterator = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-+
-+        while (iterator.hasNext()) {
-+            EnumDirection enumdirection = (EnumDirection) iterator.next();
-+
-+            blockposition_pooledblockposition.j(blockposition).d(enumdirection);
-+            int j = this.z(iblockaccess.getType(blockposition_pooledblockposition));
-+            int k;
-+
-+            if (j < 0) {
-+                if (!iblockaccess.getType(blockposition_pooledblockposition).getMaterial().isSolid()) {
-+                    j = this.z(iblockaccess.getType(blockposition_pooledblockposition.down()));
-+                    if (j >= 0) {
-+                        k = j - (i - 8);
-+                        d0 += (double) (enumdirection.getAdjacentX() * k);
-+                        d1 += (double) (enumdirection.getAdjacentY() * k);
-+                        d2 += (double) (enumdirection.getAdjacentZ() * k);
-+                    }
-+                }
-+            } else if (j >= 0) {
-+                k = j - i;
-+                d0 += (double) (enumdirection.getAdjacentX() * k);
-+                d1 += (double) (enumdirection.getAdjacentY() * k);
-+                d2 += (double) (enumdirection.getAdjacentZ() * k);
-+            }
-+        }
-+
-+        Vec3D vec3d = new Vec3D(d0, d1, d2);
-+
-+        if (((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue() >= 8) {
-+            Iterator iterator1 = EnumDirection.EnumDirectionLimit.HORIZONTAL.iterator();
-+
-+            while (iterator1.hasNext()) {
-+                EnumDirection enumdirection1 = (EnumDirection) iterator1.next();
-+
-+                blockposition_pooledblockposition.j(blockposition).d(enumdirection1);
-+                if (this.a(iblockaccess, (BlockPosition) blockposition_pooledblockposition, enumdirection1) || this.a(iblockaccess, blockposition_pooledblockposition.up(), enumdirection1)) {
-+                    vec3d = vec3d.a().add(0.0D, -6.0D, 0.0D);
-+                    break;
-+                }
-+            }
-+        }
-+
-+        blockposition_pooledblockposition.t();
-+        return vec3d.a();
-+    }
-+
-+    public Vec3D a(World world, BlockPosition blockposition, Entity entity, Vec3D vec3d) {
-+        return vec3d.e(this.a((IBlockAccess) world, blockposition, world.getType(blockposition)));
-+    }
-+
-+    public int a(World world) {
-+        return this.material == Material.WATER ? 5 : (this.material == Material.LAVA ? (world.worldProvider.n() ? 10 : 30) : 0);
-+    }
-+
-+    public void onPlace(World world, BlockPosition blockposition, IBlockData iblockdata) {
-+        this.e(world, blockposition, iblockdata);
-+    }
-+
-+    public void a(IBlockData iblockdata, World world, BlockPosition blockposition, Block block, BlockPosition blockposition1) {
-+        this.e(world, blockposition, iblockdata);
-+    }
-+
-+    public boolean e(World world, BlockPosition blockposition, IBlockData iblockdata) {
-+        if (this.material == Material.LAVA) {
-+            boolean flag = false;
-+            EnumDirection[] aenumdirection = EnumDirection.values();
-+            int i = aenumdirection.length;
-+
-+            for (int j = 0; j < i; ++j) {
-+                EnumDirection enumdirection = aenumdirection[j];
-+
-+                if (enumdirection != EnumDirection.DOWN && world.getType(blockposition.shift(enumdirection)).getMaterial() == Material.WATER) {
-+                    flag = true;
-+                    break;
-+                }
-+            }
-+
-+            if (flag) {
-+                Integer integer = (Integer) iblockdata.get(BlockFluids.LEVEL);
-+
-+                if (integer.intValue() == 0) {
-+                    world.setTypeUpdate(blockposition, Blocks.OBSIDIAN.getBlockData());
-+                    this.fizz(world, blockposition);
-+                    return true;
-+                }
-+
-+                if (integer.intValue() <= 4) {
-+                    world.setTypeUpdate(blockposition, Blocks.COBBLESTONE.getBlockData());
-+                    this.fizz(world, blockposition);
-+                    return true;
-+                }
-+            }
-+        }
-+
-+        return false;
-+    }
-+
-+    protected void fizz(World world, BlockPosition blockposition) {
-+        double d0 = (double) blockposition.getX();
-+        double d1 = (double) blockposition.getY();
-+        double d2 = (double) blockposition.getZ();
-+
-+        world.a((EntityHuman) null, blockposition, SoundEffects.dr, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
-+
-+        for (int i = 0; i < 8; ++i) {
-+            world.addParticle(EnumParticle.SMOKE_LARGE, d0 + Math.random(), d1 + 1.2D, d2 + Math.random(), 0.0D, 0.0D, 0.0D, new int[0]);
-+        }
-+
-+    }
-+
-+    public IBlockData fromLegacyData(int i) {
-+        return this.getBlockData().set(BlockFluids.LEVEL, Integer.valueOf(i));
-+    }
-+
-+    public int toLegacyData(IBlockData iblockdata) {
-+        return ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue();
-+    }
-+
-+    protected BlockStateList getStateList() {
-+        return new BlockStateList(this, new IBlockState[] { BlockFluids.LEVEL});
-+    }
-+
-+    public static BlockFlowing a(Material material) {
-+        if (material == Material.WATER) {
-+            return Blocks.FLOWING_WATER;
-+        } else if (material == Material.LAVA) {
-+            return Blocks.FLOWING_LAVA;
-+        } else {
-+            throw new IllegalArgumentException("Invalid material");
-+        }
-+    }
-+
-+    public static BlockStationary b(Material material) {
-+        if (material == Material.WATER) {
-+            return Blocks.WATER;
-+        } else if (material == Material.LAVA) {
-+            return Blocks.LAVA;
-+        } else {
-+            throw new IllegalArgumentException("Invalid material");
-+        }
-+    }
-+
-+    public static float f(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        int i = ((Integer) iblockdata.get(BlockFluids.LEVEL)).intValue();
-+
-+        return (i & 7) == 0 && iblockaccess.getType(blockposition.up()).getMaterial() == Material.WATER ? 1.0F : 1.0F - e(i);
-+    }
-+
-+    public static float g(IBlockData iblockdata, IBlockAccess iblockaccess, BlockPosition blockposition) {
-+        return (float) blockposition.getY() + f(iblockdata, iblockaccess, blockposition);
-+    }
-+}
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
 new file mode 100644
-index 0000000..5cea6f1
+index 0000000..67b476b
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
-@@ -0,0 +1,425 @@
+@@ -0,0 +1,421 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.AbstractIterator;
@@ -485,38 +243,40 @@ index 0000000..5cea6f1
 +    }
 +
 +    public static Iterable<BlockPosition> a(BlockPosition blockposition, BlockPosition blockposition1) {
-+        final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
-+        final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
++        return a(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()), Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
++    }
 +
++    public static Iterable<BlockPosition> a(final int i, final int j, final int k, final int l, final int i1, final int j1) {
 +        return new Iterable() {
 +            public Iterator<BlockPosition> iterator() {
 +                return new AbstractIterator() {
-+                    private BlockPosition b;
++                    private boolean b = true;
++                    private int c;
++                    private int d;
++                    private int e;
 +
 +                    protected BlockPosition a() {
-+                        if (this.b == null) {
-+                            this.b = blockposition;
-+                            return this.b;
-+                        } else if (this.b.equals(blockposition1)) {
++                        if (this.b) {
++                            this.b = false;
++                            this.c = i;
++                            this.d = j;
++                            this.e = k;
++                            return new BlockPosition(i, j, k);
++                        } else if (this.c == l && this.d == i1 && this.e == j1) {
 +                            return (BlockPosition) this.endOfData();
 +                        } else {
-+                            int i = this.b.getX();
-+                            int j = this.b.getY();
-+                            int k = this.b.getZ();
-+
-+                            if (i < blockposition1.getX()) {
-+                                ++i;
-+                            } else if (j < blockposition1.getY()) {
-+                                i = blockposition.getX();
-+                                ++j;
-+                            } else if (k < blockposition1.getZ()) {
-+                                i = blockposition.getX();
-+                                j = blockposition.getY();
-+                                ++k;
++                            if (this.c < l) {
++                                ++this.c;
++                            } else if (this.d < i1) {
++                                this.c = i;
++                                ++this.d;
++                            } else if (this.e < j1) {
++                                this.c = i;
++                                this.d = j;
++                                ++this.e;
 +                            }
 +
-+                            this.b = new BlockPosition(i, j, k);
-+                            return this.b;
++                            return new BlockPosition(this.c, this.d, this.e);
 +                        }
 +                    }
 +
@@ -533,9 +293,10 @@ index 0000000..5cea6f1
 +    }
 +
 +    public static Iterable<BlockPosition.MutableBlockPosition> b(BlockPosition blockposition, BlockPosition blockposition1) {
-+        final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
-+        final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
++        return b(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()), Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
++    }
 +
++    public static Iterable<BlockPosition.MutableBlockPosition> b(final int i, final int j, final int k, final int l, final int i1, final int j1) {
 +        return new Iterable() {
 +            public Iterator<BlockPosition.MutableBlockPosition> iterator() {
 +                return new AbstractIterator() {
@@ -543,29 +304,22 @@ index 0000000..5cea6f1
 +
 +                    protected BlockPosition.MutableBlockPosition a() {
 +                        if (this.b == null) {
-+                            this.b = new BlockPosition.MutableBlockPosition(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++                            this.b = new BlockPosition.MutableBlockPosition(i, j, k);
 +                            return this.b;
-+                        } else if (this.b.equals(blockposition1)) {
++                        } else if (this.b.b == l && this.b.c == i1 && this.b.d == j1) {
 +                            return (BlockPosition.MutableBlockPosition) this.endOfData();
 +                        } else {
-+                            int i = this.b.getX();
-+                            int j = this.b.getY();
-+                            int k = this.b.getZ();
-+
-+                            if (i < blockposition1.getX()) {
-+                                ++i;
-+                            } else if (j < blockposition1.getY()) {
-+                                i = blockposition.getX();
-+                                ++j;
-+                            } else if (k < blockposition1.getZ()) {
-+                                i = blockposition.getX();
-+                                j = blockposition.getY();
-+                                ++k;
++                            if (this.b.b < l) {
++                                ++this.b.b;
++                            } else if (this.b.c < i1) {
++                                this.b.b = i;
++                                ++this.b.c;
++                            } else if (this.b.d < j1) {
++                                this.b.b = i;
++                                this.b.c = j;
++                                ++this.b.d;
 +                            }
 +
-+                            this.b.b = i;
-+                            this.b.c = j;
-+                            this.b.d = k;
 +                            return this.b;
 +                        }
 +                    }
@@ -1282,7 +1036,7 @@ index 0000000..201f560
 +}
 diff --git a/src/main/java/net/minecraft/server/EntityHorse.java b/src/main/java/net/minecraft/server/EntityHorse.java
 new file mode 100644
-index 0000000..1d54dcc
+index 0000000..7eaa95a
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/EntityHorse.java
 @@ -0,0 +1,281 @@
@@ -1313,7 +1067,7 @@ index 0000000..1d54dcc
 +        this.datawatcher.register(EntityHorse.bI, Integer.valueOf(EnumHorseArmor.NONE.a()));
 +    }
 +
-+    public static void b(DataConverterManager dataconvertermanager) {
++    public static void a(DataConverterManager dataconvertermanager) {
 +        EntityHorseAbstract.c(dataconvertermanager, EntityHorse.class);
 +        dataconvertermanager.a(DataConverterTypes.ENTITY, (DataInspector) (new DataInspectorItem(EntityHorse.class, new String[] { "ArmorItem"})));
 +    }
@@ -2198,10 +1952,10 @@ index 0000000..15ad9fa
 +}
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
 new file mode 100644
-index 0000000..18341fa
+index 0000000..081bf91
 --- /dev/null
 +++ b/src/main/java/net/minecraft/server/Item.java
-@@ -0,0 +1,784 @@
+@@ -0,0 +1,785 @@
 +package net.minecraft.server;
 +
 +import com.google.common.collect.HashMultimap;
@@ -2910,8 +2664,9 @@ index 0000000..18341fa
 +        a(446, "jungle_boat", new ItemBoat(EntityBoat.EnumBoatType.JUNGLE));
 +        a(447, "acacia_boat", new ItemBoat(EntityBoat.EnumBoatType.ACACIA));
 +        a(448, "dark_oak_boat", new ItemBoat(EntityBoat.EnumBoatType.DARK_OAK));
-+        a(449, "totem", (new Item()).c("totem").d(1).a(CreativeModeTab.j));
++        a(449, "totem_of_undying", (new Item()).c("totem").d(1).a(CreativeModeTab.j));
 +        a(450, "shulker_shell", (new Item()).c("shulkerShell").a(CreativeModeTab.l));
++        a(452, "iron_nugget", (new Item()).c("ironNugget").a(CreativeModeTab.l));
 +        a(2256, "record_13", (new ItemRecord("13", SoundEffects.fa)).c("record"));
 +        a(2257, "record_cat", (new ItemRecord("cat", SoundEffects.fc)).c("record"));
 +        a(2258, "record_blocks", (new ItemRecord("blocks", SoundEffects.fb)).c("record"));

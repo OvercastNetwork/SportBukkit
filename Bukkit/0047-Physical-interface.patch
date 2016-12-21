@@ -1,4 +1,4 @@
-From ca73880202febd3fc0fde130c3609597ff48f7ae Mon Sep 17 00:00:00 2001
+From 71779699c027e121afa2f2ff999517f5ba1eef84 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 01:08:40 -0400
 Subject: [PATCH] Physical interface
@@ -51,7 +51,7 @@ index 0000000..24a58ff
 +    World getWorld();
 +}
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 615e29b..0cb6b2d 100644
+index 8a46f37..2f67d70 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -13,7 +13,6 @@ import org.bukkit.block.Block;
@@ -61,8 +61,8 @@ index 615e29b..0cb6b2d 100644
 -import org.bukkit.material.MaterialData;
  import org.bukkit.metadata.Metadatable;
  import org.bukkit.plugin.messaging.PluginMessageRecipient;
- import org.bukkit.util.RayBlockIntersection;
-@@ -22,7 +21,7 @@ import org.bukkit.util.Vector;
+ import org.bukkit.util.Consumer;
+@@ -23,7 +22,7 @@ import org.bukkit.util.Vector;
  /**
   * Represents a world, which may contain entities, chunks and blocks
   */

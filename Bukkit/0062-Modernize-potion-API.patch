@@ -1,4 +1,4 @@
-From fbe87fd1dc2f789e8b40e3afebc156d3ff8d14bd Mon Sep 17 00:00:00 2001
+From cd2a6e7c05caf1406e8f90563d1f6effdcf844b3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:08:23 -0500
 Subject: [PATCH] Modernize potion API
@@ -119,10 +119,10 @@ index 0000000..724b62f
 +    PotionEffectType forLegacyName(String legacyName);
 +}
 diff --git a/src/main/java/org/bukkit/potion/PotionEffectType.java b/src/main/java/org/bukkit/potion/PotionEffectType.java
-index 27c1f47..8bea2a9 100644
+index b7c068b..416faee 100644
 --- a/src/main/java/org/bukkit/potion/PotionEffectType.java
 +++ b/src/main/java/org/bukkit/potion/PotionEffectType.java
-@@ -1,162 +1,157 @@
+@@ -1,163 +1,158 @@
  package org.bukkit.potion;
  
 -import java.util.HashMap;
@@ -132,6 +132,7 @@ index 27c1f47..8bea2a9 100644
  
 -import org.apache.commons.lang.Validate;
 +import org.bukkit.Bukkit;
+ import org.bukkit.Color;
 +import org.bukkit.registry.Key;
 +import org.bukkit.registry.Registerable;
  
@@ -318,7 +319,7 @@ index 27c1f47..8bea2a9 100644
       * @param duration time in ticks
       * @param amplifier the effect's amplifier
       * @return a resulting potion effect
-@@ -179,15 +174,15 @@ public abstract class PotionEffectType {
+@@ -180,15 +175,15 @@ public abstract class PotionEffectType {
       * @deprecated Magic value
       */
      @Deprecated
@@ -338,7 +339,7 @@ index 27c1f47..8bea2a9 100644
      public abstract String getName();
  
      /**
-@@ -199,34 +194,22 @@ public abstract class PotionEffectType {
+@@ -207,34 +202,22 @@ public abstract class PotionEffectType {
  
      @Override
      public boolean equals(Object obj) {
@@ -379,7 +380,7 @@ index 27c1f47..8bea2a9 100644
      /**
       * Gets the effect type specified by the unique id.
       *
-@@ -236,46 +219,33 @@ public abstract class PotionEffectType {
+@@ -244,46 +227,33 @@ public abstract class PotionEffectType {
       */
      @Deprecated
      public static PotionEffectType getById(int id) {
@@ -435,7 +436,7 @@ index 27c1f47..8bea2a9 100644
      }
  
      /**
-@@ -283,8 +253,14 @@ public abstract class PotionEffectType {
+@@ -291,8 +261,14 @@ public abstract class PotionEffectType {
       * This array is not necessarily in any particular order and may contain null.
       *
       * @return Array of types.
@@ -452,15 +453,16 @@ index 27c1f47..8bea2a9 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/potion/PotionEffectTypeWrapper.java b/src/main/java/org/bukkit/potion/PotionEffectTypeWrapper.java
-index 5db1ce8..2e4bf99 100644
+index 356a866..02ea7a1 100644
 --- a/src/main/java/org/bukkit/potion/PotionEffectTypeWrapper.java
 +++ b/src/main/java/org/bukkit/potion/PotionEffectTypeWrapper.java
-@@ -1,8 +1,14 @@
+@@ -1,10 +1,15 @@
  package org.bukkit.potion;
  
 +import org.bukkit.Bukkit;
+ import org.bukkit.Color;
 +import org.bukkit.registry.Key;
-+
+ 
  public class PotionEffectTypeWrapper extends PotionEffectType {
 -    protected PotionEffectTypeWrapper(int id) {
 -        super(id);
@@ -472,7 +474,7 @@ index 5db1ce8..2e4bf99 100644
      }
  
      @Override
-@@ -11,6 +17,16 @@ public class PotionEffectTypeWrapper extends PotionEffectType {
+@@ -13,6 +18,16 @@ public class PotionEffectTypeWrapper extends PotionEffectType {
      }
  
      @Override
@@ -489,7 +491,7 @@ index 5db1ce8..2e4bf99 100644
      public String getName() {
          return getType().getName();
      }
-@@ -21,7 +37,7 @@ public class PotionEffectTypeWrapper extends PotionEffectType {
+@@ -23,7 +38,7 @@ public class PotionEffectTypeWrapper extends PotionEffectType {
       * @return The potion effect type
       */
      public PotionEffectType getType() {

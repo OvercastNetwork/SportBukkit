@@ -1,14 +1,14 @@
-From 8fb652e8a82dbfaa6fe517d7bdac4628876d54e4 Mon Sep 17 00:00:00 2001
+From 9ccdcdab8b6dd306ed02afdfca30a8139f4b22e9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 5436c67..135bd30 100644
+index 74a4c93..2b9e737 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
-@@ -1362,10 +1362,12 @@ public abstract class EntityLiving extends Entity {
+@@ -1365,10 +1365,12 @@ public abstract class EntityLiving extends Entity {
          return (float) this.getAttributeInstance(GenericAttributes.maxHealth).getValue();
      }
  

@@ -1,4 +1,4 @@
-From 6190fe4ae67c628243965e2e1ccc4a6923b79b49 Mon Sep 17 00:00:00 2001
+From 488c533608d89e7117779f968b982bc8df455830 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
@@ -92,7 +92,7 @@ index 100de93..756273d 100644
       * state updated by the server and is not recalculated unless the entity
       * moves.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 807d28d..70cca09 100644
+index 983b296..078b0e0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -25,6 +25,7 @@ import org.bukkit.map.MapView;
@@ -103,7 +103,7 @@ index 807d28d..70cca09 100644
  
  /**
   * Represents a player, connected or not
-@@ -1642,4 +1643,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1657,4 +1658,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * @return Information about the targeted block, or null if no blocks were found
       */
      RayBlockIntersection getTargetedBlock(boolean nonSolids, boolean liquids);

@@ -1,4 +1,4 @@
-From dafaf5c1cba106d9cf5ed75e5df55743c1813bfc Mon Sep 17 00:00:00 2001
+From be4faa3fbcf3cb356ac00d99c90d2a9b463375d5 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
@@ -248,10 +248,10 @@ index ba7dc49..d9cb0ca 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 02cad41..db29db8 100644
+index f34b3a9..753703d 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -756,6 +756,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -775,6 +775,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
       * Plays an effect to all players within a default radius around a given
       * location.
       *
@@ -268,7 +268,7 @@ index 02cad41..db29db8 100644
       * @param location the {@link Location} around which players must be to
       *     hear the sound
       * @param effect the {@link Effect}
-@@ -799,6 +809,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
+@@ -818,6 +828,27 @@ public interface World extends PluginMessageRecipient, Metadatable {
      public <T> void playEffect(Location location, Effect effect, T data, int radius);
  
      /**
@@ -297,7 +297,7 @@ index 02cad41..db29db8 100644
       * including valid biome data. Used for representing an ungenerated chunk,
       * or for fetching only biome data without loading a chunk.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 4fa46f0..9ab646a 100644
+index cd36fbb..b69dd7c 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -321,6 +321,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline

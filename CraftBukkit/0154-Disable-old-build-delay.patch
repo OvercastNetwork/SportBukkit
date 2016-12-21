@@ -1,0 +1,24 @@
+From 34b7a9824b050ff577ec56ec605b071cdf203e15 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Mon, 28 Nov 2016 21:05:51 -0500
+Subject: [PATCH] Disable old build delay
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 8e0686d..54470be 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -177,8 +177,8 @@ public class Main {
+                     if (buildDate.before(deadline.getTime())) {
+                         System.err.println("*** Error, this build is outdated ***");
+                         System.err.println("*** Please download a new build as per instructions from https://www.spigotmc.org/ ***");
+-                        System.err.println("*** Server will start in 15 seconds ***");
+-                        Thread.sleep(TimeUnit.SECONDS.toMillis(15));
++                        //System.err.println("*** Server will start in 15 seconds ***");
++                        //Thread.sleep(TimeUnit.SECONDS.toMillis(15));
+                     }
+                 }
+ 
+-- 
+1.9.0
+

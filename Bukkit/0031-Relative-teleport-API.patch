@@ -1,14 +1,14 @@
-From 38beec8e200a286ebe03a324c8bc805a1ae8a18f Mon Sep 17 00:00:00 2001
+From 816bff7270514013633adea171f4c7ad8544ebb5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Mar 2015 03:02:27 -0400
 Subject: [PATCH] Relative teleport API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 8ee4444..74dde51 100644
+index 3bee52b..22830d2 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -1567,4 +1567,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
+@@ -1582,4 +1582,12 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
       * Hide any title that is currently visible to the player
       */
      public void hideTitle();

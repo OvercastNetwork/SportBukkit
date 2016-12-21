@@ -1,31 +1,9 @@
-From 00bdb6edc962090f4c7f786d7344a623fb3778f8 Mon Sep 17 00:00:00 2001
+From df0d2a9bcd717b9b77a24fec2a521738f4e6d01d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 05:48:53 -0500
 Subject: [PATCH] Fix decompilation errors
 
 
-diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index 5cea6f1..73577fc 100644
---- a/src/main/java/net/minecraft/server/BlockPosition.java
-+++ b/src/main/java/net/minecraft/server/BlockPosition.java
-@@ -147,7 +147,7 @@ public class BlockPosition extends BaseBlockPosition {
-         return new BlockPosition(j, k, l);
-     }
- 
--    public static Iterable<BlockPosition> a(BlockPosition blockposition, BlockPosition blockposition1) {
-+    public static Iterable<BlockPosition> a(final BlockPosition blockposition, final BlockPosition blockposition1) { // SportBukkit - add final
-         final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
-         final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
- 
-@@ -195,7 +195,7 @@ public class BlockPosition extends BaseBlockPosition {
-         return this;
-     }
- 
--    public static Iterable<BlockPosition.MutableBlockPosition> b(BlockPosition blockposition, BlockPosition blockposition1) {
-+    public static Iterable<BlockPosition.MutableBlockPosition> b(final BlockPosition blockposition, final BlockPosition blockposition1) { // SportBukkit - add final
-         final BlockPosition blockposition2 = new BlockPosition(Math.min(blockposition.getX(), blockposition1.getX()), Math.min(blockposition.getY(), blockposition1.getY()), Math.min(blockposition.getZ(), blockposition1.getZ()));
-         final BlockPosition blockposition3 = new BlockPosition(Math.max(blockposition.getX(), blockposition1.getX()), Math.max(blockposition.getY(), blockposition1.getY()), Math.max(blockposition.getZ(), blockposition1.getZ()));
- 
 diff --git a/src/main/java/net/minecraft/server/EnumProtocol.java b/src/main/java/net/minecraft/server/EnumProtocol.java
 index 6e35b48..2f18f1e 100644
 --- a/src/main/java/net/minecraft/server/EnumProtocol.java
@@ -54,7 +32,7 @@ index 737035b..5886e4c 100644
 +    SportBukkit */
  }
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index 18341fa..0c78880 100644
+index 081bf91..35ea31f 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
 @@ -33,7 +33,7 @@ public class Item {
@@ -150,10 +128,10 @@ index 6c86341..c0d0ba5 100644
          this.e = entityliving.locY;
          this.f = entityliving.locZ;
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 9c1d5ff..2978514 100644
+index 4df43af..fa390f1 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
-@@ -734,7 +734,7 @@ public abstract class PlayerList {
+@@ -727,7 +727,7 @@ public abstract class PlayerList {
  
      public void f(EntityPlayer entityplayer) {
          GameProfile gameprofile = entityplayer.getProfile();

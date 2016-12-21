@@ -1,0 +1,31 @@
+From 5eecdc145239660312af6ade123ba1a97251dced Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Wed, 21 Dec 2016 12:29:04 -0500
+Subject: [PATCH] Firework entity in damage event
+
+
+diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
+index 0fb2a12..bf3770b 100644
+--- a/src/main/java/net/minecraft/server/EntityFireworks.java
++++ b/src/main/java/net/minecraft/server/EntityFireworks.java
+@@ -5,6 +5,7 @@ import java.util.List;
+ 
+ // SportBukkit start
+ import com.google.common.collect.Range;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
+ import org.bukkit.craftbukkit.protocol.MetadataKey;
+ // SportBukkit end
+ 
+@@ -171,7 +172,9 @@ public class EntityFireworks extends Entity {
+                     if (flag) {
+                         float f1 = f * (float) Math.sqrt((5.0D - (double) this.g(entityliving)) / 5.0D);
+ 
++                        CraftEventFactory.entityDamage = this; try { // SportBukkit
+                         entityliving.damageEntity(DamageSource.t, f1);
++                        } finally { CraftEventFactory.entityDamage = null; } // SportBukkit
+                     }
+                 }
+             }
+-- 
+1.9.0
+

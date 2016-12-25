@@ -1,4 +1,4 @@
-From 488c533608d89e7117779f968b982bc8df455830 Mon Sep 17 00:00:00 2001
+From 313972cc95ba95aab632f89c79cf724ff1abff6f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
@@ -39,10 +39,10 @@ index d165beb..b7b2690 100644
       */
      public boolean getIsolatePlugins();
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 100de93..756273d 100644
+index 1b8a841..dd0e995 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -54,6 +54,48 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+@@ -54,6 +54,48 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
      public Vector getVelocity();
  
      /**

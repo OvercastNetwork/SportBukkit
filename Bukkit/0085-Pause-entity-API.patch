@@ -1,14 +1,14 @@
-From 0697f3c5b1e60becaf1990cd62d747eb2afc0218 Mon Sep 17 00:00:00 2001
+From 74b25a55e2e0fb8828de6916ede79236d38921a5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 3 Dec 2016 23:45:45 -0500
 Subject: [PATCH] Pause entity API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 6a1b1f3..4496d40 100644
+index dccef79..4f02f2f 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -506,4 +506,21 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+@@ -506,4 +506,21 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
      boolean removeScoreboardTag(String tag);
  
      Cuboid getBoundingBox();

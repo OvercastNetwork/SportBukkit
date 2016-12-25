@@ -1,4 +1,4 @@
-From 51d7d8910fbdc1b82da21e5e4a546cc779612056 Mon Sep 17 00:00:00 2001
+From b4ca02a8d9bf8f8a32bc9f887e8b5cb2ea258564 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -178,21 +178,22 @@ index 0000000..4d8fbee
 +    RIDING;
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index dfb542b..35e3af9 100644
+index cca452b..fe7113a 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -1,8 +1,10 @@
+@@ -1,9 +1,11 @@
  package org.bukkit.entity;
  
 +import org.bukkit.EntityLocation;
+ import org.bukkit.Locatable;
  import org.bukkit.Location;
  import org.bukkit.EntityEffect;
  import org.bukkit.Nameable;
 +import org.bukkit.PoseFlag;
  import org.bukkit.Server;
  import org.bukkit.World;
- import org.bukkit.Physical;
-@@ -29,6 +31,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+ import org.bukkit.event.entity.EntityDamageEvent;
+@@ -29,6 +31,8 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
       */
      public Location getLocation();
  
@@ -201,7 +202,7 @@ index dfb542b..35e3af9 100644
      /**
       * Stores the entity's current position in the provided Location object.
       * <p>
-@@ -41,6 +45,11 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
+@@ -41,6 +45,11 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
      public Location getLocation(Location loc);
  
      /**

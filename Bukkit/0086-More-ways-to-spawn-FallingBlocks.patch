@@ -1,4 +1,4 @@
-From 9e48e5ca90251ea9b1e5faee7b839c647c8796ae Mon Sep 17 00:00:00 2001
+From c03c4ba6249232ef4971a3da0b65fb51e6c59041 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 7 Dec 2016 04:08:39 -0500
 Subject: [PATCH] More ways to spawn FallingBlocks
@@ -64,18 +64,18 @@ index 64e41f6..25593df 100644
      /**
       * Plays an effect to all players within a default radius around a given
 diff --git a/src/main/java/org/bukkit/block/BlockState.java b/src/main/java/org/bukkit/block/BlockState.java
-index 967eac0..b1fcb8e 100644
+index 15a0520..b1ae821 100644
 --- a/src/main/java/org/bukkit/block/BlockState.java
 +++ b/src/main/java/org/bukkit/block/BlockState.java
-@@ -5,6 +5,7 @@ import org.bukkit.Location;
+@@ -5,6 +5,7 @@ import org.bukkit.Locatable;
+ import org.bukkit.Location;
  import org.bukkit.Material;
  import org.bukkit.World;
- import org.bukkit.Physical;
 +import org.bukkit.entity.FallingBlock;
  import org.bukkit.geometry.BlockRotoflection;
  import org.bukkit.geometry.BlockReflection;
  import org.bukkit.geometry.BlockRotation;
-@@ -262,4 +263,23 @@ public interface BlockState extends Metadatable, Physical {
+@@ -262,4 +263,23 @@ public interface BlockState extends Metadatable, Locatable {
      boolean isPlaced();
  
      boolean hasPosition();

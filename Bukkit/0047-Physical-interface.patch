@@ -1,4 +1,4 @@
-From 71779699c027e121afa2f2ff999517f5ba1eef84 Mon Sep 17 00:00:00 2001
+From cd9a8f13bd502ce706852b226c86a4c119328e4b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 01:08:40 -0400
 Subject: [PATCH] Physical interface
@@ -17,6 +17,17 @@ index d5862a1..7ee47f4 100644
  
      /**
       * Gets the X-coordinate of this chunk
+diff --git a/src/main/java/org/bukkit/Locatable.java b/src/main/java/org/bukkit/Locatable.java
+new file mode 100644
+index 0000000..1cb686d
+--- /dev/null
++++ b/src/main/java/org/bukkit/Locatable.java
+@@ -0,0 +1,5 @@
++package org.bukkit;
++
++public interface Locatable extends Physical {
++    Location getLocation();
++}
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
 index e7af316..cd7ac2f 100644
 --- a/src/main/java/org/bukkit/Location.java
@@ -72,65 +83,84 @@ index 8a46f37..2f67d70 100644
      /**
       * Gets the {@link Block} at the given coordinates
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index fe32537..158bd8f 100644
+index fe32537..5f3a6ff 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
-@@ -6,6 +6,7 @@ import org.bukkit.Chunk;
+@@ -3,6 +3,7 @@ package org.bukkit.block;
+ import java.util.Collection;
+ 
+ import org.bukkit.Chunk;
++import org.bukkit.Locatable;
  import org.bukkit.Material;
  import org.bukkit.World;
  import org.bukkit.Location;
-+import org.bukkit.Physical;
- import org.bukkit.inventory.ItemStack;
- import org.bukkit.metadata.Metadatable;
- import org.bukkit.util.RayBlockIntersection;
 @@ -17,7 +18,7 @@ import org.bukkit.util.Vector;
   * concurrently to your own handling of it; use block.getState() to get a
   * snapshot state of a block which will not be modified.
   */
 -public interface Block extends Metadatable {
-+public interface Block extends Metadatable, Physical {
++public interface Block extends Metadatable, Locatable {
  
      /**
       * Gets the metadata for this block
 diff --git a/src/main/java/org/bukkit/block/BlockState.java b/src/main/java/org/bukkit/block/BlockState.java
-index 911a4d1..7899117 100644
+index 911a4d1..aaaecb0 100644
 --- a/src/main/java/org/bukkit/block/BlockState.java
 +++ b/src/main/java/org/bukkit/block/BlockState.java
-@@ -4,6 +4,7 @@ import org.bukkit.Chunk;
+@@ -1,6 +1,7 @@
+ package org.bukkit.block;
+ 
+ import org.bukkit.Chunk;
++import org.bukkit.Locatable;
  import org.bukkit.Location;
  import org.bukkit.Material;
  import org.bukkit.World;
-+import org.bukkit.Physical;
- import org.bukkit.material.MaterialData;
- import org.bukkit.metadata.Metadatable;
- 
 @@ -16,7 +17,7 @@ import org.bukkit.metadata.Metadatable;
   * change the state of the block and you will not know, or they may change the
   * block to another type entirely, causing your BlockState to become invalid.
   */
 -public interface BlockState extends Metadatable {
-+public interface BlockState extends Metadatable, Physical {
++public interface BlockState extends Metadatable, Locatable {
  
      /**
       * Gets the block represented by this BlockState
+diff --git a/src/main/java/org/bukkit/block/DoubleChest.java b/src/main/java/org/bukkit/block/DoubleChest.java
+index 663fcbb..1b0d1ea 100644
+--- a/src/main/java/org/bukkit/block/DoubleChest.java
++++ b/src/main/java/org/bukkit/block/DoubleChest.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.block;
+ 
++import org.bukkit.Locatable;
+ import org.bukkit.Location;
+ import org.bukkit.World;
+ import org.bukkit.inventory.DoubleChestInventory;
+@@ -9,7 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
+ /**
+  * Represents a double chest.
+  */
+-public class DoubleChest implements InventoryHolder {
++public class DoubleChest implements InventoryHolder, Locatable {
+     private DoubleChestInventory inventory;
+ 
+     public DoubleChest(DoubleChestInventory chest) {
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 759e3f0..100de93 100644
+index 759e3f0..1b8a841 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -5,6 +5,7 @@ import org.bukkit.EntityEffect;
+@@ -1,5 +1,6 @@
+ package org.bukkit.entity;
+ 
++import org.bukkit.Locatable;
+ import org.bukkit.Location;
+ import org.bukkit.EntityEffect;
  import org.bukkit.Nameable;
- import org.bukkit.Server;
- import org.bukkit.World;
-+import org.bukkit.Physical;
- import org.bukkit.event.entity.EntityDamageEvent;
- import org.bukkit.metadata.Metadatable;
- import org.bukkit.util.Vector;
 @@ -18,7 +19,7 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
  /**
   * Represents a base entity in the world
   */
 -public interface Entity extends Metadatable, CommandSender, Nameable {
-+public interface Entity extends Metadatable, CommandSender, Nameable, Physical {
++public interface Entity extends Metadatable, CommandSender, Nameable, Locatable {
  
      /**
       * Gets the entity's current position

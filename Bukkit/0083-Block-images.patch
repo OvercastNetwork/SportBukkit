@@ -1,4 +1,4 @@
-From 732297c3e8801126a9293197a188ec39b3b0f3fd Mon Sep 17 00:00:00 2001
+From e711aec4b8c50434b9a8ecfb024f5279d237b4f3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
@@ -228,7 +228,7 @@ index 2f67d70..64e41f6 100644
      /**
       * Represents various map environment types that a world may be
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index ddd6c65..64af515 100644
+index ff597f1..e97a4a4 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
 @@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
@@ -239,7 +239,7 @@ index ddd6c65..64af515 100644
  import org.bukkit.util.Vector;
  
  /**
-@@ -118,6 +119,8 @@ public interface Block extends Metadatable, Physical {
+@@ -118,6 +119,8 @@ public interface Block extends Metadatable, Locatable {
       */
      World getWorld();
  
@@ -347,13 +347,13 @@ index 0000000..defd64c
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/block/BlockState.java b/src/main/java/org/bukkit/block/BlockState.java
-index 7899117..967eac0 100644
+index aaaecb0..15a0520 100644
 --- a/src/main/java/org/bukkit/block/BlockState.java
 +++ b/src/main/java/org/bukkit/block/BlockState.java
-@@ -5,8 +5,13 @@ import org.bukkit.Location;
+@@ -5,8 +5,13 @@ import org.bukkit.Locatable;
+ import org.bukkit.Location;
  import org.bukkit.Material;
  import org.bukkit.World;
- import org.bukkit.Physical;
 +import org.bukkit.geometry.BlockRotoflection;
 +import org.bukkit.geometry.BlockReflection;
 +import org.bukkit.geometry.BlockRotation;
@@ -364,7 +364,7 @@ index 7899117..967eac0 100644
  
  /**
   * Represents a captured state of a block, which will not change
-@@ -54,6 +59,14 @@ public interface BlockState extends Metadatable, Physical {
+@@ -54,6 +59,14 @@ public interface BlockState extends Metadatable, Locatable {
       */
      void setMaterialData(MaterialData materialData);
  
@@ -379,7 +379,7 @@ index 7899117..967eac0 100644
      /**
       * Gets the metadata for this block
       *
-@@ -95,6 +108,12 @@ public interface BlockState extends Metadatable, Physical {
+@@ -95,6 +108,12 @@ public interface BlockState extends Metadatable, Locatable {
       */
      World getWorld();
  
@@ -392,7 +392,7 @@ index 7899117..967eac0 100644
      /**
       * Gets the x-coordinate of this block
       *
-@@ -241,4 +260,6 @@ public interface BlockState extends Metadatable, Physical {
+@@ -241,4 +260,6 @@ public interface BlockState extends Metadatable, Locatable {
       *         or 'virtual' (e.g. on an itemstack)
       */
      boolean isPlaced();
@@ -501,10 +501,10 @@ index 0000000..db43c72
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 35e3af9..6a1b1f3 100644
+index fe7113a..dccef79 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
-@@ -11,6 +11,7 @@ import org.bukkit.Physical;
+@@ -11,6 +11,7 @@ import org.bukkit.World;
  import org.bukkit.event.entity.EntityDamageEvent;
  import org.bukkit.geometry.Cuboid;
  import org.bukkit.metadata.Metadatable;

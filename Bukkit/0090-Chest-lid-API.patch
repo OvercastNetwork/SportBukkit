@@ -1,0 +1,24 @@
+From 950ca21895b53cfaaab4874b3d6d5a072548d9b2 Mon Sep 17 00:00:00 2001
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Sat, 24 Dec 2016 19:58:54 -0500
+Subject: [PATCH] Chest lid API
+
+
+diff --git a/src/main/java/org/bukkit/block/Chest.java b/src/main/java/org/bukkit/block/Chest.java
+index ade09dd..b28e054 100644
+--- a/src/main/java/org/bukkit/block/Chest.java
++++ b/src/main/java/org/bukkit/block/Chest.java
+@@ -16,4 +16,10 @@ public interface Chest extends BlockState, InventoryHolder, Lockable, Nameable {
+      * @return The inventory.
+      */
+     Inventory getBlockInventory();
++
++    boolean setLid(Lid lid);
++
++    Lid getLid();
++
++    enum Lid { OPEN, CLOSED, AUTO }
+ }
+-- 
+1.9.0
+

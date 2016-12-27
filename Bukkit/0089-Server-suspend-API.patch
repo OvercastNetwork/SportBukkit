@@ -1,11 +1,11 @@
-From 45cb7b0cd39fb2883820e9975ae160c486405f3f Mon Sep 17 00:00:00 2001
+From 4bbd37a9375d895c2867f91fcbceeecb955c4682 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:14:13 -0500
 Subject: [PATCH] Server suspend API
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index c1a982f..b50176c 100644
+index 079f496..12170b6 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -3,6 +3,8 @@ package org.bukkit;
@@ -25,8 +25,8 @@ index c1a982f..b50176c 100644
  
  import org.bukkit.Warning.WarningState;
  import org.bukkit.boss.BarColor;
-@@ -136,6 +139,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
-     public Collection<? extends Player> getOnlinePlayers();
+@@ -138,6 +141,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+     Map<UUID, Player> playersById();
  
      /**
 +     * If the server is currently empty of players, return the {@link Instant}
@@ -38,7 +38,7 @@ index c1a982f..b50176c 100644
       * Get the maximum amount of players which can login to this server.
       *
       * @return the amount of players this server allows
-@@ -358,6 +367,13 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -360,6 +369,13 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
      public int getTicksPerMonsterSpawns();
  
      /**
@@ -52,7 +52,7 @@ index c1a982f..b50176c 100644
       * Gets a player object by the given username.
       * <p>
       * This method may not return objects for offline players.
-@@ -1082,4 +1098,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1088,4 +1104,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       *         false if it was added to the main thread queue
       */
      boolean runOnMainThread(Plugin plugin, boolean priority, Runnable task);

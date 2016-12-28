@@ -1,4 +1,4 @@
-From cedc426e65fef1e65c4b837f3947171855ba33c6 Mon Sep 17 00:00:00 2001
+From 46d7dcf96cad15f20e1bad2f8df5ea18c50a7a64 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 20 Nov 2016 09:44:03 -0500
 Subject: [PATCH] Legacy protocol support
@@ -1348,7 +1348,7 @@ index 2c8fb70..50ccda7 100644
  
      public void a(int i, int j, int k, int l, int i1, int j1) {}
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 940f262..41d0cce 100644
+index 406dec6..f40306e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -77,6 +77,7 @@ import org.bukkit.craftbukkit.metadata.EntityMetadataStore;
@@ -1359,7 +1359,7 @@ index 940f262..41d0cce 100644
  import org.bukkit.craftbukkit.scheduler.CraftScheduler;
  import org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager;
  import org.bukkit.craftbukkit.util.CraftIconCache;
-@@ -1884,7 +1885,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1887,7 +1888,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      @Override
      public Set<Integer> getProtocolVersions() {

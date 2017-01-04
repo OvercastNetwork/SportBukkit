@@ -1,4 +1,4 @@
-From bfb637cf73e44611873ac0ee542d056d2fe9060c Mon Sep 17 00:00:00 2001
+From 0898b6dfc94173474ee9bc28c0ecdb077462ce3d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
@@ -2790,10 +2790,10 @@ index 2d84032..152010a 100644
      public static Server getInstance() {
 diff --git a/src/test/java/org/bukkit/event/EventBusTest.java b/src/test/java/org/bukkit/event/EventBusTest.java
 new file mode 100644
-index 0000000..e99c934
+index 0000000..2b50db6
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventBusTest.java
-@@ -0,0 +1,285 @@
+@@ -0,0 +1,275 @@
 +package org.bukkit.event;
 +
 +import java.util.ArrayList;
@@ -2891,16 +2891,6 @@ index 0000000..e99c934
 +            flow("body")
 +        );
 +        assertFlow("body");
-+    }
-+
-+    @Test
-+    public void nestedDispatchThrows() throws Throwable {
-+        final TestEvent event = new TestEvent();
-+        bus.callEvent(event, e ->
-+            assertThrows(IllegalStateException.class, () ->
-+                bus.callEvent(event)
-+            )
-+        );
 +    }
 +
 +    @Test

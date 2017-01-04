@@ -1,4 +1,4 @@
-From 53589c6514f819f44c53390c1f2041910313552d Mon Sep 17 00:00:00 2001
+From bfb637cf73e44611873ac0ee542d056d2fe9060c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
@@ -543,7 +543,7 @@ index 0000000..fa77ef1
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/Event.java b/src/main/java/org/bukkit/event/Event.java
-index 6677e1b..7f6af67 100644
+index 6677e1b..306449f 100644
 --- a/src/main/java/org/bukkit/event/Event.java
 +++ b/src/main/java/org/bukkit/event/Event.java
 @@ -1,5 +1,17 @@
@@ -564,7 +564,7 @@ index 6677e1b..7f6af67 100644
  import org.bukkit.plugin.PluginManager;
  
  /**
-@@ -47,7 +59,133 @@ public abstract class Event {
+@@ -47,7 +59,132 @@ public abstract class Event {
          return name;
      }
  
@@ -573,7 +573,6 @@ index 6677e1b..7f6af67 100644
 +        return false;
 +    }
 +
-+    boolean dispatching;
 +    @Nullable EventCallable yielder = null;
 +
 +    /**
@@ -1468,10 +1467,10 @@ index 0000000..bd0a7be
 +}
 diff --git a/src/main/java/org/bukkit/event/SimpleEventBus.java b/src/main/java/org/bukkit/event/SimpleEventBus.java
 new file mode 100644
-index 0000000..6d57ff4
+index 0000000..96dec8a
 --- /dev/null
 +++ b/src/main/java/org/bukkit/event/SimpleEventBus.java
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,115 @@
 +package org.bukkit.event;
 +
 +import javax.annotation.Nullable;
@@ -1523,17 +1522,10 @@ index 0000000..6d57ff4
 +    }
 +
 +    public <T extends Event, X extends Throwable> void callEvent0(T event, @Nullable EventPriority priority, @Nullable EventBody<? super T, X> body) throws X {
-+        if(event.dispatching) {
-+            throw new IllegalStateException(event.getEventName() + " is already being called");
-+        }
-+
-+        event.dispatching = true;
 +        try {
 +            callEvent0(event, priority, event.getHandlers().getRegisteredListeners(), 0, body);
 +        } catch(EventException e) {
 +            throw (X) e.getCause();
-+        } finally {
-+            event.dispatching = false;
 +        }
 +    }
 +

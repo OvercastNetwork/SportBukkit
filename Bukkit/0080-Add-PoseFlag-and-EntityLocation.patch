@@ -1,4 +1,4 @@
-From b4ca02a8d9bf8f8a32bc9f887e8b5cb2ea258564 Mon Sep 17 00:00:00 2001
+From db8f534e2efaeca4ca0998582ee76f652c3d7cff Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -343,34 +343,6 @@ index 93752f7..e2b31d7 100644
      }
  
      /**
-diff --git a/src/main/java/org/bukkit/util/EnumUtils.java b/src/main/java/org/bukkit/util/EnumUtils.java
-new file mode 100644
-index 0000000..d064568
---- /dev/null
-+++ b/src/main/java/org/bukkit/util/EnumUtils.java
-@@ -0,0 +1,22 @@
-+package org.bukkit.util;
-+
-+import java.util.Collection;
-+import java.util.EnumSet;
-+import java.util.Set;
-+
-+public final class EnumUtils {
-+    private EnumUtils() {}
-+
-+    /**
-+     * Create a new {@link EnumSet} of the given type, copying the initial
-+     * contents from the given set.
-+     *
-+     * Unlike {@link EnumSet#copyOf(Collection)}, this method always works,
-+     * even if the given set is empty, and is not another {@link EnumSet}.
-+     */
-+    public static <E extends Enum<E>> EnumSet<E> copySet(Class<E> type, Set<E> set) {
-+        final EnumSet<E> copy = EnumSet.noneOf(type);
-+        copy.addAll(set);
-+        return copy;
-+    }
-+}
 diff --git a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java b/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
 index ef75e5a..1d88ffb 100644
 --- a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java

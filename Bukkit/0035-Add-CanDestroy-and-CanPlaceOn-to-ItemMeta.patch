@@ -1,4 +1,4 @@
-From 495881278f2b39606822cc2aff309b0203eda25a Mon Sep 17 00:00:00 2001
+From 90f880c64851549197abdfae149aef687d3ec61f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 22 May 2015 00:45:13 -0400
 Subject: [PATCH] Add CanDestroy and CanPlaceOn to ItemMeta
@@ -42,9 +42,36 @@ index 92455ce..1e37a64 100644
      @SuppressWarnings("javadoc")
      ItemMeta clone();
  }
+diff --git a/src/main/java/org/bukkit/util/EnumUtils.java b/src/main/java/org/bukkit/util/EnumUtils.java
+new file mode 100644
+index 0000000..27da631
+--- /dev/null
++++ b/src/main/java/org/bukkit/util/EnumUtils.java
+@@ -0,0 +1,21 @@
++package org.bukkit.util;
++
++import java.util.Collection;
++import java.util.EnumSet;
++
++public final class EnumUtils {
++    private EnumUtils() {}
++
++    /**
++     * Create a new {@link EnumSet} of the given type, copying the initial
++     * contents from the given set.
++     *
++     * Unlike {@link EnumSet#copyOf(Collection)}, this method always works,
++     * even if the given set is empty, and is not another {@link EnumSet}.
++     */
++    public static <E extends Enum<E>> EnumSet<E> copySet(Class<E> type, Collection<E> set) {
++        final EnumSet<E> copy = EnumSet.noneOf(type);
++        copy.addAll(set);
++        return copy;
++    }
++}
 diff --git a/src/main/java/org/bukkit/util/ImmutableMaterialSet.java b/src/main/java/org/bukkit/util/ImmutableMaterialSet.java
 new file mode 100644
-index 0000000..a048988
+index 0000000..bfbbc73
 --- /dev/null
 +++ b/src/main/java/org/bukkit/util/ImmutableMaterialSet.java
 @@ -0,0 +1,78 @@
@@ -82,14 +109,14 @@ index 0000000..a048988
 +    }
 +
 +    public static ImmutableMaterialSet of(Material...materials) {
-+        return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumSet.copyOf(Arrays.asList(materials))));
++        return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumUtils.copySet(Material.class, Arrays.asList(materials))));
 +    }
 +
 +    public static ImmutableMaterialSet of(Collection<Material> materials) {
 +        if(materials instanceof ImmutableMaterialSet) {
 +            return (ImmutableMaterialSet) materials;
 +        } else {
-+            return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumSet.copyOf(materials)));
++            return new ImmutableMaterialSet(Collections.unmodifiableSet(EnumUtils.copySet(Material.class, materials)));
 +        }
 +    }
 +

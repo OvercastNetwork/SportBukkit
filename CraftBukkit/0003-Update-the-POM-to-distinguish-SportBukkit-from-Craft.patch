@@ -1,11 +1,11 @@
-From 6513d5e0d19067649187deef5afb22608fc3708a Mon Sep 17 00:00:00 2001
+From 9edd1c47b572869f59a007c8085af03cea4261e2 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index 41ac9d2..cd4bf46 100644
+index 41ac9d2..a50131f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,29 +1,39 @@
@@ -75,7 +75,20 @@ index 41ac9d2..cd4bf46 100644
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
-@@ -152,8 +172,8 @@
+@@ -70,6 +90,12 @@
+             <version>1.3</version>
+             <scope>test</scope>
+         </dependency>
++        <dependency>
++            <groupId>tc.oc</groupId>
++            <artifactId>test-util</artifactId>
++            <version>1.0-SNAPSHOT</version>
++            <scope>test</scope>
++        </dependency>
+     </dependencies>
+ 
+     <!-- required until fixed plexus-compiler-eclipse is deployed -->
+@@ -152,8 +178,8 @@
                  <configuration>
                      <signature>
                          <groupId>org.codehaus.mojo.signature</groupId>
@@ -86,7 +99,7 @@ index 41ac9d2..cd4bf46 100644
                      </signature>
                  </configuration>
              </plugin>
-@@ -185,17 +205,6 @@
+@@ -185,17 +211,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>
                                  </relocation>

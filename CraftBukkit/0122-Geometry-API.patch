@@ -1,4 +1,4 @@
-From 22f252d372d4c0578f226c0dea8c82f6adfe1206 Mon Sep 17 00:00:00 2001
+From e7a1c7a7561830bc98e3614579d5361cde6bd90c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:02 -0500
 Subject: [PATCH] Geometry API
@@ -742,31 +742,19 @@ index 0000000..30e5c74
 +}
 diff --git a/src/test/java/org/bukkit/util/VectorEqualityTest.java b/src/test/java/org/bukkit/util/VectorEqualityTest.java
 new file mode 100644
-index 0000000..aeb2260
+index 0000000..f404478
 --- /dev/null
 +++ b/src/test/java/org/bukkit/util/VectorEqualityTest.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,26 @@
 +package org.bukkit.util;
 +
 +import net.minecraft.server.BlockPosition;
 +import org.junit.Test;
 +
 +import static org.junit.Assert.*;
++import static tc.oc.test.Assert.*;
 +
 +public class VectorEqualityTest {
-+
-+    void assertMutuallyEqual(Object a, Object b) {
-+        assertTrue(a + " should equal " + b, a.equals(b));
-+        assertTrue(b + " should equal " + a, b.equals(a));
-+
-+        assertEquals(a + " and " + b + " should have identical hashCodes",
-+                     a.hashCode(), b.hashCode());
-+    }
-+
-+    void assertMutuallyUnequal(Object a, Object b) {
-+        assertFalse(a + " should not equal " + b, a.equals(b));
-+        assertFalse(b + " should not equal " + a, b.equals(a));
-+    }
 +
 +    @Test
 +    public void coarseEquality() throws Exception {

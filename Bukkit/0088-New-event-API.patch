@@ -1,4 +1,4 @@
-From 0898b6dfc94173474ee9bc28c0ecdb077462ce3d Mon Sep 17 00:00:00 2001
+From 62710ab9c87fefb08fb8c9c8ec195b0e90236c70 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
@@ -2790,7 +2790,7 @@ index 2d84032..152010a 100644
      public static Server getInstance() {
 diff --git a/src/test/java/org/bukkit/event/EventBusTest.java b/src/test/java/org/bukkit/event/EventBusTest.java
 new file mode 100644
-index 0000000..2b50db6
+index 0000000..efb19e5
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventBusTest.java
 @@ -0,0 +1,275 @@
@@ -2803,12 +2803,12 @@ index 0000000..2b50db6
 +
 +import tc.oc.exception.ExceptionHandler;
 +import org.bukkit.exception.TestExceptionHandler;
-+import org.bukkit.test.TestThread;
++import tc.oc.test.TestThread;
 +import org.junit.After;
 +import org.junit.Before;
 +import org.junit.Test;
 +
-+import static org.bukkit.test.Assert.assertThrows;
++import static tc.oc.test.Assert.*;
 +import static org.junit.Assert.*;
 +
 +public class EventBusTest {
@@ -3071,7 +3071,7 @@ index 0000000..2b50db6
 +}
 diff --git a/src/test/java/org/bukkit/event/EventHandlerMetaTest.java b/src/test/java/org/bukkit/event/EventHandlerMetaTest.java
 new file mode 100644
-index 0000000..05aba89
+index 0000000..7399b06
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventHandlerMetaTest.java
 @@ -0,0 +1,87 @@
@@ -3079,7 +3079,7 @@ index 0000000..05aba89
 +
 +import org.junit.Test;
 +
-+import static org.bukkit.test.Assert.*;
++import static tc.oc.test.Assert.*;
 +import static org.junit.Assert.*;
 +
 +public class EventHandlerMetaTest {
@@ -3164,7 +3164,7 @@ index 0000000..05aba89
 +}
 diff --git a/src/test/java/org/bukkit/event/EventMethodExecutorTest.java b/src/test/java/org/bukkit/event/EventMethodExecutorTest.java
 new file mode 100644
-index 0000000..6227c7b
+index 0000000..d879171
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventMethodExecutorTest.java
 @@ -0,0 +1,135 @@
@@ -3176,10 +3176,10 @@ index 0000000..6227c7b
 +
 +import tc.oc.exception.ExceptionHandler;
 +import org.bukkit.exception.TestExceptionHandler;
-+import org.bukkit.test.TestCodeBlock;
++import tc.oc.test.TestCodeBlock;
 +import org.junit.Test;
 +
-+import static org.bukkit.test.Assert.*;
++import static tc.oc.test.Assert.*;
 +import static org.junit.Assert.*;
 +
 +public class EventMethodExecutorTest {
@@ -3305,7 +3305,7 @@ index 0000000..6227c7b
 +}
 diff --git a/src/test/java/org/bukkit/event/EventRegistryTest.java b/src/test/java/org/bukkit/event/EventRegistryTest.java
 new file mode 100644
-index 0000000..ede5376
+index 0000000..9da2f8d
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/EventRegistryTest.java
 @@ -0,0 +1,93 @@
@@ -3320,7 +3320,7 @@ index 0000000..ede5376
 +import org.junit.Before;
 +import org.junit.Test;
 +
-+import static org.bukkit.test.Assert.*;
++import static tc.oc.test.Assert.*;
 +import static org.junit.Assert.*;
 +
 +public class EventRegistryTest {
@@ -3404,7 +3404,7 @@ index 0000000..ede5376
 +}
 diff --git a/src/test/java/org/bukkit/event/HandlerListTest.java b/src/test/java/org/bukkit/event/HandlerListTest.java
 new file mode 100644
-index 0000000..d7e97a9
+index 0000000..ff30c1d
 --- /dev/null
 +++ b/src/test/java/org/bukkit/event/HandlerListTest.java
 @@ -0,0 +1,18 @@
@@ -3412,7 +3412,7 @@ index 0000000..d7e97a9
 +
 +import org.junit.Test;
 +
-+import static org.bukkit.test.Assert.*;
++import static tc.oc.test.Assert.*;
 +
 +public class HandlerListTest {
 +
@@ -3622,174 +3622,6 @@ index 7e09892..82aff85 100644
      }
  
      public EbeanServer getDatabase() {
-diff --git a/src/test/java/org/bukkit/test/Assert.java b/src/test/java/org/bukkit/test/Assert.java
-new file mode 100644
-index 0000000..5a44776
---- /dev/null
-+++ b/src/test/java/org/bukkit/test/Assert.java
-@@ -0,0 +1,43 @@
-+package org.bukkit.test;
-+
-+import java.util.Arrays;
-+import java.util.Collection;
-+import java.util.List;
-+
-+import static org.junit.Assert.*;
-+
-+public final class Assert {
-+
-+    public static void assertEmpty(Object[] array) {
-+        assertEmpty(Arrays.asList(array));
-+    }
-+
-+    public static void assertEmpty(Collection collection) {
-+        if(collection.isEmpty()) return;
-+        fail("Expected collection to be empty, but it contains " + collection.size() + " elements");
-+    }
-+
-+    public static void assertSize(int size, Object[] array) {
-+        assertSize(size, Arrays.asList(array));
-+    }
-+
-+    public static void assertSize(int size, Collection collection) {
-+        if(collection.size() == size) return;
-+        fail("Expected collection to contain " + size +
-+             " elements, but it actually contains " + collection.size());
-+    }
-+
-+    public static void assertList(List actual, Object...expected) {
-+        assertEquals(Arrays.asList(expected), actual);
-+    }
-+
-+    public static void assertThrows(Class<? extends Throwable> expected, TestCodeBlock block) throws Throwable {
-+        try {
-+            block.run();
-+        } catch(Throwable throwable) {
-+            if(expected.isInstance(throwable)) return;
-+            throw throwable;
-+        }
-+        fail("Expected " + expected.getSimpleName() + " to be thrown, but nothing was thrown");
-+    }
-+}
-diff --git a/src/test/java/org/bukkit/test/TestCodeBlock.java b/src/test/java/org/bukkit/test/TestCodeBlock.java
-new file mode 100644
-index 0000000..f1101fa
---- /dev/null
-+++ b/src/test/java/org/bukkit/test/TestCodeBlock.java
-@@ -0,0 +1,6 @@
-+package org.bukkit.test;
-+
-+@FunctionalInterface
-+public interface TestCodeBlock {
-+    void run() throws Throwable;
-+}
-diff --git a/src/test/java/org/bukkit/test/TestLogger.java b/src/test/java/org/bukkit/test/TestLogger.java
-new file mode 100644
-index 0000000..9a85863
---- /dev/null
-+++ b/src/test/java/org/bukkit/test/TestLogger.java
-@@ -0,0 +1,49 @@
-+package org.bukkit.test;
-+
-+import java.util.ArrayList;
-+import java.util.Collections;
-+import java.util.List;
-+import java.util.logging.Handler;
-+import java.util.logging.Level;
-+import java.util.logging.LogRecord;
-+import java.util.logging.Logger;
-+
-+import static org.junit.Assert.*;
-+
-+/**
-+ * A {@link Logger} that asserts if an error is logged,
-+ * and retains all {@link LogRecord}s for tests to examine.
-+ */
-+public class TestLogger extends Logger {
-+
-+    final Level failureLevel;
-+    final List<LogRecord> records = new ArrayList<>();
-+    final List<LogRecord> recordsView = Collections.unmodifiableList(records);
-+
-+    public TestLogger() {
-+        this(Level.SEVERE);
-+    }
-+
-+    public TestLogger(Level failureLevel) {
-+        super(null, null);
-+        this.failureLevel = failureLevel;
-+        setUseParentHandlers(false);
-+
-+        addHandler(new Handler() {
-+            @Override
-+            public void publish(LogRecord record) {
-+                if(failureLevel.intValue() <= record.getLevel().intValue()) {
-+                    fail(record.getMessage());
-+                }
-+                records.add(record);
-+            }
-+
-+            @Override public void flush() {}
-+            @Override public void close() throws SecurityException { }
-+        });
-+    }
-+
-+    public List<LogRecord> records() {
-+        return recordsView;
-+    }
-+}
-diff --git a/src/test/java/org/bukkit/test/TestThread.java b/src/test/java/org/bukkit/test/TestThread.java
-new file mode 100644
-index 0000000..6b372c1
---- /dev/null
-+++ b/src/test/java/org/bukkit/test/TestThread.java
-@@ -0,0 +1,46 @@
-+package org.bukkit.test;
-+
-+import javax.annotation.Nullable;
-+
-+public class TestThread extends Thread {
-+
-+    public static TestThread start(TestCodeBlock body) {
-+        final TestThread thread = new TestThread(body);
-+        thread.start();
-+        return thread;
-+    }
-+
-+    public static TestThread join(TestCodeBlock body) throws Throwable {
-+        final TestThread thread = new TestThread(body);
-+        thread.start();
-+        thread.assertJoin();
-+        return thread;
-+    }
-+
-+    private final TestCodeBlock body;
-+    private volatile @Nullable Throwable exception;
-+
-+    public TestThread(TestCodeBlock body) {
-+        this.body = body;
-+    }
-+
-+    @Override
-+    public void run() {
-+        try {
-+            body.run();
-+        } catch(Throwable ex) {
-+            this.exception = ex;
-+        }
-+    }
-+
-+    public void assertJoin() throws Throwable {
-+        join();
-+
-+        if(exception != null) {
-+            if(exception instanceof AssertionError) {
-+                throw exception;
-+            }
-+            throw new AssertionError("Thread " + getName() + " terminated with an exception", exception);
-+        }
-+    }
-+}
 -- 
 1.9.0
 

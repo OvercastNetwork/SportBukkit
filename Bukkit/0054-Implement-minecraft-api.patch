@@ -1,11 +1,11 @@
-From 40c557caee9bf04ee9891c0e6962d87c7e1a4684 Mon Sep 17 00:00:00 2001
+From 4bfbc54f181237bba164eb736951beccad8cf5e3 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
 
 
 diff --git a/pom.xml b/pom.xml
-index 91f8160..b790c9c 100644
+index 30e6714..1af9b07 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -84,10 +84,8 @@
@@ -161,7 +161,7 @@ index 1f4c8ce..f032374 100644
          Object val = get(path, null);
          if (val != null) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 41a4bd5..72cf253 100644
+index 0c91016..1a5810f 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -29,7 +29,7 @@ import org.bukkit.util.RayBlockIntersection;
@@ -222,6 +222,19 @@ index b93569f..e4eddfb 100644
      private static final ThreadLocal<Yaml> YAML = new ThreadLocal<Yaml>() {
          @Override
          protected Yaml initialValue() {
+diff --git a/src/main/java/org/bukkit/plugin/PluginLogger.java b/src/main/java/org/bukkit/plugin/PluginLogger.java
+index f409a28..577ad70 100644
+--- a/src/main/java/org/bukkit/plugin/PluginLogger.java
++++ b/src/main/java/org/bukkit/plugin/PluginLogger.java
+@@ -40,7 +40,7 @@ public class PluginLogger extends Logger {
+      * @param context A reference to the plugin
+      */
+     public PluginLogger(Plugin context) {
+-        super(context.getClass().getCanonicalName(), null);
++        super(context.getDescription().getMain(), null);
+         String prefix = context.getDescription().getPrefix();
+         pluginName = prefix != null ? new StringBuilder().append("[").append(prefix).append("] ").toString() : "[" + context.getDescription().getName() + "] ";
+         setParent(context.getServer().getLogger());
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
 index e5638d5..15f6218 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java

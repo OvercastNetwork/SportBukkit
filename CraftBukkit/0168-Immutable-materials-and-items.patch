@@ -1,11 +1,11 @@
-From 3bafca1f3339cbd9c46f36c912c4c9f7898d8b98 Mon Sep 17 00:00:00 2001
+From e47e4a4a5b551a3dac64556250b3d83a8c898453 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Jan 2017 13:57:10 -0500
 Subject: [PATCH] Immutable materials and items
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 5246e22..fb39abd 100644
+index 5246e22..6f9c0e6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
@@ -16,21 +16,7 @@ index 5246e22..fb39abd 100644
  
  @DelegateDeserialization(ItemStack.class)
  public final class CraftItemStack extends ItemStack {
-@@ -40,7 +41,12 @@ public final class CraftItemStack extends ItemStack {
-             return net.minecraft.server.ItemStack.a;
-         }
- 
--        net.minecraft.server.ItemStack stack = new net.minecraft.server.ItemStack(item, original.getAmount(), original.getDurability());
-+        net.minecraft.server.ItemStack stack = new net.minecraft.server.ItemStack(item, original.getAmount());
-+        if(stack.usesData()) {
-+            stack.setData(original.getData().getData());
-+        } else if(stack.getItem().usesDurability()) {
-+            stack.setData(original.getDurability());
-+        }
-         if (original.hasItemMeta()) {
-             setItemMeta(stack, original.getItemMeta());
-         }
-@@ -171,6 +177,20 @@ public final class CraftItemStack extends ItemStack {
+@@ -171,6 +172,20 @@ public final class CraftItemStack extends ItemStack {
      }
  
      @Override
@@ -267,10 +253,10 @@ index 6140ede..8935fcc 100644
 +    }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
-index 1f5a6a3..b140cdf 100644
+index 1f5a6a3..44ac9db 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
-@@ -1,14 +1,21 @@
+@@ -1,14 +1,20 @@
  package org.bukkit.craftbukkit.inventory;
  
 -import static org.junit.Assert.*;
@@ -284,7 +270,6 @@ index 1f5a6a3..b140cdf 100644
 +import net.minecraft.server.Items;
 +import org.bukkit.DyeColor;
 +import org.bukkit.Material;
-+import org.bukkit.inventory.ImItemStack;
  import org.bukkit.inventory.ItemStack;
 +import org.bukkit.material.Wool;
  import org.bukkit.support.AbstractTestingBase;
@@ -296,22 +281,10 @@ index 1f5a6a3..b140cdf 100644
  public class NMSCraftItemStackTest extends AbstractTestingBase {
  
      @Test
-@@ -33,4 +40,40 @@ public class NMSCraftItemStackTest extends AbstractTestingBase {
+@@ -33,4 +39,28 @@ public class NMSCraftItemStackTest extends AbstractTestingBase {
          ItemStack clone = itemStack.clone();
          assertThat(clone, is(itemStack));
      }
-+
-+    @Test
-+    public void testDamagePreservedOnDamageableItem() throws Throwable {
-+        net.minecraft.server.ItemStack stack = CraftItemStack.asNMSCopy(ImItemStack.of(Material.STONE_SWORD, 123));
-+        assertEquals(123, stack.getData());
-+    }
-+
-+    @Test
-+    public void testDamageIgnoredOnNonDamageableItem() throws Throwable {
-+        net.minecraft.server.ItemStack stack = CraftItemStack.asNMSCopy(new ItemStack(Material.BEDROCK, 1, (short) 123));
-+        assertEquals(0, stack.getData());
-+    }
 +
 +    @Test
 +    public void testConversionPreservesItemData() throws Throwable {

@@ -1,14 +1,22 @@
-From c98c9520ffa996e2bc5f44f6091522df0ce3e399 Mon Sep 17 00:00:00 2001
+From 3bafca1f3339cbd9c46f36c912c4c9f7898d8b98 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Jan 2017 13:57:10 -0500
 Subject: [PATCH] Immutable materials and items
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 5246e22..da46b76 100644
+index 5246e22..fb39abd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-@@ -40,7 +40,12 @@ public final class CraftItemStack extends ItemStack {
+@@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
+ 
+ import com.google.common.collect.ImmutableMap;
+ import org.bukkit.craftbukkit.enchantments.CraftEnchantment;
++import org.bukkit.material.MaterialData;
+ 
+ @DelegateDeserialization(ItemStack.class)
+ public final class CraftItemStack extends ItemStack {
+@@ -40,7 +41,12 @@ public final class CraftItemStack extends ItemStack {
              return net.minecraft.server.ItemStack.a;
          }
  
@@ -22,6 +30,27 @@ index 5246e22..da46b76 100644
          if (original.hasItemMeta()) {
              setItemMeta(stack, original.getItemMeta());
          }
+@@ -171,6 +177,20 @@ public final class CraftItemStack extends ItemStack {
+     }
+ 
+     @Override
++    public MaterialData getData() {
++        if(handle == null) return Material.AIR.getNewData((byte) 0);
++        return CraftMagicNumbers.getMaterial(handle.getItem())
++                                .getNewData(handle.getItem().usesDurability() ? 0 : (byte) handle.getData());
++    }
++
++    @Override
++    public void setData(MaterialData data) {
++        if(handle != null) {
++            handle.setData(data != null ? data.getData() : 0);
++        }
++    }
++
++    @Override
+     public int getMaxStackSize() {
+         return (handle == null) ? Material.AIR.getMaxStackSize() : handle.getItem().getMaxStackSize();
+     }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 index ac039ab..0154dfb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
@@ -238,20 +267,36 @@ index 6140ede..8935fcc 100644
 +    }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
-index 1f5a6a3..c6e2da0 100644
+index 1f5a6a3..b140cdf 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
-@@ -4,7 +4,8 @@ import static org.junit.Assert.*;
- import static org.hamcrest.Matchers.*;
+@@ -1,14 +1,21 @@
+ package org.bukkit.craftbukkit.inventory;
  
+-import static org.junit.Assert.*;
+-import static org.hamcrest.Matchers.*;
+-
++import net.minecraft.server.BlockCloth;
++import net.minecraft.server.Blocks;
  import net.minecraft.server.Enchantments;
 -
++import net.minecraft.server.EnumColor;
++import net.minecraft.server.Items;
++import org.bukkit.DyeColor;
 +import org.bukkit.Material;
 +import org.bukkit.inventory.ImItemStack;
  import org.bukkit.inventory.ItemStack;
++import org.bukkit.material.Wool;
  import org.bukkit.support.AbstractTestingBase;
  import org.junit.Test;
-@@ -33,4 +34,16 @@ public class NMSCraftItemStackTest extends AbstractTestingBase {
+ 
++import static org.hamcrest.Matchers.is;
++import static org.junit.Assert.*;
++
+ public class NMSCraftItemStackTest extends AbstractTestingBase {
+ 
+     @Test
+@@ -33,4 +40,40 @@ public class NMSCraftItemStackTest extends AbstractTestingBase {
          ItemStack clone = itemStack.clone();
          assertThat(clone, is(itemStack));
      }
@@ -264,8 +309,32 @@ index 1f5a6a3..c6e2da0 100644
 +
 +    @Test
 +    public void testDamageIgnoredOnNonDamageableItem() throws Throwable {
-+        net.minecraft.server.ItemStack stack = CraftItemStack.asNMSCopy(new ItemStack(Material.DIRT, 1, (short) 123));
++        net.minecraft.server.ItemStack stack = CraftItemStack.asNMSCopy(new ItemStack(Material.BEDROCK, 1, (short) 123));
 +        assertEquals(0, stack.getData());
++    }
++
++    @Test
++    public void testConversionPreservesItemData() throws Throwable {
++        ItemStack bukkit = new Wool(DyeColor.PINK).toItemStack();
++        net.minecraft.server.ItemStack nms = new net.minecraft.server.ItemStack(Blocks.WOOL, 1, Blocks.WOOL.getDropData(Blocks.WOOL.getBlockData().set(BlockCloth.COLOR, EnumColor.PINK)));
++
++        assertEquals(bukkit, CraftItemStack.asBukkitCopy(nms));
++        assertEquals(bukkit, CraftItemStack.asCraftMirror(nms));
++        assertEquals(bukkit, CraftItemStack.asCraftCopy(bukkit));
++
++        assertTrue(net.minecraft.server.ItemStack.equals(nms, CraftItemStack.asNMSCopy(bukkit)));
++    }
++
++    @Test
++    public void testConversionPreservesDurability() throws Throwable {
++        ItemStack bukkit = new ItemStack(Material.STONE_SWORD, 1, (short) 123);
++        net.minecraft.server.ItemStack nms = new net.minecraft.server.ItemStack(Items.STONE_SWORD, 1, 123);
++
++        assertEquals(bukkit, CraftItemStack.asBukkitCopy(nms));
++        assertEquals(bukkit, CraftItemStack.asCraftMirror(nms));
++        assertEquals(bukkit, CraftItemStack.asCraftCopy(bukkit));
++
++        assertTrue(net.minecraft.server.ItemStack.equals(nms, CraftItemStack.asNMSCopy(bukkit)));
 +    }
  }
 -- 

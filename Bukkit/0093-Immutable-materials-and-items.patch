@@ -1,4 +1,4 @@
-From f2497222ba2f8783000b552238cf94c5a560353a Mon Sep 17 00:00:00 2001
+From 73fbfd3eb69a637429a0a7d9d4676a092ba3e924 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Jan 2017 14:01:56 -0500
 Subject: [PATCH] Immutable materials and items
@@ -105,7 +105,7 @@ index 0000000..17feb00
 +    @Override public boolean setItemMeta(ItemMeta itemMeta) { throw ex(); }
 +}
 diff --git a/src/main/java/org/bukkit/inventory/ItemStack.java b/src/main/java/org/bukkit/inventory/ItemStack.java
-index 188ae6d..a8a4c2b 100644
+index 188ae6d..fb861e5 100644
 --- a/src/main/java/org/bukkit/inventory/ItemStack.java
 +++ b/src/main/java/org/bukkit/inventory/ItemStack.java
 @@ -3,6 +3,8 @@ package org.bukkit.inventory;
@@ -117,15 +117,24 @@ index 188ae6d..a8a4c2b 100644
  
  import org.apache.commons.lang.Validate;
  import org.bukkit.Bukkit;
-@@ -108,7 +110,6 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
-         this.durability = damage;
-         if (data != null) {
+@@ -105,10 +107,13 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+     public ItemStack(final int type, final int amount, final short damage, final Byte data) {
+         this.type = type;
+         this.amount = amount;
+-        this.durability = damage;
+-        if (data != null) {
++        if(data == null) {
++            this.durability = damage;
++        } else {
++            if(damage != 0 && damage != data) {
++                throw new IllegalArgumentException("Item cannot have both damage and data value");
++            }
              createData(data);
 -            this.durability = data;
          }
      }
  
-@@ -124,6 +125,15 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+@@ -124,6 +129,15 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
          this(type.getId(), amount, damage, data);
      }
  
@@ -141,28 +150,61 @@ index 188ae6d..a8a4c2b 100644
      /**
       * Creates a new item stack derived from the specified stack
       *
-@@ -228,7 +238,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+@@ -199,7 +213,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+         if (this.meta != null) {
+             this.meta = Bukkit.getItemFactory().asMetaFor(meta, getType0());
+         }
+-        createData((byte) 0);
++        createData((byte) durability);
+     }
+ 
+     /**
+@@ -228,7 +242,7 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
      public MaterialData getData() {
          Material mat = getType();
          if (data == null && mat != null && mat.getData() != null) {
 -            data = mat.getNewData((byte) this.getDurability());
-+            data = mat.getNewData((byte) 0);
++            data = mat.getNewData((byte) durability);
          }
  
          return data;
-@@ -253,6 +263,11 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+@@ -251,6 +265,14 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+                 throw new IllegalArgumentException("Provided data is not of type " + mat.getData().getName() + ", found " + data.getClass().getName());
+             }
          }
-     }
- 
++        if(this.data != null && this.data.getItemType().getMaxDurability() == 0) {
++            this.durability = this.data.getData();
++        }
++    }
++
 +    public void setMaterial(MaterialData data) {
 +        setType(data.getItemType());
 +        setData(data);
-+    }
-+
+     }
+ 
      /**
-      * Sets the durability of this item
-      *
-@@ -608,4 +623,113 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+@@ -260,6 +282,9 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+      */
+     public void setDurability(final short durability) {
+         this.durability = durability;
++        if(data != null && data.getItemType().getMaxDurability() == 0) {
++            data.setData((byte) durability);
++        }
+     }
+ 
+     /**
+@@ -294,6 +319,10 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
+         } else {
+             this.data = mat.getNewData(data);
+         }
++
++        if(this.data.getItemType().getMaxDurability() == 0) {
++            this.durability = data;
++        }
+     }
+ 
+     @Override
+@@ -608,4 +637,113 @@ public class ItemStack implements Cloneable, ConfigurationSerializable {
  
          return true;
      }

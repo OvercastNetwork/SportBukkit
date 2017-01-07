@@ -1,4 +1,4 @@
-From 30d9cf0e1096ccf763eb5deb0896ea03c3c111b3 Mon Sep 17 00:00:00 2001
+From 3bf0e9cba7d20a488eaed75f84dede64055c9ce5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 5 Aug 2016 10:46:15 -0400
 Subject: [PATCH] Mojang task queue access
@@ -226,7 +226,7 @@ index 7847d05..7105833 100644
  
              try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f43ec56..d73a58c 100644
+index d4b9c94..07c7776 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -95,6 +95,7 @@ import org.bukkit.inventory.ShapedRecipe;
@@ -237,7 +237,7 @@ index f43ec56..d73a58c 100644
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.PluginLoadOrder;
  import org.bukkit.plugin.PluginManager;
-@@ -1828,4 +1829,44 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1832,4 +1833,44 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      public Set<Integer> getProtocolVersions() {
          return ImmutableSet.of(315);
      }

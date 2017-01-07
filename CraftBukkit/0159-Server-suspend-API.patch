@@ -1,4 +1,4 @@
-From 4e550eb4c441a004730290a296eac9c3bb0e8162 Mon Sep 17 00:00:00 2001
+From ce78188b6ce2f46e6570d44a29fc65cad215981a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:28:26 -0500
 Subject: [PATCH] Server suspend API
@@ -229,7 +229,7 @@ index da6702c..99f49c0 100644
              long j = MinecraftServer.aw();
              long k = j - i;
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6e27d17..406dec6 100644
+index ddbc354..9a825c0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -6,6 +6,8 @@ import java.io.FileInputStream;
@@ -284,7 +284,7 @@ index 6e27d17..406dec6 100644
      public PluginManager getPluginManager() {
          return pluginManager;
      }
-@@ -1914,4 +1929,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1918,4 +1933,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
          return task instanceof Wrapped ? task : new Wrapped();
      }

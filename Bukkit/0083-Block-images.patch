@@ -1,11 +1,11 @@
-From e711aec4b8c50434b9a8ecfb024f5279d237b4f3 Mon Sep 17 00:00:00 2001
+From 5c85a30e76f695004b960cf783b7e6c7b53b5ef0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 2c1fb24..b3837d9 100644
+index 86fd99b..9a2e33a 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
@@ -16,7 +16,7 @@ index 2c1fb24..b3837d9 100644
  import org.bukkit.permissions.Permissible;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.PluginManager;
-@@ -1298,6 +1299,7 @@ public final class Bukkit {
+@@ -1302,6 +1303,7 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -50,10 +50,10 @@ index 837b2dd..8a7b3a2 100644
       * Gets the instance of the item factory (for {@link ItemMeta}).
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 6d47a61..deecc6e 100644
+index 02d5f77..111ccf3 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1011,12 +1011,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1013,12 +1013,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
  
      /**
       * Create a ChunkData for use in a generator.

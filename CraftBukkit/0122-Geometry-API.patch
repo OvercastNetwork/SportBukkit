@@ -1,4 +1,4 @@
-From e7a1c7a7561830bc98e3614579d5361cde6bd90c Mon Sep 17 00:00:00 2001
+From b25a16ee32ca0fbc19ce04dc17a82eb294b5d60e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:02 -0500
 Subject: [PATCH] Geometry API
@@ -271,6 +271,32 @@ index a8254cc..59a7e21 100644
      public CraftItemFactory getItemFactory() {
          return CraftItemFactory.instance();
      }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 1d0ceda..b124e12 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1111,12 +1111,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+ 
+     @Override
+     public World getWorld(UUID uid) {
+-        for (World world : worlds.values()) {
+-            if (world.getUID().equals(uid)) {
+-                return world;
+-            }
++        return worldsById.get(uid);
++    }
++
++    @Override
++    public World world(UUID uid) {
++        final World world = getWorld(uid);
++        if(world == null) {
++            throw new IllegalStateException("No loaded world with UUID " + uid);
+         }
+-        return null;
++        return world;
+     }
+ 
+     public void addWorld(World world) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftVectorFactory.java b/src/main/java/org/bukkit/craftbukkit/util/CraftVectorFactory.java
 new file mode 100644
 index 0000000..287c095

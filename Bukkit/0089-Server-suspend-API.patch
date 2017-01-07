@@ -1,11 +1,11 @@
-From 4bbd37a9375d895c2867f91fcbceeecb955c4682 Mon Sep 17 00:00:00 2001
+From 5147f92db1b72813ef6d54ece39838fcbb2d25d7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:14:13 -0500
 Subject: [PATCH] Server suspend API
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 079f496..12170b6 100644
+index ad936e8..40cdbd1 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -3,6 +3,8 @@ package org.bukkit;
@@ -52,7 +52,7 @@ index 079f496..12170b6 100644
       * Gets a player object by the given username.
       * <p>
       * This method may not return objects for offline players.
-@@ -1088,4 +1104,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1090,4 +1106,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       *         false if it was added to the main thread queue
       */
      boolean runOnMainThread(Plugin plugin, boolean priority, Runnable task);

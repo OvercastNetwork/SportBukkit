@@ -1,11 +1,11 @@
-From cc822f10da2100767814e5e356b3c79367fbc164 Mon Sep 17 00:00:00 2001
+From 2fc02dcf1690c1a2e7f13aac610c5d4ce6144d86 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:11 -0500
 Subject: [PATCH] Geometry API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 3f99983..1519aae 100644
+index 3f99983..7e48235 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -50,6 +50,7 @@ import org.bukkit.generator.ChunkGenerator;
@@ -16,7 +16,18 @@ index 3f99983..1519aae 100644
  
  /**
   * Represents the Bukkit core, for version and Server singleton handling
-@@ -1289,6 +1290,8 @@ public final class Bukkit {
+@@ -619,6 +620,10 @@ public final class Bukkit {
+         return server.getWorld(uid);
+     }
+ 
++    public static World world(UUID uid) {
++        return server.world(uid);
++    }
++
+     /**
+      * Gets the map from the given item ID.
+      *
+@@ -1289,6 +1294,8 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -47,14 +58,16 @@ index b452cd3..837b2dd 100644
       * Gets the instance of the item factory (for {@link ItemMeta}).
       *
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index cd7ac2f..0d2cca2 100644
+index cd7ac2f..c23087e 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
-@@ -2,24 +2,45 @@ package org.bukkit;
+@@ -2,24 +2,64 @@ package org.bukkit;
  
  import java.util.HashMap;
  import java.util.Map;
 +import java.util.Objects;
++import java.util.UUID;
++import javax.annotation.Nullable;
  
  import org.bukkit.block.Block;
  import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -71,28 +84,46 @@ index cd7ac2f..0d2cca2 100644
   * Represents a 3-dimensional position in a world
   */
  public class Location implements Cloneable, ConfigurationSerializable, Physical {
-+
-     private World world;
+-    private World world;
 -    private double x;
 -    private double y;
 -    private double z;
++
++    private UUID worldId;
 +    private final Vector position;
      private float pitch;
      private float yaw;
  
-+    public Location(final World world, Vec3 position) {
++    public Location(World world, Vec3 position) {
 +        this(world, position, 0, 0);
 +    }
 +
-+    public Location(final World world, Vec3 position, float yaw, float pitch) {
++    public Location(UUID world, Vec3 position) {
++        this(world, position, 0, 0);
++    }
++
++    public Location(World world, Vec3 position, float yaw, float pitch) {
 +        this(world, position.fineX(), position.fineY(), position.fineZ(), yaw, pitch);
 +    }
 +
-+    public Location(final World world, Vec3 position, Direction direction) {
++    public Location(UUID world, Vec3 position, float yaw, float pitch) {
++        this(world, position.fineX(), position.fineY(), position.fineZ(), yaw, pitch);
++    }
++
++    public Location(World world, Vec3 position, Direction direction) {
 +        this(world, position.fineX(), position.fineY(), position.fineZ(), direction.yawDegrees(), direction.pitchDegrees());
 +    }
 +
-+    public Location(final World world, Ray ray) {
++    public Location(UUID world, Vec3 position, Direction direction) {
++        this(world, position.fineX(), position.fineY(), position.fineZ(), direction.yawDegrees(), direction.pitchDegrees());
++    }
++
++    public Location(World world, Ray ray) {
++        this(world, ray.origin().fineX(), ray.origin().fineY(), ray.origin().fineZ(),
++             ray.direction().yawDegrees(), ray.direction().pitchDegrees());
++    }
++
++    public Location(UUID world, Ray ray) {
 +        this(world, ray.origin().fineX(), ray.origin().fineY(), ray.origin().fineZ(),
 +             ray.direction().yawDegrees(), ray.direction().pitchDegrees());
 +    }
@@ -100,21 +131,93 @@ index cd7ac2f..0d2cca2 100644
      /**
       * Constructs a new Location with the given coordinates
       *
-@@ -44,9 +65,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -28,7 +68,11 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @param y The y-coordinate of this new location
+      * @param z The z-coordinate of this new location
       */
-     public Location(final World world, final double x, final double y, final double z, final float yaw, final float pitch) {
-         this.world = world;
+-    public Location(final World world, final double x, final double y, final double z) {
++    public Location(World world, double x, double y, double z) {
++        this(world, x, y, z, 0, 0);
++    }
++
++    public Location(UUID world, double x, double y, double z) {
+         this(world, x, y, z, 0, 0);
+     }
+ 
+@@ -42,11 +86,13 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @param yaw The absolute rotation on the x-plane, in degrees
+      * @param pitch The absolute rotation on the y-plane, in degrees
+      */
+-    public Location(final World world, final double x, final double y, final double z, final float yaw, final float pitch) {
+-        this.world = world;
 -        this.x = x;
 -        this.y = y;
 -        this.z = z;
++    public Location(World world, double x, double y, double z, float yaw, float pitch) {
++        this(world.getUID(), x, y, z, yaw, pitch);
++    }
++
++    public Location(UUID world, double x, double y, double z, float yaw, float pitch) {
++        this.worldId = world;
 +        this.position = new Vector(x, y, z);
          this.pitch = pitch;
          this.yaw = yaw;
      }
-@@ -87,13 +106,25 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
-         return world.getBlockAt(this);
+@@ -57,7 +103,11 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @param world New world that this location resides in
+      */
+     public void setWorld(World world) {
+-        this.world = world;
++        setWorldId(world.getUID());
++    }
++
++    public void setWorldId(UUID worldId) {
++        this.worldId = worldId;
      }
  
+     /**
+@@ -66,7 +116,23 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @return World that contains this location
+      */
+     public World getWorld() {
+-        return world;
++        return getWorld(Bukkit.getServer());
++    }
++
++    public World getWorld(Server server) {
++        return server.world(getWorldId());
++    }
++
++    public @Nullable World getWorldIfLoaded() {
++        return getWorldIfLoaded(Bukkit.getServer());
++    }
++
++    public @Nullable World getWorldIfLoaded(Server server) {
++        return server.getWorld(getWorldId());
++    }
++
++    public UUID getWorldId() {
++        return worldId;
+     }
+ 
+     /**
+@@ -75,7 +141,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @return Chunk at the represented location
+      */
+     public Chunk getChunk() {
+-        return world.getChunkAt(this);
++        return getWorld().getChunkAt(this);
+     }
+ 
+     /**
+@@ -84,7 +150,19 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+      * @return Block at the represented location
+      */
+     public Block getBlock() {
+-        return world.getBlockAt(this);
++        return getWorld().getBlockAt(this);
++    }
++
 +    public Vector position() {
 +        return position;
 +    }
@@ -125,11 +228,10 @@ index cd7ac2f..0d2cca2 100644
 +
 +    public void setPosition(double x, double y, double z) {
 +        position.set(x, y, z);
-+    }
-+
+     }
+ 
      /**
-      * Sets the x-coordinate of this location
-      *
+@@ -93,7 +171,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @param x X-coordinate
       */
      public void setX(double x) {
@@ -138,7 +240,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -102,7 +133,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -102,7 +180,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return x-coordinate
       */
      public double getX() {
@@ -147,7 +249,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -112,7 +143,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -112,7 +190,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block X
       */
      public int getBlockX() {
@@ -156,7 +258,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -121,7 +152,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -121,7 +199,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @param y y-coordinate
       */
      public void setY(double y) {
@@ -165,7 +267,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -130,7 +161,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -130,7 +208,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return y-coordinate
       */
      public double getY() {
@@ -174,7 +276,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -140,7 +171,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -140,7 +218,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block y
       */
      public int getBlockY() {
@@ -183,7 +285,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -149,7 +180,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -149,7 +227,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @param z z-coordinate
       */
      public void setZ(double z) {
@@ -192,7 +294,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -158,7 +189,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -158,7 +236,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return z-coordinate
       */
      public double getZ() {
@@ -201,7 +303,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -168,7 +199,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -168,7 +246,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return block z
       */
      public int getBlockZ() {
@@ -210,7 +312,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -239,6 +270,14 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -239,6 +317,14 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          return pitch;
      }
  
@@ -225,7 +327,7 @@ index cd7ac2f..0d2cca2 100644
      /**
       * Gets a unit-vector pointing in the direction that this Location is
       * facing.
-@@ -310,11 +349,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -310,11 +396,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
@@ -238,7 +340,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -325,9 +360,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -325,9 +407,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location add(Vector vec) {
@@ -249,7 +351,7 @@ index cd7ac2f..0d2cca2 100644
          return this;
      }
  
-@@ -341,9 +374,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -341,9 +421,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location add(double x, double y, double z) {
@@ -260,7 +362,7 @@ index cd7ac2f..0d2cca2 100644
          return this;
      }
  
-@@ -359,11 +390,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -359,11 +437,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          if (vec == null || vec.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot add Locations of differing worlds");
          }
@@ -273,7 +375,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -374,9 +401,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -374,9 +448,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location subtract(Vector vec) {
@@ -284,7 +386,7 @@ index cd7ac2f..0d2cca2 100644
          return this;
      }
  
-@@ -391,9 +416,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -391,9 +463,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location subtract(double x, double y, double z) {
@@ -295,7 +397,7 @@ index cd7ac2f..0d2cca2 100644
          return this;
      }
  
-@@ -409,7 +432,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -409,7 +479,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the magnitude
       */
      public double length() {
@@ -304,7 +406,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -420,7 +443,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -420,7 +490,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the magnitude
       */
      public double lengthSquared() {
@@ -313,7 +415,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -455,8 +478,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -455,8 +525,7 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
          } else if (o.getWorld() != getWorld()) {
              throw new IllegalArgumentException("Cannot measure distance between " + getWorld().getName() + " and " + o.getWorld().getName());
          }
@@ -323,7 +425,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      /**
-@@ -468,72 +490,59 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -468,72 +537,59 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       * @return the same location
       */
      public Location multiply(double m) {
@@ -331,20 +433,20 @@ index cd7ac2f..0d2cca2 100644
 -        y *= m;
 -        z *= m;
 +        position.multiply(m);
-+        return this;
-+    }
-+
-+    /**
+         return this;
+     }
+ 
+     /**
 +     * Copy yaw and pitch from the given {@link Location} to this one.
 +     * @return this object
 +     */
 +    public Location copyAngles(Location loc) {
 +        this.yaw = loc.getYaw();
 +        this.pitch = loc.getPitch();
-         return this;
-     }
- 
-     /**
++        return this;
++    }
++
++    /**
 +     * Copy position and angles from the given {@link Location} to this one.
 +     * @return this object
 +     */
@@ -368,7 +470,7 @@ index cd7ac2f..0d2cca2 100644
      }
  
      @Override
-     public boolean equals(Object obj) {
+-    public boolean equals(Object obj) {
 -        if (obj == null) {
 -            return false;
 -        }
@@ -396,17 +498,18 @@ index cd7ac2f..0d2cca2 100644
 -            return false;
 -        }
 -        return true;
++    public final boolean equals(Object obj) {
 +        if(this == obj) return true;
 +        if(!(obj instanceof Location)) return false;
 +        final Location that = (Location) obj;
-+        return Objects.equals(world, that.getWorld()) &&
++        return Objects.equals(worldId, that.getWorldId()) &&
 +               Objects.equals(position, that.position()) &&
 +               yaw == that.getYaw() &&
 +               pitch == that.getPitch();
      }
  
      @Override
-     public int hashCode() {
+-    public int hashCode() {
 -        int hash = 3;
 -
 -        hash = 19 * hash + (this.world != null ? this.world.hashCode() : 0);
@@ -416,17 +519,18 @@ index cd7ac2f..0d2cca2 100644
 -        hash = 19 * hash + Float.floatToIntBits(this.pitch);
 -        hash = 19 * hash + Float.floatToIntBits(this.yaw);
 -        return hash;
-+        return Objects.hash(world, position, yaw, pitch);
++    public final int hashCode() {
++        return Objects.hash(worldId, position, yaw, pitch);
      }
  
      @Override
      public String toString() {
 -        return "Location{" + "world=" + world + ",x=" + x + ",y=" + y + ",z=" + z + ",pitch=" + pitch + ",yaw=" + yaw + '}';
-+        return "Location{" + "world=" + world + ",pos=" + position + ",pitch=" + pitch + ",yaw=" + yaw + '}';
++        return "Location{" + "world=" + worldId + ",pos=" + position + ",pitch=" + pitch + ",yaw=" + yaw + '}';
      }
  
      /**
-@@ -543,37 +552,26 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
+@@ -543,37 +599,26 @@ public class Location implements Cloneable, ConfigurationSerializable, Physical
       *     Location
       */
      public Vector toVector() {
@@ -456,14 +560,15 @@ index cd7ac2f..0d2cca2 100644
 -        return NumberConversions.floor(loc);
 +    @Override
 +    public Location clone() {
-+        return new Location(world, position, yaw, pitch);
++        return new Location(worldId, position, yaw, pitch);
      }
  
 -	@Utility
 +    @Utility
  	public Map<String, Object> serialize() {
  		Map<String, Object> data = new HashMap<String, Object>();
- 		data.put("world", this.world.getName());
+-		data.put("world", this.world.getName());
++		data.put("world", this.worldId);
  
 -		data.put("x", this.x);
 -		data.put("y", this.y);
@@ -474,6 +579,19 @@ index cd7ac2f..0d2cca2 100644
  
  		data.put("yaw", this.yaw);
  		data.put("pitch", this.pitch);
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index d165beb..5ce8344 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -509,6 +509,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+      */
+     public World getWorld(UUID uid);
+ 
++    World world(UUID uid);
++
+     /**
+      * Gets the map from the given item ID.
+      *
 diff --git a/src/main/java/org/bukkit/block/BlockFace.java b/src/main/java/org/bukkit/block/BlockFace.java
 index 58fb195..fe704f1 100644
 --- a/src/main/java/org/bukkit/block/BlockFace.java
@@ -6553,6 +6671,27 @@ index 0000000..ab193d3
 +        return (M) this;
 +    }
 +}
+diff --git a/src/test/java/org/bukkit/LocationTest.java b/src/test/java/org/bukkit/LocationTest.java
+index fa24776..4d56747 100644
+--- a/src/test/java/org/bukkit/LocationTest.java
++++ b/src/test/java/org/bukkit/LocationTest.java
+@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
+ 
+ import java.util.List;
+ import java.util.Random;
++import java.util.UUID;
+ 
+ import org.bukkit.util.Vector;
+ import org.junit.Test;
+@@ -184,7 +185,7 @@ public class LocationTest {
+     }
+ 
+     private static Location getEmptyLocation() {
+-        return new Location(null, 0, 0, 0);
++        return new Location(new UUID(0, 0), 0, 0, 0);
+     }
+ 
+     private Location getLocation() {
 -- 
 1.9.0
 

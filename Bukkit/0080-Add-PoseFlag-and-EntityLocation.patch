@@ -1,4 +1,4 @@
-From db8f534e2efaeca4ca0998582ee76f652c3d7cff Mon Sep 17 00:00:00 2001
+From 289c62d7b60ab64d9e66bdfce351f7c710ef5f94 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -6,13 +6,12 @@ Subject: [PATCH] Add PoseFlag and EntityLocation
 
 diff --git a/src/main/java/org/bukkit/EntityLocation.java b/src/main/java/org/bukkit/EntityLocation.java
 new file mode 100644
-index 0000000..41e6da8
+index 0000000..d9fbf35
 --- /dev/null
 +++ b/src/main/java/org/bukkit/EntityLocation.java
-@@ -0,0 +1,120 @@
+@@ -0,0 +1,104 @@
 +package org.bukkit;
 +
-+import java.util.Arrays;
 +import java.util.EnumSet;
 +import java.util.Set;
 +
@@ -107,21 +106,6 @@ index 0000000..41e6da8
 +               " velocity=" + velocity() +
 +               " poseFlags=" + poseFlags() +
 +               '}';
-+    }
-+
-+    @Override
-+    public boolean equals(Object that) {
-+        return this == that || (
-+            super.equals(that) &&
-+            that instanceof EntityLocation &&
-+            this.velocity.equals(((EntityLocation) that).velocity()) &&
-+            this.poseFlags.equals(((EntityLocation) that).poseFlags())
-+        );
-+    }
-+
-+    @Override
-+    public int hashCode() {
-+        return Arrays.hashCode(new Object[] {super.hashCode(), velocity, poseFlags});
 +    }
 +
 +    @Override

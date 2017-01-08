@@ -1,4 +1,4 @@
-From 4bfbc54f181237bba164eb736951beccad8cf5e3 Mon Sep 17 00:00:00 2001
+From d95041470ab849acd3a2ea75be5e28aa3eb82dca Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 4 Feb 2016 04:59:45 -0500
 Subject: [PATCH] Implement minecraft-api
@@ -34,7 +34,7 @@ index ba17c11..f36daaa 100644
      /**
       * Used for all administrative messages, such as an operator using a
 diff --git a/src/main/java/org/bukkit/command/CommandSender.java b/src/main/java/org/bukkit/command/CommandSender.java
-index 52c5947..a0fffb2 100644
+index 52c5947..76c386b 100644
 --- a/src/main/java/org/bukkit/command/CommandSender.java
 +++ b/src/main/java/org/bukkit/command/CommandSender.java
 @@ -3,7 +3,7 @@ package org.bukkit.command;
@@ -46,6 +46,16 @@ index 52c5947..a0fffb2 100644
  
      /**
       * Sends this sender a message
+@@ -38,4 +38,9 @@ public interface CommandSender extends Permissible {
+      * {@link org.bukkit.entity.Player}s to support fake names.
+      */
+     public String getName(CommandSender viewer);
++
++    @Override
++    default String getName(tc.oc.minecraft.api.command.CommandSender viewer) {
++        return getName((CommandSender) viewer);
++    }
+ }
 diff --git a/src/main/java/org/bukkit/command/ConsoleCommandSender.java b/src/main/java/org/bukkit/command/ConsoleCommandSender.java
 index f309c2e..a460d33 100644
 --- a/src/main/java/org/bukkit/command/ConsoleCommandSender.java

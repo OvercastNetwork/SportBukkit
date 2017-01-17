@@ -1,11 +1,9 @@
-From e4600cadecfa68e764408c93466393c218494ecb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 May 2015 06:31:14 -0400
 Subject: [PATCH] Item Attribute Modifier API
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
-index 31e608a..07b457e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
 +++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeInstance.java
 @@ -65,11 +65,11 @@ public class CraftAttributeInstance implements AttributeInstance {
@@ -23,7 +21,6 @@ index 31e608a..07b457e 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
-index e3adb5b..a385997 100644
 --- a/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
 +++ b/src/main/java/org/bukkit/craftbukkit/attribute/CraftAttributeMap.java
 @@ -17,23 +17,8 @@ public class CraftAttributeMap implements Attributable {
@@ -52,7 +49,6 @@ index e3adb5b..a385997 100644
 -    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
-index a72b179..d1cdc45 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
 @@ -1,16 +1,30 @@
@@ -165,7 +161,6 @@ index a72b179..d1cdc45 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index bb76444..b69c7c8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -8,11 +8,15 @@ import java.lang.reflect.Constructor;
@@ -491,6 +486,3 @@ index bb76444..b69c7c8 100644
                          HIDEFLAGS.NBT,
                          UNBREAKABLE.NBT,
                          CraftMetaMap.MAP_SCALING.NBT,
--- 
-1.9.0
-

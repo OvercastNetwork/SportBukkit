@@ -1,11 +1,9 @@
-From f2f360e0a86309feb0ee14423ba3108a2ca5eb62 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 30 Apr 2014 17:37:27 -0500
 Subject: [PATCH] Disable resource leak detector
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 12f8c71..1255517 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -131,6 +131,10 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -19,6 +17,3 @@ index 12f8c71..1255517 100644
          this.p = new ServerConnection(this);
          this.b = this.i();
          // this.convertable = new WorldLoaderServer(file); // CraftBukkit - moved to DedicatedServer.init
--- 
-1.9.0
-

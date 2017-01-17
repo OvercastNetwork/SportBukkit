@@ -1,11 +1,9 @@
-From 8dfbff7913729fe5793b54810a2f86b770b1e27c Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Wed, 25 Dec 2013 20:11:34 -0600
 Subject: [PATCH] Add EntityDespawnInVoidEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 0cc2dd0..e926529 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -26,6 +26,7 @@ import org.bukkit.entity.Hanging;
@@ -26,6 +24,3 @@ index 0cc2dd0..e926529 100644
          this.die();
      }
  
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 7fb6a6cb82c3669d364436add300257186b353b9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 12 Feb 2015 22:15:03 -0500
 Subject: [PATCH] Player list header/footer API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 2c433d3..d8e9255 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1509,4 +1509,20 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
@@ -30,6 +28,3 @@ index 2c433d3..d8e9255 100644
 +     */
 +    public void setPlayerListHeaderFooter(net.md_5.bungee.api.chat.BaseComponent header, net.md_5.bungee.api.chat.BaseComponent footer);
 +}
--- 
-1.9.0
-

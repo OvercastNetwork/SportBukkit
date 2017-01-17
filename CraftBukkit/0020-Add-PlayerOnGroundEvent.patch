@@ -1,11 +1,9 @@
-From 0da0a72f1e4522261aa97e5b486fc0fd36b2dec8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Jan 2013 14:12:03 -0500
 Subject: [PATCH] Add PlayerOnGroundEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 43db97d..e3b31ab 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -98,6 +98,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -31,6 +29,3 @@ index 43db97d..e3b31ab 100644
                              this.player.a(this.player.locY - d3, packetplayinflying.a());
                              this.o = this.player.locX;
                              this.p = this.player.locY;
--- 
-1.9.0
-

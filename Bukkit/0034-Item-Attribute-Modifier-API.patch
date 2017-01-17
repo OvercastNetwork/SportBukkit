@@ -1,11 +1,9 @@
-From f439dff73078f25e7e7c25ed971545b762001c63 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 May 2015 06:30:47 -0400
 Subject: [PATCH] Item Attribute Modifier API
 
 
 diff --git a/src/main/java/org/bukkit/attribute/Attribute.java b/src/main/java/org/bukkit/attribute/Attribute.java
-index 38bea1e..d9e83ad 100644
 --- a/src/main/java/org/bukkit/attribute/Attribute.java
 +++ b/src/main/java/org/bukkit/attribute/Attribute.java
 @@ -1,5 +1,8 @@
@@ -95,7 +93,6 @@ index 38bea1e..d9e83ad 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/attribute/AttributeModifier.java b/src/main/java/org/bukkit/attribute/AttributeModifier.java
-index ade7bf0..239c56a 100644
 --- a/src/main/java/org/bukkit/attribute/AttributeModifier.java
 +++ b/src/main/java/org/bukkit/attribute/AttributeModifier.java
 @@ -99,5 +99,11 @@ public class AttributeModifier implements ConfigurationSerializable {
@@ -182,7 +179,6 @@ index 0000000..71ae14e
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/inventory/ItemFactory.java b/src/main/java/org/bukkit/inventory/ItemFactory.java
-index 52a8d4d..ecfd18c 100644
 --- a/src/main/java/org/bukkit/inventory/ItemFactory.java
 +++ b/src/main/java/org/bukkit/inventory/ItemFactory.java
 @@ -1,11 +1,18 @@
@@ -226,7 +222,6 @@ index 52a8d4d..ecfd18c 100644
 +    Collection<ItemAttributeModifier> getAttributeModifiers(Material item, Attribute attribute);
  }
 diff --git a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
-index fa3efe3..92455ce 100644
 --- a/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
 +++ b/src/main/java/org/bukkit/inventory/meta/ItemMeta.java
 @@ -1,9 +1,13 @@
@@ -274,6 +269,3 @@ index fa3efe3..92455ce 100644
      @SuppressWarnings("javadoc")
      ItemMeta clone();
  }
--- 
-1.9.0
-

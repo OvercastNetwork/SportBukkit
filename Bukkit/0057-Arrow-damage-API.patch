@@ -1,11 +1,9 @@
-From a52ba8184dba04f8ca5018eb0d091d52f7600eee Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 04:36:30 -0500
 Subject: [PATCH] Arrow damage API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Arrow.java b/src/main/java/org/bukkit/entity/Arrow.java
-index 819d3fb..7963208 100644
 --- a/src/main/java/org/bukkit/entity/Arrow.java
 +++ b/src/main/java/org/bukkit/entity/Arrow.java
 @@ -6,6 +6,27 @@ package org.bukkit.entity;
@@ -36,6 +34,3 @@ index 819d3fb..7963208 100644
       * Gets the knockback strength for an arrow, which is the
       * {@link org.bukkit.enchantments.Enchantment#KNOCKBACK KnockBack} level
       * of the bow that shot it.
--- 
-1.9.0
-

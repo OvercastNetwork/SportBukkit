@@ -1,11 +1,9 @@
-From 80303e9b18eef3f6a292655e0307a998b93ec6c9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 01:54:36 -0500
 Subject: [PATCH] Fix FallingSand creating invisible blocks
 
 
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 81294d6..bfdb5f9 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -968,6 +968,18 @@ public abstract class World implements IBlockAccess {
@@ -27,6 +25,3 @@ index 81294d6..bfdb5f9 100644
          // CraftBukkit end
          int i = MathHelper.floor(entity.locX / 16.0D);
          int j = MathHelper.floor(entity.locZ / 16.0D);
--- 
-1.9.0
-

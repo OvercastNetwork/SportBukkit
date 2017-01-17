@@ -1,11 +1,9 @@
-From d9dfee65da1ae0f99276c772855de917025654fa Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 22 May 2015 00:46:32 -0400
 Subject: [PATCH] Add CanDestroy and CanPlaceOn to ItemMeta
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index b69c7c8..ac039ab 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
@@ -208,6 +206,3 @@ index b69c7c8..ac039ab 100644
                          CraftMetaMap.MAP_SCALING.NBT,
                          CraftMetaPotion.POTION_EFFECTS.NBT,
                          CraftMetaPotion.DEFAULT_POTION.NBT,
--- 
-1.9.0
-

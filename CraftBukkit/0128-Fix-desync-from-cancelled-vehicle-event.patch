@@ -1,11 +1,9 @@
-From ad67a94d400fac82e4d53dc9020acee9f114ba23 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 02:50:33 -0400
 Subject: [PATCH] Fix desync from cancelled vehicle event
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 704a847..f0f90a1 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1826,6 +1826,24 @@ public abstract class Entity implements ICommandListener {
@@ -113,6 +111,3 @@ index 704a847..f0f90a1 100644
      public Entity bB() {
          return this.au;
      }
--- 
-1.9.0
-

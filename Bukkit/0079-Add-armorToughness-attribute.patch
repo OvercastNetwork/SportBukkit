@@ -1,11 +1,9 @@
-From 2b2803d86abc90e7c9150634e2bca1c3ced19f2f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 26 Jun 2016 19:18:01 -0400
 Subject: [PATCH] Add armorToughness attribute
 
 
 diff --git a/src/main/java/org/bukkit/attribute/Attribute.java b/src/main/java/org/bukkit/attribute/Attribute.java
-index 183fcb4..26affb9 100644
 --- a/src/main/java/org/bukkit/attribute/Attribute.java
 +++ b/src/main/java/org/bukkit/attribute/Attribute.java
 @@ -37,6 +37,10 @@ public enum Attribute {
@@ -19,6 +17,3 @@ index 183fcb4..26affb9 100644
       * Luck bonus of an Entity.
       */
      GENERIC_LUCK("generic.luck"),
--- 
-1.9.0
-

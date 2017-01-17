@@ -1,11 +1,9 @@
-From 2d24be9cccc978e677d548dff13c5476a2f7cc9e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 22 Jun 2016 15:17:26 -0400
 Subject: [PATCH] Allow empty ItemStack
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 8ee617a..5246e22 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -150,11 +150,7 @@ public final class CraftItemStack extends ItemStack {
@@ -21,6 +19,3 @@ index 8ee617a..5246e22 100644
      }
  
      @Override
--- 
-1.9.0
-

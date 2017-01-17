@@ -1,11 +1,9 @@
-From 3bf0e9cba7d20a488eaed75f84dede64055c9ce5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 5 Aug 2016 10:46:15 -0400
 Subject: [PATCH] Mojang task queue access
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 274282c..1924983 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
 @@ -363,7 +363,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
@@ -43,7 +41,6 @@ index 274282c..1924983 100644
              return waitable.get();
          } catch (java.util.concurrent.ExecutionException e) {
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 957756c..7e2a590 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -243,7 +243,7 @@ public class LoginListener implements PacketLoginInListener, ITickable {
@@ -64,7 +61,6 @@ index 957756c..7e2a590 100644
      }
  
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 0db201b..669cb07 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -48,6 +48,11 @@ import org.bukkit.craftbukkit.CraftServer;
@@ -174,7 +170,6 @@ index 0db201b..669cb07 100644
          return 256;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index fbf67c3..bdb9c2b 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1332,7 +1332,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -205,7 +200,6 @@ index fbf67c3..bdb9c2b 100644
                      waitable.run();
                  }
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index 7847d05..7105833 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
 @@ -126,14 +126,8 @@ public class ServerConnection {
@@ -226,7 +220,6 @@ index 7847d05..7105833 100644
  
              try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index d4b9c94..07c7776 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -95,6 +95,7 @@ import org.bukkit.inventory.ShapedRecipe;
@@ -283,7 +276,6 @@ index d4b9c94..07c7776 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/command/ConsoleCommandCompleter.java b/src/main/java/org/bukkit/craftbukkit/command/ConsoleCommandCompleter.java
-index 9dc1218..3a67414 100644
 --- a/src/main/java/org/bukkit/craftbukkit/command/ConsoleCommandCompleter.java
 +++ b/src/main/java/org/bukkit/craftbukkit/command/ConsoleCommandCompleter.java
 @@ -30,7 +30,7 @@ public class ConsoleCommandCompleter implements Completer {
@@ -295,6 +287,3 @@ index 9dc1218..3a67414 100644
          try {
              List<String> offers = waitable.get();
              if (offers == null) {
--- 
-1.9.0
-

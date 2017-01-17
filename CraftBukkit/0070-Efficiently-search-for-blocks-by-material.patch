@@ -1,11 +1,9 @@
-From 4db7334e166bc05533a233c5e0568acda7605851 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Feb 2015 04:58:46 -0500
 Subject: [PATCH] Efficiently search for blocks by material
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index eff62af..465debd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -2,6 +2,8 @@ package org.bukkit.craftbukkit;
@@ -49,6 +47,3 @@ index eff62af..465debd 100644
      public Entity[] getEntities() {
          int count = 0, index = 0;
          net.minecraft.server.Chunk chunk = getHandle();
--- 
-1.9.0
-

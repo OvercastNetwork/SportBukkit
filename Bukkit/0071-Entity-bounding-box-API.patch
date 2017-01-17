@@ -1,11 +1,9 @@
-From b68f43a590a1b603d8d16cb2f2a5a0dceff55326 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:00:35 -0400
 Subject: [PATCH] Entity bounding box API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index c1a990e..cca452b 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -7,6 +7,7 @@ import org.bukkit.Nameable;
@@ -24,7 +22,6 @@ index c1a990e..cca452b 100644
 +    Cuboid getBoundingBox();
  }
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 3a9f98d..e5c6f97 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
 @@ -13,6 +13,7 @@ import org.bukkit.inventory.EntityEquipment;
@@ -48,6 +45,3 @@ index 3a9f98d..e5c6f97 100644
       * Gets all blocks along the living entity's line of sight.
       * <p>
       * This list contains all blocks from the living entity's eye position to
--- 
-1.9.0
-

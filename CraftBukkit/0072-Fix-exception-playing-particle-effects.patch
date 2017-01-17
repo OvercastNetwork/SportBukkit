@@ -1,11 +1,9 @@
-From 6e53068681ef5ba97205b97d66d4d895835d4bae Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 17 Feb 2015 03:50:47 -0500
 Subject: [PATCH] Fix exception playing particle effects
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
-index 582d7bf..845245c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftEffect.java
 @@ -65,4 +65,13 @@ public class CraftEffect {
@@ -23,7 +21,6 @@ index 582d7bf..845245c 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 3dc6dab..75f48d5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -867,7 +867,7 @@ public class CraftWorld implements World {
@@ -36,7 +33,6 @@ index 3dc6dab..75f48d5 100644
  
          int distance;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c190168..4b40cb5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -656,7 +656,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -48,6 +44,3 @@ index c190168..4b40cb5 100644
          }
  
          if (!location.getWorld().equals(getWorld())) {
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 1b953d5a6c26d3eaccc47f85e1bf8cedf057aae2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 3 Jun 2015 19:09:27 -0400
 Subject: [PATCH] Mutable ChunkSnapshots
 
 
 diff --git a/src/main/java/org/bukkit/ChunkSnapshot.java b/src/main/java/org/bukkit/ChunkSnapshot.java
-index 83fccc8..28f4442 100644
 --- a/src/main/java/org/bukkit/ChunkSnapshot.java
 +++ b/src/main/java/org/bukkit/ChunkSnapshot.java
 @@ -1,6 +1,9 @@
@@ -74,6 +72,3 @@ index 83fccc8..28f4442 100644
 +     */
 +    void updateBlock(BlockState state);
  }
--- 
-1.9.0
-

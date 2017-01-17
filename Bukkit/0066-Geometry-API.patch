@@ -1,11 +1,9 @@
-From 2fc02dcf1690c1a2e7f13aac610c5d4ce6144d86 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 18 Nov 2016 04:34:11 -0500
 Subject: [PATCH] Geometry API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 3f99983..7e48235 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -50,6 +50,7 @@ import org.bukkit.generator.ChunkGenerator;
@@ -37,7 +35,6 @@ index 3f99983..7e48235 100644
          return runtime().potionRegistry();
      }
 diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/bukkit/BukkitRuntime.java
-index b452cd3..837b2dd 100644
 --- a/src/main/java/org/bukkit/BukkitRuntime.java
 +++ b/src/main/java/org/bukkit/BukkitRuntime.java
 @@ -5,6 +5,7 @@ import org.bukkit.inventory.meta.ItemMeta;
@@ -58,7 +55,6 @@ index b452cd3..837b2dd 100644
       * Gets the instance of the item factory (for {@link ItemMeta}).
       *
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index cd7ac2f..c23087e 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
 @@ -2,24 +2,64 @@ package org.bukkit;
@@ -580,7 +576,6 @@ index cd7ac2f..c23087e 100644
  		data.put("yaw", this.yaw);
  		data.put("pitch", this.pitch);
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index d165beb..5ce8344 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -509,6 +509,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
@@ -593,7 +588,6 @@ index d165beb..5ce8344 100644
       * Gets the map from the given item ID.
       *
 diff --git a/src/main/java/org/bukkit/block/BlockFace.java b/src/main/java/org/bukkit/block/BlockFace.java
-index 58fb195..fe704f1 100644
 --- a/src/main/java/org/bukkit/block/BlockFace.java
 +++ b/src/main/java/org/bukkit/block/BlockFace.java
 @@ -1,43 +1,79 @@
@@ -5520,7 +5514,6 @@ index 0000000..93f613e
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/BlockVector.java b/src/main/java/org/bukkit/util/BlockVector.java
-index bdf8f6d..cc2b700 100644
 --- a/src/main/java/org/bukkit/util/BlockVector.java
 +++ b/src/main/java/org/bukkit/util/BlockVector.java
 @@ -2,6 +2,7 @@ package org.bukkit.util;
@@ -5826,7 +5819,6 @@ index 0000000..0c53b96
 +    @Override public Vector set(double x, double y, double z) { throw ex(); }
 +}
 diff --git a/src/main/java/org/bukkit/util/NumberConversions.java b/src/main/java/org/bukkit/util/NumberConversions.java
-index e6af9ec..ff04e6a 100644
 --- a/src/main/java/org/bukkit/util/NumberConversions.java
 +++ b/src/main/java/org/bukkit/util/NumberConversions.java
 @@ -121,4 +121,45 @@ public final class NumberConversions {
@@ -5876,7 +5868,6 @@ index e6af9ec..ff04e6a 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/util/RayBlockIntersection.java b/src/main/java/org/bukkit/util/RayBlockIntersection.java
-index b1ba1d8..f2c986c 100644
 --- a/src/main/java/org/bukkit/util/RayBlockIntersection.java
 +++ b/src/main/java/org/bukkit/util/RayBlockIntersection.java
 @@ -2,6 +2,7 @@ package org.bukkit.util;
@@ -5970,7 +5961,6 @@ index 0000000..036df35
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/util/Vector.java b/src/main/java/org/bukkit/util/Vector.java
-index cebd3cc..b44e5e4 100644
 --- a/src/main/java/org/bukkit/util/Vector.java
 +++ b/src/main/java/org/bukkit/util/Vector.java
 @@ -3,11 +3,14 @@ package org.bukkit.util;
@@ -6672,7 +6662,6 @@ index 0000000..ab193d3
 +    }
 +}
 diff --git a/src/test/java/org/bukkit/LocationTest.java b/src/test/java/org/bukkit/LocationTest.java
-index fa24776..4d56747 100644
 --- a/src/test/java/org/bukkit/LocationTest.java
 +++ b/src/test/java/org/bukkit/LocationTest.java
 @@ -5,6 +5,7 @@ import static org.junit.Assert.*;
@@ -6692,6 +6681,3 @@ index fa24776..4d56747 100644
      }
  
      private Location getLocation() {
--- 
-1.9.0
-

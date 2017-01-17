@@ -1,4 +1,3 @@
-From 15a5c76017223a12124c7de2659ca481d545482a Mon Sep 17 00:00:00 2001
 From: YukonAppleGeek <yukonvinecki@gmail.com>
 Date: Mon, 8 Apr 2013 20:14:25 -0700
 Subject: [PATCH] Add BlockDispenseEntityEvent
@@ -59,6 +58,3 @@ index 0000000..9d2227e
 +        this.location = location;
 +    }
 +}
--- 
-1.9.0
-

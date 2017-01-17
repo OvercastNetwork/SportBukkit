@@ -1,11 +1,9 @@
-From a9b7dab2f8237ec53955d8d11f6a39410027fe15 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 9 Dec 2014 02:08:38 -0500
 Subject: [PATCH] Better handling of plugin startup errors
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 0183aa7..26df822 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
 @@ -353,7 +353,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
@@ -18,7 +16,6 @@ index 0183aa7..26df822 100644
  
      public void D() { // CraftBukkit - fix decompile error
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 1255517..d6bc343 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -122,7 +122,9 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -52,7 +49,6 @@ index 1255517..d6bc343 100644
  
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 2b4d237..cc2d4a1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -291,6 +291,12 @@ public final class CraftServer implements Server {
@@ -106,7 +102,6 @@ index 2b4d237..cc2d4a1 100644
      public boolean hasWhitelist() {
          return this.getConfigBoolean("white-list", false);
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 959a63b..8e0686d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -186,6 +186,7 @@ public class Main {
@@ -118,7 +113,6 @@ index 959a63b..8e0686d 100644
          }
      }
 diff --git a/src/main/resources/configurations/bukkit.yml b/src/main/resources/configurations/bukkit.yml
-index 51831e9..76a0b79 100644
 --- a/src/main/resources/configurations/bukkit.yml
 +++ b/src/main/resources/configurations/bukkit.yml
 @@ -20,6 +20,7 @@ settings:
@@ -129,6 +123,3 @@ index 51831e9..76a0b79 100644
      deprecated-verbose: default
      shutdown-message: Server closed
      bungeecord: false
--- 
-1.9.0
-

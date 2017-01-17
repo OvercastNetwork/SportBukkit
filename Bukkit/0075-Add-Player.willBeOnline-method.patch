@@ -1,11 +1,9 @@
-From b445a3731aa82caa5a852a7b9fdb1f969635b29f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 25 Apr 2016 20:47:00 -0400
 Subject: [PATCH] Add Player.willBeOnline method
 
 
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
-index e98706a..98494cb 100644
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
 @@ -6,6 +6,8 @@ import java.util.UUID;
@@ -32,6 +30,3 @@ index e98706a..98494cb 100644
       * Returns the name of this player
       * <p>
       * Names are no longer unique past a single game session. For persistent storage
--- 
-1.9.0
-

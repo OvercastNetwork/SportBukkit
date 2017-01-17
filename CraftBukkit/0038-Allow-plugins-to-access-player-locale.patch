@@ -1,11 +1,9 @@
-From 8b99f7a5a81622604aa62868dbae234efdea6036 Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Sun, 5 Jan 2014 20:35:57 -0600
 Subject: [PATCH] Allow plugins to access player locale
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 7f95d69..e1b1825 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -28,7 +28,7 @@ import org.bukkit.inventory.MainHand;
@@ -34,7 +32,6 @@ index 7f95d69..e1b1825 100644
          this.ch = packetplayinsettings.d();
          this.getDataWatcher().set(EntityPlayer.bq, Byte.valueOf((byte) packetplayinsettings.e()));
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 75b1a15..3110c19 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1492,4 +1492,15 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -54,7 +51,6 @@ index 75b1a15..3110c19 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 2111f04..fcb6c27 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -655,7 +655,7 @@ public class CraftEventFactory {
@@ -78,6 +74,3 @@ index 2111f04..fcb6c27 100644
 +        return event;
 +    }
  }
--- 
-1.9.0
-

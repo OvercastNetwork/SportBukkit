@@ -1,11 +1,9 @@
-From 1c2be7b0a1d024bb58f109130d60f72ed15780d4 Mon Sep 17 00:00:00 2001
 From: Pablete1234 <pabloherrerapalacio@gmail.com>
 Date: Mon, 9 Jan 2017 20:51:49 +0100
 Subject: [PATCH] Add id specific map API
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemWorldMap.java b/src/main/java/net/minecraft/server/ItemWorldMap.java
-index 71f8d1c..f2219aa 100644
 --- a/src/main/java/net/minecraft/server/ItemWorldMap.java
 +++ b/src/main/java/net/minecraft/server/ItemWorldMap.java
 @@ -41,6 +41,20 @@ public class ItemWorldMap extends ItemWorldMapBase {
@@ -30,7 +28,6 @@ index 71f8d1c..f2219aa 100644
              worldmap.scale = 3;
              worldmap.a((double) world.getWorldData().b(), (double) world.getWorldData().d(), worldmap.scale);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6520c73..e51f606 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1431,6 +1431,13 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
@@ -47,6 +44,3 @@ index 6520c73..e51f606 100644
      public void shutdown() {
          console.safeShutdown();
      }
--- 
-1.9.5.msysgit.1
-

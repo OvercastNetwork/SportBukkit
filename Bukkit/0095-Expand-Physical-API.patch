@@ -1,11 +1,9 @@
-From 9fa4e56645dfb8e0e17ff37b991e034d7e2e3afc Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 7 Jan 2017 04:14:27 -0500
 Subject: [PATCH] Expand Physical API
 
 
 diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/Location.java
-index c23087e..3dce857 100644
 --- a/src/main/java/org/bukkit/Location.java
 +++ b/src/main/java/org/bukkit/Location.java
 @@ -4,7 +4,6 @@ import java.util.HashMap;
@@ -81,7 +79,6 @@ index c23087e..3dce857 100644
  
      /**
 diff --git a/src/main/java/org/bukkit/Physical.java b/src/main/java/org/bukkit/Physical.java
-index 24a58ff..e2bc766 100644
 --- a/src/main/java/org/bukkit/Physical.java
 +++ b/src/main/java/org/bukkit/Physical.java
 @@ -1,5 +1,8 @@
@@ -143,7 +140,6 @@ index 24a58ff..e2bc766 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index dafcbb1..dba2b55 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -533,6 +533,11 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
@@ -159,7 +155,6 @@ index dafcbb1..dba2b55 100644
       * Gets the default spawn {@link Location} of this world
       *
 diff --git a/src/main/java/org/bukkit/block/BlockState.java b/src/main/java/org/bukkit/block/BlockState.java
-index b1ae821..ca31a82 100644
 --- a/src/main/java/org/bukkit/block/BlockState.java
 +++ b/src/main/java/org/bukkit/block/BlockState.java
 @@ -109,8 +109,6 @@ public interface BlockState extends Metadatable, Locatable {
@@ -171,6 +166,3 @@ index b1ae821..ca31a82 100644
      Vec3 getPosition();
  
      Vec3 tryPosition();
--- 
-1.9.0
-

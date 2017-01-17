@@ -1,11 +1,9 @@
-From bdd6272dc2d007f16ab141c479701738520964fc Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Oct 2014 00:40:07 -0400
 Subject: [PATCH] Fix combustion events
 
 
 diff --git a/src/main/java/net/minecraft/server/DispenserRegistry.java b/src/main/java/net/minecraft/server/DispenserRegistry.java
-index 623785d..539d167 100644
 --- a/src/main/java/net/minecraft/server/DispenserRegistry.java
 +++ b/src/main/java/net/minecraft/server/DispenserRegistry.java
 @@ -230,7 +230,7 @@ public class DispenserRegistry {
@@ -26,7 +24,6 @@ index 623785d..539d167 100644
                  ((Fireball) fireball.getBukkitEntity()).setDirection(event.getVelocity()); // don't call the NMS version because it randomizes the value
  
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index e926529..d53056d 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -25,6 +25,8 @@ import org.bukkit.block.BlockFace;
@@ -178,7 +175,6 @@ index e926529..d53056d 100644
          float f3 = f * f + f1 * f1;
  
 diff --git a/src/main/java/net/minecraft/server/World.java b/src/main/java/net/minecraft/server/World.java
-index 45c6808..81294d6 100644
 --- a/src/main/java/net/minecraft/server/World.java
 +++ b/src/main/java/net/minecraft/server/World.java
 @@ -1744,6 +1744,41 @@ public abstract class World implements IBlockAccess {
@@ -224,7 +220,6 @@ index 45c6808..81294d6 100644
          return this.createExplosion(entity, d0, d1, d2, f, false, flag);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index fcb6c27..8eb488b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -484,18 +484,16 @@ public class CraftEventFactory {
@@ -259,6 +254,3 @@ index fcb6c27..8eb488b 100644
          } else if (source == DamageSource.STARVE) {
              cause = DamageCause.STARVATION;
          } else if (source == DamageSource.WITHER) {
--- 
-1.9.0
-

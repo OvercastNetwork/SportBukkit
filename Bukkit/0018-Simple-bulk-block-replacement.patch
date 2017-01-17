@@ -1,11 +1,9 @@
-From bd10e8b0666a77482471c279504341b21ee521b9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 28 Sep 2014 05:47:53 -0400
 Subject: [PATCH] Simple bulk block replacement
 
 
 diff --git a/src/main/java/org/bukkit/Chunk.java b/src/main/java/org/bukkit/Chunk.java
-index f39aabc..6c4107d 100644
 --- a/src/main/java/org/bukkit/Chunk.java
 +++ b/src/main/java/org/bukkit/Chunk.java
 @@ -3,6 +3,7 @@ package org.bukkit;
@@ -29,6 +27,3 @@ index f39aabc..6c4107d 100644
 +     */
 +    int replaceMaterial(Material original, MaterialData replacement);
  }
--- 
-1.9.0
-

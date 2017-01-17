@@ -1,11 +1,9 @@
-From 5c85a30e76f695004b960cf783b7e6c7b53b5ef0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:20:38 -0400
 Subject: [PATCH] Block images
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 86fd99b..9a2e33a 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -33,6 +33,7 @@ import org.bukkit.inventory.ItemStack;
@@ -25,7 +23,6 @@ index 86fd99b..9a2e33a 100644
  
      public static PotionBrewRegistry potionRegistry() {
 diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/bukkit/BukkitRuntime.java
-index 837b2dd..8a7b3a2 100644
 --- a/src/main/java/org/bukkit/BukkitRuntime.java
 +++ b/src/main/java/org/bukkit/BukkitRuntime.java
 @@ -1,9 +1,10 @@
@@ -50,7 +47,6 @@ index 837b2dd..8a7b3a2 100644
       * Gets the instance of the item factory (for {@link ItemMeta}).
       *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 02d5f77..111ccf3 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -1013,12 +1013,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
@@ -70,7 +66,6 @@ index 02d5f77..111ccf3 100644
      public ChunkGenerator.ChunkData createChunkData(World world);
  
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 2f67d70..64e41f6 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -1,12 +1,20 @@
@@ -228,7 +223,6 @@ index 2f67d70..64e41f6 100644
      /**
       * Represents various map environment types that a world may be
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index ff597f1..e97a4a4 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
 @@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
@@ -347,7 +341,6 @@ index 0000000..defd64c
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/block/BlockState.java b/src/main/java/org/bukkit/block/BlockState.java
-index aaaecb0..15a0520 100644
 --- a/src/main/java/org/bukkit/block/BlockState.java
 +++ b/src/main/java/org/bukkit/block/BlockState.java
 @@ -5,8 +5,13 @@ import org.bukkit.Locatable;
@@ -501,7 +494,6 @@ index 0000000..db43c72
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index fe7113a..dccef79 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -11,6 +11,7 @@ import org.bukkit.World;
@@ -513,7 +505,6 @@ index fe7113a..dccef79 100644
  
  import java.util.List;
 diff --git a/src/main/java/org/bukkit/material/Alignable.java b/src/main/java/org/bukkit/material/Alignable.java
-index c9ad81e..5759f6c 100644
 --- a/src/main/java/org/bukkit/material/Alignable.java
 +++ b/src/main/java/org/bukkit/material/Alignable.java
 @@ -1,6 +1,6 @@
@@ -525,7 +516,6 @@ index c9ad81e..5759f6c 100644
  public interface Alignable {
  
 diff --git a/src/main/java/org/bukkit/material/Lever.java b/src/main/java/org/bukkit/material/Lever.java
-index 3b76ed0..706b514 100644
 --- a/src/main/java/org/bukkit/material/Lever.java
 +++ b/src/main/java/org/bukkit/material/Lever.java
 @@ -2,7 +2,7 @@ package org.bukkit.material;
@@ -537,6 +527,3 @@ index 3b76ed0..706b514 100644
  
  /**
   * Represents a lever
--- 
-1.9.0
-

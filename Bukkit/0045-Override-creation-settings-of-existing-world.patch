@@ -1,11 +1,9 @@
-From 597e7ed68339a6eaeb0cb076ab5c083ea758a9da Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 28 Jun 2015 03:37:39 -0400
 Subject: [PATCH] Override creation settings of existing world
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index ed3aa4f..192f52c 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -500,6 +500,14 @@ public final class Bukkit {
@@ -24,7 +22,6 @@ index ed3aa4f..192f52c 100644
       * Creates or loads a world with the given name using the specified
       * options.
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 8dd5c65..b74d880 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -411,6 +411,29 @@ public interface Server extends PluginMessageRecipient {
@@ -58,7 +55,6 @@ index 8dd5c65..b74d880 100644
       * options.
       * <p>
 diff --git a/src/main/java/org/bukkit/WorldCreator.java b/src/main/java/org/bukkit/WorldCreator.java
-index 53980fd..81c95d1 100644
 --- a/src/main/java/org/bukkit/WorldCreator.java
 +++ b/src/main/java/org/bukkit/WorldCreator.java
 @@ -16,6 +16,7 @@ public class WorldCreator {
@@ -85,6 +81,3 @@ index 53980fd..81c95d1 100644
      /**
       * Creates a world with the specified options.
       * <p>
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 9a39bb87d59050b458e8b45432362416c199f052 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 29 May 2015 01:08:37 -0400
 Subject: [PATCH] Plugin isolation
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index e52d0d4..c8a829e 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -369,6 +369,13 @@ public final class Bukkit {
@@ -23,7 +21,6 @@ index e52d0d4..c8a829e 100644
       * <p>
       * <b>Example Usage:</b>
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 0e1d140..ba17c11 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -304,6 +304,11 @@ public interface Server extends PluginMessageRecipient {
@@ -39,7 +36,6 @@ index 0e1d140..ba17c11 100644
       * <p>
       * <b>Example Usage:</b>
 diff --git a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
-index e5ddef2..9cd15f4 100644
 --- a/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
 +++ b/src/main/java/org/bukkit/configuration/serialization/ConfigurationSerialization.java
 @@ -5,10 +5,13 @@ import java.lang.reflect.InvocationTargetException;
@@ -170,7 +166,6 @@ index e5ddef2..9cd15f4 100644
  
      /**
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index dc71961..89b40f2 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -23,6 +23,7 @@ import org.bukkit.Server;
@@ -195,7 +190,6 @@ index dc71961..89b40f2 100644
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 885f8ae..6cb69ba 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -9,10 +9,12 @@ import java.lang.reflect.Method;
@@ -393,7 +387,6 @@ index 885f8ae..6cb69ba 100644
              }
          }
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index 13f8633..4e94cc8 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 @@ -4,11 +4,13 @@ import java.io.File;
@@ -617,6 +610,3 @@ index 13f8633..4e94cc8 100644
 +        javaPlugin.init(pluginLoader, pluginLoader.server, description, dataFolder, file, this);
      }
  }
--- 
-1.9.0
-

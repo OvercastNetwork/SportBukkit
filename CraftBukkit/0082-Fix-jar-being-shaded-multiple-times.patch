@@ -1,11 +1,9 @@
-From 455b78410f504a02038f42e9b69a174d6f6de719 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 30 Apr 2015 22:42:34 -0400
 Subject: [PATCH] Fix jar being shaded multiple times
 
 
 diff --git a/pom.xml b/pom.xml
-index a50131f..7b6d84c 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -130,6 +130,7 @@
@@ -16,6 +14,3 @@ index a50131f..7b6d84c 100644
                      <archive>
                          <manifestEntries>
                              <Main-Class>org.bukkit.craftbukkit.Main</Main-Class>
--- 
-1.9.0
-

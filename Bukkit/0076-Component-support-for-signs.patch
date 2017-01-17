@@ -1,11 +1,9 @@
-From d130ff22b8ba390f3b0df0bc0c1e01997c1c1295 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:23 -0400
 Subject: [PATCH] Component support for signs
 
 
 diff --git a/src/main/java/org/bukkit/block/Sign.java b/src/main/java/org/bukkit/block/Sign.java
-index 5d7a633..7ded5ab 100644
 --- a/src/main/java/org/bukkit/block/Sign.java
 +++ b/src/main/java/org/bukkit/block/Sign.java
 @@ -1,5 +1,7 @@
@@ -49,7 +47,6 @@ index 5d7a633..7ded5ab 100644
      public void setLine(int index, String line) throws IndexOutOfBoundsException;
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index b13c16a..0ab4a72 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,8 +1,10 @@
@@ -74,7 +71,6 @@ index b13c16a..0ab4a72 100644
  
      /**
 diff --git a/src/main/java/org/bukkit/event/block/SignChangeEvent.java b/src/main/java/org/bukkit/event/block/SignChangeEvent.java
-index 702eca0..14a3808 100644
 --- a/src/main/java/org/bukkit/event/block/SignChangeEvent.java
 +++ b/src/main/java/org/bukkit/event/block/SignChangeEvent.java
 @@ -1,5 +1,7 @@
@@ -154,6 +150,3 @@ index 702eca0..14a3808 100644
      public boolean isCancelled() {
          return cancel;
      }
--- 
-1.9.0
-

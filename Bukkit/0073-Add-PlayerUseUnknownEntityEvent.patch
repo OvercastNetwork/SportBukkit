@@ -1,4 +1,3 @@
-From 65f8385e8d9e98ae8d33c3bda0f6b5ee54dc64ca Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 05:08:36 -0400
 Subject: [PATCH] Add PlayerUseUnknownEntityEvent
@@ -45,6 +44,3 @@ index 0000000..26cda06
 +    public static HandlerList getHandlerList() { return handlers; }
 +    @Override public HandlerList getHandlers() { return handlers; }
 +}
--- 
-1.9.0
-

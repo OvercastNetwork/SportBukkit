@@ -1,11 +1,9 @@
-From 62b32538d824d7d0c8ac1b7ab1a436e4629ef0bb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Feb 2015 04:32:45 -0500
 Subject: [PATCH] Title API
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
-index 7bcafa8..01c58fb 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
 @@ -12,6 +12,18 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
@@ -43,7 +41,6 @@ index 7bcafa8..01c58fb 100644
  
          if (this.a == PacketPlayOutTitle.EnumTitleAction.TIMES) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 4b40cb5..c8170b4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1819,4 +1819,48 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -95,6 +92,3 @@ index 4b40cb5..c8170b4 100644
 +        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.CLEAR, (BaseComponent[]) null, 0, 0, 0));
 +    }
  }
--- 
-1.9.0
-

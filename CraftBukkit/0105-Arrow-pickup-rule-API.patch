@@ -1,11 +1,9 @@
-From ffeb56941e86c1ea044fdf91259fdf9d4cd5862d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 03:16:11 -0500
 Subject: [PATCH] Arrow pickup rule API
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
-index dca8520..5ae05c5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
 @@ -46,6 +46,34 @@ public class CraftArrow extends AbstractProjectile implements Arrow {
@@ -43,6 +41,3 @@ index dca8520..5ae05c5 100644
      public EntityArrow getHandle() {
          return (EntityArrow) entity;
      }
--- 
-1.9.0
-

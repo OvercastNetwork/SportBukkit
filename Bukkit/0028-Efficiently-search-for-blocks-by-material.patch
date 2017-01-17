@@ -1,11 +1,9 @@
-From b25a138505ba5beb3ba2245f227a33950a816d2a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 16 Feb 2015 04:58:20 -0500
 Subject: [PATCH] Efficiently search for blocks by material
 
 
 diff --git a/src/main/java/org/bukkit/Chunk.java b/src/main/java/org/bukkit/Chunk.java
-index 6c4107d..d5862a1 100644
 --- a/src/main/java/org/bukkit/Chunk.java
 +++ b/src/main/java/org/bukkit/Chunk.java
 @@ -5,6 +5,8 @@ import org.bukkit.block.BlockState;
@@ -32,6 +30,3 @@ index 6c4107d..d5862a1 100644
       * Capture thread-safe read-only snapshot of chunk data
       *
       * @return ChunkSnapshot
--- 
-1.9.0
-

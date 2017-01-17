@@ -1,11 +1,9 @@
-From b7912c0c3acee012016cf004213f801cda3b44ea Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 29 Dec 2016 23:25:25 -0500
 Subject: [PATCH] Don't tick empty worlds
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 12170b6..f966510 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -230,6 +230,10 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
@@ -20,7 +18,6 @@ index 12170b6..f966510 100644
       * Gets whether this server allows the End or not.
       *
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 25593df..dafcbb1 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -312,6 +312,8 @@ public interface World extends PluginMessageRecipient, Metadatable, Physical {
@@ -45,6 +42,3 @@ index 25593df..dafcbb1 100644
      /**
       * Drops an item at the specified {@link Location}
       *
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 6c572f324b5af6692cdb245d464fbabbfcdb798d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:58:08 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
-index 008976a..f4adedb 100644
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
 @@ -17,6 +17,9 @@ import org.bukkit.craftbukkit.block.CraftBlockState;
@@ -53,6 +51,3 @@ index 008976a..f4adedb 100644
      }
  
      public ItemStack(NBTTagCompound nbttagcompound) {
--- 
-1.9.0
-

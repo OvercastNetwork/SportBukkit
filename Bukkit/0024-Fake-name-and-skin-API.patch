@@ -1,11 +1,9 @@
-From 1a6fd6de55230b3d0b086288ffd228c3df2ae937 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 23 Jan 2014 00:17:31 -0500
 Subject: [PATCH] Fake name and skin API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 748aa1a..e483168 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -437,6 +437,27 @@ public final class Bukkit {
@@ -37,7 +35,6 @@ index 748aa1a..e483168 100644
       *
       * @return a plugin manager for this Server instance
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index fc02479..a6f2b10 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -363,7 +363,22 @@ public interface Server extends PluginMessageRecipient {
@@ -147,7 +144,6 @@ index 0000000..5dc9cef
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/command/Command.java b/src/main/java/org/bukkit/command/Command.java
-index 7adc6ee..322c063 100644
 --- a/src/main/java/org/bukkit/command/Command.java
 +++ b/src/main/java/org/bukkit/command/Command.java
 @@ -103,7 +103,7 @@ public abstract class Command {
@@ -160,7 +156,6 @@ index 7adc6ee..322c063 100644
                  matchedPlayers.add(name);
              }
 diff --git a/src/main/java/org/bukkit/command/CommandSender.java b/src/main/java/org/bukkit/command/CommandSender.java
-index 148756b..52c5947 100644
 --- a/src/main/java/org/bukkit/command/CommandSender.java
 +++ b/src/main/java/org/bukkit/command/CommandSender.java
 @@ -32,4 +32,10 @@ public interface CommandSender extends Permissible {
@@ -175,7 +170,6 @@ index 148756b..52c5947 100644
 +    public String getName(CommandSender viewer);
  }
 diff --git a/src/main/java/org/bukkit/command/defaults/ListCommand.java b/src/main/java/org/bukkit/command/defaults/ListCommand.java
-index ea62bee..8442e03 100644
 --- a/src/main/java/org/bukkit/command/defaults/ListCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/ListCommand.java
 @@ -36,7 +36,7 @@ public class ListCommand extends VanillaCommand {
@@ -188,7 +182,6 @@ index ea62bee..8442e03 100644
  
          sender.sendMessage("There are " + players.size() + "/" + Bukkit.getMaxPlayers() + " players online:\n" + online.toString());
 diff --git a/src/main/java/org/bukkit/command/defaults/TellCommand.java b/src/main/java/org/bukkit/command/defaults/TellCommand.java
-index 7b0a41c..466691f 100644
 --- a/src/main/java/org/bukkit/command/defaults/TellCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/TellCommand.java
 @@ -25,7 +25,8 @@ public class TellCommand extends VanillaCommand {
@@ -202,7 +195,6 @@ index 7b0a41c..466691f 100644
          // If a player is hidden from the sender pretend they are offline
          if (player == null || (sender instanceof Player && !((Player) sender).canSee(player))) {
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index ce6ee84..0e2784d 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1,6 +1,7 @@
@@ -395,6 +387,3 @@ index 0000000..a222f21
 +        return handlers;
 +    }
 +}
--- 
-1.9.0
-

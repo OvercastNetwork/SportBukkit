@@ -1,11 +1,9 @@
-From 237d6b047c474c0b58a0debbac2cff7c92549e57 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 04:18:12 -0500
 Subject: [PATCH] Multi-trade API
 
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index ede84ef..e001b14 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
 @@ -119,6 +119,14 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
@@ -23,6 +21,3 @@ index ede84ef..e001b14 100644
       * Starts a trade between the player and the merchant.
       *
       * Note that only one player may trade with a merchant at once. You must use
--- 
-1.9.0
-

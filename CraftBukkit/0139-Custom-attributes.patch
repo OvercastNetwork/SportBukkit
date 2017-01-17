@@ -1,11 +1,9 @@
-From 7abe1ff1c2d3f7d7162d35401db430c7089a36f7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 21:57:42 -0400
 Subject: [PATCH] Custom attributes
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index 65bdfe2..431e6ad 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -73,13 +73,23 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -37,7 +35,6 @@ index 65bdfe2..431e6ad 100644
  
      public void shoot(double d0, double d1, double d2, float f, float f1) {
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index b916cb2..2c6a404 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -18,6 +18,7 @@ import java.util.ArrayList;
@@ -83,7 +80,6 @@ index b916cb2..2c6a404 100644
              };
              float blockingModifier = blocking.apply((double) f).floatValue();
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
-index d1cdc45..4f2468d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemFactory.java
 @@ -1,12 +1,14 @@
@@ -122,6 +118,3 @@ index d1cdc45..4f2468d 100644
      }
  
      private CraftItemFactory() {
--- 
-1.9.0
-

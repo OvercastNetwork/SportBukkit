@@ -1,11 +1,9 @@
-From 00770727af296e4106df33a7787ebbaef5c59893 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Mon, 1 Sep 2014 15:37:16 -0500
 Subject: [PATCH] Remove this shit
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 4b165e1..0183aa7 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
 @@ -127,7 +127,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
@@ -17,6 +15,3 @@ index 4b165e1..0183aa7 100644
              DedicatedServer.LOGGER.info("You need to agree to the EULA in order to run the server. Go to eula.txt for more info.");
              this.r.b();
              return false;
--- 
-1.9.0
-

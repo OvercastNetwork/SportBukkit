@@ -1,11 +1,9 @@
-From fd19b94781b81f45a515868d03f6cf9f66ccbc7d Mon Sep 17 00:00:00 2001
 From: md_5 <git@md-5.net>
 Date: Sat, 13 Dec 2014 12:59:14 +1100
 Subject: [PATCH] BungeeCord Chat API
 
 
 diff --git a/pom.xml b/pom.xml
-index 3304f7e..4db5835 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -82,6 +82,14 @@
@@ -24,7 +22,6 @@ index 3304f7e..4db5835 100644
          <dependency>
              <groupId>junit</groupId>
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index e483168..983a6cc 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -1192,4 +1192,22 @@ public final class Bukkit {
@@ -51,7 +48,6 @@ index e483168..983a6cc 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index a6f2b10..e96f5f4 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -974,4 +974,18 @@ public interface Server extends PluginMessageRecipient {
@@ -74,7 +70,6 @@ index a6f2b10..e96f5f4 100644
 +    public void broadcast(net.md_5.bungee.api.chat.BaseComponent... components);
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index e38feda..2c433d3 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1495,4 +1495,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
@@ -96,6 +91,3 @@ index e38feda..2c433d3 100644
 +     */
 +    public void sendMessage(net.md_5.bungee.api.chat.BaseComponent... components);
   }
--- 
-1.9.0
-

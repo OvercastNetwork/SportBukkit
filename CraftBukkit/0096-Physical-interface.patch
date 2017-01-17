@@ -1,11 +1,9 @@
-From e351138aeeef7b370644638c9980489d149006f7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jul 2015 01:08:46 -0400
 Subject: [PATCH] Physical interface
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 814373a..50fd775 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -92,6 +92,11 @@ public class CraftWorld implements World {
@@ -21,7 +19,6 @@ index 814373a..50fd775 100644
          return getChunkAt(x >> 4, z >> 4).getBlock(x & 0xF, y, z & 0xF);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index 0033246..dd016e9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 @@ -18,6 +18,7 @@ import net.minecraft.server.TileEntityFurnace;
@@ -45,7 +42,6 @@ index 0033246..dd016e9 100644
          return inventory.getMaxStackSize();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/projectiles/CraftBlockProjectileSource.java b/src/main/java/org/bukkit/craftbukkit/projectiles/CraftBlockProjectileSource.java
-index 744da02..42823da 100644
 --- a/src/main/java/org/bukkit/craftbukkit/projectiles/CraftBlockProjectileSource.java
 +++ b/src/main/java/org/bukkit/craftbukkit/projectiles/CraftBlockProjectileSource.java
 @@ -4,6 +4,7 @@ import java.util.Random;
@@ -68,6 +64,3 @@ index 744da02..42823da 100644
      public <T extends Projectile> T launchProjectile(Class<? extends T> projectile) {
          return launchProjectile(projectile, null);
      }
--- 
-1.9.0
-

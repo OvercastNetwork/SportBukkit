@@ -1,11 +1,9 @@
-From e47e4a4a5b551a3dac64556250b3d83a8c898453 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 4 Jan 2017 13:57:10 -0500
 Subject: [PATCH] Immutable materials and items
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 5246e22..6f9c0e6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -21,6 +21,7 @@ import org.bukkit.inventory.meta.ItemMeta;
@@ -38,7 +36,6 @@ index 5246e22..6f9c0e6 100644
          return (handle == null) ? Material.AIR.getMaxStackSize() : handle.getItem().getMaxStackSize();
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index ac039ab..0154dfb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -79,7 +79,7 @@ import org.apache.commons.codec.binary.Base64;
@@ -176,7 +173,6 @@ index 0000000..0dd64b3
 +    }
 +}
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/ItemStackTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/ItemStackTest.java
-index 6140ede..8935fcc 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/ItemStackTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/ItemStackTest.java
 @@ -3,6 +3,7 @@ package org.bukkit.craftbukkit.inventory;
@@ -253,7 +249,6 @@ index 6140ede..8935fcc 100644
 +    }
  }
 diff --git a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
-index 1f5a6a3..44ac9db 100644
 --- a/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
 +++ b/src/test/java/org/bukkit/craftbukkit/inventory/NMSCraftItemStackTest.java
 @@ -1,14 +1,20 @@
@@ -310,6 +305,3 @@ index 1f5a6a3..44ac9db 100644
 +        assertTrue(net.minecraft.server.ItemStack.equals(nms, CraftItemStack.asNMSCopy(bukkit)));
 +    }
  }
--- 
-1.9.0
-

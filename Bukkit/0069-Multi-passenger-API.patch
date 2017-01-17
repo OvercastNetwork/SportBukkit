@@ -1,11 +1,9 @@
-From 3181f370f42a27ee849eed16b990f83fffc1256e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:41:04 -0400
 Subject: [PATCH] Multi-passenger API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index dd0e995..c1a990e 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -248,6 +248,28 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
@@ -50,6 +48,3 @@ index dd0e995..c1a990e 100644
       * Leave the current vehicle. If the entity is currently in a vehicle (and
       * is removed from it), true will be returned, otherwise false will be
       * returned.
--- 
-1.9.0
-

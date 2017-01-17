@@ -1,11 +1,9 @@
-From 9edd1c47b572869f59a007c8085af03cea4261e2 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 17:00:13 -0700
 Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 
 
 diff --git a/pom.xml b/pom.xml
-index 41ac9d2..a50131f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -1,29 +1,39 @@
@@ -117,6 +115,3 @@ index 41ac9d2..a50131f 100644
                              </relocations>
                              <transformers>
                                  <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
--- 
-1.9.0
-

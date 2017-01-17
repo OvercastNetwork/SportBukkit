@@ -1,11 +1,9 @@
-From 0d338c18568b90f08c224cca94918209b53ffac9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 12 Aug 2016 20:49:50 -0400
 Subject: [PATCH] Remove armorToughness limit
 
 
 diff --git a/src/main/java/net/minecraft/server/GenericAttributes.java b/src/main/java/net/minecraft/server/GenericAttributes.java
-index 15ad9fa..b1711f9 100644
 --- a/src/main/java/net/minecraft/server/GenericAttributes.java
 +++ b/src/main/java/net/minecraft/server/GenericAttributes.java
 @@ -17,7 +17,7 @@ public class GenericAttributes {
@@ -17,6 +15,3 @@ index 15ad9fa..b1711f9 100644
      public static final IAttribute i = (new AttributeRanged((IAttribute) null, "generic.luck", 0.0D, -1024.0D, 1024.0D)).a(true);
  
      public static NBTTagList a(AttributeMapBase attributemapbase) {
--- 
-1.9.0
-

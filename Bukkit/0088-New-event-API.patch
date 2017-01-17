@@ -1,11 +1,9 @@
-From 0573039d4c90e2aa747a80564cd17ca18cf4f914 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 9 Jul 2016 05:27:03 -0400
 Subject: [PATCH] New event API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 9a2e33a..a658614 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -24,6 +24,7 @@ import org.bukkit.command.ConsoleCommandSender;
@@ -89,7 +87,6 @@ index 0000000..2cb3a71
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/bukkit/BukkitRuntime.java
-index 8a7b3a2..ed038b8 100644
 --- a/src/main/java/org/bukkit/BukkitRuntime.java
 +++ b/src/main/java/org/bukkit/BukkitRuntime.java
 @@ -1,5 +1,6 @@
@@ -116,7 +113,6 @@ index 8a7b3a2..ed038b8 100644
  
      Key key(String key);
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 111ccf3..ad936e8 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -24,6 +24,7 @@ import org.bukkit.command.ConsoleCommandSender;
@@ -326,7 +322,6 @@ index 0000000..373967b
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/command/defaults/TimingsCommand.java b/src/main/java/org/bukkit/command/defaults/TimingsCommand.java
-index a39ea5d..09554e4 100644
 --- a/src/main/java/org/bukkit/command/defaults/TimingsCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/TimingsCommand.java
 @@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
@@ -543,7 +538,6 @@ index 0000000..fa77ef1
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/Event.java b/src/main/java/org/bukkit/event/Event.java
-index 6677e1b..306449f 100644
 --- a/src/main/java/org/bukkit/event/Event.java
 +++ b/src/main/java/org/bukkit/event/Event.java
 @@ -1,5 +1,17 @@
@@ -794,7 +788,6 @@ index 0000000..e56fcf6
 +    EventCallable<?> EMPTY = event -> {};
 +}
 diff --git a/src/main/java/org/bukkit/event/EventException.java b/src/main/java/org/bukkit/event/EventException.java
-index aef8d49..d34096e 100644
 --- a/src/main/java/org/bukkit/event/EventException.java
 +++ b/src/main/java/org/bukkit/event/EventException.java
 @@ -1,5 +1,8 @@
@@ -1157,7 +1150,6 @@ index 0000000..dcf4a37
 +    Stream<BoundEventHandler<?>> bindHandlers(Listener listener);
 +}
 diff --git a/src/main/java/org/bukkit/event/HandlerList.java b/src/main/java/org/bukkit/event/HandlerList.java
-index 7d5efff..821220a 100644
 --- a/src/main/java/org/bukkit/event/HandlerList.java
 +++ b/src/main/java/org/bukkit/event/HandlerList.java
 @@ -1,33 +1,33 @@
@@ -1705,7 +1697,6 @@ index 0000000..bb0172e
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/EventExecutor.java b/src/main/java/org/bukkit/plugin/EventExecutor.java
-index 3b2c99e..2a994fa 100644
 --- a/src/main/java/org/bukkit/plugin/EventExecutor.java
 +++ b/src/main/java/org/bukkit/plugin/EventExecutor.java
 @@ -5,8 +5,9 @@ import org.bukkit.event.EventException;
@@ -1745,7 +1736,6 @@ index 0000000..5b03f17
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/Plugin.java b/src/main/java/org/bukkit/plugin/Plugin.java
-index 0d21654..9a1c231 100644
 --- a/src/main/java/org/bukkit/plugin/Plugin.java
 +++ b/src/main/java/org/bukkit/plugin/Plugin.java
 @@ -7,6 +7,7 @@ import java.util.logging.Logger;
@@ -1769,7 +1759,6 @@ index 0d21654..9a1c231 100644
       *
       * @return Server running this plugin
 diff --git a/src/main/java/org/bukkit/plugin/PluginBase.java b/src/main/java/org/bukkit/plugin/PluginBase.java
-index 6031af1..44f438b 100644
 --- a/src/main/java/org/bukkit/plugin/PluginBase.java
 +++ b/src/main/java/org/bukkit/plugin/PluginBase.java
 @@ -1,5 +1,15 @@
@@ -1969,7 +1958,6 @@ index 0000000..8c64d81
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/PluginManager.java b/src/main/java/org/bukkit/plugin/PluginManager.java
-index 15f6218..0864ecb 100644
 --- a/src/main/java/org/bukkit/plugin/PluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/PluginManager.java
 @@ -8,13 +8,12 @@ import org.bukkit.event.EventPriority;
@@ -2087,7 +2075,6 @@ index 0000000..80c562e
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/RegisteredListener.java b/src/main/java/org/bukkit/plugin/RegisteredListener.java
-index 9dd0b7a..89a50a1 100644
 --- a/src/main/java/org/bukkit/plugin/RegisteredListener.java
 +++ b/src/main/java/org/bukkit/plugin/RegisteredListener.java
 @@ -1,32 +1,32 @@
@@ -2185,7 +2172,6 @@ index 9dd0b7a..89a50a1 100644
 +    public boolean isIgnoringCancelled() { return meta().ignoreCancelled(); }
  }
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index c4adbd8..a8ac144 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -2,7 +2,6 @@ package org.bukkit.plugin;
@@ -2364,7 +2350,6 @@ index c4adbd8..a8ac144 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/plugin/TimedRegisteredListener.java b/src/main/java/org/bukkit/plugin/TimedRegisteredListener.java
-index 164be93..a5eb0a8 100644
 --- a/src/main/java/org/bukkit/plugin/TimedRegisteredListener.java
 +++ b/src/main/java/org/bukkit/plugin/TimedRegisteredListener.java
 @@ -2,22 +2,31 @@ package org.bukkit.plugin;
@@ -2400,7 +2385,6 @@ index 164be93..a5eb0a8 100644
      public void callEvent(Event event) throws EventException {
          if (event.isAsynchronous()) {
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
-index 9da6dc8..c74bae2 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPlugin.java
 @@ -9,24 +9,20 @@ import java.io.OutputStream;
@@ -2481,7 +2465,6 @@ index 9da6dc8..c74bae2 100644
                  isEnabled = false;
              }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index 6cb69ba..7f92280 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -4,9 +4,6 @@ import java.io.File;
@@ -2642,7 +2625,6 @@ index 0000000..98941df
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index 4e94cc8..977d6bb 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 @@ -9,6 +9,7 @@ import java.util.Set;
@@ -2685,7 +2667,6 @@ index 4e94cc8..977d6bb 100644
          if (this.plugin != null) {
              throw new IllegalArgumentException("Plugin already initialized!");
 diff --git a/src/main/java/org/bukkit/scheduler/BukkitScheduler.java b/src/main/java/org/bukkit/scheduler/BukkitScheduler.java
-index 6e28205..28ac02e 100644
 --- a/src/main/java/org/bukkit/scheduler/BukkitScheduler.java
 +++ b/src/main/java/org/bukkit/scheduler/BukkitScheduler.java
 @@ -1,6 +1,8 @@
@@ -2720,7 +2701,6 @@ index 6e28205..28ac02e 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/scheduler/BukkitTask.java b/src/main/java/org/bukkit/scheduler/BukkitTask.java
-index e447e64..ce24c8b 100644
 --- a/src/main/java/org/bukkit/scheduler/BukkitTask.java
 +++ b/src/main/java/org/bukkit/scheduler/BukkitTask.java
 @@ -1,11 +1,12 @@
@@ -2738,7 +2718,6 @@ index e447e64..ce24c8b 100644
      /**
       * Returns the taskId for the task.
 diff --git a/src/test/java/org/bukkit/TestServer.java b/src/test/java/org/bukkit/TestServer.java
-index 2d84032..152010a 100644
 --- a/src/test/java/org/bukkit/TestServer.java
 +++ b/src/test/java/org/bukkit/TestServer.java
 @@ -6,12 +6,13 @@ import java.lang.reflect.Proxy;
@@ -3482,7 +3461,6 @@ index df6cf00..0000000
 -    }
 -}
 diff --git a/src/test/java/org/bukkit/event/TestEvent.java b/src/test/java/org/bukkit/event/TestEvent.java
-index 25904f5..badbcee 100644
 --- a/src/test/java/org/bukkit/event/TestEvent.java
 +++ b/src/test/java/org/bukkit/event/TestEvent.java
 @@ -4,6 +4,10 @@ package org.bukkit.event;
@@ -3513,7 +3491,6 @@ index 0000000..440d183
 +    }
 +}
 diff --git a/src/test/java/org/bukkit/plugin/PluginManagerTest.java b/src/test/java/org/bukkit/plugin/PluginManagerTest.java
-index 6b86128..fd00bd9 100644
 --- a/src/test/java/org/bukkit/plugin/PluginManagerTest.java
 +++ b/src/test/java/org/bukkit/plugin/PluginManagerTest.java
 @@ -26,7 +26,7 @@ public class PluginManagerTest {
@@ -3535,7 +3512,6 @@ index 6b86128..fd00bd9 100644
  
      @Test
 diff --git a/src/test/java/org/bukkit/plugin/TestPlugin.java b/src/test/java/org/bukkit/plugin/TestPlugin.java
-index 7e09892..82aff85 100644
 --- a/src/test/java/org/bukkit/plugin/TestPlugin.java
 +++ b/src/test/java/org/bukkit/plugin/TestPlugin.java
 @@ -3,22 +3,37 @@ package org.bukkit.plugin;
@@ -3622,6 +3598,3 @@ index 7e09892..82aff85 100644
      }
  
      public EbeanServer getDatabase() {
--- 
-1.9.0
-

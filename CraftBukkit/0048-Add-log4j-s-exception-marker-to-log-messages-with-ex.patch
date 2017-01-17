@@ -1,11 +1,9 @@
-From 4f1879bb26b4bdabf7268fb8b6d3dc11c40a8f69 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 27 Jun 2014 21:53:44 -0500
 Subject: [PATCH] Add log4j's exception marker to log messages with exceptions
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java b/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
-index 74ce4b2..e35c6cf 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/ForwardLogHandler.java
 @@ -2,6 +2,8 @@ package org.bukkit.craftbukkit.util;
@@ -41,6 +39,3 @@ index 74ce4b2..e35c6cf 100644
          }
      }
  
--- 
-1.9.0
-

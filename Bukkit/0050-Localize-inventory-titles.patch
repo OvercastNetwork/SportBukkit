@@ -1,11 +1,9 @@
-From f6bf0833d1b3ccba5ab127c90ee736dc7cb42b37 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 12 Jul 2015 09:58:54 -0400
 Subject: [PATCH] Localize inventory titles
 
 
 diff --git a/src/main/java/org/bukkit/event/inventory/InventoryType.java b/src/main/java/org/bukkit/event/inventory/InventoryType.java
-index 43be533..0532ec1 100644
 --- a/src/main/java/org/bukkit/event/inventory/InventoryType.java
 +++ b/src/main/java/org/bukkit/event/inventory/InventoryType.java
 @@ -6,78 +6,80 @@ public enum InventoryType {
@@ -117,7 +115,6 @@ index 43be533..0532ec1 100644
          /**
           * A result slot in a furnace or crafting inventory.
 diff --git a/src/main/java/org/bukkit/inventory/Inventory.java b/src/main/java/org/bukkit/inventory/Inventory.java
-index bac683b..7166baa 100644
 --- a/src/main/java/org/bukkit/inventory/Inventory.java
 +++ b/src/main/java/org/bukkit/inventory/Inventory.java
 @@ -4,6 +4,7 @@ import java.util.HashMap;
@@ -167,6 +164,3 @@ index bac683b..7166baa 100644
       */
      public String getTitle();
  
--- 
-1.9.0
-

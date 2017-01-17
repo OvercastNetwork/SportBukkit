@@ -1,11 +1,9 @@
-From be4faa3fbcf3cb356ac00d99c90d2a9b463375d5 Mon Sep 17 00:00:00 2001
 From: Thinkofdeath <purgames@gmail.com>
 Date: Sun, 17 Mar 2013 22:56:14 +0000
 Subject: [PATCH] Allow playEffect to spawn particles
 
 
 diff --git a/src/main/java/org/bukkit/Effect.java b/src/main/java/org/bukkit/Effect.java
-index ba7dc49..d9cb0ca 100644
 --- a/src/main/java/org/bukkit/Effect.java
 +++ b/src/main/java/org/bukkit/Effect.java
 @@ -5,6 +5,7 @@ import java.util.Map;
@@ -248,7 +246,6 @@ index ba7dc49..d9cb0ca 100644
 +    public enum Type {SOUND, VISUAL, PARTICLE}
  }
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index f34b3a9..753703d 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -775,6 +775,16 @@ public interface World extends PluginMessageRecipient, Metadatable {
@@ -297,7 +294,6 @@ index f34b3a9..753703d 100644
       * including valid biome data. Used for representing an ungenerated chunk,
       * or for fetching only biome data without loading a chunk.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index cd36fbb..b69dd7c 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -321,6 +321,8 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
@@ -310,7 +306,6 @@ index cd36fbb..b69dd7c 100644
       * Send a block change. This fakes a block change packet for a user at a
       * certain location. This will not actually change the world in any way.
 diff --git a/src/test/java/org/bukkit/EffectTest.java b/src/test/java/org/bukkit/EffectTest.java
-index 08aa71d..5217aec 100644
 --- a/src/test/java/org/bukkit/EffectTest.java
 +++ b/src/test/java/org/bukkit/EffectTest.java
 @@ -9,7 +9,11 @@ public class EffectTest {
@@ -326,6 +321,3 @@ index 08aa71d..5217aec 100644
          }
      }
  }
--- 
-1.9.0
-

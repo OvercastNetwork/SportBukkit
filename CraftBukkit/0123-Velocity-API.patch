@@ -1,11 +1,9 @@
-From 67894bb798f89486f58442d9a4d7c85a839537c8 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 22:09:17 -0400
 Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index 59d8499..b3bdad0 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1304,13 +1304,41 @@ public abstract class Entity implements ICommandListener {
@@ -55,7 +53,6 @@ index 59d8499..b3bdad0 100644
          this.velocityChanged = true;
      }
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index 87a00a2..65bdfe2 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -283,7 +283,7 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -68,7 +65,6 @@ index 87a00a2..65bdfe2 100644
                      }
  
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 900b2cc..2852d1b 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -1041,10 +1041,10 @@ public abstract class EntityHuman extends EntityLiving {
@@ -108,7 +104,6 @@ index 900b2cc..2852d1b 100644
                          }
  
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index c0f589b..1590e49 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -928,7 +928,7 @@ public abstract class EntityLiving extends Entity {
@@ -179,7 +174,6 @@ index c0f589b..1590e49 100644
      public float getHeadRotation() {
          return this.aP;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 43b72b4..eac9df1 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -4,10 +4,13 @@ import com.google.common.collect.Lists;
@@ -361,7 +355,6 @@ index 43b72b4..eac9df1 100644
          super(worldserver, gameprofile);
          playerinteractmanager.player = this;
 diff --git a/src/main/java/net/minecraft/server/EntityTrackerEntry.java b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
-index 736c3d5..3cc18f1 100644
 --- a/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 +++ b/src/main/java/net/minecraft/server/EntityTrackerEntry.java
 @@ -255,6 +255,8 @@ public class EntityTrackerEntry {
@@ -390,7 +383,6 @@ index 736c3d5..3cc18f1 100644
  
      private void d() {
 diff --git a/src/main/java/net/minecraft/server/Explosion.java b/src/main/java/net/minecraft/server/Explosion.java
-index 904bee8..ed18951 100644
 --- a/src/main/java/net/minecraft/server/Explosion.java
 +++ b/src/main/java/net/minecraft/server/Explosion.java
 @@ -142,9 +142,19 @@ public class Explosion {
@@ -414,7 +406,6 @@ index 904bee8..ed18951 100644
                              EntityHuman entityhuman = (EntityHuman) entity;
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 8623eef..f33935b 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -59,6 +59,7 @@ import org.bukkit.inventory.CraftingInventory;
@@ -496,7 +487,6 @@ index 8623eef..f33935b 100644
          return System.nanoTime() / 1000000L;
      }
 diff --git a/src/main/java/net/minecraft/server/WorldServer.java b/src/main/java/net/minecraft/server/WorldServer.java
-index aa0cd4f..51c6cbd 100644
 --- a/src/main/java/net/minecraft/server/WorldServer.java
 +++ b/src/main/java/net/minecraft/server/WorldServer.java
 @@ -1176,7 +1176,10 @@ public class WorldServer extends World implements IAsyncTaskHandler {
@@ -512,7 +502,6 @@ index aa0cd4f..51c6cbd 100644
          }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1d0ceda..f43ec56 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -636,6 +636,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
@@ -528,7 +517,6 @@ index 1d0ceda..f43ec56 100644
          return this.configuration.getBoolean("settings.isolate-plugins", false);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 04b5e94..995616e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -33,6 +33,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
@@ -585,7 +573,6 @@ index 04b5e94..995616e 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index de624bb..e557626 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -77,6 +77,7 @@ import org.bukkit.plugin.Plugin;
@@ -623,6 +610,3 @@ index de624bb..e557626 100644
      public boolean teleportRelative(org.bukkit.util.Vector deltaPos, float deltaYaw, float deltaPitch) {
          return teleportRelative(deltaPos, deltaYaw, deltaPitch, PlayerTeleportEvent.TeleportCause.PLUGIN);
      }
--- 
-1.9.0
-

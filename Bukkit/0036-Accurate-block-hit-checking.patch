@@ -1,11 +1,9 @@
-From e36796e0f38c4fd83e821637a0a9fc0c9241adb2 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 26 May 2015 04:00:58 -0400
 Subject: [PATCH] Accurate block hit checking
 
 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 753703d..8a46f37 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
 @@ -17,6 +17,7 @@ import org.bukkit.material.MaterialData;
@@ -44,7 +42,6 @@ index 753703d..8a46f37 100644
       *
       * @param x X-coordinate of the chunk
 diff --git a/src/main/java/org/bukkit/block/Block.java b/src/main/java/org/bukkit/block/Block.java
-index 235c15b..fe32537 100644
 --- a/src/main/java/org/bukkit/block/Block.java
 +++ b/src/main/java/org/bukkit/block/Block.java
 @@ -8,6 +8,8 @@ import org.bukkit.World;
@@ -77,7 +74,6 @@ index 235c15b..fe32537 100644
 +    RayBlockIntersection rayTrace(Location start, double distance);
  }
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index add1a5b..0c91016 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -24,6 +24,7 @@ import org.bukkit.event.player.PlayerResourcePackStatusEvent;
@@ -164,6 +160,3 @@ index 0000000..b1ba1d8
 +        return position;
 +    }
 +}
--- 
-1.9.0
-

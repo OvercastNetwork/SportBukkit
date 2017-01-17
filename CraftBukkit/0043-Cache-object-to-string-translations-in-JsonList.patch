@@ -1,4 +1,3 @@
-From 97982444b7d1930ebef8a78e2a176179c68b7d54 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 2 May 2014 20:48:11 -0500
 Subject: [PATCH] Cache object to string translations in JsonList
@@ -8,7 +7,6 @@ With 1.7 the ban, white, and op lists all use JsonList. While this is nice, when
 Without this change, player.isOp() and player.hasPermission() are far more expensive than they were in 1.6.
 
 diff --git a/src/main/java/net/minecraft/server/GameProfileBanList.java b/src/main/java/net/minecraft/server/GameProfileBanList.java
-index 5886e4c..fd3c345 100644
 --- a/src/main/java/net/minecraft/server/GameProfileBanList.java
 +++ b/src/main/java/net/minecraft/server/GameProfileBanList.java
 @@ -33,7 +33,7 @@ public class GameProfileBanList extends JsonList<GameProfile, GameProfileBanEntr
@@ -21,7 +19,6 @@ index 5886e4c..fd3c345 100644
  
      public GameProfile a(String s) {
 diff --git a/src/main/java/net/minecraft/server/JsonList.java b/src/main/java/net/minecraft/server/JsonList.java
-index a0b5ce9..abe1af0 100644
 --- a/src/main/java/net/minecraft/server/JsonList.java
 +++ b/src/main/java/net/minecraft/server/JsonList.java
 @@ -29,6 +29,12 @@ import org.apache.commons.io.IOUtils;
@@ -72,7 +69,6 @@ index a0b5ce9..abe1af0 100644
  
      protected boolean d(K k0) {
 diff --git a/src/main/java/net/minecraft/server/OpList.java b/src/main/java/net/minecraft/server/OpList.java
-index bf3bc6e..e0410df 100644
 --- a/src/main/java/net/minecraft/server/OpList.java
 +++ b/src/main/java/net/minecraft/server/OpList.java
 @@ -41,7 +41,7 @@ public class OpList extends JsonList<GameProfile, OpListEntry> {
@@ -85,7 +81,6 @@ index bf3bc6e..e0410df 100644
  
      public GameProfile a(String s) {
 diff --git a/src/main/java/net/minecraft/server/WhiteList.java b/src/main/java/net/minecraft/server/WhiteList.java
-index be2f4c1..44c565e 100644
 --- a/src/main/java/net/minecraft/server/WhiteList.java
 +++ b/src/main/java/net/minecraft/server/WhiteList.java
 @@ -33,7 +33,7 @@ public class WhiteList extends JsonList<GameProfile, WhiteListEntry> {
@@ -97,6 +92,3 @@ index be2f4c1..44c565e 100644
      }
  
      public GameProfile a(String s) {
--- 
-1.9.0
-

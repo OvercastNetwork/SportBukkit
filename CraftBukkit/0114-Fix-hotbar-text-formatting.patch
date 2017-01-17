@@ -1,11 +1,9 @@
-From 128ab4d991cf736fdc3955123d4a66b12a49fe7e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 8 Mar 2016 04:34:03 -0500
 Subject: [PATCH] Fix hotbar text formatting
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 90040fb..7aa82d5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -21,11 +21,14 @@ import java.util.Set;
@@ -38,6 +36,3 @@ index 90040fb..7aa82d5 100644
          getHandle().playerConnection.sendPacket(packet);
      }
  
--- 
-1.9.0
-

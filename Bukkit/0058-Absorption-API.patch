@@ -1,11 +1,9 @@
-From 7ffe87eb319156ef6e15d90b7d84d4841d4af44c Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 05:57:57 -0500
 Subject: [PATCH] Absorption API
 
 
 diff --git a/src/main/java/org/bukkit/entity/LivingEntity.java b/src/main/java/org/bukkit/entity/LivingEntity.java
-index 183134e..3a9f98d 100644
 --- a/src/main/java/org/bukkit/entity/LivingEntity.java
 +++ b/src/main/java/org/bukkit/entity/LivingEntity.java
 @@ -227,6 +227,16 @@ public interface LivingEntity extends Attributable, Entity, Damageable, Projecti
@@ -25,6 +23,3 @@ index 183134e..3a9f98d 100644
       * Gets the player identified as the killer of the living entity.
       * <p>
       * May be null.
--- 
-1.9.0
-

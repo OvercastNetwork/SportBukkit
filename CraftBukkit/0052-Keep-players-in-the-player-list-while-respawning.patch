@@ -1,11 +1,9 @@
-From 149ee656a9979b91e38f651d28a0e27b5e4a794b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 7 Sep 2014 21:17:24 -0400
 Subject: [PATCH] Keep players in the player list while respawning
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 207bdbb..f42c3cb 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -598,6 +598,7 @@ public abstract class PlayerList {
@@ -31,6 +29,3 @@ index 207bdbb..f42c3cb 100644
              this.j.put(entityplayer1.getUniqueID(), entityplayer1);
          }
          // entityplayer1.syncInventory();
--- 
-1.9.0
-

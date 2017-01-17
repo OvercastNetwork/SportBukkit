@@ -1,11 +1,9 @@
-From 0d02c6a5a9ed222cabb73648114efa1b8634f4e9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 4 Mar 2016 04:36:20 -0500
 Subject: [PATCH] Arrow damage API
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityArrow.java b/src/main/java/net/minecraft/server/EntityArrow.java
-index f64838d..87a00a2 100644
 --- a/src/main/java/net/minecraft/server/EntityArrow.java
 +++ b/src/main/java/net/minecraft/server/EntityArrow.java
 @@ -469,10 +469,12 @@ public abstract class EntityArrow extends Entity implements IProjectile {
@@ -22,7 +20,6 @@ index f64838d..87a00a2 100644
          return this.damage;
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
-index 5ae05c5..3e3dc3c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftArrow.java
 @@ -15,6 +15,16 @@ public class CraftArrow extends AbstractProjectile implements Arrow {
@@ -42,6 +39,3 @@ index 5ae05c5..3e3dc3c 100644
      public void setKnockbackStrength(int knockbackStrength) {
          Validate.isTrue(knockbackStrength >= 0, "Knockback cannot be negative");
          getHandle().setKnockbackStrength(knockbackStrength);
--- 
-1.9.0
-

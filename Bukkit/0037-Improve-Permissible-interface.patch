@@ -1,11 +1,9 @@
-From 8d681f2f5131e153c1519f7c17c9eae0d7452b1e Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 28 May 2015 04:31:07 -0400
 Subject: [PATCH] Improve Permissible interface
 
 
 diff --git a/src/main/java/org/bukkit/permissions/Permissible.java b/src/main/java/org/bukkit/permissions/Permissible.java
-index 5cd3cff..a7c0ef5 100644
 --- a/src/main/java/org/bukkit/permissions/Permissible.java
 +++ b/src/main/java/org/bukkit/permissions/Permissible.java
 @@ -1,5 +1,6 @@
@@ -94,7 +92,6 @@ index 5cd3cff..a7c0ef5 100644
 +    Collection<PermissionAttachmentInfo> getAttachments(Plugin plugin, Permission permission);
  }
 diff --git a/src/main/java/org/bukkit/permissions/PermissibleBase.java b/src/main/java/org/bukkit/permissions/PermissibleBase.java
-index bc772e5..3f053be 100644
 --- a/src/main/java/org/bukkit/permissions/PermissibleBase.java
 +++ b/src/main/java/org/bukkit/permissions/PermissibleBase.java
 @@ -1,12 +1,17 @@
@@ -262,6 +259,3 @@ index bc772e5..3f053be 100644
      }
  
      private class RemoveAttachmentRunnable implements Runnable {
--- 
-1.9.0
-

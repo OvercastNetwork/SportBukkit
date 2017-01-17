@@ -1,11 +1,9 @@
-From 141abc810c0b5000f0e95c9449824d2c8147bbd5 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 26 Jun 2016 01:57:07 -0400
 Subject: [PATCH] Item cooldown API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 035baef..892077f 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1678,5 +1678,29 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
@@ -38,6 +36,3 @@ index 035baef..892077f 100644
 +     */
 +    float getRemainingItemCooldown(Material item);
  }
--- 
-1.9.0
-

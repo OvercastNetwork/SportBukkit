@@ -1,11 +1,9 @@
-From 62b056bcfd09348047e8b4ce6d28f9eb50c033db Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 29 Mar 2016 02:08:56 -0400
 Subject: [PATCH] Attack cooldown info API
 
 
 diff --git a/src/main/java/org/bukkit/entity/HumanEntity.java b/src/main/java/org/bukkit/entity/HumanEntity.java
-index 4757478..224581d 100644
 --- a/src/main/java/org/bukkit/entity/HumanEntity.java
 +++ b/src/main/java/org/bukkit/entity/HumanEntity.java
 @@ -244,4 +244,21 @@ public interface HumanEntity extends LivingEntity, AnimalTamer, Permissible, Inv
@@ -30,6 +28,3 @@ index 4757478..224581d 100644
 +     */
 +    float getAttackCooldownCoefficient();
  }
--- 
-1.9.0
-

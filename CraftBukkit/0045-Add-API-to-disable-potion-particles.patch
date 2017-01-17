@@ -1,11 +1,9 @@
-From 3fa71a8078bab74cced6d5d4a53cac56698e876b Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 9 May 2014 23:48:01 -0400
 Subject: [PATCH] Add API to disable potion particles
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index ac0eba7..2e967d7 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -29,6 +29,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
@@ -46,7 +44,6 @@ index ac0eba7..2e967d7 100644
                          ((EntityTameableAnimal)this).getGoalSit().setSitting(false);
                      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 19d946b..60adcf7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -77,6 +77,7 @@ import org.bukkit.util.Vector;
@@ -78,6 +75,3 @@ index 19d946b..60adcf7 100644
      public <T extends Projectile> T launchProjectile(Class<? extends T> projectile) {
          return launchProjectile(projectile, null);
      }
--- 
-1.9.0
-

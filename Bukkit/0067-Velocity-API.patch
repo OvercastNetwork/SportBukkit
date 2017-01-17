@@ -1,11 +1,9 @@
-From 313972cc95ba95aab632f89c79cf724ff1abff6f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 16 Mar 2016 21:24:15 -0400
 Subject: [PATCH] Velocity API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 1519aae..05193b0 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -392,6 +392,13 @@ public final class Bukkit {
@@ -23,7 +21,6 @@ index 1519aae..05193b0 100644
       */
      public static boolean getIsolatePlugins() {
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index d165beb..b7b2690 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -304,6 +304,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
@@ -39,7 +36,6 @@ index d165beb..b7b2690 100644
       */
      public boolean getIsolatePlugins();
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index 1b8a841..dd0e995 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -54,6 +54,48 @@ public interface Entity extends Metadatable, CommandSender, Nameable, Locatable
@@ -92,7 +88,6 @@ index 1b8a841..dd0e995 100644
       * state updated by the server and is not recalculated unless the entity
       * moves.
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 983b296..078b0e0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -25,6 +25,7 @@ import org.bukkit.map.MapView;
@@ -149,7 +144,6 @@ index 0000000..7411633
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
-index 69d2fce..9005c9c 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerVelocityEvent.java
 @@ -6,16 +6,18 @@ import org.bukkit.event.HandlerList;
@@ -202,6 +196,3 @@ index 69d2fce..9005c9c 100644
      }
  
      @Override
--- 
-1.9.0
-

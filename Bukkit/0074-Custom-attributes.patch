@@ -1,11 +1,9 @@
-From d300f420a9c7939ce8e156f46925efc4aae267f0 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 21:57:13 -0400
 Subject: [PATCH] Custom attributes
 
 
 diff --git a/src/main/java/org/bukkit/attribute/Attribute.java b/src/main/java/org/bukkit/attribute/Attribute.java
-index d9e83ad..183fcb4 100644
 --- a/src/main/java/org/bukkit/attribute/Attribute.java
 +++ b/src/main/java/org/bukkit/attribute/Attribute.java
 @@ -47,7 +47,13 @@ public enum Attribute {
@@ -23,6 +21,3 @@ index d9e83ad..183fcb4 100644
  
      private final String name;
  
--- 
-1.9.0
-

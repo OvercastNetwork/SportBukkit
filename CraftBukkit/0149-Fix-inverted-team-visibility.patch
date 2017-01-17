@@ -1,11 +1,9 @@
-From b1123ada4f0cb2bfae7dc6ccadb4cb940c60ecd9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 9 Aug 2016 14:48:53 -0400
 Subject: [PATCH] Fix inverted team visibility
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
-index dc4b11d..3ea3d67 100644
 --- a/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
 +++ b/src/main/java/org/bukkit/craftbukkit/scoreboard/CraftTeam.java
 @@ -188,11 +188,11 @@ public final class CraftTeam extends CraftScoreboardComponent implements Team {
@@ -91,6 +89,3 @@ index dc4b11d..3ea3d67 100644
      public static EnumNameTagVisibility bukkitToNotch(NameTagVisibility visibility) {
          switch (visibility) {
              case ALWAYS:
--- 
-1.9.0
-

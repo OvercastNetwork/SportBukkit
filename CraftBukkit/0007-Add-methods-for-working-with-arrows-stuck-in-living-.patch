@@ -1,11 +1,9 @@
-From 9ccdcdab8b6dd306ed02afdfca30a8139f4b22e9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sun, 25 Nov 2012 13:43:39 -0600
 Subject: [PATCH] Add methods for working with arrows stuck in living entities
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 74a4c93..2b9e737 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -1365,10 +1365,12 @@ public abstract class EntityLiving extends Entity {
@@ -22,7 +20,6 @@ index 74a4c93..2b9e737 100644
          this.datawatcher.set(EntityLiving.bq, Integer.valueOf(i));
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 4641e3d..19d946b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -556,4 +556,12 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -38,6 +35,3 @@ index 4641e3d..19d946b 100644
 +        getHandle().setArrowsStuck(arrows);
 +    }
  }
--- 
-1.9.0
-

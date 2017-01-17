@@ -1,11 +1,9 @@
-From 189f6b2876acba47d5601ce085a8d3069981874f Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 19 Mar 2016 00:45:13 -0400
 Subject: [PATCH] Legacy potion support
 
 
 diff --git a/src/main/java/org/bukkit/potion/Potion.java b/src/main/java/org/bukkit/potion/Potion.java
-index 7aa5a2d..ffe7630 100644
 --- a/src/main/java/org/bukkit/potion/Potion.java
 +++ b/src/main/java/org/bukkit/potion/Potion.java
 @@ -6,6 +6,7 @@ import org.apache.commons.lang.Validate;
@@ -99,6 +97,3 @@ index 7aa5a2d..ffe7630 100644
      }
  
      /**
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 9ec0b74ee7a13d84770e9222e7f31bae9fae20ae Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 29 Dec 2016 23:23:45 -0500
 Subject: [PATCH] Don't tick empty worlds
 
 
 diff --git a/src/main/java/net/minecraft/server/ChunkProviderServer.java b/src/main/java/net/minecraft/server/ChunkProviderServer.java
-index e07d08e..cf8e1e8 100644
 --- a/src/main/java/net/minecraft/server/ChunkProviderServer.java
 +++ b/src/main/java/net/minecraft/server/ChunkProviderServer.java
 @@ -304,6 +304,16 @@ public class ChunkProviderServer implements IChunkProvider {
@@ -26,7 +24,6 @@ index e07d08e..cf8e1e8 100644
          return !this.world.savingDisabled;
      }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 401b7e4..45eca3a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -843,6 +843,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -38,7 +35,6 @@ index 401b7e4..45eca3a 100644
                  this.methodProfiler.a(worldserver.getWorldData().getName());
                  /* Drop global time updates
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f40306e..24b0c30 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -601,6 +601,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
@@ -59,7 +55,6 @@ index f40306e..24b0c30 100644
          return this.configuration.getBoolean("settings.allow-end");
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 3ff9b63..5e57fba 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -96,6 +96,40 @@ public class CraftWorld implements World {
@@ -115,6 +110,3 @@ index 3ff9b63..5e57fba 100644
      public boolean regenerateChunk(int x, int z) {
          if (!unloadChunk0(x, z, false)) {
              return false;
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 3397d290a8f643011da7299a159cb545cb94ad14 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 19 Jul 2015 16:51:38 -0400
 Subject: [PATCH] Set health before death event
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
-index 60adcf7..a336b0d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftLivingEntity.java
 @@ -96,11 +96,11 @@ public class CraftLivingEntity extends CraftEntity implements LivingEntity {
@@ -22,6 +20,3 @@ index 60adcf7..a336b0d 100644
      }
  
      public double getMaxHealth() {
--- 
-1.9.0
-

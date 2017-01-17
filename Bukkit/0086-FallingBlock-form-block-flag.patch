@@ -1,11 +1,9 @@
-From 2dc5ee1f8a1cd84e3accbfc7aaebca7927652f32 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 7 Dec 2016 04:29:15 -0500
 Subject: [PATCH] FallingBlock form block flag
 
 
 diff --git a/src/main/java/org/bukkit/entity/FallingBlock.java b/src/main/java/org/bukkit/entity/FallingBlock.java
-index bc56fa2..4ff5c06 100644
 --- a/src/main/java/org/bukkit/entity/FallingBlock.java
 +++ b/src/main/java/org/bukkit/entity/FallingBlock.java
 @@ -59,4 +59,19 @@ public interface FallingBlock extends Entity {
@@ -28,6 +26,3 @@ index bc56fa2..4ff5c06 100644
 +     */
 +    void setFormBlock(boolean formBlock);
  }
--- 
-1.9.0
-

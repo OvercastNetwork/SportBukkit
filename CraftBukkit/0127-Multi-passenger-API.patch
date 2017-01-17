@@ -1,11 +1,9 @@
-From 4eba625b21175c34f43768420f37ebc6a42b87d9 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 21 Mar 2016 01:42:17 -0400
 Subject: [PATCH] Multi-passenger API
 
 
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index b3bdad0..704a847 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -1840,6 +1840,7 @@ public abstract class Entity implements ICommandListener {
@@ -25,7 +23,6 @@ index b3bdad0..704a847 100644
          return (List) (this.passengers.isEmpty() ? Collections.emptyList() : Lists.newArrayList(this.passengers));
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 995616e..af7a562 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -1,11 +1,17 @@
@@ -107,6 +104,3 @@ index 995616e..af7a562 100644
      public boolean leaveVehicle() {
          if (!isInsideVehicle()) {
              return false;
--- 
-1.9.0
-

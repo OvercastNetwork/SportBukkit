@@ -1,11 +1,9 @@
-From 9298ac5acec29c98adc64fd5b61b9ada789d0f26 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 21 Jun 2015 15:07:20 -0400
 Subject: [PATCH] Custom replacement for eaten items
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index 2e967d7..affbc49 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -2336,9 +2336,23 @@ public abstract class EntityLiving extends Entity {
@@ -32,6 +30,3 @@ index 2e967d7..affbc49 100644
          }
  
      }
--- 
-1.9.0
-

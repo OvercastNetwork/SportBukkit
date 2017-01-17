@@ -1,11 +1,9 @@
-From 6d833f4a3befa148715ed9b9807022cb473bb849 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 24 Dec 2016 20:03:43 -0500
 Subject: [PATCH] Chest lid API
 
 
 diff --git a/src/main/java/net/minecraft/server/TileEntityChest.java b/src/main/java/net/minecraft/server/TileEntityChest.java
-index 28a514a..af69061 100644
 --- a/src/main/java/net/minecraft/server/TileEntityChest.java
 +++ b/src/main/java/net/minecraft/server/TileEntityChest.java
 @@ -4,6 +4,7 @@ import java.util.Iterator;
@@ -95,7 +93,6 @@ index 28a514a..af69061 100644
  
              // CraftBukkit start - Call redstone event
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftChest.java b/src/main/java/org/bukkit/craftbukkit/block/CraftChest.java
-index 3de7e14..31cb225 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftChest.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftChest.java
 @@ -1,5 +1,7 @@
@@ -121,6 +118,3 @@ index 3de7e14..31cb225 100644
 +        return getTileEntity().getLid();
 +    }
  }
--- 
-1.9.0
-

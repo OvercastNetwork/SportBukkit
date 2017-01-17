@@ -1,11 +1,9 @@
-From f654e7b52a80fc2e0669f75729d2b830cf4a3871 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 19 Apr 2016 20:30:55 -0400
 Subject: [PATCH] Use client ticks to make attack speed more accurate
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityHuman.java b/src/main/java/net/minecraft/server/EntityHuman.java
-index 75c788c..da2664f 100644
 --- a/src/main/java/net/minecraft/server/EntityHuman.java
 +++ b/src/main/java/net/minecraft/server/EntityHuman.java
 @@ -65,6 +65,8 @@ public abstract class EntityHuman extends EntityLiving {
@@ -32,7 +30,6 @@ index 75c788c..da2664f 100644
  
      public ItemCooldown di() {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index f33935b..d9a30c5 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -496,6 +496,8 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -44,6 +41,3 @@ index f33935b..d9a30c5 100644
                  // SportBukkit start - velocity prediction
                  this.player.handleClientTick(
                      packetplayinflying.hasPos ? new Vector(packetplayinflying.x,
--- 
-1.9.0
-

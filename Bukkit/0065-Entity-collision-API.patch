@@ -1,11 +1,9 @@
-From 52b4ca6fb1f958172b40530b624b6c74074e3d32 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 28 Apr 2012 01:39:04 -0400
 Subject: [PATCH] Entity collision API
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 72cf253..807d28d 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -1073,6 +1073,18 @@ public interface Player extends HumanEntity, Conversable, CommandSender, Offline
@@ -27,6 +25,3 @@ index 72cf253..807d28d 100644
       * Sets the speed at which a client will fly. Negative values indicate
       * reverse directions.
       *
--- 
-1.9.0
-

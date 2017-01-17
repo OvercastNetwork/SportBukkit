@@ -1,11 +1,9 @@
-From b24f2cf204904566268bee2405a5cd38816db896 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 7 Dec 2016 04:08:52 -0500
 Subject: [PATCH] More ways to spawn FallingBlocks
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index d137200..3ff9b63 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -934,25 +934,32 @@ public class CraftWorld implements World {
@@ -48,6 +46,3 @@ index d137200..3ff9b63 100644
      }
  
      @SuppressWarnings("unchecked")
--- 
-1.9.0
-

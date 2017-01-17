@@ -1,11 +1,9 @@
-From c1217a95f60ca54724139679ca8f8251b2c737ea Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 13 Nov 2012 19:38:11 -0600
 Subject: [PATCH] Enable multiworld maps
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemWorldMap.java b/src/main/java/net/minecraft/server/ItemWorldMap.java
-index d4438fd..71f8d1c 100644
 --- a/src/main/java/net/minecraft/server/ItemWorldMap.java
 +++ b/src/main/java/net/minecraft/server/ItemWorldMap.java
 @@ -35,19 +35,18 @@ public class ItemWorldMap extends ItemWorldMapBase {
@@ -39,6 +37,3 @@ index d4438fd..71f8d1c 100644
          itemstack.setData(world.b("map"));
          WorldMap worldmap1 = new WorldMap("map_" + itemstack.getData());
  
--- 
-1.9.0
-

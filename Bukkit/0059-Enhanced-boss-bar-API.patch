@@ -1,11 +1,9 @@
-From d1e419d75770f71c625438ad312121c42e67e377 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 5 Mar 2016 01:41:34 -0500
 Subject: [PATCH] Enhanced boss bar API
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index c8a829e..f1be862 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -1228,7 +1228,7 @@ public final class Bukkit {
@@ -18,7 +16,6 @@ index c8a829e..f1be862 100644
      }
  
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index f36daaa..0d8192d 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -1024,7 +1024,7 @@ public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.serv
@@ -31,7 +28,6 @@ index f36daaa..0d8192d 100644
      /**
       * @see UnsafeValues
 diff --git a/src/main/java/org/bukkit/boss/BossBar.java b/src/main/java/org/bukkit/boss/BossBar.java
-index effc329..1a7ca56 100644
 --- a/src/main/java/org/bukkit/boss/BossBar.java
 +++ b/src/main/java/org/bukkit/boss/BossBar.java
 @@ -1,8 +1,10 @@
@@ -86,6 +82,3 @@ index effc329..1a7ca56 100644
 +     */
 +    void update(BaseComponent title, double progress, BarColor color, BarStyle style, Set<BarFlag> flags);
  }
--- 
-1.9.0
-

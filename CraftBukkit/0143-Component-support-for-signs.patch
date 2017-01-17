@@ -1,11 +1,9 @@
-From ad08e34a9479b0f10c1aa6975f8e5e2fe40230ea Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 3 Jun 2016 02:02:17 -0400
 Subject: [PATCH] Component support for signs
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 527d654..5996e96 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -11,6 +11,9 @@ import java.util.ArrayList;
@@ -49,7 +47,6 @@ index 527d654..5996e96 100644
               }
              // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
-index 42a6f9a..66c7578 100644
 --- a/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
 +++ b/src/main/java/org/bukkit/craftbukkit/block/CraftSign.java
 @@ -1,85 +1,80 @@
@@ -173,7 +170,6 @@ index 42a6f9a..66c7578 100644
      public TileEntitySign getTileEntity() {
          return sign;
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index c55ecff..d2013ec 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -58,6 +58,7 @@ import org.bukkit.craftbukkit.CraftWorld;
@@ -232,6 +228,3 @@ index c55ecff..d2013ec 100644
  
          getHandle().playerConnection.sendPacket(sign.getUpdatePacket());
      }
--- 
-1.9.0
-

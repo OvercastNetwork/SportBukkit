@@ -1,4 +1,3 @@
-From 7cd9ff870693931a3e5e30c84b9bd01aaaeb6053 Mon Sep 17 00:00:00 2001
 From: Steve Anton <anxuiz.nx@gmail.com>
 Date: Thu, 2 Aug 2012 18:33:13 -0700
 Subject: [PATCH] Support PlayerInitialSpawnEvent for modifying a player's
@@ -6,7 +5,6 @@ Subject: [PATCH] Support PlayerInitialSpawnEvent for modifying a player's
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index fa390f1..7ee9908 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -101,6 +101,22 @@ public abstract class PlayerList {
@@ -32,6 +30,3 @@ index fa390f1..7ee9908 100644
          entityplayer.spawnIn(this.server.getWorldServer(entityplayer.dimension));
          entityplayer.playerInteractManager.a((WorldServer) entityplayer.world);
          String s1 = "local";
--- 
-1.9.0
-

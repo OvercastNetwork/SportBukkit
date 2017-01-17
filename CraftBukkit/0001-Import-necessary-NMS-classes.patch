@@ -1,4 +1,3 @@
-From d5931f202861c009d4eb9db2aaf2abfea3f26d14 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 1 Mar 2016 04:32:08 -0500
 Subject: [PATCH] Import necessary NMS classes
@@ -6927,6 +6926,3 @@ index 0000000..85085d5
 +        return this.b((GameProfile) object);
 +    }
 +}
--- 
-1.9.0
-

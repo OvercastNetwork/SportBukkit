@@ -1,11 +1,9 @@
-From 8f78d7ecbeda2db3c1b11d02a557fbd0a3e418eb Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 22 Mar 2016 19:53:00 -0400
 Subject: [PATCH] Run data converters on passenger entities
 
 
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a1cc8e0..0db201b 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -141,6 +141,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -45,6 +43,3 @@ index 0000000..3afe5b8
 +        return nbt;
 +    }
 +}
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 317d14444da6fa40e6b027816e18751c33d7faaa Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Thu, 10 Mar 2016 15:10:18 -0500
 Subject: [PATCH] Modernize potion API
 
 
 diff --git a/src/main/java/net/minecraft/server/MobEffectList.java b/src/main/java/net/minecraft/server/MobEffectList.java
-index 610b1a6..dd25069 100644
 --- a/src/main/java/net/minecraft/server/MobEffectList.java
 +++ b/src/main/java/net/minecraft/server/MobEffectList.java
 @@ -224,10 +224,5 @@ public class MobEffectList {
@@ -20,7 +18,6 @@ index 610b1a6..dd25069 100644
      }
  }
 diff --git a/src/main/java/org/bukkit/CraftBukkitRuntime.java b/src/main/java/org/bukkit/CraftBukkitRuntime.java
-index a9a30e8..a8254cc 100644
 --- a/src/main/java/org/bukkit/CraftBukkitRuntime.java
 +++ b/src/main/java/org/bukkit/CraftBukkitRuntime.java
 @@ -2,7 +2,11 @@ package org.bukkit;
@@ -61,7 +58,6 @@ index a9a30e8..a8254cc 100644
 +    }
  }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
-index a90c6da..9dd1fb6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaPotion.java
 @@ -10,10 +10,13 @@ import net.minecraft.server.NBTTagInt;
@@ -262,7 +258,6 @@ index 0000000..94e0a5f
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
-index b06fddf..fa25284 100644
 --- a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
 +++ b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionEffectType.java
 @@ -1,15 +1,15 @@
@@ -301,7 +296,6 @@ index b06fddf..fa25284 100644
          switch (getId()) {
          case 1:
 diff --git a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
-index 8483cd8..042fcf4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
 +++ b/src/main/java/org/bukkit/craftbukkit/potion/CraftPotionUtil.java
 @@ -7,92 +7,44 @@ import com.google.common.collect.ImmutableBiMap;
@@ -423,6 +417,3 @@ index 8483cd8..042fcf4 100644
      }
  
      public static MobEffect fromBukkit(PotionEffect effect) {
--- 
-1.9.0
-

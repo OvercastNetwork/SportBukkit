@@ -1,11 +1,9 @@
-From db731febcd9bbc2154fa6a8040c376b4ef9dcc5d Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 8 Mar 2016 01:46:12 -0500
 Subject: [PATCH] Fix missing dropper cases
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
-index c086975..5940c7e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftContainer.java
 @@ -101,6 +101,8 @@ public class CraftContainer extends Container {
@@ -25,6 +23,3 @@ index c086975..5940c7e 100644
                  setupDispenser(top, bottom);
                  break;
              case FURNACE:
--- 
-1.9.0
-

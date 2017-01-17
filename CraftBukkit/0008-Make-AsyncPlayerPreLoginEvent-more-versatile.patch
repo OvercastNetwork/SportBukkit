@@ -1,11 +1,9 @@
-From a7debe51a57a6f6abf01120b3d298ddef0b2fcd9 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Sat, 17 Nov 2012 12:41:06 -0600
 Subject: [PATCH] Make AsyncPlayerPreLoginEvent more versatile
 
 
 diff --git a/src/main/java/net/minecraft/server/LoginListener.java b/src/main/java/net/minecraft/server/LoginListener.java
-index 1780c4e..e1bbfe4 100644
 --- a/src/main/java/net/minecraft/server/LoginListener.java
 +++ b/src/main/java/net/minecraft/server/LoginListener.java
 @@ -72,6 +72,12 @@ public class LoginListener implements PacketLoginInListener, ITickable {
@@ -178,6 +176,3 @@ index 1780c4e..e1bbfe4 100644
      protected GameProfile a(GameProfile gameprofile) {
          UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
  
--- 
-1.9.0
-

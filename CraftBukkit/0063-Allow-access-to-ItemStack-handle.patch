@@ -1,11 +1,9 @@
-From dcfed5a686888eb5c71bdd68d6860073983ffb47 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Wed, 17 Dec 2014 17:26:31 -0600
 Subject: [PATCH] Allow access to ItemStack handle
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 8ed4b4b..8ee617a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -87,7 +87,10 @@ public final class CraftItemStack extends ItemStack {
@@ -20,6 +18,3 @@ index 8ed4b4b..8ee617a 100644
  
      /**
       * Mirror
--- 
-1.9.0
-

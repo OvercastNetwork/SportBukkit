@@ -1,11 +1,9 @@
-From e65e29def4cfa9c579a8d00d30ab3bc86d9c26cf Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 28 Sep 2014 05:48:35 -0400
 Subject: [PATCH] Simple bulk block replacement
 
 
 diff --git a/src/main/java/net/minecraft/server/Block.java b/src/main/java/net/minecraft/server/Block.java
-index 1968c0e..4ba7447 100644
 --- a/src/main/java/net/minecraft/server/Block.java
 +++ b/src/main/java/net/minecraft/server/Block.java
 @@ -106,6 +106,7 @@ public class Block {
@@ -17,7 +15,6 @@ index 1968c0e..4ba7447 100644
      public Material q(IBlockData iblockdata) {
          return this.material;
 diff --git a/src/main/java/net/minecraft/server/BlockPosition.java b/src/main/java/net/minecraft/server/BlockPosition.java
-index 67b476b..2ecb816 100644
 --- a/src/main/java/net/minecraft/server/BlockPosition.java
 +++ b/src/main/java/net/minecraft/server/BlockPosition.java
 @@ -383,6 +383,7 @@ public class BlockPosition extends BaseBlockPosition {
@@ -29,7 +26,6 @@ index 67b476b..2ecb816 100644
              this.b = i;
              this.c = j;
 diff --git a/src/main/java/net/minecraft/server/Chunk.java b/src/main/java/net/minecraft/server/Chunk.java
-index ba02b67..5b239d7 100644
 --- a/src/main/java/net/minecraft/server/Chunk.java
 +++ b/src/main/java/net/minecraft/server/Chunk.java
 @@ -697,6 +697,7 @@ public class Chunk {
@@ -41,7 +37,6 @@ index ba02b67..5b239d7 100644
          if (this.j) {
              TileEntity tileentity = (TileEntity) this.tileEntities.remove(blockposition);
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index f7d8dec..eff62af 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 @@ -6,12 +6,15 @@ import java.util.Arrays;
@@ -97,7 +92,6 @@ index f7d8dec..eff62af 100644
          BiomeBase[] biomes = chunkmanager.getBiomes(null, chunkX, chunkZ, 16, 16);
          float[] temps = new float[biomes.length];
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 492c4b5..a104746 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
 @@ -1,5 +1,6 @@
@@ -151,6 +145,3 @@ index 492c4b5..a104746 100644
      @Override
      public Material getMaterialFromInternalName(String name) {
          return getMaterial((Item) Item.REGISTRY.get(new MinecraftKey(name)));
--- 
-1.9.0
-

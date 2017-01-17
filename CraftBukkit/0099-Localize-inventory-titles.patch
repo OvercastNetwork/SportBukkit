@@ -1,11 +1,9 @@
-From c825d09838371d5f6934526c6dbfb50b6928f387 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 12 Jul 2015 09:59:02 -0400
 Subject: [PATCH] Localize inventory titles
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
-index 7184b8c..d2bea7d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftHumanEntity.java
 @@ -329,7 +329,12 @@ public class CraftHumanEntity extends CraftLivingEntity implements HumanEntity {
@@ -32,7 +30,6 @@ index 7184b8c..d2bea7d 100644
          getHandle().activeContainer.addSlotListener(player);
      }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index dd016e9..6d6a768 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 @@ -4,11 +4,15 @@ import java.util.HashMap;
@@ -84,7 +81,6 @@ index dd016e9..6d6a768 100644
  
      public InventoryType getType() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCustom.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCustom.java
-index da8df63..814a31d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCustom.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCustom.java
 @@ -4,7 +4,7 @@ import java.util.ArrayList;
@@ -146,6 +142,3 @@ index da8df63..814a31d 100644
          }
  
          @Override
--- 
-1.9.0
-

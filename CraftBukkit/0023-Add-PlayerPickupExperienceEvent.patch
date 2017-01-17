@@ -1,11 +1,9 @@
-From 97eec55b4a6cec1b2c0604eb5042a6a4fe910696 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Fri, 17 May 2013 20:44:04 -0500
 Subject: [PATCH] Add PlayerPickupExperienceEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityExperienceOrb.java b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
-index 4b38164..ccc9557 100644
 --- a/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 +++ b/src/main/java/net/minecraft/server/EntityExperienceOrb.java
 @@ -161,6 +161,7 @@ public class EntityExperienceOrb extends Entity {
@@ -17,7 +15,6 @@ index 4b38164..ccc9557 100644
                  ItemStack itemstack = EnchantmentManager.b(Enchantments.C, (EntityLiving) entityhuman);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
-index 74faf99..2111f04 100644
 --- a/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/event/CraftEventFactory.java
 @@ -948,6 +948,13 @@ public class CraftEventFactory {
@@ -34,6 +31,3 @@ index 74faf99..2111f04 100644
      public static Cancellable handleStatisticsIncrease(EntityHuman entityHuman, net.minecraft.server.Statistic statistic, int current, int incrementation) {
          Player player = ((EntityPlayer) entityHuman).getBukkitEntity();
          Event event;
--- 
-1.9.0
-

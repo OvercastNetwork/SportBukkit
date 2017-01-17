@@ -1,11 +1,9 @@
-From d7d1855defafc2b3ba88547802b077125c3be8ee Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 23 Dec 2016 14:02:20 -0500
 Subject: [PATCH] Do things inside events
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 1578a05..7f244ad 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -395,7 +395,7 @@ public abstract class PlayerList {
@@ -26,6 +24,3 @@ index 1578a05..7f244ad 100644
          return playerQuitEvent.getQuitMessage(); // CraftBukkit
      }
  
--- 
-1.9.0
-

@@ -1,4 +1,3 @@
-From 289c62d7b60ab64d9e66bdfce351f7c710ef5f94 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Fri, 1 Jul 2016 03:36:15 -0400
 Subject: [PATCH] Add PoseFlag and EntityLocation
@@ -162,7 +161,6 @@ index 0000000..4d8fbee
 +    RIDING;
 +}
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
-index cca452b..fe7113a 100644
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java
 @@ -1,9 +1,11 @@
@@ -199,7 +197,6 @@ index cca452b..fe7113a 100644
       *
       * @param velocity New velocity to travel with
 diff --git a/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java b/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
-index 7687667..b587a5a 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerMoveEvent.java
 @@ -1,24 +1,35 @@
@@ -284,7 +281,6 @@ index 7687667..b587a5a 100644
  
      private void validateLocation(Location loc) {
 diff --git a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
-index 93752f7..e2b31d7 100644
 --- a/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
 +++ b/src/main/java/org/bukkit/event/player/PlayerPortalEvent.java
 @@ -1,5 +1,7 @@
@@ -328,7 +324,6 @@ index 93752f7..e2b31d7 100644
  
      /**
 diff --git a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java b/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
-index ef75e5a..1d88ffb 100644
 --- a/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
 +++ b/src/test/java/org/bukkit/plugin/TimedRegisteredListenerTest.java
 @@ -9,9 +9,8 @@ import org.bukkit.event.EventPriority;
@@ -369,6 +364,3 @@ index ef75e5a..1d88ffb 100644
          assertThat(trl.getEventClass(), is((Object) Event.class));
      }
  }
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 5147f92db1b72813ef6d54ece39838fcbb2d25d7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:14:13 -0500
 Subject: [PATCH] Server suspend API
 
 
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index ad936e8..40cdbd1 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -3,6 +3,8 @@ package org.bukkit;
@@ -119,7 +117,6 @@ index ad936e8..40cdbd1 100644
 +    int interruptions();
  }
 diff --git a/src/main/java/org/bukkit/command/SimpleCommandMap.java b/src/main/java/org/bukkit/command/SimpleCommandMap.java
-index 4d475c6..8b2fa79 100644
 --- a/src/main/java/org/bukkit/command/SimpleCommandMap.java
 +++ b/src/main/java/org/bukkit/command/SimpleCommandMap.java
 @@ -32,6 +32,7 @@ public class SimpleCommandMap implements CommandMap {
@@ -211,6 +208,3 @@ index 0000000..aac9118
 +public class ServerSuspendEvent extends ServerEvent {
 +    private static final HandlerList<ServerSuspendEvent> handlers = new HandlerList<>();
 +}
--- 
-1.9.0
-

@@ -1,11 +1,9 @@
-From 682d04bbb775a9140a2ca21674b1cce9f942f642 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 2 Apr 2016 05:09:16 -0400
 Subject: [PATCH] Add PlayerUseUnknownEntityEvent
 
 
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
-index 458b4da..ecbbb0d 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayInUseEntity.java
 @@ -5,11 +5,20 @@ import javax.annotation.Nullable;
@@ -31,7 +29,6 @@ index 458b4da..ecbbb0d 100644
  
      public PacketPlayInUseEntity(Entity entity) {
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index d9a30c5..21bb3d3 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -42,6 +42,7 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
@@ -60,6 +57,3 @@ index d9a30c5..21bb3d3 100644
      }
  
      public void a(PacketPlayInClientCommand packetplayinclientcommand) {
--- 
-1.9.0
-

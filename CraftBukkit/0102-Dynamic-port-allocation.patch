@@ -1,11 +1,9 @@
-From caf33d1a9baeb4626727eb8e5045fc85f144a199 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 25 Aug 2015 05:30:20 -0400
 Subject: [PATCH] Dynamic port allocation
 
 
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
-index 26df822..274282c 100644
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
 @@ -175,6 +175,11 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
@@ -38,7 +36,6 @@ index 26df822..274282c 100644
      public String f_() {
          return this.getMotd();
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d6bc343..a1cc8e0 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1083,6 +1083,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
@@ -58,7 +55,6 @@ index d6bc343..a1cc8e0 100644
          return this.p;
      }
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
-index 446842a..7847d05 100644
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
 @@ -64,6 +64,11 @@ public class ServerConnection {
@@ -83,7 +79,6 @@ index 446842a..7847d05 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7962bb6..6ff4f6a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -514,12 +514,28 @@ public final class CraftServer implements Server {
@@ -116,6 +111,3 @@ index 7962bb6..6ff4f6a 100644
      public int getViewDistance() {
          return this.getConfigInt("view-distance", 10);
      }
--- 
-1.9.0
-

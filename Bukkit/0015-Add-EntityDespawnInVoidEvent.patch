@@ -1,4 +1,3 @@
-From e07b72954179af7b61332ee61837045eb4d8f99d Mon Sep 17 00:00:00 2001
 From: Isaac Moore <rmsy@me.com>
 Date: Wed, 25 Dec 2013 20:12:57 -0600
 Subject: [PATCH] Add EntityDespawnInVoidEvent
@@ -35,6 +34,3 @@ index 0000000..f413467
 +        return handlers;
 +    }
 +}
--- 
-1.9.0
-

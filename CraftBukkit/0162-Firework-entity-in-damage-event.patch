@@ -1,11 +1,9 @@
-From 5eecdc145239660312af6ade123ba1a97251dced Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 21 Dec 2016 12:29:04 -0500
 Subject: [PATCH] Firework entity in damage event
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
-index 0fb2a12..bf3770b 100644
 --- a/src/main/java/net/minecraft/server/EntityFireworks.java
 +++ b/src/main/java/net/minecraft/server/EntityFireworks.java
 @@ -5,6 +5,7 @@ import java.util.List;
@@ -26,6 +24,3 @@ index 0fb2a12..bf3770b 100644
                      }
                  }
              }
--- 
-1.9.0
-

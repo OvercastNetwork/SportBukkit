@@ -1,4 +1,3 @@
-From 2df9df0c652e987f7ee2946c9a7992fb97b8cbd7 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 10 Dec 2016 20:15:32 -0500
 Subject: [PATCH] Remove BukkitMirrorTest
@@ -85,6 +84,3 @@ index 219788f..0000000
 -        assertThat(bukkit.getGenericExceptionTypes(), is(server.getGenericExceptionTypes()));
 -    }
 -}
--- 
-1.9.0
-

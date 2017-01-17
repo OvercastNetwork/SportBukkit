@@ -1,11 +1,9 @@
-From fb84b048eb7dc39ac59a202937eeb3c90b9cfd17 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 20 Nov 2016 09:44:03 -0500
 Subject: [PATCH] Legacy protocol support
 
 
 diff --git a/src/main/java/net/minecraft/server/Block.java b/src/main/java/net/minecraft/server/Block.java
-index 4ba7447..073f3ea 100644
 --- a/src/main/java/net/minecraft/server/Block.java
 +++ b/src/main/java/net/minecraft/server/Block.java
 @@ -36,6 +36,15 @@ public class Block {
@@ -44,7 +42,6 @@ index 4ba7447..073f3ea 100644
          a(220, "orange_shulker_box", (new BlockShulkerBox(EnumColor.ORANGE)).c(2.0F).a(SoundEffectType.d).c("shulkerBoxOrange"));
          a(221, "magenta_shulker_box", (new BlockShulkerBox(EnumColor.MAGENTA)).c(2.0F).a(SoundEffectType.d).c("shulkerBoxMagenta"));
 diff --git a/src/main/java/net/minecraft/server/BlockShulkerBox.java b/src/main/java/net/minecraft/server/BlockShulkerBox.java
-index c11fc81..5e2e75e 100644
 --- a/src/main/java/net/minecraft/server/BlockShulkerBox.java
 +++ b/src/main/java/net/minecraft/server/BlockShulkerBox.java
 @@ -7,6 +7,7 @@ public class BlockShulkerBox extends BlockTileEntity {
@@ -56,7 +53,6 @@ index c11fc81..5e2e75e 100644
          this.a(CreativeModeTab.c);
          this.y(this.blockStateList.getBlockData().set(BlockShulkerBox.a, EnumDirection.UP));
 diff --git a/src/main/java/net/minecraft/server/DataWatcher.java b/src/main/java/net/minecraft/server/DataWatcher.java
-index 235dffe..56b32abf 100644
 --- a/src/main/java/net/minecraft/server/DataWatcher.java
 +++ b/src/main/java/net/minecraft/server/DataWatcher.java
 @@ -16,12 +16,17 @@ import org.apache.commons.lang3.ObjectUtils;
@@ -181,7 +177,6 @@ index 235dffe..56b32abf 100644
              return copy;
          }
 diff --git a/src/main/java/net/minecraft/server/Entity.java b/src/main/java/net/minecraft/server/Entity.java
-index f1445fd..bdcdd19 100644
 --- a/src/main/java/net/minecraft/server/Entity.java
 +++ b/src/main/java/net/minecraft/server/Entity.java
 @@ -24,6 +24,7 @@ import org.bukkit.PoseFlag;
@@ -214,7 +209,6 @@ index f1445fd..bdcdd19 100644
      public int ab;
      public int ac;
 diff --git a/src/main/java/net/minecraft/server/EntityAreaEffectCloud.java b/src/main/java/net/minecraft/server/EntityAreaEffectCloud.java
-index 58c4898..1f9518a 100644
 --- a/src/main/java/net/minecraft/server/EntityAreaEffectCloud.java
 +++ b/src/main/java/net/minecraft/server/EntityAreaEffectCloud.java
 @@ -15,14 +15,19 @@ import org.bukkit.entity.LivingEntity; // CraftBukkit
@@ -240,7 +234,6 @@ index 58c4898..1f9518a 100644
      public List<MobEffect> effects;
      private final Map<Entity, Integer> at;
 diff --git a/src/main/java/net/minecraft/server/EntityFireworks.java b/src/main/java/net/minecraft/server/EntityFireworks.java
-index 4d34e51..0fb2a12 100644
 --- a/src/main/java/net/minecraft/server/EntityFireworks.java
 +++ b/src/main/java/net/minecraft/server/EntityFireworks.java
 @@ -3,10 +3,15 @@ package net.minecraft.server;
@@ -261,7 +254,6 @@ index 4d34e51..0fb2a12 100644
      public int expectedLifespan;
      private EntityLiving e;
 diff --git a/src/main/java/net/minecraft/server/EntityHorse.java b/src/main/java/net/minecraft/server/EntityHorse.java
-index 7eaa95a..8d944bc 100644
 --- a/src/main/java/net/minecraft/server/EntityHorse.java
 +++ b/src/main/java/net/minecraft/server/EntityHorse.java
 @@ -6,8 +6,8 @@ import javax.annotation.Nullable;
@@ -289,7 +281,6 @@ index 7eaa95a..8d944bc 100644
  
      public static void a(DataConverterManager dataconvertermanager) {
 diff --git a/src/main/java/net/minecraft/server/EntityHorseAbstract.java b/src/main/java/net/minecraft/server/EntityHorseAbstract.java
-index d74ccd6..c4a9c3d 100644
 --- a/src/main/java/net/minecraft/server/EntityHorseAbstract.java
 +++ b/src/main/java/net/minecraft/server/EntityHorseAbstract.java
 @@ -8,8 +8,48 @@ import java.util.UUID;
@@ -378,7 +369,6 @@ index d74ccd6..c4a9c3d 100644
  
      protected boolean g(int i) {
 diff --git a/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java b/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java
-index 22aa68d..3a8e6d0 100644
 --- a/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java
 +++ b/src/main/java/net/minecraft/server/EntityHorseChestedAbstract.java
 @@ -1,8 +1,18 @@
@@ -402,7 +392,6 @@ index 22aa68d..3a8e6d0 100644
      public EntityHorseChestedAbstract(World world) {
          super(world);
 diff --git a/src/main/java/net/minecraft/server/EntityLightning.java b/src/main/java/net/minecraft/server/EntityLightning.java
-index 37780ac..8247ae0 100644
 --- a/src/main/java/net/minecraft/server/EntityLightning.java
 +++ b/src/main/java/net/minecraft/server/EntityLightning.java
 @@ -65,9 +65,9 @@ public class EntityLightning extends EntityWeather {
@@ -418,7 +407,6 @@ index 37780ac..8247ae0 100644
              }
              // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/server/EntityLlama.java b/src/main/java/net/minecraft/server/EntityLlama.java
-index 13ae7a0..7f6f24a 100644
 --- a/src/main/java/net/minecraft/server/EntityLlama.java
 +++ b/src/main/java/net/minecraft/server/EntityLlama.java
 @@ -4,11 +4,30 @@ import com.google.common.base.Predicate;
@@ -456,7 +444,6 @@ index 13ae7a0..7f6f24a 100644
      @Nullable
      private EntityLlama bK;
 diff --git a/src/main/java/net/minecraft/server/EntityPig.java b/src/main/java/net/minecraft/server/EntityPig.java
-index 813e18b..baa62f9 100644
 --- a/src/main/java/net/minecraft/server/EntityPig.java
 +++ b/src/main/java/net/minecraft/server/EntityPig.java
 @@ -7,10 +7,15 @@ import javax.annotation.Nullable;
@@ -477,7 +464,6 @@ index 813e18b..baa62f9 100644
      private boolean bA;
      private int bB;
 diff --git a/src/main/java/net/minecraft/server/EntityPlayer.java b/src/main/java/net/minecraft/server/EntityPlayer.java
-index 5726636..677476a 100644
 --- a/src/main/java/net/minecraft/server/EntityPlayer.java
 +++ b/src/main/java/net/minecraft/server/EntityPlayer.java
 @@ -902,7 +902,7 @@ public class EntityPlayer extends EntityHuman implements ICrafting {
@@ -490,7 +476,6 @@ index 5726636..677476a 100644
                      return;
                  }
 diff --git a/src/main/java/net/minecraft/server/EntitySkeletonAbstract.java b/src/main/java/net/minecraft/server/EntitySkeletonAbstract.java
-index 9cacd89..0044ecb 100644
 --- a/src/main/java/net/minecraft/server/EntitySkeletonAbstract.java
 +++ b/src/main/java/net/minecraft/server/EntitySkeletonAbstract.java
 @@ -4,9 +4,29 @@ import java.util.Calendar;
@@ -544,7 +529,6 @@ index 9cacd89..0044ecb 100644
  
      protected void a(BlockPosition blockposition, Block block) {
 diff --git a/src/main/java/net/minecraft/server/EntityZombie.java b/src/main/java/net/minecraft/server/EntityZombie.java
-index e851c2d..2fe0458 100644
 --- a/src/main/java/net/minecraft/server/EntityZombie.java
 +++ b/src/main/java/net/minecraft/server/EntityZombie.java
 @@ -12,14 +12,55 @@ import org.bukkit.event.entity.EntityCombustEvent;
@@ -619,7 +603,6 @@ index e851c2d..2fe0458 100644
  
      public void a(boolean flag) {
 diff --git a/src/main/java/net/minecraft/server/EntityZombieVillager.java b/src/main/java/net/minecraft/server/EntityZombieVillager.java
-index 88f8fbb..1e4e30d 100644
 --- a/src/main/java/net/minecraft/server/EntityZombieVillager.java
 +++ b/src/main/java/net/minecraft/server/EntityZombieVillager.java
 @@ -4,8 +4,8 @@ import javax.annotation.Nullable;
@@ -647,7 +630,6 @@ index 88f8fbb..1e4e30d 100644
  
      public void setProfession(int i) {
 diff --git a/src/main/java/net/minecraft/server/EnumProtocol.java b/src/main/java/net/minecraft/server/EnumProtocol.java
-index 2f18f1e..89c8917 100644
 --- a/src/main/java/net/minecraft/server/EnumProtocol.java
 +++ b/src/main/java/net/minecraft/server/EnumProtocol.java
 @@ -8,6 +8,16 @@ import java.util.Map;
@@ -779,7 +761,6 @@ index 2f18f1e..89c8917 100644
          }
  
 diff --git a/src/main/java/net/minecraft/server/HandshakeListener.java b/src/main/java/net/minecraft/server/HandshakeListener.java
-index a57f23c..22bde8e 100644
 --- a/src/main/java/net/minecraft/server/HandshakeListener.java
 +++ b/src/main/java/net/minecraft/server/HandshakeListener.java
 @@ -65,7 +65,7 @@ public class HandshakeListener implements PacketHandshakingInListener {
@@ -792,7 +773,6 @@ index a57f23c..22bde8e 100644
                  this.b.sendPacket(new PacketLoginOutDisconnect(chatcomponenttext));
                  this.b.close(chatcomponenttext);
 diff --git a/src/main/java/net/minecraft/server/Item.java b/src/main/java/net/minecraft/server/Item.java
-index 35ea31f..a8a9d88 100644
 --- a/src/main/java/net/minecraft/server/Item.java
 +++ b/src/main/java/net/minecraft/server/Item.java
 @@ -32,6 +32,15 @@ public class Item {
@@ -834,7 +814,6 @@ index 35ea31f..a8a9d88 100644
          a(2257, "record_cat", (new ItemRecord("cat", SoundEffects.fc)).c("record"));
          a(2258, "record_blocks", (new ItemRecord("blocks", SoundEffects.fb)).c("record"));
 diff --git a/src/main/java/net/minecraft/server/ItemBlock.java b/src/main/java/net/minecraft/server/ItemBlock.java
-index eb32871..c943f92 100644
 --- a/src/main/java/net/minecraft/server/ItemBlock.java
 +++ b/src/main/java/net/minecraft/server/ItemBlock.java
 @@ -8,6 +8,7 @@ public class ItemBlock extends Item {
@@ -846,7 +825,6 @@ index eb32871..c943f92 100644
  
      public EnumInteractionResult a(EntityHuman entityhuman, World world, BlockPosition blockposition, EnumHand enumhand, EnumDirection enumdirection, float f, float f1, float f2) {
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index 1e98784..fcaf94f 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -28,6 +28,8 @@ import org.apache.logging.log4j.Logger;
@@ -868,7 +846,6 @@ index 1e98784..fcaf94f 100644
      private IChatBaseComponent n;
      private boolean o;
 diff --git a/src/main/java/net/minecraft/server/PacketDataSerializer.java b/src/main/java/net/minecraft/server/PacketDataSerializer.java
-index 5637d02..851a9a8 100644
 --- a/src/main/java/net/minecraft/server/PacketDataSerializer.java
 +++ b/src/main/java/net/minecraft/server/PacketDataSerializer.java
 @@ -22,9 +22,12 @@ import java.util.UUID;
@@ -933,7 +910,6 @@ index 5637d02..851a9a8 100644
              this.writeShort(Item.getId(itemstack.getItem()));
              this.writeByte(itemstack.getCount());
 diff --git a/src/main/java/net/minecraft/server/PacketDecoder.java b/src/main/java/net/minecraft/server/PacketDecoder.java
-index fc22c20..07155f5 100644
 --- a/src/main/java/net/minecraft/server/PacketDecoder.java
 +++ b/src/main/java/net/minecraft/server/PacketDecoder.java
 @@ -24,7 +24,12 @@ public class PacketDecoder extends ByteToMessageDecoder {
@@ -951,7 +927,6 @@ index fc22c20..07155f5 100644
              if (packet == null) {
                  throw new IOException("Bad packet id " + i);
 diff --git a/src/main/java/net/minecraft/server/PacketEncoder.java b/src/main/java/net/minecraft/server/PacketEncoder.java
-index f4066bd..2298643 100644
 --- a/src/main/java/net/minecraft/server/PacketEncoder.java
 +++ b/src/main/java/net/minecraft/server/PacketEncoder.java
 @@ -20,7 +20,10 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
@@ -975,7 +950,6 @@ index f4066bd..2298643 100644
              packetdataserializer.d(integer.intValue());
  
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
-index 512b3e4..8bb9a41 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayInResourcePackStatus.java
 @@ -13,10 +13,20 @@ public class PacketPlayInResourcePackStatus implements Packet<PacketListenerPlay
@@ -1000,7 +974,6 @@ index 512b3e4..8bb9a41 100644
      }
  
 diff --git a/src/main/java/net/minecraft/server/PacketPlayInUseItem.java b/src/main/java/net/minecraft/server/PacketPlayInUseItem.java
-index bdcda81..ccd3ed0 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayInUseItem.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayInUseItem.java
 @@ -17,18 +17,34 @@ public class PacketPlayInUseItem implements Packet<PacketListenerPlayIn> {
@@ -1045,7 +1018,6 @@ index bdcda81..ccd3ed0 100644
  
      public void a(PacketListenerPlayIn packetlistenerplayin) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCollect.java b/src/main/java/net/minecraft/server/PacketPlayOutCollect.java
-index 1678628..1b967a4 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutCollect.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutCollect.java
 @@ -19,13 +19,21 @@ public class PacketPlayOutCollect implements Packet<PacketListenerPlayOut> {
@@ -1073,7 +1045,6 @@ index 1678628..1b967a4 100644
  
      public void a(PacketListenerPlayOut packetlistenerplayout) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
-index 8a19c73..1b6a96d 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
 @@ -15,6 +15,19 @@ public class PacketPlayOutCustomSoundEffect implements Packet<PacketListenerPlay
@@ -1127,7 +1098,6 @@ index 8a19c73..1b6a96d 100644
  
      public void a(PacketListenerPlayOut packetlistenerplayout) {
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
-index 9a973d5..0204a68 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutLogin.java
 @@ -54,7 +54,13 @@ public class PacketPlayOutLogin implements Packet<PacketListenerPlayOut> {
@@ -1146,7 +1116,6 @@ index 9a973d5..0204a68 100644
          packetdataserializer.writeByte(this.f);
          packetdataserializer.a(this.g.name());
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
-index d16669b..027d92a 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutMapChunk.java
 @@ -75,6 +75,7 @@ public class PacketPlayOutMapChunk implements Packet<PacketListenerPlayOut> {
@@ -1158,7 +1127,6 @@ index d16669b..027d92a 100644
          Iterator iterator = this.e.iterator();
  
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
-index 44f0d00..95d1494 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
 @@ -94,7 +94,13 @@ public class PacketPlayOutSpawnEntityLiving implements Packet<PacketListenerPlay
@@ -1192,7 +1160,6 @@ index 44f0d00..95d1494 100644
          packetdataserializer.writeDouble(this.e);
          packetdataserializer.writeDouble(this.f);
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
-index b30c97e..d2d73b7 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutTileEntityData.java
 @@ -2,6 +2,8 @@ package net.minecraft.server;
@@ -1226,7 +1193,6 @@ index b30c97e..d2d73b7 100644
          packetdataserializer.writeByte((byte) this.b);
          packetdataserializer.a(this.c);
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
-index 01c58fb..d726020 100644
 --- a/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
 +++ b/src/main/java/net/minecraft/server/PacketPlayOutTitle.java
 @@ -57,7 +57,14 @@ public class PacketPlayOutTitle implements Packet<PacketListenerPlayOut> {
@@ -1246,7 +1212,6 @@ index 01c58fb..d726020 100644
              // SportBukkit start
              if(this.components != null) {
 diff --git a/src/main/java/net/minecraft/server/PlayerChunk.java b/src/main/java/net/minecraft/server/PlayerChunk.java
-index dd40e98..a814ee1 100644
 --- a/src/main/java/net/minecraft/server/PlayerChunk.java
 +++ b/src/main/java/net/minecraft/server/PlayerChunk.java
 @@ -36,6 +36,33 @@ public class PlayerChunk {
@@ -1308,7 +1273,6 @@ index dd40e98..a814ee1 100644
                      this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
  
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index bdb9c2b..bf5c609 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -1249,7 +1249,7 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -1335,7 +1299,6 @@ index bdb9c2b..bf5c609 100644
  
                                  if (b1 == 2) {
 diff --git a/src/main/java/net/minecraft/server/WorldManager.java b/src/main/java/net/minecraft/server/WorldManager.java
-index 2c8fb70..50ccda7 100644
 --- a/src/main/java/net/minecraft/server/WorldManager.java
 +++ b/src/main/java/net/minecraft/server/WorldManager.java
 @@ -36,7 +36,7 @@ public class WorldManager implements IWorldAccess {
@@ -1348,7 +1311,6 @@ index 2c8fb70..50ccda7 100644
  
      public void a(int i, int j, int k, int l, int i1, int j1) {}
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9a825c0..19578ae 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -77,6 +77,7 @@ import org.bukkit.craftbukkit.metadata.EntityMetadataStore;
@@ -1369,7 +1331,6 @@ index 9a825c0..19578ae 100644
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 738dd7b..5cb0c16 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -552,7 +552,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -1670,6 +1631,3 @@ index 0000000..ff6f2d9
 +    }
 +
 +}
--- 
-1.9.0
-

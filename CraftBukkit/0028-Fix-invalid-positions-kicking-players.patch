@@ -1,11 +1,9 @@
-From bdb089ae5751339bf7c975813fbc9adc26b38445 Mon Sep 17 00:00:00 2001
 From: mrapple <tony@oc.tc>
 Date: Tue, 9 Jul 2013 17:06:59 -0500
 Subject: [PATCH] Fix invalid positions kicking players
 
 
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index e3b31ab..2bfd8a8 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -590,6 +590,12 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -40,6 +38,3 @@ index e3b31ab..2bfd8a8 100644
          this.justTeleported = true;
          // CraftBukkit end
          double d3 = set.contains(PacketPlayOutPosition.EnumPlayerTeleportFlags.X) ? this.player.locX : 0.0D;
--- 
-1.9.0
-

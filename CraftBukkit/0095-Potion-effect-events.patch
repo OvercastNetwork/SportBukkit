@@ -1,11 +1,9 @@
-From 20ac2cd6be27c20b767f7eb8edb4c558b014c787 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Mon, 29 Jun 2015 04:47:28 -0400
 Subject: [PATCH] Potion effect events
 
 
 diff --git a/src/main/java/net/minecraft/server/EntityLiving.java b/src/main/java/net/minecraft/server/EntityLiving.java
-index affbc49..2b61f76 100644
 --- a/src/main/java/net/minecraft/server/EntityLiving.java
 +++ b/src/main/java/net/minecraft/server/EntityLiving.java
 @@ -21,6 +21,7 @@ import org.bukkit.Location;
@@ -223,6 +221,3 @@ index 0000000..ef29a03
 +        effect.a(cloneWithDuration(effect, duration));
 +    }
 +}
--- 
-1.9.0
-

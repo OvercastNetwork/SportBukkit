@@ -1,11 +1,9 @@
-From 081e9e0c92ec8e2a98023f00242d1d31aa86e343 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sat, 7 Jan 2017 00:30:44 -0500
 Subject: [PATCH] Reduce ItemStack copying
 
 
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
-index f4adedb..1bef94c 100644
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
 @@ -14,6 +14,7 @@ import org.bukkit.Location;
@@ -35,7 +33,6 @@ index f4adedb..1bef94c 100644
          this(block, 1);
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerInventory.java b/src/main/java/net/minecraft/server/PlayerInventory.java
-index 2aef1f1..01641ef 100644
 --- a/src/main/java/net/minecraft/server/PlayerInventory.java
 +++ b/src/main/java/net/minecraft/server/PlayerInventory.java
 @@ -30,6 +30,7 @@ public class PlayerInventory implements IInventory {
@@ -47,7 +44,6 @@ index 2aef1f1..01641ef 100644
          for (List<net.minecraft.server.ItemStack> sub : this.g) {
              combined.addAll(sub);
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
-index 3537b17..9d783ec 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java
 @@ -3,7 +3,10 @@ package org.bukkit.craftbukkit.inventory;
@@ -326,7 +322,6 @@ index 3537b17..9d783ec 100644
  
      public void clear(int index) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java
-index 24d1804..708dac3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryCrafting.java
 @@ -1,6 +1,6 @@
@@ -405,7 +400,6 @@ index 24d1804..708dac3 100644
                  getMatrixInventory().setItem(i, net.minecraft.server.ItemStack.a);
              }
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryDoubleChest.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryDoubleChest.java
-index 446a385..4058301 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryDoubleChest.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryDoubleChest.java
 @@ -1,5 +1,7 @@
@@ -442,7 +436,6 @@ index 446a385..4058301 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
-index e8643ee..b8f6eaa 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventoryPlayer.java
 @@ -1,7 +1,9 @@
@@ -542,7 +535,6 @@ index e8643ee..b8f6eaa 100644
              if (id > -1 && item.getTypeId() != id) continue;
              if (data > -1 && item.getData().getData() != data) continue;
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 6f9c0e6..b7b0f2f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -69,7 +69,7 @@ public final class CraftItemStack extends ItemStack {
@@ -564,7 +556,6 @@ index 6f9c0e6..b7b0f2f 100644
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/InventoryWrapper.java b/src/main/java/org/bukkit/craftbukkit/inventory/InventoryWrapper.java
-index 5634a22..fe4b6ef 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/InventoryWrapper.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/InventoryWrapper.java
 @@ -4,6 +4,8 @@ import com.google.common.base.Predicates;
@@ -592,6 +583,3 @@ index 5634a22..fe4b6ef 100644
      }
  
      @Override
--- 
-1.9.0
-

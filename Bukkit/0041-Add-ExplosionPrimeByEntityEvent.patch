@@ -1,4 +1,3 @@
-From 92306258d464f739ef03383a49306544f23bdde1 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Sun, 14 Jun 2015 04:13:42 -0400
 Subject: [PATCH] Add ExplosionPrimeByEntityEvent
@@ -44,6 +43,3 @@ index 0000000..6b7d13f
 +        return primer;
 +    }
 +}
--- 
-1.9.0
-

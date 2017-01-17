@@ -1,11 +1,9 @@
-From ec5c9c8beda776abcd240821d066a0c5df71091a Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Tue, 25 Aug 2015 05:22:19 -0400
 Subject: [PATCH] Dynamic port allocation
 
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 192f52c..e52d0d4 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
 @@ -164,13 +164,39 @@ public final class Bukkit {
@@ -50,7 +48,6 @@ index 192f52c..e52d0d4 100644
          return server.getPort();
      }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index b74d880..0e1d140 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
 @@ -141,10 +141,35 @@ public interface Server extends PluginMessageRecipient {
@@ -90,6 +87,3 @@ index b74d880..0e1d140 100644
      public int getPort();
  
      /**
--- 
-1.9.0
-

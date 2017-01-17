@@ -1,11 +1,9 @@
-From 15ec704f87be9d26bb866da3d6628071c2b46dd4 Mon Sep 17 00:00:00 2001
 From: Jedediah Smith <jedediah@silencegreys.com>
 Date: Wed, 18 May 2016 03:31:16 -0400
 Subject: [PATCH] Enqueue play packets during login
 
 
 diff --git a/src/main/java/net/minecraft/server/NetworkManager.java b/src/main/java/net/minecraft/server/NetworkManager.java
-index e941fe1..1e98784 100644
 --- a/src/main/java/net/minecraft/server/NetworkManager.java
 +++ b/src/main/java/net/minecraft/server/NetworkManager.java
 @@ -263,6 +263,7 @@ public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
@@ -17,7 +15,6 @@ index e941fe1..1e98784 100644
          return this.m;
      }
 diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main/java/net/minecraft/server/PlayerConnection.java
-index 21bb3d3..527d654 100644
 --- a/src/main/java/net/minecraft/server/PlayerConnection.java
 +++ b/src/main/java/net/minecraft/server/PlayerConnection.java
 @@ -105,10 +105,30 @@ public class PlayerConnection implements PacketListenerPlayIn, ITickable {
@@ -67,7 +64,6 @@ index 21bb3d3..527d654 100644
  
          if (packet instanceof PacketPlayOutChat) {
 diff --git a/src/main/java/net/minecraft/server/PlayerList.java b/src/main/java/net/minecraft/server/PlayerList.java
-index 923f12c..7c28074 100644
 --- a/src/main/java/net/minecraft/server/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/PlayerList.java
 @@ -132,7 +132,11 @@ public abstract class PlayerList {
@@ -103,6 +99,3 @@ index 923f12c..7c28074 100644
          entity.hostname = hostname;
          entity.protocolVersion = loginlistener.networkManager.protocolVersion; // Can't reach NetworkManager through CraftPlayer at this point, so copy the value
  
--- 
-1.9.0
-

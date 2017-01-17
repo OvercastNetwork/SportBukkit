@@ -1,4 +1,4 @@
-Bukkit
+SportBukkit-API
 ======
 A plugin API for [Minecraft](https://minecraft.net/) servers, currently maintained by [SpigotMC](http://www.spigotmc.org/).
 

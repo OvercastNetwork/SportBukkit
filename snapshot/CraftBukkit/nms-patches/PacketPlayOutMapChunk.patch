@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/PacketPlayOutMapChunk.java
++++ b/net/minecraft/server/PacketPlayOutMapChunk.java
+@@ -75,6 +75,7 @@
+         packetdataserializer.d(this.c);
+         packetdataserializer.d(this.d.length);
+         packetdataserializer.writeBytes(this.d);
++        if(packetdataserializer.protocolVersion < 110) return; // SportBukkit
+         packetdataserializer.d(this.e.size());
+         Iterator iterator = this.e.iterator();
+ 

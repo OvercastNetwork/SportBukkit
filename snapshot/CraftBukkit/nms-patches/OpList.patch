@@ -1,0 +1,29 @@
+--- a/net/minecraft/server/OpList.java
++++ b/net/minecraft/server/OpList.java
+@@ -28,7 +28,7 @@
+         return astring;
+     }
+ 
+-    public int a(GameProfile gameprofile) {
++    public int getLevel(GameProfile gameprofile) { // SportBukkit - rename method to avoid decomp error
+         OpListEntry oplistentry = (OpListEntry) this.get(gameprofile);
+ 
+         return oplistentry != null ? oplistentry.a() : 0;
+@@ -41,7 +41,7 @@
+     }
+ 
+     protected String c(GameProfile gameprofile) {
+-        return gameprofile.getId().toString();
++        return super.a(gameprofile); // SportBukkit - use super method that uses cache
+     }
+ 
+     public GameProfile a(String s) {
+@@ -59,8 +59,4 @@
+ 
+         return (GameProfile) oplistentry.getKey();
+     }
+-
+-    protected String a(Object object) {
+-        return this.c((GameProfile) object);
+-    }
+ }

@@ -1,0 +1,14 @@
+--- a/net/minecraft/server/BlockIce.java
++++ b/net/minecraft/server/BlockIce.java
+@@ -47,6 +47,11 @@
+     }
+ 
+     protected void b(World world, BlockPosition blockposition) {
++        // CraftBukkit start
++        if (org.bukkit.craftbukkit.event.CraftEventFactory.callBlockFadeEvent(world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()), world.worldProvider.l() ? Blocks.AIR : Blocks.WATER).isCancelled()) {
++            return;
++        }
++        // CraftBukkit end
+         if (world.worldProvider.l()) {
+             world.setAir(blockposition);
+         } else {

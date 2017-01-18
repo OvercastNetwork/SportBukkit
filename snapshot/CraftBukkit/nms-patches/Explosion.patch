@@ -1,0 +1,173 @@
+--- a/net/minecraft/server/Explosion.java
++++ b/net/minecraft/server/Explosion.java
+@@ -10,6 +10,13 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.EntityExplodeEvent;
++import org.bukkit.Location;
++import org.bukkit.event.block.BlockExplodeEvent;
++// CraftBukkit end
++
+ public class Explosion {
+ 
+     private final boolean a;
+@@ -23,11 +30,12 @@
+     private final float size;
+     private final List<BlockPosition> blocks = Lists.newArrayList();
+     private final Map<EntityHuman, Vec3D> k = Maps.newHashMap();
++    public boolean wasCanceled = false; // CraftBukkit - add field
+ 
+     public Explosion(World world, Entity entity, double d0, double d1, double d2, float f, boolean flag, boolean flag1) {
+         this.world = world;
+         this.source = entity;
+-        this.size = f;
++        this.size = (float) Math.max(f, 0.0); // CraftBukkit - clamp bad values
+         this.posX = d0;
+         this.posY = d1;
+         this.posZ = d2;
+@@ -36,6 +44,11 @@
+     }
+ 
+     public void a() {
++        // CraftBukkit start
++        if (this.size < 0.1F) {
++            return;
++        }
++        // CraftBukkit end
+         HashSet hashset = Sets.newHashSet();
+         boolean flag = true;
+ 
+@@ -69,7 +82,7 @@
+                                 f -= (f2 + 0.3F) * 0.3F;
+                             }
+ 
+-                            if (f > 0.0F && (this.source == null || this.source.a(this, this.world, blockposition, iblockdata, f))) {
++                            if (f > 0.0F && (this.source == null || this.source.a(this, this.world, blockposition, iblockdata, f)) && blockposition.getY() < 256 && blockposition.getY() >= 0) { // CraftBukkit - don't wrap explosions
+                                 hashset.add(blockposition);
+                             }
+ 
+@@ -113,16 +126,35 @@
+                         double d12 = (double) this.world.a(vec3d, entity.getBoundingBox());
+                         double d13 = (1.0D - d7) * d12;
+ 
+-                        entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f3 + 1.0D)));
++                        // CraftBukkit start
++                        // entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f3 + 1.0D)));
++                        CraftEventFactory.entityDamage = source;
++                        entity.forceExplosionKnockback = false;
++                        boolean wasDamaged = entity.damageEntity(DamageSource.explosion(this), (float) ((int) ((d13 * d13 + d13) / 2.0D * 7.0D * (double) f3 + 1.0D)));
++                        CraftEventFactory.entityDamage = null;
++                        if (!wasDamaged && !(entity instanceof EntityTNTPrimed || entity instanceof EntityFallingBlock) && !entity.forceExplosionKnockback) {
++                            continue;
++                        }
++                        // CraftBukkit end
+                         double d14 = d13;
+ 
+                         if (entity instanceof EntityLiving) {
+                             d14 = EnchantmentProtection.a((EntityLiving) entity, d13);
+                         }
+ 
++                        // SportBukkit start
++                        // For non-player entities, call the knockback method instead of directly mutating velocity.
++                        // Don't change player velocity at all, that happens later in WorldServer.createExplosion
++                        /*
+                         entity.motX += d8 * d14;
+                         entity.motY += d9 * d14;
+                         entity.motZ += d10 * d14;
++                        */
++                        if(!(entity instanceof EntityHuman)) {
++                            entity.applyKnockback(source, d8 * d14, d9 * d14, d10 * d14, true);
++                        }
++                        // SportBukkit end
++
+                         if (entity instanceof EntityHuman) {
+                             EntityHuman entityhuman = (EntityHuman) entity;
+ 
+@@ -149,6 +181,50 @@
+         BlockPosition blockposition;
+ 
+         if (this.b) {
++            // CraftBukkit start
++            org.bukkit.World bworld = this.world.getWorld();
++            org.bukkit.entity.Entity explode = this.source == null ? null : this.source.getBukkitEntity();
++            Location location = new Location(bworld, this.posX, this.posY, this.posZ);
++
++            List<org.bukkit.block.Block> blockList = Lists.newArrayList();
++            for (int i1 = this.blocks.size() - 1; i1 >= 0; i1--) {
++                BlockPosition cpos = (BlockPosition) this.blocks.get(i1);
++                org.bukkit.block.Block bblock = bworld.getBlockAt(cpos.getX(), cpos.getY(), cpos.getZ());
++                if (bblock.getType() != org.bukkit.Material.AIR) {
++                    blockList.add(bblock);
++                }
++            }
++
++            boolean cancelled;
++            List<org.bukkit.block.Block> bukkitBlocks;
++            float yield;
++
++            if (explode != null) {
++                EntityExplodeEvent event = new EntityExplodeEvent(explode, location, blockList, 1.0F / this.size);
++                this.world.getServer().getPluginManager().callEvent(event);
++                cancelled = event.isCancelled();
++                bukkitBlocks = event.blockList();
++                yield = event.getYield();
++            } else {
++                BlockExplodeEvent event = new BlockExplodeEvent(location.getBlock(), blockList, 1.0F / this.size);
++                this.world.getServer().getPluginManager().callEvent(event);
++                cancelled = event.isCancelled();
++                bukkitBlocks = event.blockList();
++                yield = event.getYield();
++            }
++
++            this.blocks.clear();
++
++            for (org.bukkit.block.Block bblock : bukkitBlocks) {
++                BlockPosition coords = new BlockPosition(bblock.getX(), bblock.getY(), bblock.getZ());
++                blocks.add(coords);
++            }
++
++            if (cancelled) {
++                this.wasCanceled = true;
++                return;
++            }
++            // CraftBukkit end
+             iterator = this.blocks.iterator();
+ 
+             while (iterator.hasNext()) {
+@@ -180,7 +256,8 @@
+ 
+                 if (iblockdata.getMaterial() != Material.AIR) {
+                     if (block.a(this)) {
+-                        block.dropNaturally(this.world, blockposition, this.world.getType(blockposition), 1.0F / this.size, 0);
++                        // CraftBukkit - add yield
++                        block.dropNaturally(this.world, blockposition, this.world.getType(blockposition), yield, 0);
+                     }
+ 
+                     this.world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 3);
+@@ -195,7 +272,11 @@
+             while (iterator.hasNext()) {
+                 blockposition = (BlockPosition) iterator.next();
+                 if (this.world.getType(blockposition).getMaterial() == Material.AIR && this.world.getType(blockposition.down()).b() && this.c.nextInt(3) == 0) {
+-                    this.world.setTypeUpdate(blockposition, Blocks.FIRE.getBlockData());
++                    // CraftBukkit start - Ignition by explosion
++                    if (!org.bukkit.craftbukkit.event.CraftEventFactory.callBlockIgniteEvent(this.world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this).isCancelled()) {
++                        this.world.setTypeUpdate(blockposition, Blocks.FIRE.getBlockData());
++                    }
++                    // CraftBukkit end
+                 }
+             }
+         }
+@@ -208,7 +289,9 @@
+ 
+     @Nullable
+     public EntityLiving getSource() {
+-        return this.source == null ? null : (this.source instanceof EntityTNTPrimed ? ((EntityTNTPrimed) this.source).getSource() : (this.source instanceof EntityLiving ? (EntityLiving) this.source : null));
++        // CraftBukkit start - obtain Fireball shooter for explosion tracking
++        return this.source == null ? null : (this.source instanceof EntityTNTPrimed ? ((EntityTNTPrimed) this.source).getSource() : (this.source instanceof EntityLiving ? (EntityLiving) this.source : (this.source instanceof EntityFireball ? ((EntityFireball) this.source).shooter : null)));
++        // CraftBukkit end
+     }
+ 
+     public void clearBlocks() {

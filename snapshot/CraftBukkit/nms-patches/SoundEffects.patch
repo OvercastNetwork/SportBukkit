@@ -1,0 +1,38 @@
+--- a/net/minecraft/server/SoundEffects.java
++++ b/net/minecraft/server/SoundEffects.java
+@@ -224,7 +224,7 @@
+     public static final SoundEffect dl;
+     public static final SoundEffect dm;
+     public static final SoundEffect dn;
+-    public static final SoundEffect do;
++    public static final SoundEffect BLOCK_LADDER_PLACE; // SportBukkit - fix decomp
+     public static final SoundEffect dp;
+     public static final SoundEffect dq;
+     public static final SoundEffect dr;
+@@ -475,7 +475,7 @@
+     public static final SoundEffect ic;
+     public static final SoundEffect id;
+     public static final SoundEffect ie;
+-    public static final SoundEffect if;
++    public static final SoundEffect ENTITY_ZOMBIE_ATTACK_DOOR_WOOD; // SportBukkit - fix decomp
+     public static final SoundEffect ig;
+     public static final SoundEffect ih;
+     public static final SoundEffect ii;
+@@ -732,7 +732,7 @@
+             dl = a("block.ladder.break");
+             dm = a("block.ladder.fall");
+             dn = a("block.ladder.hit");
+-            do = a("block.ladder.place");
++            BLOCK_LADDER_PLACE = a("block.ladder.place"); // SportBukkit - fix decomp
+             dp = a("block.ladder.step");
+             dq = a("block.lava.ambient");
+             dr = a("block.lava.extinguish");
+@@ -983,7 +983,7 @@
+             ic = a("block.wood_pressureplate.click_on");
+             id = a("block.wood.step");
+             ie = a("entity.zombie.ambient");
+-            if = a("entity.zombie.attack_door_wood");
++            ENTITY_ZOMBIE_ATTACK_DOOR_WOOD = a("entity.zombie.attack_door_wood"); // SportBukkit - fix decomp
+             ig = a("entity.zombie.attack_iron_door");
+             ih = a("entity.zombie.break_door_wood");
+             ii = a("entity.zombie.death");

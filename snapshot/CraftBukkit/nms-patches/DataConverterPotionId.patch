@@ -1,0 +1,12 @@
+--- a/net/minecraft/server/DataConverterPotionId.java
++++ b/net/minecraft/server/DataConverterPotionId.java
+@@ -18,7 +18,9 @@
+             if (!nbttagcompound1.hasKeyOfType("Potion", 8)) {
+                 String s = DataConverterPotionId.a[short0 & 127];
+ 
++                if(!nbttagcompound1.hasKeyOfType("CustomPotionEffects", 9)) { // SportBukkit - custom effects override defaults
+                 nbttagcompound1.setString("Potion", s == null ? "minecraft:water" : s);
++                } // SportBukkit
+                 nbttagcompound.set("tag", nbttagcompound1);
+                 if ((short0 & 16384) == 16384) {
+                     nbttagcompound.setString("id", "minecraft:splash_potion");

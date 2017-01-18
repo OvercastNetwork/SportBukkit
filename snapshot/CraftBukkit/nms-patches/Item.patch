@@ -1,0 +1,43 @@
+--- a/net/minecraft/server/Item.java
++++ b/net/minecraft/server/Item.java
+@@ -32,8 +32,17 @@
+     private Item craftingResult;
+     private String name;
+ 
++    // SportBukkit start - minimum protocol version
++    private int proto;
++    public int proto() { return proto; }
++    public Item proto(int p) {
++        this.proto = p;
++        return this;
++    }
++    // SportBukkit end
++
+     public static int getId(Item item) {
+-        return item == null ? 0 : Item.REGISTRY.a((Object) item);
++        return item == null ? 0 : Item.REGISTRY.a(item); // SportBukkit - fix decomp error
+     }
+ 
+     public static Item getById(int i) {
+@@ -508,7 +517,7 @@
+         a(Blocks.dy, (Item) (new ItemShulkerBox(Blocks.dy)));
+         a(Blocks.dz, (Item) (new ItemShulkerBox(Blocks.dz)));
+         a(Blocks.dA, (Item) (new ItemShulkerBox(Blocks.dA)));
+-        b(Blocks.STRUCTURE_BLOCK);
++        /* b(Blocks.STRUCTURE_BLOCK); */ a(Blocks.STRUCTURE_BLOCK, new ItemBlock(Blocks.STRUCTURE_BLOCK).proto(201)); // SportBukkit - proto (block was in 1.9, but not an item until 1.10)
+         a(256, "iron_shovel", (new ItemSpade(Item.EnumToolMaterial.IRON)).c("shovelIron"));
+         a(257, "iron_pickaxe", (new ItemPickaxe(Item.EnumToolMaterial.IRON)).c("pickaxeIron"));
+         a(258, "iron_axe", (new ItemAxe(Item.EnumToolMaterial.IRON)).c("hatchetIron"));
+@@ -706,9 +715,9 @@
+         a(446, "jungle_boat", new ItemBoat(EntityBoat.EnumBoatType.JUNGLE));
+         a(447, "acacia_boat", new ItemBoat(EntityBoat.EnumBoatType.ACACIA));
+         a(448, "dark_oak_boat", new ItemBoat(EntityBoat.EnumBoatType.DARK_OAK));
+-        a(449, "totem_of_undying", (new Item()).c("totem").d(1).a(CreativeModeTab.j));
+-        a(450, "shulker_shell", (new Item()).c("shulkerShell").a(CreativeModeTab.l));
+-        a(452, "iron_nugget", (new Item()).c("ironNugget").a(CreativeModeTab.l));
++        a(449, "totem_of_undying", (new Item()).c("totem").d(1).a(CreativeModeTab.j).proto(307)); // SportBukkit - proto
++        a(450, "shulker_shell", (new Item()).c("shulkerShell").a(CreativeModeTab.l).proto(307)); // SportBukkit - proto
++        a(452, "iron_nugget", (new Item()).c("ironNugget").a(CreativeModeTab.l).proto(316)); // SportBukkit - proto
+         a(2256, "record_13", (new ItemRecord("13", SoundEffects.fa)).c("record"));
+         a(2257, "record_cat", (new ItemRecord("cat", SoundEffects.fc)).c("record"));
+         a(2258, "record_blocks", (new ItemRecord("blocks", SoundEffects.fb)).c("record"));

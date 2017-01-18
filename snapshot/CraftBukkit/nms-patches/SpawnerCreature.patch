@@ -1,0 +1,124 @@
+--- a/net/minecraft/server/SpawnerCreature.java
++++ b/net/minecraft/server/SpawnerCreature.java
+@@ -6,10 +6,16 @@
+ import java.util.Random;
+ import java.util.Set;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.util.LongHash;
++import org.bukkit.craftbukkit.util.LongHashSet;
++import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
++// CraftBukkit end
++
+ public final class SpawnerCreature {
+ 
+     private static final int a = (int) Math.pow(17.0D, 2.0D);
+-    private final Set<ChunkCoordIntPair> b = Sets.newHashSet();
++    private final LongHashSet b = new LongHashSet(); // CraftBukkit
+ 
+     public SpawnerCreature() {}
+ 
+@@ -27,6 +33,8 @@
+             while (iterator.hasNext()) {
+                 EntityHuman entityhuman = (EntityHuman) iterator.next();
+ 
++                if (!entityhuman.affectsSpawning) continue; // SportBukkit - affectsSpawning check
++
+                 if (!entityhuman.isSpectator()) {
+                     int l = MathHelper.floor(entityhuman.locX / 16.0D);
+ 
+@@ -38,13 +46,16 @@
+                             boolean flag4 = i1 == -8 || i1 == 8 || k == -8 || k == 8;
+                             ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i1 + l, k + j);
+ 
+-                            if (!this.b.contains(chunkcoordintpair)) {
++                            // CraftBukkit start - use LongHash and LongHashSet
++                            long chunkCoords = LongHash.toLong(chunkcoordintpair.x, chunkcoordintpair.z);
++                            if (!this.b.contains(chunkCoords)) {
+                                 ++i;
+                                 if (!flag4 && worldserver.getWorldBorder().isInBounds(chunkcoordintpair)) {
+                                     PlayerChunk playerchunk = worldserver.getPlayerChunkMap().getChunk(chunkcoordintpair.x, chunkcoordintpair.z);
+ 
+                                     if (playerchunk != null && playerchunk.e()) {
+-                                        this.b.add(chunkcoordintpair);
++                                        this.b.add(chunkCoords);
++                                        // CraftBukkit end
+                                     }
+                                 }
+                             }
+@@ -62,9 +73,31 @@
+             for (int k1 = 0; k1 < j; ++k1) {
+                 EnumCreatureType enumcreaturetype = aenumcreaturetype[k1];
+ 
++               // CraftBukkit start - Use per-world spawn limits
++                int limit = enumcreaturetype.b();
++                switch (enumcreaturetype) {
++                    case MONSTER:
++                        limit = worldserver.getWorld().getMonsterSpawnLimit();
++                        break;
++                    case CREATURE:
++                        limit = worldserver.getWorld().getAnimalSpawnLimit();
++                        break;
++                    case WATER_CREATURE:
++                        limit = worldserver.getWorld().getWaterAnimalSpawnLimit();
++                        break;
++                    case AMBIENT:
++                        limit = worldserver.getWorld().getAmbientSpawnLimit();
++                        break;
++                }
++
++                if (limit == 0) {
++                    continue;
++                }
++                // CraftBukkit end
++
+                 if ((!enumcreaturetype.d() || flag1) && (enumcreaturetype.d() || flag) && (!enumcreaturetype.e() || flag2)) {
+                     k = worldserver.a(enumcreaturetype.a());
+-                    int l1 = enumcreaturetype.b() * i / SpawnerCreature.a;
++                    int l1 = limit * i / a; // CraftBukkit - use per-world limits
+ 
+                     if (k <= l1) {
+                         BlockPosition.MutableBlockPosition blockposition_mutableblockposition = new BlockPosition.MutableBlockPosition();
+@@ -72,8 +105,10 @@
+ 
+                         label120:
+                         while (iterator1.hasNext()) {
+-                            ChunkCoordIntPair chunkcoordintpair1 = (ChunkCoordIntPair) iterator1.next();
+-                            BlockPosition blockposition1 = getRandomPosition(worldserver, chunkcoordintpair1.x, chunkcoordintpair1.z);
++                            // CraftBukkit start = use LongHash and LongObjectHashMap
++                            long key = ((Long) iterator1.next()).longValue();
++                            BlockPosition blockposition1 = getRandomPosition(worldserver, LongHash.msw(key), LongHash.lsw(key));
++                            // CraftBukkit
+                             int i2 = blockposition1.getX();
+                             int j2 = blockposition1.getY();
+                             int k2 = blockposition1.getZ();
+@@ -103,7 +138,7 @@
+                                                 float f = (float) j3 + 0.5F;
+                                                 float f1 = (float) l3 + 0.5F;
+ 
+-                                                if (!worldserver.isPlayerNearby((double) f, (double) k3, (double) f1, 24.0D) && blockposition.distanceSquared((double) f, (double) k3, (double) f1) >= 576.0D) {
++                                                if (!worldserver.isPlayerNearby((double) f, (double) k3, (double) f1, 24.0D, EntityHuman.affectsSpawningFilter()) && blockposition.distanceSquared((double) f, (double) k3, (double) f1) >= 576.0D) { // SportBukkit - affectsSpawning filter
+                                                     if (biomebase_biomemeta == null) {
+                                                         biomebase_biomemeta = worldserver.a(enumcreaturetype, (BlockPosition) blockposition_mutableblockposition);
+                                                         if (biomebase_biomemeta == null) {
+@@ -126,7 +161,7 @@
+                                                             groupdataentity = entityinsentient.prepare(worldserver.D(new BlockPosition(entityinsentient)), groupdataentity);
+                                                             if (entityinsentient.canSpawn()) {
+                                                                 ++l2;
+-                                                                worldserver.addEntity(entityinsentient);
++                                                                worldserver.addEntity(entityinsentient, SpawnReason.NATURAL); // CraftBukkit - Added a reason for spawning this creature
+                                                             } else {
+                                                                 entityinsentient.die();
+                                                             }
+@@ -226,8 +261,10 @@
+                             }
+ 
+                             entityinsentient.setPositionRotation((double) ((float) j1 + 0.5F), (double) blockposition.getY(), (double) ((float) k1 + 0.5F), random.nextFloat() * 360.0F, 0.0F);
+-                            world.addEntity(entityinsentient);
++                            // CraftBukkit start - Added a reason for spawning this creature, moved entityinsentient.prepare(groupdataentity) up
+                             groupdataentity = entityinsentient.prepare(world.D(new BlockPosition(entityinsentient)), groupdataentity);
++                            world.addEntity(entityinsentient, SpawnReason.CHUNK_GEN);
++                            // CraftBukkit end
+                             flag = true;
+                         }
+ 

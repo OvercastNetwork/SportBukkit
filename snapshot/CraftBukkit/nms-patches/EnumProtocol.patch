@@ -1,0 +1,130 @@
+--- a/net/minecraft/server/EnumProtocol.java
++++ b/net/minecraft/server/EnumProtocol.java
+@@ -8,6 +8,16 @@
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ 
++// SportBukkit start
++import com.google.common.base.Predicate;
++import com.google.common.collect.HashBasedTable;
++import com.google.common.collect.Range;
++import com.google.common.collect.Table;
++
++import org.bukkit.craftbukkit.protocol.PacketPlayOutUpdateSign;
++import org.bukkit.craftbukkit.protocol.Protocol;
++// SportBukkit end
++
+ public enum EnumProtocol {
+ 
+     HANDSHAKING(-1) {;
+@@ -86,6 +96,7 @@
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutSpawnPosition.class);
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUpdateTime.class);
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutTitle.class);
++        register(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutUpdateSign.class, Range.lessThan(110)); // SportBukkit
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutNamedSoundEffect.class);
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutPlayerListHeaderFooter.class);
+         this.a(EnumProtocolDirection.CLIENTBOUND, PacketPlayOutCollect.class);
+@@ -144,20 +155,33 @@
+     private static final EnumProtocol[] e = new EnumProtocol[4];
+     private static final Map<Class<? extends Packet<?>>, EnumProtocol> f = Maps.newHashMap();
+     private final int g;
+-    private final Map<EnumProtocolDirection, BiMap<Integer, Class<? extends Packet<?>>>> h;
++    // SportBukkit start - multi-protocol
++    //private final Map<EnumProtocolDirection, BiMap<Integer, Class<? extends Packet<?>>>> h;
++    public final Table<Integer, EnumProtocolDirection, BiMap<Integer, Class<? extends Packet<?>>>> h = HashBasedTable.create();
++    // SportBukkit end
+ 
+     private EnumProtocol(int i) {
+-        this.h = Maps.newEnumMap(EnumProtocolDirection.class);
++        //this.h = Maps.newEnumMap(EnumProtocolDirection.class); // SportBukkit
+         this.g = i;
+     }
+ 
+     protected EnumProtocol a(EnumProtocolDirection enumprotocoldirection, Class<? extends Packet<?>> oclass) {
+-        Object object = (BiMap) this.h.get(enumprotocoldirection);
++        // SportBukkit start - multi-protocol
++        return register(enumprotocoldirection, oclass, Range.all());
++    }
+ 
+-        if (object == null) {
++    protected EnumProtocol register(EnumProtocolDirection direction, Class<? extends Packet<?>> packet, Predicate<Integer> protos) {
++        Protocol.supported(protos).forEach(proto -> register(direction, packet, proto));
++        return this;
++    }
++
++    protected EnumProtocol register(EnumProtocolDirection enumprotocoldirection, Class<? extends Packet<?>> oclass, int proto) {
++        BiMap<Integer, Class<? extends Packet<?>>> object = h.get(proto, enumprotocoldirection);
++        if(object == null) {
+             object = HashBiMap.create();
+-            this.h.put(enumprotocoldirection, object);
++            h.put(proto, enumprotocoldirection, object);
+         }
++        // SportBukkit end
+ 
+         if (((BiMap) object).containsValue(oclass)) {
+             String s = enumprotocoldirection + " packet " + oclass + " is already known to ID " + ((BiMap) object).inverse().get(oclass);
+@@ -170,13 +194,33 @@
+         }
+     }
+ 
+-    public Integer a(EnumProtocolDirection enumprotocoldirection, Packet<?> packet) {
+-        return (Integer) ((BiMap) this.h.get(enumprotocoldirection)).inverse().get(packet.getClass());
++    // SportBukkit start - multi-protocol
++    public BiMap<Integer, Class<? extends Packet<?>>> packets(EnumProtocolDirection direction, int proto) {
++        final BiMap<Integer, Class<? extends Packet<?>>> map = h.get(proto, direction);
++        if(map == null) {
++            throw new IllegalArgumentException("No packet map for protocol " + proto + " " + this + " " + direction);
++        }
++        return map;
++    }
++
++    public int packetId(EnumProtocolDirection direction, Class<? extends Packet<?>> packet, int proto) {
++        final Integer id = packets(direction, proto).inverse().get(packet);
++        if(id == null) {
++            throw new IllegalArgumentException("No ID for packet " + packet.getSimpleName() + " in proto " + proto + " " + this + " " + direction);
++        }
++        return id;
++    }
++
++    public Integer a(EnumProtocolDirection enumprotocoldirection, Packet<?> packet, int proto) {
++        return packets(enumprotocoldirection, proto).inverse().get(packet.getClass());
++        // return (Integer) ((BiMap) this.h.get(enumprotocoldirection)).inverse().get(packet.getClass());
+     }
+ 
+     @Nullable
+-    public Packet<?> a(EnumProtocolDirection enumprotocoldirection, int i) throws IllegalAccessException, InstantiationException {
+-        Class oclass = (Class) ((BiMap) this.h.get(enumprotocoldirection)).get(Integer.valueOf(i));
++    public Packet<?> a(EnumProtocolDirection enumprotocoldirection, int i, int proto) throws IllegalAccessException, InstantiationException {
++        final Class<? extends Packet<?>> oclass = packets(enumprotocoldirection, proto).get(i);
++        // Class oclass = (Class) ((BiMap) this.h.get(enumprotocoldirection)).get(Integer.valueOf(i));
++        // SportBukkit end
+ 
+         return oclass == null ? null : (Packet) oclass.newInstance();
+     }
+@@ -210,14 +254,15 @@
+             }
+ 
+             EnumProtocol.e[k - -1] = enumprotocol;
+-            Iterator iterator = enumprotocol.h.keySet().iterator();
++            for(int proto : Protocol.SUPPORTED) { // SportBukkit - multi-protocol
++            Iterator iterator = enumprotocol.h.columnKeySet().iterator(); // SportBukkit
+ 
+             while (iterator.hasNext()) {
+                 EnumProtocolDirection enumprotocoldirection = (EnumProtocolDirection) iterator.next();
+ 
+                 Class oclass;
+ 
+-                for (Iterator iterator1 = ((BiMap) enumprotocol.h.get(enumprotocoldirection)).values().iterator(); iterator1.hasNext(); EnumProtocol.f.put(oclass, enumprotocol)) {
++                for (Iterator iterator1 = ((BiMap) enumprotocol.h.get(proto, enumprotocoldirection)).values().iterator(); iterator1.hasNext(); EnumProtocol.f.put(oclass, enumprotocol)) { // SportBukkit
+                     oclass = (Class) iterator1.next();
+                     if (EnumProtocol.f.containsKey(oclass) && EnumProtocol.f.get(oclass) != enumprotocol) {
+                         throw new Error("Packet " + oclass + " is already assigned to protocol " + EnumProtocol.f.get(oclass) + " - can\'t reassign to " + enumprotocol);
+@@ -229,6 +274,7 @@
+                         throw new Error("Packet " + oclass + " fails instantiation checks! " + oclass);
+                     }
+                 }
++            } // SportBukkit
+             }
+         }
+ 

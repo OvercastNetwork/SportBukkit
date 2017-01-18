@@ -1,0 +1,47 @@
+--- a/net/minecraft/server/EntityFireworks.java
++++ b/net/minecraft/server/EntityFireworks.java
+@@ -3,11 +3,17 @@
+ import java.util.Iterator;
+ import java.util.List;
+ 
++// SportBukkit start
++import com.google.common.collect.Range;
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++// SportBukkit end
++
+ public class EntityFireworks extends Entity {
+ 
+     public static final DataWatcherObject<ItemStack> FIREWORK_ITEM = DataWatcher.a(EntityFireworks.class, DataWatcherRegistry.f);
+-    private static final DataWatcherObject<Integer> b = DataWatcher.a(EntityFireworks.class, DataWatcherRegistry.b);
+-    private int ticksFlown;
++    private static final DataWatcherObject<Integer> b = MetadataKey.auto(EntityFireworks.class, DataWatcherRegistry.b, Range.atLeast(316)); // SportBukkit - boosting entity ID
++    public int ticksFlown; // SportBukkit - private -> public
+     public int expectedLifespan;
+     private EntityLiving e;
+ 
+@@ -117,8 +123,12 @@
+         }
+ 
+         if (!this.world.isClientSide && this.ticksFlown > this.expectedLifespan) {
+-            this.world.broadcastEntityEffect(this, (byte) 17);
+-            this.k();
++            // CraftBukkit start
++            if (!org.bukkit.craftbukkit.event.CraftEventFactory.callFireworkExplodeEvent(this).isCancelled()) {
++                this.world.broadcastEntityEffect(this, (byte) 17);
++                this.k();
++            }
++            // CraftBukkit end
+             this.die();
+         }
+ 
+@@ -162,7 +172,9 @@
+                     if (flag) {
+                         float f1 = f * (float) Math.sqrt((5.0D - (double) this.g(entityliving)) / 5.0D);
+ 
++                        CraftEventFactory.entityDamage = this; try { // SportBukkit
+                         entityliving.damageEntity(DamageSource.t, f1);
++                        } finally { CraftEventFactory.entityDamage = null; } // SportBukkit
+                     }
+                 }
+             }

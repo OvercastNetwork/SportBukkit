@@ -1,0 +1,43 @@
+--- a/net/minecraft/server/RegionFileCache.java
++++ b/net/minecraft/server/RegionFileCache.java
+@@ -10,7 +10,7 @@
+ 
+ public class RegionFileCache {
+ 
+-    private static final Map<File, RegionFile> a = Maps.newHashMap();
++    public static final Map<File, RegionFile> a = Maps.newHashMap(); // SportBukkit - private -> public
+ 
+     public static synchronized RegionFile a(File file, int i, int j) {
+         File file1 = new File(file, "region");
+@@ -74,17 +74,27 @@
+         RegionFileCache.a.clear();
+     }
+ 
+-    public static DataInputStream d(File file, int i, int j) {
++    // CraftBukkit start - call sites hoisted for synchronization
++    public static synchronized NBTTagCompound d(File file, int i, int j) throws IOException {
+         RegionFile regionfile = a(file, i, j);
+ 
+-        return regionfile.a(i & 31, j & 31);
++        DataInputStream datainputstream = regionfile.a(i & 31, j & 31);
++
++        if (datainputstream == null) {
++            return null;
++        }
++
++        return NBTCompressedStreamTools.a(datainputstream);
+     }
+ 
+-    public static DataOutputStream e(File file, int i, int j) {
++    public static synchronized void e(File file, int i, int j, NBTTagCompound nbttagcompound) throws IOException {
+         RegionFile regionfile = a(file, i, j);
+ 
+-        return regionfile.b(i & 31, j & 31);
++        DataOutputStream dataoutputstream = regionfile.b(i & 31, j & 31);
++        NBTCompressedStreamTools.a(nbttagcompound, (java.io.DataOutput) dataoutputstream);
++        dataoutputstream.close();
+     }
++    // CraftBukkit end
+ 
+     public static boolean f(File file, int i, int j) {
+         RegionFile regionfile = b(file, i, j);

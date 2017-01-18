@@ -1,0 +1,63 @@
+--- a/net/minecraft/server/BlockRedstoneTorch.java
++++ b/net/minecraft/server/BlockRedstoneTorch.java
+@@ -6,14 +6,16 @@
+ import java.util.Map;
+ import java.util.Random;
+ 
++import org.bukkit.event.block.BlockRedstoneEvent; // CraftBukkit
++
+ public class BlockRedstoneTorch extends BlockTorch {
+ 
+-    private static final Map<World, List<BlockRedstoneTorch.RedstoneUpdateInfo>> g = Maps.newHashMap();
++    private static final Map<World, List<BlockRedstoneTorch.RedstoneUpdateInfo>> g = new java.util.WeakHashMap<World, List<BlockRedstoneTorch.RedstoneUpdateInfo>>(); // SportBukkit - plug world leak
+     private final boolean isOn;
+ 
+     private boolean a(World world, BlockPosition blockposition, boolean flag) {
+         if (!BlockRedstoneTorch.g.containsKey(world)) {
+-            BlockRedstoneTorch.g.put(world, Lists.newArrayList());
++            BlockRedstoneTorch.g.put(world, Lists.<BlockRedstoneTorch.RedstoneUpdateInfo>newArrayList()); // CraftBukkit - fix decompile error
+         }
+ 
+         List list = (List) BlockRedstoneTorch.g.get(world);
+@@ -96,8 +98,25 @@
+             list.remove(0);
+         }
+ 
++        // CraftBukkit start
++        org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
++        org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++        int oldCurrent = this.isOn ? 15 : 0;
++
++        BlockRedstoneEvent event = new BlockRedstoneEvent(block, oldCurrent, oldCurrent);
++        // CraftBukkit end
++
+         if (this.isOn) {
+             if (flag) {
++                // CraftBukkit start
++                if (oldCurrent != 0) {
++                    event.setNewCurrent(0);
++                    manager.callEvent(event);
++                    if (event.getNewCurrent() != 0) {
++                        return;
++                    }
++                }
++                // CraftBukkit end
+                 world.setTypeAndData(blockposition, Blocks.UNLIT_REDSTONE_TORCH.getBlockData().set(BlockRedstoneTorch.FACING, iblockdata.get(BlockRedstoneTorch.FACING)), 3);
+                 if (this.a(world, blockposition, true)) {
+                     world.a((EntityHuman) null, blockposition, SoundEffects.fl, SoundCategory.BLOCKS, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F);
+@@ -114,6 +133,15 @@
+                 }
+             }
+         } else if (!flag && !this.a(world, blockposition, false)) {
++            // CraftBukkit start
++            if (oldCurrent != 15) {
++                event.setNewCurrent(15);
++                manager.callEvent(event);
++                if (event.getNewCurrent() != 15) {
++                    return;
++                }
++            }
++            // CraftBukkit end
+             world.setTypeAndData(blockposition, Blocks.REDSTONE_TORCH.getBlockData().set(BlockRedstoneTorch.FACING, iblockdata.get(BlockRedstoneTorch.FACING)), 3);
+         }
+ 

@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/PacketHandshakingInSetProtocol.java
++++ b/net/minecraft/server/PacketHandshakingInSetProtocol.java
+@@ -13,7 +13,7 @@
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+         this.a = packetdataserializer.g();
+-        this.hostname = packetdataserializer.e(255);
++        this.hostname = packetdataserializer.e(Short.MAX_VALUE); // SportBukkit - Make extra room for BungeeCord spoofed info
+         this.port = packetdataserializer.readUnsignedShort();
+         this.d = EnumProtocol.a(packetdataserializer.g());
+     }

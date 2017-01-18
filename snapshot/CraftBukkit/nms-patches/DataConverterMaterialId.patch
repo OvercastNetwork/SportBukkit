@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/DataConverterMaterialId.java
++++ b/net/minecraft/server/DataConverterMaterialId.java
+@@ -261,7 +261,7 @@
+         DataConverterMaterialId.a[347] = "minecraft:clock";
+         DataConverterMaterialId.a[348] = "minecraft:glowstone_dust";
+         DataConverterMaterialId.a[349] = "minecraft:fish";
+-        DataConverterMaterialId.a[350] = "minecraft:cooked_fished";
++        DataConverterMaterialId.a[350] = "minecraft:cooked_fish"; // SportBukkit - cooked_fished -> cooked_fish
+         DataConverterMaterialId.a[351] = "minecraft:dye";
+         DataConverterMaterialId.a[352] = "minecraft:bone";
+         DataConverterMaterialId.a[353] = "minecraft:sugar";

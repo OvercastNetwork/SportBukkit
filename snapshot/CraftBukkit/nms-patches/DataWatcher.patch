@@ -1,0 +1,155 @@
+--- a/net/minecraft/server/DataWatcher.java
++++ b/net/minecraft/server/DataWatcher.java
+@@ -16,12 +16,17 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// SportBukkit start
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++import com.google.common.collect.Range;
++// SportBukkit end
++
+ public class DataWatcher {
+ 
+     private static final Logger a = LogManager.getLogger();
+     private static final Map<Class<? extends Entity>, Integer> b = Maps.newHashMap();
+-    private final Entity c;
+-    private final Map<Integer, DataWatcher.Item<?>> d = Maps.newHashMap();
++    private final Entity c; public Entity getEntity() { return c; } // SportBukkit - alias
++    private final Map<DataWatcherObject<?>, DataWatcher.Item<?>> d = Maps.newHashMap(); // SportBukkit - use DWO as key instead of integer ID (because ID depends on proto)
+     private final ReadWriteLock e = new ReentrantReadWriteLock();
+     private boolean f = true;
+     private boolean g;
+@@ -31,6 +36,8 @@
+     }
+ 
+     public static <T> DataWatcherObject<T> a(Class<? extends Entity> oclass, DataWatcherSerializer<T> datawatcherserializer) {
++        if(true) return MetadataKey.auto(oclass, datawatcherserializer, Range.all()); // SportBukkit - use our own ID allocator
++
+         if (DataWatcher.a.isDebugEnabled()) {
+             try {
+                 Class oclass1 = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+@@ -70,7 +77,8 @@
+         }
+     }
+ 
+-    public <T> void register(DataWatcherObject<T> datawatcherobject, T t0) {
++    public <T> void register(DataWatcherObject<T> datawatcherobject, Object t0) { // CraftBukkit T -> Object
++        registerObject(datawatcherobject, t0); if(true) return; // SportBukkit - these checks don't work, and they were useless anyway
+         int i = datawatcherobject.a();
+ 
+         if (i > 254) {
+@@ -84,11 +92,11 @@
+         }
+     }
+ 
+-    private <T> void registerObject(DataWatcherObject<T> datawatcherobject, T t0) {
+-        DataWatcher.Item datawatcher_item = new DataWatcher.Item(datawatcherobject, t0);
++    private <T> void registerObject(DataWatcherObject<T> datawatcherobject, Object t0) { // CraftBukkit Object
++        DataWatcher.Item datawatcher_item = new DataWatcher.Item(getEntity().getClass(), datawatcherobject, t0); // SportBukkit - add entity
+ 
+         this.e.writeLock().lock();
+-        this.d.put(Integer.valueOf(datawatcherobject.a()), datawatcher_item);
++        this.d.put(datawatcherobject, datawatcher_item); // SportBukkit - use DWO as key
+         this.f = false;
+         this.e.writeLock().unlock();
+     }
+@@ -99,7 +107,7 @@
+         DataWatcher.Item datawatcher_item;
+ 
+         try {
+-            datawatcher_item = (DataWatcher.Item) this.d.get(Integer.valueOf(datawatcherobject.a()));
++            datawatcher_item = (DataWatcher.Item) this.d.get(datawatcherobject); // SportBukkit - use DWO as key
+         } catch (Throwable throwable) {
+             CrashReport crashreport = CrashReport.a(throwable, "Getting synched entity data");
+             CrashReportSystemDetails crashreportsystemdetails = crashreport.a("Synched entity data");
+@@ -213,6 +221,15 @@
+     }
+ 
+     private static <T> void a(PacketDataSerializer packetdataserializer, DataWatcher.Item<T> datawatcher_item) throws IOException {
++        // SportBukkit start - protocol translation
++        // Note that ALL keys in SB are MetadataKeys, but we do this check in case some plugins use DWO.
++        // Such plugins may want to consider using MetadataKey in order to support translation.
++        if(datawatcher_item.key() instanceof MetadataKey) {
++            ((MetadataKey<T>) datawatcher_item.key()).send(packetdataserializer, datawatcher_item);
++            return;
++        }
++        // SportBukkit end
++
+         DataWatcherObject datawatcherobject = datawatcher_item.a();
+         int i = DataWatcherRegistry.b(datawatcherobject.b());
+ 
+@@ -231,7 +248,12 @@
+ 
+         short short0;
+ 
+-        while ((short0 = packetdataserializer.readUnsignedByte()) != 255) {
++        // SportBukkit start - Java 8 bytecode verifier doesn't like the inline assignment, no clue why
++        for(;;) {
++            short0 = packetdataserializer.readUnsignedByte();
++            if(short0 == 255) break;
++            // SportBukkit end
++
+             if (arraylist == null) {
+                 arraylist = Lists.newArrayList();
+             }
+@@ -243,7 +265,7 @@
+                 throw new DecoderException("Unknown serializer type " + i);
+             }
+ 
+-            arraylist.add(new DataWatcher.Item(datawatcherserializer.a(short0), datawatcherserializer.a(packetdataserializer)));
++            throw new UnsupportedOperationException(); // arraylist.add(new DataWatcher.Item(datawatcherserializer.a(short0), datawatcherserializer.a(packetdataserializer))); // SportBukkit - deserializing metadata is not supported
+         }
+ 
+         return arraylist;
+@@ -269,11 +291,16 @@
+ 
+     public static class Item<T> {
+ 
+-        private final DataWatcherObject<T> a;
+-        private T b;
++        private final DataWatcherObject<T> a; public DataWatcherObject<T> key() { return a; } // SportBukkit - alias
++        private T b; public T value() { return b; } // SportBukkit - alias
+         private boolean c;
+ 
+-        public Item(DataWatcherObject<T> datawatcherobject, T t0) {
++        // SportBukkit start - add entity field
++        public final Class<? extends Entity> entityClass;
++
++        public Item(Class<? extends Entity> entityClass, DataWatcherObject<T> datawatcherobject, T t0) {
++            this.entityClass = entityClass;
++            // SportBukkit end
+             this.a = datawatcherobject;
+             this.b = t0;
+             this.c = true;
+@@ -298,5 +325,30 @@
+         public void a(boolean flag) {
+             this.c = flag;
+         }
++
++        // SportBukkit start - Make an independent copy of the item
++        public Item<T> deepCopy() {
++            T value = value();
++
++            // All the metadata types are immutable except ItemStack, which we have to clone.
++            if(value instanceof ItemStack) {
++                value = (T) ((ItemStack) value).cloneItemStack();
++            }
++
++            final Item<T> copy = new Item<>(entityClass, key(), value);
++            copy.a(this.c());
++            return copy;
++        }
++        // SportBukkit end
++    }
++
++    // SportBukkit start - Copy all items in the given list in-place
++    public static void deepCopy(List<Item<?>> items) {
++        if(items == null) return;
++
++        for(int j = 0; j < items.size(); j++) {
++            items.set(j, items.get(j).deepCopy());
++        }
+     }
++    // SportBukkit end
+ }

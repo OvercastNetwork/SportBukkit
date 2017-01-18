@@ -1,0 +1,86 @@
+--- a/net/minecraft/server/ItemMonsterEgg.java
++++ b/net/minecraft/server/ItemMonsterEgg.java
+@@ -5,6 +5,12 @@
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.entity.CraftEntity;
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.player.PlayerSpawnEntityEvent;
++// CraftBukkit end
++
+ public class ItemMonsterEgg extends Item {
+ 
+     public ItemMonsterEgg() {
+@@ -54,6 +60,42 @@
+             double d0 = this.a(world, blockposition1);
+             Entity entity = a(world, h(itemstack), (double) blockposition1.getX() + 0.5D, (double) blockposition1.getY() + d0, (double) blockposition1.getZ() + 0.5D);
+ 
++            // SportBukkit start - fire event
++            if (entity != null) {
++                CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack);
++                PlayerSpawnEntityEvent event = new PlayerSpawnEntityEvent(
++                    (org.bukkit.entity.Player) entityhuman.getBukkitEntity(),
++                    entity.getBukkitEntity(),
++                    new org.bukkit.Location(
++                        world.getWorld(),
++                        (double) blockposition1.getX() + 0.5D,
++                        (double) blockposition1.getY() + d0,
++                        (double) blockposition1.getZ() + 0.5D,
++                        MathHelper.g(world.random.nextFloat() * 360.0F),
++                        0.0F
++                    ),
++                    craftItem.clone()
++                );
++                world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    event.getEntity().remove();
++                    return EnumInteractionResult.PASS;
++                }
++
++                if (entity instanceof EntityLiving) {
++                    EntityInsentient entityinsentient = (EntityInsentient) entity;
++
++                    entity.setPositionRotation(event.getLocation().getX(), event.getLocation().getY(), event.getLocation().getZ(), event.getLocation().getYaw(), event.getLocation().getPitch());
++                    entityinsentient.aK = entityinsentient.yaw;
++                    entityinsentient.aM = entityinsentient.yaw;
++                    entityinsentient.prepare(world.D(new BlockPosition(entityinsentient)), (GroupDataEntity) null);
++                    world.addEntity(entity, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++                    entityinsentient.D();
++                }
++            }
++            // SportBukkit end
++
+             if (entity != null) {
+                 if (entity instanceof EntityLiving && itemstack.hasName()) {
+                     entity.setCustomName(itemstack.getName());
+@@ -152,6 +194,11 @@
+ 
+     @Nullable
+     public static Entity a(World world, @Nullable MinecraftKey minecraftkey, double d0, double d1, double d2) {
++        return spawnCreature(world, minecraftkey, d0, d1, d2, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG);
++    }
++
++    @Nullable
++    public static Entity spawnCreature(World world, @Nullable MinecraftKey minecraftkey, double d0, double d1, double d2, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
+         if (minecraftkey != null && EntityTypes.eggInfo.containsKey(minecraftkey)) {
+             Entity entity = null;
+ 
+@@ -164,8 +211,13 @@
+                     entityinsentient.aP = entityinsentient.yaw;
+                     entityinsentient.aN = entityinsentient.yaw;
+                     entityinsentient.prepare(world.D(new BlockPosition(entityinsentient)), (GroupDataEntity) null);
+-                    world.addEntity(entity);
+-                    entityinsentient.D();
++                    // CraftBukkit start - don't return an entity when CreatureSpawnEvent is canceled
++                    if (!world.addEntity(entity, spawnReason)) {
++                        entity = null;
++                    } else {
++                        entityinsentient.D();
++                    }
++                    // CraftBukkit end
+                 }
+             }
+ 

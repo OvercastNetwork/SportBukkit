@@ -1,0 +1,210 @@
+--- a/net/minecraft/server/LoginListener.java
++++ b/net/minecraft/server/LoginListener.java
+@@ -22,6 +22,12 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.util.Waitable;
++import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
++import org.bukkit.event.player.PlayerPreLoginEvent;
++// CraftBukkit end
++
+ public class LoginListener implements PacketLoginInListener, ITickable {
+ 
+     private static final AtomicInteger b = new AtomicInteger(0);
+@@ -36,6 +42,7 @@
+     private final String j;
+     private SecretKey loginKey;
+     private EntityPlayer l;
++    public String hostname = ""; // CraftBukkit - add field
+ 
+     public LoginListener(MinecraftServer minecraftserver, NetworkManager networkmanager) {
+         this.g = LoginListener.EnumProtocolState.HELLO;
+@@ -65,6 +72,12 @@
+     }
+ 
+     public void disconnect(String s) {
++        // SportBukkit start - postpone disconnect until after pre-login event
++        if(!this.preLoginEventFired) {
++            this.disconnectReason = s;
++            return;
++        }
++        // SportBukkit end
+         try {
+             LoginListener.c.info("Disconnecting {}: {}", new Object[] { this.d(), s});
+             ChatComponentText chatcomponenttext = new ChatComponentText(s);
+@@ -78,14 +91,18 @@
+     }
+ 
+     public void b() {
++        /* SportBukkit - moved to PacketLoginInStart handler
+         if (!this.i.isComplete()) {
+             this.i = this.a(this.i);
+         }
++        */
+ 
+-        String s = this.server.getPlayerList().attemptLogin(this.networkManager.getSocketAddress(), this.i);
++        // CraftBukkit start - fire PlayerLoginEvent
++        EntityPlayer s = this.server.getPlayerList().attemptLogin(this, this.i, hostname);
+ 
+-        if (s != null) {
+-            this.disconnect(s);
++        if (s == null) {
++            // this.disconnect(s);
++            // CraftBukkit end
+         } else {
+             this.g = LoginListener.EnumProtocolState.ACCEPTED;
+             if (this.server.aG() >= 0 && !this.networkManager.isLocal()) {
+@@ -94,7 +111,7 @@
+                         LoginListener.this.networkManager.setCompressionLevel(LoginListener.this.server.aG());
+                     }
+ 
+-                    public void operationComplete(Future future) throws Exception {
++                    public void operationComplete(ChannelFuture future) throws Exception { // CraftBukkit - fix decompile error
+                         this.a((ChannelFuture) future);
+                     }
+                 }, new GenericFutureListener[0]);
+@@ -105,9 +122,9 @@
+ 
+             if (entityplayer != null) {
+                 this.g = LoginListener.EnumProtocolState.DELAY_ACCEPT;
+-                this.l = this.server.getPlayerList().processLogin(this.i);
++                this.l = this.server.getPlayerList().processLogin(this.i, s); // CraftBukkit - add player reference
+             } else {
+-                this.server.getPlayerList().a(this.networkManager, this.server.getPlayerList().processLogin(this.i));
++                this.server.getPlayerList().a(this.networkManager, this.server.getPlayerList().processLogin(this.i, s)); // CraftBukkit - add player reference
+             }
+         }
+ 
+@@ -128,7 +145,15 @@
+             this.g = LoginListener.EnumProtocolState.KEY;
+             this.networkManager.sendPacket(new PacketLoginOutEncryptionBegin("", this.server.O().getPublic(), this.e));
+         } else {
+-            this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
++            // SportBukkit start - call pre-login event in offline mode
++            new Thread("User Authenticator #" + LoginListener.b.incrementAndGet()) {
++                public void run() {
++                    LoginListener.this.i = LoginListener.this.completeOfflineProfile(LoginListener.this.i);
++                    LoginListener.c.info("UUID (offline) of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
++                    callPreLoginEvent();
++                }
++            }.start();
++            // SportBukkit end
+         }
+ 
+     }
+@@ -152,12 +177,11 @@
+ 
+                         LoginListener.this.i = LoginListener.this.server.az().hasJoinedServer(new GameProfile((UUID) null, gameprofile.getName()), s, this.a());
+                         if (LoginListener.this.i != null) {
+-                            LoginListener.c.info("UUID of player {} is {}", new Object[] { LoginListener.this.i.getName(), LoginListener.this.i.getId()});
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
++                            if (!networkManager.isConnected()) return; // SportBukkit - ensure player is still connected
++                            LoginListener.c.info("UUID of player " + LoginListener.this.i.getName() + " is " + LoginListener.this.i.getId());
+                         } else if (LoginListener.this.server.R()) {
+                             LoginListener.c.warn("Failed to verify username but will let them in anyway!");
+                             LoginListener.this.i = LoginListener.this.a(gameprofile);
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                         } else {
+                             LoginListener.this.disconnect("Failed to verify username!");
+                             LoginListener.c.error("Username \'{}\' tried to join with an invalid session", new Object[] { gameprofile.getName()});
+@@ -166,13 +190,17 @@
+                         if (LoginListener.this.server.R()) {
+                             LoginListener.c.warn("Authentication servers are down but will let them in anyway!");
+                             LoginListener.this.i = LoginListener.this.a(gameprofile);
+-                            LoginListener.this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
+                         } else {
+                             LoginListener.this.disconnect("Authentication servers are down. Please try again later, sorry!");
+                             LoginListener.c.error("Couldn\'t verify username because servers are unavailable");
+                         }
++                        // CraftBukkit start - catch all exceptions
++                    } catch (Exception exception) {
++                        disconnect("Failed to verify username!");
++                        server.server.getLogger().log(java.util.logging.Level.WARNING, "Exception verifying " + gameprofile.getName(), exception);
++                        // CraftBukkit end
+                     }
+-
++                    callPreLoginEvent(); // SportBukkit
+                 }
+ 
+                 @Nullable
+@@ -185,8 +213,77 @@
+         }
+     }
+ 
++    // SportBukkit start
++    private volatile String disconnectReason;
++    private volatile boolean preLoginEventFired;
++
++    void callPreLoginEvent() {
++        String playerName = i.getName();
++        java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress();
++        java.util.UUID uniqueId = i.getId();
++        final org.bukkit.craftbukkit.CraftServer server = LoginListener.this.server.server;
++        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
++
++        if(this.disconnectReason != null) {
++            asyncEvent.disallow(AsyncPlayerPreLoginEvent.Result.KICK_VERIFY, this.disconnectReason);
++        }
++
++        server.getPluginManager().callEvent(asyncEvent);
++        this.preLoginEventFired = true;
++
++        if (PlayerPreLoginEvent.getHandlerList().getRegisteredListeners().length != 0) {
++            final PlayerPreLoginEvent event = new PlayerPreLoginEvent(playerName, address, uniqueId);
++            if (asyncEvent.getResult() != PlayerPreLoginEvent.Result.ALLOWED) {
++                event.disallow(asyncEvent.getResult(), asyncEvent.getKickMessage());
++            }
++            Waitable<PlayerPreLoginEvent.Result> waitable = new Waitable<PlayerPreLoginEvent.Result>() {
++                @Override
++                protected PlayerPreLoginEvent.Result evaluate() {
++                    server.getPluginManager().callEvent(event);
++                    return event.getResult();
++                }};
++
++            LoginListener.this.server.addMainThreadTask(waitable);
++            try {
++                if (waitable.get() != PlayerPreLoginEvent.Result.ALLOWED) {
++                    disconnect(event.getKickMessage());
++                    return;
++                }
++            } catch(Exception e) {
++                disconnect("Internal server error");
++                server.getLogger().log(java.util.logging.Level.SEVERE, "Exception waiting for PlayerPreLoginEvent while verifying " + playerName, e);
++                return;
++            }
++        } else {
++            if (asyncEvent.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
++                disconnect(asyncEvent.getKickMessage());
++                return;
++            }
++        }
++
++        server.setSuspended(false);
++        this.g = LoginListener.EnumProtocolState.READY_TO_ACCEPT;
++    }
++
++    public GameProfile completeOfflineProfile(GameProfile profile) {
++        if (networkManager.spoofedUUID != null) {
++            profile = new GameProfile(networkManager.spoofedUUID, profile.getName());
++        } else {
++            profile = this.a(profile);
++        }
++
++        if (networkManager.spoofedProfile != null) {
++            for (com.mojang.authlib.properties.Property property : networkManager.spoofedProfile) {
++                profile.getProperties().put(property.getName(), property);
++            }
++        }
++
++        return profile;
++    }
++    // SportBukkit end
++
+     protected GameProfile a(GameProfile gameprofile) {
+-        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName()).getBytes(Charsets.UTF_8));
++        UUID uuid = UUID.nameUUIDFromBytes(("OfflinePlayer:" + gameprofile.getName().toLowerCase()).getBytes(Charsets.UTF_8));
+ 
+         return new GameProfile(uuid, gameprofile.getName());
+     }

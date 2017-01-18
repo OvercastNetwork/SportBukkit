@@ -1,0 +1,89 @@
+--- a/net/minecraft/server/Block.java
++++ b/net/minecraft/server/Block.java
+@@ -36,8 +36,17 @@
+     private IBlockData blockData;
+     private String name;
+ 
++    // SportBukkit start - minimum protocol version
++    private int proto;
++    public int proto() { return proto; }
++    public Block proto(int p) {
++        this.proto = p;
++        return this;
++    }
++    // SportBukkit end
++
+     public static int getId(Block block) {
+-        return Block.REGISTRY.a((Object) block);
++        return Block.REGISTRY.a(block); // CraftBukkit - decompile error
+     }
+ 
+     public static int getCombinedId(IBlockData iblockdata) {
+@@ -106,6 +115,7 @@
+         return this.p;
+     }
+ 
++    public Material getMaterial(IBlockData data) { return q(data); } // SportBukkit - alias
+     @Deprecated
+     public Material q(IBlockData iblockdata) {
+         return this.material;
+@@ -334,7 +344,8 @@
+             int j = this.getDropCount(i, world.random);
+ 
+             for (int k = 0; k < j; ++k) {
+-                if (world.random.nextFloat() <= f) {
++                // CraftBukkit - <= to < to allow for plugins to completely disable block drops from explosions
++                if (world.random.nextFloat() < f) {
+                     Item item = this.getDropType(iblockdata, world.random, i);
+ 
+                     if (item != Items.a) {
+@@ -841,12 +852,12 @@
+         a(210, "repeating_command_block", (new BlockCommand(MaterialMapColor.z)).j().b(6000000.0F).c("repeatingCommandBlock"));
+         a(211, "chain_command_block", (new BlockCommand(MaterialMapColor.C)).j().b(6000000.0F).c("chainCommandBlock"));
+         a(212, "frosted_ice", (new BlockIceFrost()).c(0.5F).d(3).a(SoundEffectType.f).c("frostedIce"));
+-        a(213, "magma", (new BlockMagma()).c(0.5F).a(SoundEffectType.d).c("magma"));
+-        a(214, "nether_wart_block", (new Block(Material.GRASS, MaterialMapColor.D)).a(CreativeModeTab.b).c(1.0F).a(SoundEffectType.a).c("netherWartBlock"));
+-        a(215, "red_nether_brick", (new BlockNetherbrick()).c(2.0F).b(10.0F).a(SoundEffectType.d).c("redNetherBrick").a(CreativeModeTab.b));
+-        a(216, "bone_block", (new BlockBone()).c("boneBlock"));
+-        a(217, "structure_void", (new BlockStructureVoid()).c("structureVoid"));
+-        a(218, "observer", (new BlockObserver()).c(3.0F).c("observer"));
++        a(213, "magma", (new BlockMagma()).c(0.5F).a(SoundEffectType.d).c("magma").proto(201)); // SportBukkit - proto
++        a(214, "nether_wart_block", (new Block(Material.GRASS, MaterialMapColor.D)).a(CreativeModeTab.b).c(1.0F).a(SoundEffectType.a).c("netherWartBlock").proto(201)); // SportBukkit - proto
++        a(215, "red_nether_brick", (new BlockNetherbrick()).c(2.0F).b(10.0F).a(SoundEffectType.d).c("redNetherBrick").a(CreativeModeTab.b).proto(201)); // SportBukkit - proto
++        a(216, "bone_block", (new BlockBone()).c("boneBlock").proto(201)); // SportBukkit - proto
++        a(217, "structure_void", (new BlockStructureVoid()).c("structureVoid").proto(201)); // SportBukkit - proto
++        a(218, "observer", (new BlockObserver()).c(3.0F).c("observer").proto(315)); // SportBukkit - proto
+         a(219, "white_shulker_box", (new BlockShulkerBox(EnumColor.WHITE)).c(2.0F).a(SoundEffectType.d).c("shulkerBoxWhite"));
+         a(220, "orange_shulker_box", (new BlockShulkerBox(EnumColor.ORANGE)).c(2.0F).a(SoundEffectType.d).c("shulkerBoxOrange"));
+         a(221, "magenta_shulker_box", (new BlockShulkerBox(EnumColor.MAGENTA)).c(2.0F).a(SoundEffectType.d).c("shulkerBoxMagenta"));
+@@ -896,7 +907,7 @@
+ 
+             if (hashset.contains(block16)) {
+                 for (int i = 0; i < 15; ++i) {
+-                    int j = Block.REGISTRY.a((Object) block16) << 4 | i;
++                    int j = Block.REGISTRY.a(block16) << 4 | i; // CraftBukkit - decompile error
+ 
+                     Block.REGISTRY_ID.a(block16.fromLegacyData(i), j);
+                 }
+@@ -905,7 +916,7 @@
+ 
+                 while (unmodifiableiterator.hasNext()) {
+                     IBlockData iblockdata = (IBlockData) unmodifiableiterator.next();
+-                    int k = Block.REGISTRY.a((Object) block16) << 4 | block16.toLegacyData(iblockdata);
++                    int k = Block.REGISTRY.a(block16) << 4 | block16.toLegacyData(iblockdata); // CraftBukkit - decompile error
+ 
+                     Block.REGISTRY_ID.a(iblockdata, k);
+                 }
+@@ -914,6 +925,12 @@
+ 
+     }
+ 
++    // CraftBukkit start
++    public int getExpDrop(World world, IBlockData data, int enchantmentLevel) {
++        return 0;
++    }
++    // CraftBukkit end
++
+     private static void a(int i, MinecraftKey minecraftkey, Block block) {
+         Block.REGISTRY.a(i, minecraftkey, block);
+     }

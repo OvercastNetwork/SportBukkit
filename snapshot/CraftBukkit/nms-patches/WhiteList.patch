@@ -1,0 +1,21 @@
+--- a/net/minecraft/server/WhiteList.java
++++ b/net/minecraft/server/WhiteList.java
+@@ -33,7 +33,7 @@
+     }
+ 
+     protected String b(GameProfile gameprofile) {
+-        return gameprofile.getId().toString();
++        return super.a(gameprofile); // CraftBukkit - use super method that uses cache
+     }
+ 
+     public GameProfile a(String s) {
+@@ -52,7 +52,9 @@
+         return (GameProfile) whitelistentry.getKey();
+     }
+ 
++    /* SportBukkit - fix decomp error
+     protected String a(Object object) {
+         return this.b((GameProfile) object);
+     }
++    SportBukkit */
+ }

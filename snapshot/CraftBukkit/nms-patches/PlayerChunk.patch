@@ -1,0 +1,158 @@
+--- a/net/minecraft/server/PlayerChunk.java
++++ b/net/minecraft/server/PlayerChunk.java
+@@ -8,32 +8,75 @@
+ import javax.annotation.Nullable;
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
++// CraftBukkit Start
++import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
++// CraftBukkit end
+ 
+ public class PlayerChunk {
+ 
+     private static final Logger a = LogManager.getLogger();
+     private final PlayerChunkMap playerChunkMap;
+-    private final List<EntityPlayer> c = Lists.newArrayList();
++    public final List<EntityPlayer> c = Lists.newArrayList(); // CraftBukkit - public
+     private final ChunkCoordIntPair location;
+     private final short[] dirtyBlocks = new short[64];
+     @Nullable
+-    private Chunk chunk;
++    public Chunk chunk; // CraftBukkit - public
+     private int dirtyCount;
+     private int h;
+     private long i;
+     private boolean done;
+ 
++    // CraftBukkit start - add fields
++    private boolean loadInProgress = false;
++    private Runnable loadedRunnable = new Runnable() {
++        public void run() {
++            loadInProgress = false;
++            PlayerChunk.this.chunk = PlayerChunk.this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(location.x, location.z);
++        }
++    };
++    // CraftBukkit end
++
++    // SportBukkit start
++    private List<Packet> getTileEntityPackets(int sectionMask) {
++        final List<Packet> packets = new java.util.ArrayList<Packet>();
++        for(TileEntity tile : chunk.getTileEntities().values()) {
++            if((sectionMask & (1 << (tile.getPosition().getY() >> 4))) != 0) {
++                final Packet packet = tile.getUpdatePacket();
++                if(packet != null) packets.add(packet);
++            }
++        }
++        return packets;
++    }
++
++    private void sendLegacyTileEntityUpdates(int sectionMask, java.util.Collection<EntityPlayer> players) {
++        if(sectionMask == 0 || players.isEmpty()) return;
++        List<Packet> packets = null;
++        for(EntityPlayer viewer : players) {
++            if(viewer.protocolVersion < 110) {
++                if(packets == null) {
++                    packets = getTileEntityPackets(sectionMask);
++                    if(packets.isEmpty()) return;
++                }
++                for(Packet packet : packets) viewer.playerConnection.sendPacket(packet);
++            }
++        }
++    }
++    // SportBukkit end
++
+     public PlayerChunk(PlayerChunkMap playerchunkmap, int i, int j) {
+         this.playerChunkMap = playerchunkmap;
+         this.location = new ChunkCoordIntPair(i, j);
+-        this.chunk = playerchunkmap.getWorld().getChunkProviderServer().getOrLoadChunkAt(i, j);
++        // CraftBukkit start
++        loadInProgress = true;
++        this.chunk = playerchunkmap.getWorld().getChunkProviderServer().getChunkAt(i, j, loadedRunnable, false);
++        // CraftBukkit end
+     }
+ 
+     public ChunkCoordIntPair a() {
+         return this.location;
+     }
+ 
+-    public void a(EntityPlayer entityplayer) {
++    public void a(final EntityPlayer entityplayer) { // CraftBukkit - added final to argument
+         if (this.c.contains(entityplayer)) {
+             PlayerChunk.a.debug("Failed to add player. {} already is in chunk {}, {}", new Object[] { entityplayer, Integer.valueOf(this.location.x), Integer.valueOf(this.location.z)});
+         } else {
+@@ -42,15 +85,32 @@
+             }
+ 
+             this.c.add(entityplayer);
++            // CraftBukkit start - use async chunk io
++            // if (this.done) {
++            //     this.sendChunk(entityplayer);
++            // }
+             if (this.done) {
+                 this.sendChunk(entityplayer);
+             }
++            // CraftBukkit end
+ 
+         }
+     }
+ 
+     public void b(EntityPlayer entityplayer) {
+         if (this.c.contains(entityplayer)) {
++            // CraftBukkit start - If we haven't loaded yet don't load the chunk just so we can clean it up
++            if (!this.done) {
++                this.c.remove(entityplayer);
++
++                if (this.c.isEmpty()) {
++                    ChunkIOExecutor.dropQueuedChunkLoad(this.playerChunkMap.getWorld(), this.location.x, this.location.z, this.loadedRunnable);
++                    this.playerChunkMap.b(this);
++                }
++
++                return;
++            }
++            // CraftBukkit end
+             if (this.done) {
+                 entityplayer.playerConnection.sendPacket(new PacketPlayOutUnloadChunk(this.location.x, this.location.z));
+             }
+@@ -67,11 +127,18 @@
+         if (this.chunk != null) {
+             return true;
+         } else {
++            /* CraftBukkit start
+             if (flag) {
+                 this.chunk = this.playerChunkMap.getWorld().getChunkProviderServer().getChunkAt(this.location.x, this.location.z);
+             } else {
+                 this.chunk = this.playerChunkMap.getWorld().getChunkProviderServer().getOrLoadChunkAt(this.location.x, this.location.z);
+             }
++            */
++            if (!loadInProgress) {
++                loadInProgress = true;
++                this.chunk = playerChunkMap.getWorld().getChunkProviderServer().getChunkAt(this.location.x, this.location.z, loadedRunnable, flag);
++            }
++            // CraftBukkit end
+ 
+             return this.chunk != null;
+         }
+@@ -98,6 +165,7 @@
+                 this.playerChunkMap.getWorld().getTracker().a(entityplayer, this.chunk);
+             }
+ 
++            sendLegacyTileEntityUpdates(0xffff, this.c); // SportBukkit
+             return true;
+         }
+     }
+@@ -106,6 +174,7 @@
+         if (this.done) {
+             entityplayer.playerConnection.sendPacket(new PacketPlayOutMapChunk(this.chunk, '\uffff'));
+             this.playerChunkMap.getWorld().getTracker().a(entityplayer, this.chunk);
++            sendLegacyTileEntityUpdates(0xffff, java.util.Collections.singleton(entityplayer)); // SportBukkit
+         }
+     }
+ 
+@@ -169,6 +238,7 @@
+                     }
+                 } else if (this.dirtyCount == 64) {
+                     this.a((Packet) (new PacketPlayOutMapChunk(this.chunk, this.h)));
++                    sendLegacyTileEntityUpdates(this.h, this.c); // SportBukkit
+                 } else {
+                     this.a((Packet) (new PacketPlayOutMultiBlockChange(this.dirtyCount, this.dirtyBlocks, this.chunk)));
+ 

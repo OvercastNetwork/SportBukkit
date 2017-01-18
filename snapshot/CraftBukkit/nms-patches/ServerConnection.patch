@@ -1,0 +1,92 @@
+--- a/net/minecraft/server/ServerConnection.java
++++ b/net/minecraft/server/ServerConnection.java
+@@ -20,6 +20,7 @@
+ import io.netty.util.concurrent.GenericFutureListener;
+ import java.io.IOException;
+ import java.net.InetAddress;
++import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.Iterator;
+ import java.util.List;
+@@ -58,8 +59,15 @@
+     };
+     private final MinecraftServer f;
+     public volatile boolean d;
+-    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.newArrayList());
+-    private final List<NetworkManager> h = Collections.synchronizedList(Lists.newArrayList());
++    // SportBukkit start - fix decomp errors
++    private final List<ChannelFuture> g = Collections.synchronizedList(Lists.<ChannelFuture>newArrayList());
++    private final List<NetworkManager> h = Collections.synchronizedList(Lists.<NetworkManager>newArrayList());
++    // SportBukkit end
++
++    // SportBukkit start
++    private int port;
++    public int getPort() { return port; }
++    // SportBukkit end
+ 
+     public ServerConnection(MinecraftServer minecraftserver) {
+         this.f = minecraftserver;
+@@ -97,8 +105,11 @@
+                     ServerConnection.this.h.add(networkmanager);
+                     channel.pipeline().addLast("packet_handler", networkmanager);
+                     networkmanager.setPacketListener(new HandshakeListener(ServerConnection.this.f, networkmanager));
++                    f.server.eventBus().callEvent(new org.bukkit.craftbukkit.event.AsyncClientConnectEvent(channel, networkmanager)); // SportBukkit
+                 }
+             }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
++
++            this.port = ((java.net.InetSocketAddress) this.g.get(0).channel().localAddress()).getPort(); // SportBukkit
+         }
+     }
+ 
+@@ -106,16 +117,27 @@
+         this.d = false;
+         Iterator iterator = this.g.iterator();
+ 
++        // CraftBukkit start - handle processQueue while closing channels to prevent deadlock
++        ArrayList<ChannelFuture> futures = new ArrayList<ChannelFuture>();
++
+         while (iterator.hasNext()) {
+             ChannelFuture channelfuture = (ChannelFuture) iterator.next();
+ 
++            futures.add(channelfuture.channel().close());
++        }
++
++        for(;;) {
++            futures.removeIf(java.util.concurrent.Future::isDone);
++            f.processTasks();
++            if(futures.isEmpty()) break;
++
+             try {
+-                channelfuture.channel().close().sync();
+-            } catch (InterruptedException interruptedexception) {
+-                ServerConnection.e.error("Interrupted whilst closing channel");
++                Thread.sleep(50);
++            } catch(InterruptedException e) {
++                e.printStackTrace();
+             }
+         }
+-
++        // CraftBukkit end
+     }
+ 
+     public void c() {
+@@ -151,7 +173,7 @@
+                             ServerConnection.e.warn("Failed to handle packet for {}", new Object[] { networkmanager.getSocketAddress(), exception});
+                             final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
+ 
+-                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener() {
++                            networkmanager.sendPacket(new PacketPlayOutKickDisconnect(chatcomponenttext), new GenericFutureListener<Future<? super Void>>() { // SportBukkit - fix decomp error
+                                 public void operationComplete(Future<? super Void> future) throws Exception {
+                                     networkmanager.close(chatcomponenttext);
+                                 }
+@@ -171,4 +193,10 @@
+     public MinecraftServer d() {
+         return this.f;
+     }
++
++    // SportBukkit start
++    public boolean hasClientConnections() {
++        return !h.isEmpty();
++    }
++    // SportBukkit end
+ }

@@ -1,0 +1,10 @@
+--- a/net/minecraft/server/EntityPainting.java
++++ b/net/minecraft/server/EntityPainting.java
+@@ -10,6 +10,7 @@
+ 
+     public EntityPainting(World world) {
+         super(world);
++        this.art = EnumArt.values()[this.random.nextInt(EnumArt.values().length)]; // CraftBukkit - generate a non-null painting
+     }
+ 
+     public EntityPainting(World world, BlockPosition blockposition, EnumDirection enumdirection) {

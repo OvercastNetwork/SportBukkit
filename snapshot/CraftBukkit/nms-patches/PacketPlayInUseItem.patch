@@ -1,0 +1,43 @@
+--- a/net/minecraft/server/PacketPlayInUseItem.java
++++ b/net/minecraft/server/PacketPlayInUseItem.java
+@@ -17,18 +17,34 @@
+         this.a = packetdataserializer.e();
+         this.b = (EnumDirection) packetdataserializer.a(EnumDirection.class);
+         this.c = (EnumHand) packetdataserializer.a(EnumHand.class);
+-        this.d = packetdataserializer.readFloat();
+-        this.e = packetdataserializer.readFloat();
+-        this.f = packetdataserializer.readFloat();
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 309) {
++            this.d = (float) packetdataserializer.readUnsignedByte() / 16.0F;
++            this.e = (float) packetdataserializer.readUnsignedByte() / 16.0F;
++            this.f = (float) packetdataserializer.readUnsignedByte() / 16.0F;
++        } else {
++            this.d = packetdataserializer.readFloat();
++            this.e = packetdataserializer.readFloat();
++            this.f = packetdataserializer.readFloat();
++        }
++        // SportBukkit end
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+         packetdataserializer.a(this.a);
+         packetdataserializer.a((Enum) this.b);
+         packetdataserializer.a((Enum) this.c);
+-        packetdataserializer.writeFloat(this.d);
+-        packetdataserializer.writeFloat(this.e);
+-        packetdataserializer.writeFloat(this.f);
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 309) {
++            packetdataserializer.writeByte((int) (this.d * 16.0F));
++            packetdataserializer.writeByte((int) (this.e * 16.0F));
++            packetdataserializer.writeByte((int) (this.f * 16.0F));
++        } else {
++            packetdataserializer.writeFloat(this.d);
++            packetdataserializer.writeFloat(this.e);
++            packetdataserializer.writeFloat(this.f);
++        }
++        // SportBukkit end
+     }
+ 
+     public void a(PacketListenerPlayIn packetlistenerplayin) {

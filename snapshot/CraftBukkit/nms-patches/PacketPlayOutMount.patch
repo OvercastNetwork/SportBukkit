@@ -1,0 +1,16 @@
+--- a/net/minecraft/server/PacketPlayOutMount.java
++++ b/net/minecraft/server/PacketPlayOutMount.java
+@@ -8,6 +8,13 @@
+     private int a;
+     private int[] b;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayOutMount(int vehicleId, int... riderIds) {
++        this.a = vehicleId;
++        this.b = riderIds;
++    }
++    // SportBukkit end
++
+     public PacketPlayOutMount() {}
+ 
+     public PacketPlayOutMount(Entity entity) {

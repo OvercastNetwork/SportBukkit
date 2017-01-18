@@ -1,0 +1,125 @@
+--- a/net/minecraft/server/BlockPiston.java
++++ b/net/minecraft/server/BlockPiston.java
+@@ -5,6 +5,18 @@
+ import java.util.List;
+ import javax.annotation.Nullable;
+ 
++// CraftBukkit start
++import java.util.AbstractList;
++import java.util.Collection;
++import java.util.Iterator;
++import java.util.ListIterator;
++
++import com.google.common.collect.ImmutableList;
++import org.bukkit.craftbukkit.block.CraftBlock;
++import org.bukkit.event.block.BlockPistonRetractEvent;
++import org.bukkit.event.block.BlockPistonExtendEvent;
++// CraftBukkit end
++
+ public class BlockPiston extends BlockDirectional {
+ 
+     public static final BlockStateBoolean EXTENDED = BlockStateBoolean.of("extended");
+@@ -103,6 +115,18 @@
+                 world.playBlockAction(blockposition, this, 0, enumdirection.a());
+             }
+         } else if (!flag && ((Boolean) iblockdata.get(BlockPiston.EXTENDED)).booleanValue()) {
++            // CraftBukkit start
++            if (!this.sticky) {
++                org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++                BlockPistonRetractEvent event = new BlockPistonRetractEvent(block, ImmutableList.<org.bukkit.block.Block>of(), CraftBlock.notchToBlockFace(enumdirection));
++                world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    return;
++                }
++            }
++            // PAIL: checkME - what happened to setTypeAndData?
++            // CraftBukkit end
+             world.playBlockAction(blockposition, this, 1, enumdirection.a());
+         }
+ 
+@@ -159,6 +183,11 @@
+         }
+ 
+         if (i == 0) {
++            // SportBukkit start
++            org.bukkit.event.block.BlockPistonEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPistonEvent(world, blockposition, enumdirection, true);
++            if(event != null && event.isCancelled()) return false;
++            // SportBukkit end
++
+             if (!this.a(world, blockposition, enumdirection, true)) {
+                 return false;
+             }
+@@ -174,6 +203,12 @@
+ 
+             world.setTypeAndData(blockposition, Blocks.PISTON_EXTENSION.getBlockData().set(BlockPistonMoving.FACING, enumdirection).set(BlockPistonMoving.TYPE, this.sticky ? BlockPistonExtension.EnumPistonType.STICKY : BlockPistonExtension.EnumPistonType.DEFAULT), 3);
+             world.setTileEntity(blockposition, BlockPistonMoving.a(this.fromLegacyData(j), enumdirection, false, true));
++
++            // SportBukkit start
++            org.bukkit.event.block.BlockPistonEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callBlockPistonEvent(world, blockposition, enumdirection, false);
++            if(event != null && event.isCancelled()) return false;
++            // SportBukkit end
++
+             if (this.sticky) {
+                 BlockPosition blockposition1 = blockposition.a(enumdirection.getAdjacentX() * 2, enumdirection.getAdjacentY() * 2, enumdirection.getAdjacentZ() * 2);
+                 IBlockData iblockdata1 = world.getType(blockposition1);
+@@ -193,7 +228,7 @@
+                     }
+                 }
+ 
+-                if (!flag1 && iblockdata1.getMaterial() != Material.AIR && a(iblockdata1, world, blockposition1, enumdirection.opposite(), false) && (iblockdata1.p() == EnumPistonReaction.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) {
++                if (!flag1 && a(iblockdata1, world, blockposition1, enumdirection.opposite(), false) && (iblockdata1.p() == EnumPistonReaction.NORMAL || block == Blocks.PISTON || block == Blocks.STICKY_PISTON)) { // CraftBukkit - remove 'block.getMaterial() != Material.AIR' condition
+                     this.a(world, blockposition, enumdirection, false);
+                 }
+             } else {
+@@ -274,6 +309,50 @@
+             int j = list.size() + list1.size();
+             IBlockData[] aiblockdata = new IBlockData[j];
+             EnumDirection enumdirection1 = flag ? enumdirection : enumdirection.opposite();
++            /* SportBukkit start - move this earlier so we can actually cancel the event
++            // CraftBukkit start
++            final org.bukkit.block.Block bblock = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++
++            final List<BlockPosition> moved = pistonextendschecker.getMovedBlocks();
++            final List<BlockPosition> broken = pistonextendschecker.getBrokenBlocks();
++
++            List<org.bukkit.block.Block> blocks = new AbstractList<org.bukkit.block.Block>() {
++
++                @Override
++                public int size() {
++                    return moved.size() + broken.size();
++                }
++
++                @Override
++                public org.bukkit.block.Block get(int index) {
++                    if (index >= size() || index < 0) {
++                        throw new ArrayIndexOutOfBoundsException(index);
++                    }
++                    BlockPosition pos = (BlockPosition) (index < moved.size() ? moved.get(index) : broken.get(index - moved.size()));
++                    return bblock.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
++                }
++            };
++            org.bukkit.event.block.BlockPistonEvent event;
++            if (flag) {
++                event = new BlockPistonExtendEvent(bblock, blocks, CraftBlock.notchToBlockFace(enumdirection1));
++            } else {
++                event = new BlockPistonRetractEvent(bblock, blocks, CraftBlock.notchToBlockFace(enumdirection1));
++            }
++            world.getServer().getPluginManager().callEvent(event);
++
++            if (event.isCancelled()) {
++                for (BlockPosition b : broken) {
++                    world.notify(b, Blocks.AIR.getBlockData(), world.getType(b), 3);
++                }
++                for (BlockPosition b : moved) {
++                    world.notify(b, Blocks.AIR.getBlockData(), world.getType(b), 3);
++                    b = b.shift(enumdirection1);
++                    world.notify(b, Blocks.AIR.getBlockData(), world.getType(b), 3);
++                }
++                return false;
++            }
++            // CraftBukkit end
++            SportBukkit end */
+ 
+             int k;
+             BlockPosition blockposition2;

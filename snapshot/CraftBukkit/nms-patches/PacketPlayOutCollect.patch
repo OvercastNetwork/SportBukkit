@@ -1,0 +1,26 @@
+--- a/net/minecraft/server/PacketPlayOutCollect.java
++++ b/net/minecraft/server/PacketPlayOutCollect.java
+@@ -19,13 +19,21 @@
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+         this.a = packetdataserializer.g();
+         this.b = packetdataserializer.g();
+-        this.c = packetdataserializer.g();
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion >= 301) {
++            this.c = packetdataserializer.readVarInt();
++        }
++        // SportBukkit end
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+         packetdataserializer.d(this.a);
+         packetdataserializer.d(this.b);
+-        packetdataserializer.d(this.c);
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion >= 301) {
++            packetdataserializer.writeVarInt(this.c);
++        }
++        // SportBukkit end
+     }
+ 
+     public void a(PacketListenerPlayOut packetlistenerplayout) {

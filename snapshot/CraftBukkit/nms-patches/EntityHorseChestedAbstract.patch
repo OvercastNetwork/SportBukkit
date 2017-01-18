@@ -1,0 +1,22 @@
+--- a/net/minecraft/server/EntityHorseChestedAbstract.java
++++ b/net/minecraft/server/EntityHorseChestedAbstract.java
+@@ -1,8 +1,18 @@
+ package net.minecraft.server;
+ 
++// SportBukkit start
++import com.google.common.collect.Range;
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++// SportBukkit end
++
+ public abstract class EntityHorseChestedAbstract extends EntityHorseAbstract {
+ 
+-    private static final DataWatcherObject<Boolean> bG = DataWatcher.a(EntityHorseChestedAbstract.class, DataWatcherRegistry.h);
++    // SportBukkit start
++    private static final DataWatcherObject<Boolean> bG = MetadataKey
++        .builder(EntityHorseChestedAbstract.class, DataWatcherRegistry.h)
++        .id(Range.atLeast(301), 15)
++        .build();
++    // SportBukkit end
+ 
+     public EntityHorseChestedAbstract(World world) {
+         super(world);

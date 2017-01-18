@@ -1,0 +1,12 @@
+--- a/net/minecraft/server/BlockNetherWart.java
++++ b/net/minecraft/server/BlockNetherWart.java
+@@ -31,7 +31,8 @@
+ 
+         if (i < 3 && random.nextInt(10) == 0) {
+             iblockdata = iblockdata.set(BlockNetherWart.AGE, Integer.valueOf(i + 1));
+-            world.setTypeAndData(blockposition, iblockdata, 2);
++            // world.setTypeAndData(blockposition, iblockdata, 2); // CraftBukkit
++            org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(world, blockposition.getX(), blockposition.getY(), blockposition.getZ(), this, toLegacyData(iblockdata)); // CraftBukkit
+         }
+ 
+         super.b(world, blockposition, iblockdata, random);

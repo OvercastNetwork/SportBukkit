@@ -1,0 +1,49 @@
+--- a/net/minecraft/server/EntityZombieVillager.java
++++ b/net/minecraft/server/EntityZombieVillager.java
+@@ -4,9 +4,10 @@
+ 
+ public class EntityZombieVillager extends EntityZombie {
+ 
+-    private static final DataWatcherObject<Boolean> b = DataWatcher.a(EntityZombieVillager.class, DataWatcherRegistry.h);
+-    private static final DataWatcherObject<Integer> c = DataWatcher.a(EntityZombieVillager.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Boolean> b = META_CONVERTING; // SportBukkit
++    private static final DataWatcherObject<Integer> c = META_PROFESSION; // SportBukkit
+     private int conversionTime;
++    private int lastTick = MinecraftServer.currentTick; // CraftBukkit - add field
+ 
+     public EntityZombieVillager(World world) {
+         super(world);
+@@ -14,8 +15,10 @@
+ 
+     protected void i() {
+         super.i();
+-        this.datawatcher.register(EntityZombieVillager.b, Boolean.valueOf(false));
+-        this.datawatcher.register(EntityZombieVillager.c, Integer.valueOf(0));
++        // SportBukkit start - registered already in superclass
++        //this.datawatcher.register(EntityZombieVillager.b, Boolean.valueOf(false));
++        //this.datawatcher.register(EntityZombieVillager.c, Integer.valueOf(0));
++        // SportBukkit end
+     }
+ 
+     public void setProfession(int i) {
+@@ -54,6 +57,11 @@
+     public void A_() {
+         if (!this.world.isClientSide && this.isConverting()) {
+             int i = this.dq();
++            // CraftBukkit start - Use wall time instead of ticks for villager conversion
++            int elapsedTicks = MinecraftServer.currentTick - this.lastTick;
++            this.lastTick = MinecraftServer.currentTick;
++            i *= elapsedTicks;
++            // CraftBukkit end
+ 
+             this.conversionTime -= i;
+             if (this.conversionTime <= 0) {
+@@ -116,7 +124,7 @@
+             entityvillager.setCustomNameVisible(this.getCustomNameVisible());
+         }
+ 
+-        this.world.addEntity(entityvillager);
++        this.world.addEntity(entityvillager, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CURED); // CraftBukkit - add SpawnReason
+         entityvillager.addEffect(new MobEffect(MobEffects.CONFUSION, 200, 0));
+         this.world.a((EntityHuman) null, 1027, new BlockPosition((int) this.locX, (int) this.locY, (int) this.locZ), 0);
+     }

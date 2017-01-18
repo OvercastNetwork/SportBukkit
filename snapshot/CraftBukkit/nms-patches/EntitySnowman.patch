@@ -1,0 +1,32 @@
+--- a/net/minecraft/server/EntitySnowman.java
++++ b/net/minecraft/server/EntitySnowman.java
+@@ -1,6 +1,11 @@
+ package net.minecraft.server;
+ 
+ import javax.annotation.Nullable;
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.craftbukkit.util.CraftMagicNumbers;
++import org.bukkit.event.block.EntityBlockFormEvent;
++// CraftBukkit end
+ 
+ public class EntitySnowman extends EntityGolem implements IRangedEntity {
+ 
+@@ -59,7 +64,7 @@
+             }
+ 
+             if (this.world.getBiome(new BlockPosition(i, 0, k)).a(new BlockPosition(i, j, k)) > 1.0F) {
+-                this.damageEntity(DamageSource.BURN, 1.0F);
++                this.damageEntity(CraftEventFactory.MELTING, 1.0F); // CraftBukkit - DamageSource.BURN -> CraftEventFactory.MELTING
+             }
+ 
+             if (!this.world.getGameRules().getBoolean("mobGriefing")) {
+@@ -73,7 +78,7 @@
+                 BlockPosition blockposition = new BlockPosition(i, j, k);
+ 
+                 if (this.world.getType(blockposition).getMaterial() == Material.AIR && this.world.getBiome(blockposition).a(blockposition) < 0.8F && Blocks.SNOW_LAYER.canPlace(this.world, blockposition)) {
+-                    this.world.setTypeUpdate(blockposition, Blocks.SNOW_LAYER.getBlockData());
++                    org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(this.world, blockposition, Blocks.SNOW_LAYER, this); // CraftBukkit
+                 }
+             }
+         }

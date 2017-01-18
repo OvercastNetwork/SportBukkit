@@ -1,0 +1,99 @@
+--- a/net/minecraft/server/NameReferencingFileConverter.java
++++ b/net/minecraft/server/NameReferencingFileConverter.java
+@@ -88,8 +88,9 @@
+             if (gameprofilebanlist.c().exists()) {
+                 try {
+                     gameprofilebanlist.load();
+-                } catch (FileNotFoundException filenotfoundexception) {
+-                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { gameprofilebanlist.c().getName(), filenotfoundexception});
++                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacetrace
++                } catch (IOException filenotfoundexception) {
++                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { gameprofilebanlist.c().getName()});
+                 }
+             }
+ 
+@@ -146,8 +147,9 @@
+             if (ipbanlist.c().exists()) {
+                 try {
+                     ipbanlist.load();
+-                } catch (FileNotFoundException filenotfoundexception) {
+-                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { ipbanlist.c().getName(), filenotfoundexception});
++                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacetrace
++                } catch (IOException filenotfoundexception) {
++                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { ipbanlist.c().getName()});
+                 }
+             }
+ 
+@@ -187,8 +189,9 @@
+             if (oplist.c().exists()) {
+                 try {
+                     oplist.load();
+-                } catch (FileNotFoundException filenotfoundexception) {
+-                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { oplist.c().getName(), filenotfoundexception});
++                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacetrace
++                } catch (IOException filenotfoundexception) {
++                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { oplist.c().getName()});
+                 }
+             }
+ 
+@@ -231,8 +234,9 @@
+             if (whitelist.c().exists()) {
+                 try {
+                     whitelist.load();
+-                } catch (FileNotFoundException filenotfoundexception) {
+-                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { whitelist.c().getName(), filenotfoundexception});
++                // CraftBukkit start - FileNotFoundException -> IOException, don't print stacetrace
++                } catch (IOException filenotfoundexception) {
++                    NameReferencingFileConverter.e.warn("Could not load existing file {}", new Object[] { whitelist.c().getName()});
+                 }
+             }
+ 
+@@ -350,6 +354,30 @@
+                         File file1 = new File(file2, s + ".dat");
+                         File file3 = new File(file, s1 + ".dat");
+ 
++                        // CraftBukkit start - Use old file name to seed lastKnownName
++                        NBTTagCompound root = null;
++
++                        try {
++                            root = NBTCompressedStreamTools.a(new java.io.FileInputStream(file1));
++                        } catch (Exception exception) {
++                            exception.printStackTrace();
++                        }
++
++                        if (root != null) {
++                            if (!root.hasKey("bukkit")) {
++                                root.set("bukkit", new NBTTagCompound());
++                            }
++                            NBTTagCompound data = root.getCompound("bukkit");
++                            data.setString("lastKnownName", s);
++
++                            try {
++                                NBTCompressedStreamTools.a(root, new java.io.FileOutputStream(file2));
++                            } catch (Exception exception) {
++                                exception.printStackTrace();
++                            }
++                       }
++                        // CraftBukkit end
++
+                         NameReferencingFileConverter.b(file);
+                         if (!file1.renameTo(file3)) {
+                             throw new NameReferencingFileConverter.FileConversionException("Could not convert file for " + s, null);
+@@ -358,7 +386,7 @@
+ 
+                     private String a(GameProfile gameprofile) {
+                         String s = null;
+-                        String[] astring = astring1;
++                        // String[] astring = astring1; // CraftBukkit - decompile error
+                         int i = astring.length;
+ 
+                         for (int j = 0; j < i; ++j) {
+@@ -471,7 +499,7 @@
+ 
+     private static File d(PropertyManager propertymanager) {
+         String s = propertymanager.getString("level-name", "world");
+-        File file = new File(s);
++        File file = new File(MinecraftServer.getServer().server.getWorldContainer(), s); // CraftBukkit - Respect container setting
+ 
+         return new File(file, "players");
+     }

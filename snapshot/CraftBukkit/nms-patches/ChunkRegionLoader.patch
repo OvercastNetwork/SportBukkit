@@ -1,0 +1,210 @@
+--- a/net/minecraft/server/ChunkRegionLoader.java
++++ b/net/minecraft/server/ChunkRegionLoader.java
+@@ -29,19 +29,49 @@
+         this.e = dataconvertermanager;
+     }
+ 
++    // CraftBukkit start
++    public boolean chunkExists(World world, int i, int j) {
++        ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
++
++        if (this.c.contains(chunkcoordintpair)) {
++            if (this.b.containsKey(chunkcoordintpair)) {
++                return true;
++            }
++        }
++
++        return RegionFileCache.a(this.d, i, j).chunkExists(i & 31, j & 31);
++    }
++    // CraftBukkit end
++
++    // CraftBukkit start - Add async variant, provide compatibility
+     @Nullable
+     public Chunk a(World world, int i, int j) throws IOException {
++        Object[] data = loadChunk(world, i, j);
++        if (data != null) {
++            Chunk chunk = (Chunk) data[0];
++            NBTTagCompound nbttagcompound = (NBTTagCompound) data[1];
++            loadEntities(chunk, nbttagcompound.getCompound("Level"), world);
++            return chunk;
++        }
++
++        return null;
++    }
++
++    public Object[] loadChunk(World world, int i, int j) throws IOException {
++        // CraftBukkit end
+         ChunkCoordIntPair chunkcoordintpair = new ChunkCoordIntPair(i, j);
+         NBTTagCompound nbttagcompound = (NBTTagCompound) this.b.get(chunkcoordintpair);
+ 
+         if (nbttagcompound == null) {
+-            DataInputStream datainputstream = RegionFileCache.d(this.d, i, j);
++            // CraftBukkit start
++            nbttagcompound = RegionFileCache.d(this.d, i, j);
+ 
+-            if (datainputstream == null) {
++            if (nbttagcompound == null) {
+                 return null;
+             }
+ 
+-            nbttagcompound = this.e.a((DataConverterType) DataConverterTypes.CHUNK, NBTCompressedStreamTools.a(datainputstream));
++            nbttagcompound = this.e.a((DataConverterType) DataConverterTypes.CHUNK, nbttagcompound);
++            // CraftBukkit end
+         }
+ 
+         return this.a(world, i, j, nbttagcompound);
+@@ -55,7 +85,7 @@
+     }
+ 
+     @Nullable
+-    protected Chunk a(World world, int i, int j, NBTTagCompound nbttagcompound) {
++    protected Object[] a(World world, int i, int j, NBTTagCompound nbttagcompound) { // CraftBukkit - return Chunk -> Object[]
+         if (!nbttagcompound.hasKeyOfType("Level", 10)) {
+             ChunkRegionLoader.a.error("Chunk file at {},{} is missing level data, skipping", new Object[] { Integer.valueOf(i), Integer.valueOf(j)});
+             return null;
+@@ -72,10 +102,28 @@
+                     ChunkRegionLoader.a.error("Chunk file at {},{} is in the wrong location; relocating. (Expected {}, {}, got {}, {})", new Object[] { Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(i), Integer.valueOf(j), Integer.valueOf(chunk.locX), Integer.valueOf(chunk.locZ)});
+                     nbttagcompound1.setInt("xPos", i);
+                     nbttagcompound1.setInt("zPos", j);
++
++                    // CraftBukkit start - Have to move tile entities since we don't load them at this stage
++                    NBTTagList tileEntities = nbttagcompound.getCompound("Level").getList("TileEntities", 10);
++                    if (tileEntities != null) {
++                        for (int te = 0; te < tileEntities.size(); te++) {
++                            NBTTagCompound tileEntity = (NBTTagCompound) tileEntities.get(te);
++                            int x = tileEntity.getInt("x") - chunk.locX * 16;
++                            int z = tileEntity.getInt("z") - chunk.locZ * 16;
++                            tileEntity.setInt("x", i * 16 + x);
++                            tileEntity.setInt("z", j * 16 + z);
++                        }
++                    }
++                    // CraftBukkit end
+                     chunk = this.a(world, nbttagcompound1);
+                 }
+ 
+-                return chunk;
++                // CraftBukkit start
++                Object[] data = new Object[2];
++                data[0] = chunk;
++                data[1] = nbttagcompound;
++                return data;
++                // CraftBukkit end
+             }
+         }
+     }
+@@ -106,20 +154,27 @@
+     }
+ 
+     public boolean c() {
+-        if (this.b.isEmpty()) {
++        // CraftBukkit start
++        Iterator<Map.Entry<ChunkCoordIntPair, NBTTagCompound>> iter = this.b.entrySet().iterator();
++        if (!iter.hasNext()) {
++            // CraftBukkit end
+             if (this.f) {
+                 ChunkRegionLoader.a.info("ThreadedAnvilChunkStorage ({}): All chunks are saved", new Object[] { this.d.getName()});
+             }
+ 
+             return false;
+         } else {
+-            ChunkCoordIntPair chunkcoordintpair = (ChunkCoordIntPair) this.b.keySet().iterator().next();
++            // CraftBukkit start
++            Map.Entry<ChunkCoordIntPair, NBTTagCompound> entry = iter.next();
++            iter.remove(); // Pop single entry
++            ChunkCoordIntPair chunkcoordintpair = entry.getKey();
++            // CraftBukkit end
+ 
+             boolean flag;
+ 
+             try {
+                 this.c.add(chunkcoordintpair);
+-                NBTTagCompound nbttagcompound = (NBTTagCompound) this.b.remove(chunkcoordintpair);
++                NBTTagCompound nbttagcompound = (NBTTagCompound) entry.getValue(); // CraftBukkit
+ 
+                 if (nbttagcompound != null) {
+                     try {
+@@ -139,10 +194,14 @@
+     }
+ 
+     private void b(ChunkCoordIntPair chunkcoordintpair, NBTTagCompound nbttagcompound) throws IOException {
+-        DataOutputStream dataoutputstream = RegionFileCache.e(this.d, chunkcoordintpair.x, chunkcoordintpair.z);
++        // CraftBukkit start
++        RegionFileCache.e(this.d, chunkcoordintpair.x, chunkcoordintpair.z, nbttagcompound);
+ 
++        /*
+         NBTCompressedStreamTools.a(nbttagcompound, (DataOutput) dataoutputstream);
+         dataoutputstream.close();
++        */
++        // CraftBukkit end
+     }
+ 
+     public void b(World world, Chunk chunk) throws IOException {}
+@@ -157,6 +216,7 @@
+                 if (this.c()) {
+                     continue;
+                 }
++                break; // CraftBukkit - Fix infinite loop when saving chunks
+             }
+         } finally {
+             this.f = false;
+@@ -334,6 +394,13 @@
+             chunk.a(nbttagcompound.getByteArray("Biomes"));
+         }
+ 
++        // CraftBukkit start - End this method here and split off entity loading to another method
++        return chunk;
++    }
++
++    public void loadEntities(Chunk chunk, NBTTagCompound nbttagcompound, World world) {
++        // CraftBukkit end
++
+         NBTTagList nbttaglist1 = nbttagcompound.getList("Entities", 10);
+ 
+         for (int l = 0; l < nbttaglist1.size(); ++l) {
+@@ -371,7 +438,7 @@
+             }
+         }
+ 
+-        return chunk;
++        // return chunk; // CraftBukkit
+     }
+ 
+     @Nullable
+@@ -399,14 +466,20 @@
+     }
+ 
+     @Nullable
++    // CraftBukkit start
+     public static Entity a(NBTTagCompound nbttagcompound, World world, double d0, double d1, double d2, boolean flag) {
++        return spawnEntity(nbttagcompound, world, d0, d1, d2, flag, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    public static Entity spawnEntity(NBTTagCompound nbttagcompound, World world, double d0, double d1, double d2, boolean flag, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason spawnReason) {
++        // CraftBukkit end
+         Entity entity = a(nbttagcompound, world);
+ 
+         if (entity == null) {
+             return null;
+         } else {
+             entity.setPositionRotation(d0, d1, d2, entity.yaw, entity.pitch);
+-            if (flag && !world.addEntity(entity)) {
++            if (flag && !world.addEntity(entity, spawnReason)) { // CraftBukkit
+                 return null;
+             } else {
+                 if (nbttagcompound.hasKeyOfType("Passengers", 9)) {
+@@ -435,8 +508,14 @@
+         }
+     }
+ 
++    // CraftBukkit start
+     public static void a(Entity entity, World world) {
+-        if (world.addEntity(entity) && entity.isVehicle()) {
++        a(entity, world, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT);
++    }
++
++    public static void a(Entity entity, World world, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason reason) {
++        if (world.addEntity(entity, reason) && entity.isVehicle()) {
++            // CraftBukkit end
+             Iterator iterator = entity.bx().iterator();
+ 
+             while (iterator.hasNext()) {

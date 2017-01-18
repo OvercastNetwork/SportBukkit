@@ -1,0 +1,38 @@
+--- a/net/minecraft/server/SecondaryWorldServer.java
++++ b/net/minecraft/server/SecondaryWorldServer.java
+@@ -4,9 +4,12 @@
+ 
+     private final WorldServer a;
+ 
+-    public SecondaryWorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, int i, WorldServer worldserver, MethodProfiler methodprofiler) {
+-        super(minecraftserver, idatamanager, new SecondaryWorldData(worldserver.getWorldData()), i, methodprofiler);
++    // CraftBukkit start - Add WorldData, Environment and ChunkGenerator arguments
++    public SecondaryWorldServer(MinecraftServer minecraftserver, IDataManager idatamanager, int i, WorldServer worldserver, MethodProfiler methodprofiler, WorldData worldData, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen) {
++        super(minecraftserver, idatamanager, worldData, i, methodprofiler, env, gen);
++        // CraftBukkit end
+         this.a = worldserver;
++        /* CraftBukkit start
+         worldserver.getWorldBorder().a(new IWorldBorderListener() {
+             public void a(WorldBorder worldborder, double d0) {
+                 SecondaryWorldServer.this.getWorldBorder().setSize(d0);
+@@ -36,9 +39,10 @@
+                 SecondaryWorldServer.this.getWorldBorder().setDamageBuffer(d0);
+             }
+         });
++        // CraftBukkit end */
+     }
+ 
+-    protected void a() {}
++    // protected void a() {} // CraftBukkit
+ 
+     public World b() {
+         this.worldMaps = this.a.X();
+@@ -55,7 +59,7 @@
+             this.villages.a((World) this);
+         }
+ 
+-        return this;
++        return super.b(); // CraftBukkit
+     }
+ 
+     public void c() {

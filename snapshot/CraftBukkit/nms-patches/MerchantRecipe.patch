@@ -1,0 +1,46 @@
+--- a/net/minecraft/server/MerchantRecipe.java
++++ b/net/minecraft/server/MerchantRecipe.java
+@@ -1,5 +1,7 @@
+ package net.minecraft.server;
+ 
++import org.bukkit.craftbukkit.inventory.CraftMerchantRecipe; // CraftBukkit
++
+ public class MerchantRecipe {
+ 
+     public ItemStack buyingItem1;
+@@ -8,6 +10,18 @@
+     public int uses;
+     public int maxUses;
+     public boolean rewardExp;
++    // CraftBukkit start
++    private CraftMerchantRecipe bukkitHandle;
++
++    public CraftMerchantRecipe asBukkit() {
++        return (bukkitHandle == null) ? bukkitHandle = new CraftMerchantRecipe(this) : bukkitHandle;
++    }
++
++    public MerchantRecipe(ItemStack itemstack, ItemStack itemstack1, ItemStack itemstack2, int i, int j, CraftMerchantRecipe bukkit) {
++        this(itemstack, itemstack1, itemstack2, i, j);
++        this.bukkitHandle = bukkit;
++    }
++    // CraftBukkit end
+ 
+     public MerchantRecipe(NBTTagCompound nbttagcompound) {
+         this.buyingItem1 = ItemStack.a;
+@@ -87,6 +101,16 @@
+         NBTTagCompound nbttagcompound2 = nbttagcompound.getCompound("sell");
+ 
+         this.sellingItem = new ItemStack(nbttagcompound2);
++
++        // SportBukkit start - replace invalid items with barrier, to prevent NPE later
++        if(this.buyingItem1 == null) {
++            this.buyingItem1 = new ItemStack(Blocks.BARRIER, 1);
++        }
++        if(this.sellingItem == null) {
++            this.sellingItem = new ItemStack(Blocks.BARRIER, 1);
++        }
++        // SportBukkit end
++
+         if (nbttagcompound.hasKeyOfType("buyB", 10)) {
+             this.buyingItem2 = new ItemStack(nbttagcompound.getCompound("buyB"));
+         }

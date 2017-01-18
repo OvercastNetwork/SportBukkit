@@ -1,0 +1,11 @@
+--- a/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
++++ b/net/minecraft/server/PacketPlayOutNamedSoundEffect.java
+@@ -37,7 +37,7 @@
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+-        packetdataserializer.d(SoundEffect.a.a((Object) this.a));
++        packetdataserializer.d(SoundEffect.a.a(this.a)); // SportBukkit - fix decompile error
+         packetdataserializer.a((Enum) this.b);
+         packetdataserializer.writeInt(this.c);
+         packetdataserializer.writeInt(this.d);

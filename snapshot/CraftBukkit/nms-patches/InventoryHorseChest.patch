@@ -1,0 +1,14 @@
+--- a/net/minecraft/server/InventoryHorseChest.java
++++ b/net/minecraft/server/InventoryHorseChest.java
+@@ -2,7 +2,9 @@
+ 
+ public class InventoryHorseChest extends InventorySubcontainer {
+ 
+-    public InventoryHorseChest(String s, int i) {
+-        super(s, false, i);
++    // CraftBukkit start
++    public InventoryHorseChest(String s, int i, EntityHorseAbstract owner) {
++        super(s, false, i, (org.bukkit.entity.AbstractHorse) owner.getBukkitEntity());
++        // CraftBukkit end
+     }
+ }

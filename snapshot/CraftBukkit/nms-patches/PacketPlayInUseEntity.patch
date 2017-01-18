@@ -1,0 +1,42 @@
+--- a/net/minecraft/server/PacketPlayInUseEntity.java
++++ b/net/minecraft/server/PacketPlayInUseEntity.java
+@@ -5,11 +5,20 @@
+ 
+ public class PacketPlayInUseEntity implements Packet<PacketListenerPlayIn> {
+ 
+-    private int a;
++    private int a; public int getEntityId() { return a; } // SportBukkit - add accessor
+     private PacketPlayInUseEntity.EnumEntityUseAction action;
+     private Vec3D c;
+     private EnumHand d;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayInUseEntity(int entityId, EnumEntityUseAction action, Vec3D touchAt, EnumHand hand) {
++        this.a = entityId;
++        this.action = action;
++        this.c = touchAt;
++        this.d = hand;
++    }
++    // SportBukkit end
++
+     public PacketPlayInUseEntity() {}
+ 
+     public PacketPlayInUseEntity(Entity entity) {
+@@ -17,7 +26,7 @@
+         this.action = PacketPlayInUseEntity.EnumEntityUseAction.ATTACK;
+     }
+ 
+-    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++    public void a(PacketDataSerializer packetdataserializer) { // SportBukkit - remove throws
+         this.a = packetdataserializer.g();
+         this.action = (PacketPlayInUseEntity.EnumEntityUseAction) packetdataserializer.a(PacketPlayInUseEntity.EnumEntityUseAction.class);
+         if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {
+@@ -30,7 +39,7 @@
+ 
+     }
+ 
+-    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++    public void b(PacketDataSerializer packetdataserializer) { // SportBukkit - remove throws
+         packetdataserializer.d(this.a);
+         packetdataserializer.a((Enum) this.action);
+         if (this.action == PacketPlayInUseEntity.EnumEntityUseAction.INTERACT_AT) {

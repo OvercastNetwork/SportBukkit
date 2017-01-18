@@ -1,0 +1,32 @@
+--- a/net/minecraft/server/PacketPlayOutTileEntityData.java
++++ b/net/minecraft/server/PacketPlayOutTileEntityData.java
+@@ -2,6 +2,8 @@
+ 
+ import java.io.IOException;
+ 
++import org.bukkit.craftbukkit.protocol.PacketPlayOutUpdateSign; // SportBukkit
++
+ public class PacketPlayOutTileEntityData implements Packet<PacketListenerPlayOut> {
+ 
+     private BlockPosition a;
+@@ -23,6 +25,20 @@
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        // SportBukkit start - Sign Update packet replaced with TileEntityData packet
++        if(b == 9 && packetdataserializer.protocolVersion < 110) {
++            // Fake a sign update packet by backing up and rewriting the packet ID
++            packetdataserializer.writerIndex(packetdataserializer.writerIndex() - 1);
++            packetdataserializer.writeVarInt(EnumProtocol.PLAY.packetId(EnumProtocolDirection.CLIENTBOUND,
++                                                                        PacketPlayOutUpdateSign.class,
++                                                                        packetdataserializer.protocolVersion));
++            packetdataserializer.writeBlockPosition(this.a);
++            for(int line = 0; line < 4; line++) {
++                packetdataserializer.writeChatComponent(IChatBaseComponent.ChatSerializer.a(c.getString("Text" + (line + 1))));
++            }
++            return;
++        }
++        // SportBukkit end
+         packetdataserializer.a(this.a);
+         packetdataserializer.writeByte((byte) this.b);
+         packetdataserializer.a(this.c);

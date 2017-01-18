@@ -1,0 +1,48 @@
+--- a/net/minecraft/server/EntityOcelot.java
++++ b/net/minecraft/server/EntityOcelot.java
+@@ -57,7 +57,7 @@
+     }
+ 
+     protected boolean isTypeNotPersistent() {
+-        return !this.isTamed() && this.ticksLived > 2400;
++        return !this.isTamed() /*&& this.ticksLived > 2400*/; // CraftBukkit
+     }
+ 
+     protected void initAttributes() {
+@@ -103,6 +103,9 @@
+         return entity.damageEntity(DamageSource.mobAttack(this), 3.0F);
+     }
+ 
++    /* CraftBukkit start
++    // Function disabled as it has no special function anymore after
++    //   setSitting is disabled.
+     public boolean damageEntity(DamageSource damagesource, float f) {
+         if (this.isInvulnerable(damagesource)) {
+             return false;
+@@ -114,6 +117,7 @@
+             return super.damageEntity(damagesource, f);
+         }
+     }
++    // CraftBukkit end */
+ 
+     @Nullable
+     protected MinecraftKey J() {
+@@ -133,7 +137,8 @@
+             }
+ 
+             if (!this.world.isClientSide) {
+-                if (this.random.nextInt(3) == 0) {
++                // CraftBukkit - added event call and isCancelled check
++                if (this.random.nextInt(3) == 0 && !org.bukkit.craftbukkit.event.CraftEventFactory.callEntityTameEvent(this, entityhuman).isCancelled()) {
+                     this.setTamed(true);
+                     this.setCatType(1 + this.world.random.nextInt(3));
+                     this.setOwnerUUID(entityhuman.getUniqueID());
+@@ -238,7 +243,7 @@
+ 
+                 entityocelot.setPositionRotation(this.locX, this.locY, this.locZ, this.yaw, 0.0F);
+                 entityocelot.setAgeRaw(-24000);
+-                this.world.addEntity(entityocelot);
++                this.world.addEntity(entityocelot, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.OCELOT_BABY); // CraftBukkit - add SpawnReason
+             }
+         }
+ 

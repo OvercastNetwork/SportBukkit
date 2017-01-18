@@ -1,0 +1,98 @@
+--- a/net/minecraft/server/EntityTNTPrimed.java
++++ b/net/minecraft/server/EntityTNTPrimed.java
+@@ -1,6 +1,7 @@
+ package net.minecraft.server;
+ 
+ import javax.annotation.Nullable;
++import org.bukkit.event.entity.ExplosionPrimeEvent; // CraftBukkit
+ 
+ public class EntityTNTPrimed extends Entity {
+ 
+@@ -8,6 +9,8 @@
+     @Nullable
+     private EntityLiving source;
+     private int c;
++    public float yield = 4; // CraftBukkit - add field
++    public boolean isIncendiary = false; // CraftBukkit - add field
+ 
+     public EntityTNTPrimed(World world) {
+         super(world);
+@@ -63,10 +66,13 @@
+ 
+         --this.c;
+         if (this.c <= 0) {
+-            this.die();
++            // CraftBukkit start - Need to reverse the order of the explosion and the entity death so we have a location for the event
++            // this.die();
+             if (!this.world.isClientSide) {
+                 this.explode();
+             }
++            this.die();
++            // CraftBukkit end
+         } else {
+             this.ak();
+             this.world.addParticle(EnumParticle.SMOKE_NORMAL, this.locX, this.locY + 0.5D, this.locZ, 0.0D, 0.0D, 0.0D, new int[0]);
+@@ -74,10 +80,52 @@
+ 
+     }
+ 
++    // SportBukkit start - Prevent TNT from being pushed in water by overriding the method that applies the motion
++    @Override
++    public boolean ak() {
++        if(this.world.getServer().getWaterPushesTNT()) return super.ak();
++
++        // Preserve velocity while calling the super method
++        double oldMotX = this.motX;
++        double oldMotY = this.motY;
++        double oldMotZ = this.motZ;
++
++        super.ak();
++
++        this.motX = oldMotX;
++        this.motY = oldMotY;
++        this.motZ = oldMotZ;
++
++        if(this.inWater) {
++            // Send position and velocity updates to nearby players on every tick while the TNT is in water.
++            // This does pretty well at keeping their clients in sync with the server.
++            EntityTrackerEntry ete = ((WorldServer) this.getWorld()).getTracker().trackedEntities.get(this.getId());
++            if(ete != null) {
++                PacketPlayOutEntityVelocity velocityPacket = new PacketPlayOutEntityVelocity(this);
++                PacketPlayOutEntityTeleport positionPacket = new PacketPlayOutEntityTeleport(this);
++
++                for(EntityPlayer viewer : ete.trackedPlayers) {
++                    if((viewer.locX - this.locX) * (viewer.locY - this.locY) * (viewer.locZ - this.locZ) < 16 * 16) {
++                        viewer.playerConnection.sendPacket(velocityPacket);
++                        viewer.playerConnection.sendPacket(positionPacket);
++                    }
++                }
++            }
++        }
++
++        return this.inWater;
++    }
++    // SportBukkit end
++
+     private void explode() {
+-        float f = 4.0F;
++        // CraftBukkit start
++        // float f = 4.0F;
++
++        org.bukkit.craftbukkit.CraftServer server = this.world.getServer();
++        org.bukkit.entity.Explosive explosive = (org.bukkit.entity.Explosive) org.bukkit.craftbukkit.entity.CraftEntity.getEntity(server, this);
+ 
+-        this.world.explode(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, 4.0F, true);
++        this.world.createExplosion(this, this.locX, this.locY + (double) (this.length / 16.0F), this.locZ, explosive.getYield(), explosive.isIncendiary(), true);
++        // CraftBukkit end
+     }
+ 
+     protected void b(NBTTagCompound nbttagcompound) {
+@@ -94,7 +142,7 @@
+     }
+ 
+     public float getHeadHeight() {
+-        return 0.0F;
++        return this.length / 16f; // SportBukkit
+     }
+ 
+     public void setFuseTicks(int i) {

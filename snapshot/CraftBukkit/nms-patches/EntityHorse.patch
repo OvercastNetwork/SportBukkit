@@ -1,0 +1,26 @@
+--- a/net/minecraft/server/EntityHorse.java
++++ b/net/minecraft/server/EntityHorse.java
+@@ -6,8 +6,8 @@
+ public class EntityHorse extends EntityHorseAbstract {
+ 
+     private static final UUID bG = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
+-    private static final DataWatcherObject<Integer> bH = DataWatcher.a(EntityHorse.class, DataWatcherRegistry.b);
+-    private static final DataWatcherObject<Integer> bI = DataWatcher.a(EntityHorse.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Integer> bH = META_HORSE_VARIANT; // SportBukkit
++    private static final DataWatcherObject<Integer> bI = META_ARMOR; // SportBukkit
+     private static final String[] bJ = new String[] { "textures/entity/horse/horse_white.png", "textures/entity/horse/horse_creamy.png", "textures/entity/horse/horse_chestnut.png", "textures/entity/horse/horse_brown.png", "textures/entity/horse/horse_black.png", "textures/entity/horse/horse_gray.png", "textures/entity/horse/horse_darkbrown.png"};
+     private static final String[] bK = new String[] { "hwh", "hcr", "hch", "hbr", "hbl", "hgr", "hdb"};
+     private static final String[] bL = new String[] { null, "textures/entity/horse/horse_markings_white.png", "textures/entity/horse/horse_markings_whitefield.png", "textures/entity/horse/horse_markings_whitedots.png", "textures/entity/horse/horse_markings_blackdots.png"};
+@@ -21,8 +21,10 @@
+ 
+     protected void i() {
+         super.i();
+-        this.datawatcher.register(EntityHorse.bH, Integer.valueOf(0));
+-        this.datawatcher.register(EntityHorse.bI, Integer.valueOf(EnumHorseArmor.NONE.a()));
++        // SportBukkit start - registered already in superclass
++        //this.datawatcher.register(EntityHorse.bH, Integer.valueOf(0));
++        //this.datawatcher.register(EntityHorse.bI, Integer.valueOf(EnumHorseArmor.NONE.a()));
++        // SportBukkit end
+     }
+ 
+     public static void a(DataConverterManager dataconvertermanager) {

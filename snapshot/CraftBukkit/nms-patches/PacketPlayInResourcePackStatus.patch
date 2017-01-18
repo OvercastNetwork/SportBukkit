@@ -1,0 +1,23 @@
+--- a/net/minecraft/server/PacketPlayInResourcePackStatus.java
++++ b/net/minecraft/server/PacketPlayInResourcePackStatus.java
+@@ -13,10 +13,20 @@
+     }
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 204) {
++            packetdataserializer.e(40);
++        }
++        // SportBukkit end
+         this.status = (PacketPlayInResourcePackStatus.EnumResourcePackStatus) packetdataserializer.a(PacketPlayInResourcePackStatus.EnumResourcePackStatus.class);
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 204) {
++            packetdataserializer.a("0123456789012345678901234567890123456789");
++        }
++        // SportBukkit end
+         packetdataserializer.a((Enum) this.status);
+     }
+ 

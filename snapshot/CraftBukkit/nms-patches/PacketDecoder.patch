@@ -1,0 +1,16 @@
+--- a/net/minecraft/server/PacketDecoder.java
++++ b/net/minecraft/server/PacketDecoder.java
+@@ -24,7 +24,12 @@
+         if (bytebuf.readableBytes() != 0) {
+             PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
+             int i = packetdataserializer.g();
+-            Packet packet = ((EnumProtocol) channelhandlercontext.channel().attr(NetworkManager.c).get()).a(this.c, i);
++
++            // SportBukkit start
++            final NetworkManager networkManager = channelhandlercontext.pipeline().get(NetworkManager.class);
++            packetdataserializer.protocolVersion = networkManager.protocolVersion;
++            Packet packet = ((EnumProtocol) channelhandlercontext.channel().attr(NetworkManager.c).get()).a(this.c, i, networkManager.protocolVersion);
++            // SportBukkit end
+ 
+             if (packet == null) {
+                 throw new IOException("Bad packet id " + i);

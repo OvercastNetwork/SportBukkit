@@ -1,0 +1,26 @@
+--- a/net/minecraft/server/PacketPlayOutSpawnEntity.java
++++ b/net/minecraft/server/PacketPlayOutSpawnEntity.java
+@@ -18,6 +18,23 @@
+     private int k;
+     private int l;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayOutSpawnEntity(int id, UUID uuid, double xPos, double yPos, double zPos, int xVel, int yVel, int zVel, int pitch, int yaw, int type, int data) {
++        this.a = id;
++        this.b = uuid;
++        this.c = xPos;
++        this.d = yPos;
++        this.e = zPos;
++        this.f = xVel;
++        this.g = yVel;
++        this.h = zVel;
++        this.i = pitch;
++        this.j = yaw;
++        this.k = type;
++        this.l = data;
++    }
++    // SportBukkit end
++
+     public PacketPlayOutSpawnEntity() {}
+ 
+     public PacketPlayOutSpawnEntity(Entity entity, int i) {

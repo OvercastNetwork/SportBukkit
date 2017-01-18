@@ -1,0 +1,119 @@
+--- a/net/minecraft/server/EntityCreeper.java
++++ b/net/minecraft/server/EntityCreeper.java
+@@ -3,6 +3,11 @@
+ import java.util.Collection;
+ import java.util.Iterator;
+ import javax.annotation.Nullable;
++// CraftBukkit start
++import org.bukkit.craftbukkit.event.CraftEventFactory;
++import org.bukkit.event.entity.ExplosionPrimeEvent;
++import org.bukkit.event.entity.ExplosionPrimeByEntityEvent;
++// CraftBukkit end
+ 
+ public class EntityCreeper extends EntityMonster {
+ 
+@@ -14,6 +19,7 @@
+     private int maxFuseTicks = 30;
+     private int explosionRadius = 3;
+     private int bA;
++    private Entity primer; // SportBukkit
+ 
+     public EntityCreeper(World world) {
+         super(world);
+@@ -99,7 +105,22 @@
+             int i = this.di();
+ 
+             if (i > 0 && this.fuseTicks == 0) {
+-                this.a(SoundEffects.av, 1.0F, 0.5F);
++                // SportBukkit start - fire ExplosionPrimeEvent
++                final float radius = this.explosionRadius * (this.isPowered() ? 2.0F : 1.0F);
++                final ExplosionPrimeEvent event;
++                if(primer != null) {
++                    event = new ExplosionPrimeByEntityEvent(this.getBukkitEntity(), radius, false, primer.getBukkitEntity());
++                } else {
++                    event = new ExplosionPrimeEvent(this.getBukkitEntity(), radius, false);
++                }
++                this.world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    i = 0;
++                } else {
++                    this.a(SoundEffects.av, 1.0F, 0.5F);
++                }
++                // SportBukkit end
+             }
+ 
+             this.fuseTicks += i;
+@@ -125,7 +146,7 @@
+     }
+ 
+     public void die(DamageSource damagesource) {
+-        super.die(damagesource);
++        // super.die(damagesource); // CraftBukkit - Moved to end
+         if (this.world.getGameRules().getBoolean("doMobLoot")) {
+             if (damagesource.getEntity() instanceof EntitySkeleton) {
+                 int i = Item.getId(Items.RECORD_13);
+@@ -138,6 +159,7 @@
+                 this.a(new ItemStack(Items.SKULL, 1, 4), 0.0F);
+             }
+         }
++        super.die(damagesource); // CraftBukkit - Moved from above
+ 
+     }
+ 
+@@ -164,8 +186,18 @@
+ 
+     public void onLightningStrike(EntityLightning entitylightning) {
+         super.onLightningStrike(entitylightning);
+-        this.datawatcher.set(EntityCreeper.b, Boolean.valueOf(true));
++        // CraftBukkit start
++        if (CraftEventFactory.callCreeperPowerEvent(this, entitylightning, org.bukkit.event.entity.CreeperPowerEvent.PowerCause.LIGHTNING).isCancelled()) {
++            return;
++        }
++
++        this.setPowered(true);
++    }
++
++    public void setPowered(boolean powered) {
++        this.datawatcher.set(EntityCreeper.b, powered);
+     }
++    // CraftBukkit end
+ 
+     protected boolean a(EntityHuman entityhuman, EnumHand enumhand) {
+         ItemStack itemstack = entityhuman.b(enumhand);
+@@ -174,6 +206,7 @@
+             this.world.a(entityhuman, this.locX, this.locY, this.locZ, SoundEffects.bI, this.bC(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+             entityhuman.a(enumhand);
+             if (!this.world.isClientSide) {
++                this.primer = entityhuman; // SportBukkit
+                 this.dk();
+                 itemstack.damage(1, entityhuman);
+                 return true;
+@@ -188,10 +221,23 @@
+             boolean flag = this.world.getGameRules().getBoolean("mobGriefing");
+             float f = this.isPowered() ? 2.0F : 1.0F;
+ 
+-            this.aU = true;
+-            this.world.explode(this, this.locX, this.locY, this.locZ, (float) this.explosionRadius * f, flag);
+-            this.die();
+-            this.do_();
++            // CraftBukkit start
++            final ExplosionPrimeEvent event;
++            if(primer != null) {
++                event = new ExplosionPrimeByEntityEvent(this.getBukkitEntity(), this.explosionRadius * f, false, primer.getBukkitEntity());
++            } else {
++                event = new ExplosionPrimeEvent(this.getBukkitEntity(), this.explosionRadius * f, false);
++            }
++            this.world.getServer().getPluginManager().callEvent(event);
++            if (!event.isCancelled()) {
++                this.aU = true;
++                this.world.createExplosion(this, this.locX, this.locY, this.locZ, event.getRadius(), event.getFire(), flag);
++                this.die();
++                this.do_();
++            } else {
++                fuseTicks = 0;
++            }
++            // CraftBukkit end
+         }
+ 
+     }

@@ -1,0 +1,92 @@
+--- a/net/minecraft/server/JsonList.java
++++ b/net/minecraft/server/JsonList.java
+@@ -29,6 +29,12 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// SportBukkit start
++import com.google.common.cache.LoadingCache;
++import com.google.common.cache.CacheBuilder;
++import com.google.common.cache.CacheLoader;
++// SportBukkit end
++
+ public class JsonList<K, V extends JsonListEntry<K>> {
+ 
+     protected static final Logger a = LogManager.getLogger();
+@@ -50,6 +56,16 @@
+         }
+     };
+ 
++    // CraftBukkit - add cache of object -> string translations
++    LoadingCache<K, String> pastTranslations = CacheBuilder.newBuilder()
++        .maximumSize(500)
++        .build(new CacheLoader<K, String>() {
++                   public String load(K obj) {
++                       return obj.toString();
++                   }
++               }
++        );
++
+     public JsonList(File file) {
+         this.c = file;
+         GsonBuilder gsonbuilder = (new GsonBuilder()).setPrettyPrinting();
+@@ -83,7 +99,7 @@
+ 
+     public V get(K k0) {
+         this.h();
+-        return (JsonListEntry) this.d.get(this.a(k0));
++        return (V) this.d.get(this.a(k0)); // CraftBukkit - fix decompile error
+     }
+ 
+     public void remove(K k0) {
+@@ -101,12 +117,26 @@
+         return (String[]) this.d.keySet().toArray(new String[this.d.size()]);
+     }
+ 
++    // CraftBukkit start
++    public Collection<V> getValues() {
++        return this.d.values();
++    }
++    // CraftBukkit end
++
+     public boolean isEmpty() {
+         return this.d.size() < 1;
+     }
+ 
+     protected String a(K k0) {
+-        return k0.toString();
++        // SportBukkit start - use cache
++        String result = null;
++
++        try {
++            result = this.pastTranslations.get(k0);
++        } catch (Exception e) {}
++
++        return result;
++        // SportBukkit end
+     }
+ 
+     protected boolean d(K k0) {
+@@ -176,7 +206,7 @@
+                 JsonListEntry jsonlistentry = (JsonListEntry) iterator.next();
+ 
+                 if (jsonlistentry.getKey() != null) {
+-                    this.d.put(this.a(jsonlistentry.getKey()), jsonlistentry);
++                    this.d.put(this.a((K) jsonlistentry.getKey()), (V) jsonlistentry); // CraftBukkit - fix decompile error
+                 }
+             }
+         }
+@@ -204,11 +234,11 @@
+             }
+         }
+ 
+-        public JsonElement serialize(Object object, Type type, JsonSerializationContext jsonserializationcontext) {
++        public JsonElement serialize(JsonListEntry<K> object, Type type, JsonSerializationContext jsonserializationcontext) { // CraftBukkit - fix decompile error
+             return this.a((JsonListEntry) object, type, jsonserializationcontext);
+         }
+ 
+-        public Object deserialize(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException {
++        public JsonListEntry<K> deserialize(JsonElement jsonelement, Type type, JsonDeserializationContext jsondeserializationcontext) throws JsonParseException { // CraftBukkit - fix decompile error
+             return this.a(jsonelement, type, jsondeserializationcontext);
+         }
+ 

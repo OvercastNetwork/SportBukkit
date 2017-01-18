@@ -1,0 +1,44 @@
+--- a/net/minecraft/server/EntityPig.java
++++ b/net/minecraft/server/EntityPig.java
+@@ -5,10 +5,17 @@
+ import java.util.Set;
+ import javax.annotation.Nullable;
+ 
++import org.bukkit.craftbukkit.event.CraftEventFactory; // CraftBukkit
++
++// SportBukkit start
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++import com.google.common.collect.Range;
++// SportBukkit end
++
+ public class EntityPig extends EntityAnimal {
+ 
+     private static final DataWatcherObject<Boolean> bw = DataWatcher.a(EntityPig.class, DataWatcherRegistry.h);
+-    private static final DataWatcherObject<Integer> bx = DataWatcher.a(EntityPig.class, DataWatcherRegistry.b);
++    private static final DataWatcherObject<Integer> bx = MetadataKey.auto(EntityPig.class, DataWatcherRegistry.b, Range.atLeast(316)); // SportBukkit - total boost time
+     private static final Set<Item> by = Sets.newHashSet(new Item[] { Items.CARROT, Items.POTATO, Items.BEETROOT});
+     private boolean bA;
+     private int bB;
+@@ -156,6 +163,12 @@
+         if (!this.world.isClientSide && !this.dead) {
+             EntityPigZombie entitypigzombie = new EntityPigZombie(this.world);
+ 
++            // CraftBukkit start
++            if (CraftEventFactory.callPigZapEvent(this, entitylightning, entitypigzombie).isCancelled()) {
++                return;
++            }
++            // CraftBukkit end
++
+             entitypigzombie.setSlot(EnumItemSlot.MAINHAND, new ItemStack(Items.GOLDEN_SWORD));
+             entitypigzombie.setPositionRotation(this.locX, this.locY, this.locZ, this.yaw, this.pitch);
+             entitypigzombie.setAI(this.hasAI());
+@@ -164,7 +177,8 @@
+                 entitypigzombie.setCustomNameVisible(this.getCustomNameVisible());
+             }
+ 
+-            this.world.addEntity(entitypigzombie);
++            // CraftBukkit - added a reason for spawning this creature
++            this.world.addEntity(entitypigzombie, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.LIGHTNING);
+             this.die();
+         }
+     }

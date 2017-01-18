@@ -1,0 +1,50 @@
+--- a/net/minecraft/server/ContainerFurnace.java
++++ b/net/minecraft/server/ContainerFurnace.java
+@@ -1,5 +1,10 @@
+ package net.minecraft.server;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.inventory.CraftInventoryFurnace;
++import org.bukkit.craftbukkit.inventory.CraftInventoryView;
++// CraftBukkit end
++
+ public class ContainerFurnace extends Container {
+ 
+     private final IInventory furnace;
+@@ -8,11 +13,28 @@
+     private int h;
+     private int i;
+ 
++    // CraftBukkit start
++    private CraftInventoryView bukkitEntity = null;
++    private PlayerInventory player;
++
++    @Override
++    public CraftInventoryView getBukkitView() {
++        if (bukkitEntity != null) {
++            return bukkitEntity;
++        }
++
++        CraftInventoryFurnace inventory = new CraftInventoryFurnace((TileEntityFurnace) this.furnace);
++        bukkitEntity = new CraftInventoryView(this.player.player.getBukkitEntity(), inventory, this);
++        return bukkitEntity;
++    }
++    // CraftBukkit end
++
+     public ContainerFurnace(PlayerInventory playerinventory, IInventory iinventory) {
+         this.furnace = iinventory;
+         this.a(new Slot(iinventory, 0, 56, 17));
+         this.a((Slot) (new SlotFurnaceFuel(iinventory, 1, 56, 53)));
+         this.a((Slot) (new SlotFurnaceResult(playerinventory.player, iinventory, 2, 116, 35)));
++        this.player = playerinventory; // CraftBukkit - save player
+ 
+         int i;
+ 
+@@ -63,6 +85,7 @@
+     }
+ 
+     public boolean a(EntityHuman entityhuman) {
++        if (!this.checkReachable) return true; // CraftBukkit
+         return this.furnace.a(entityhuman);
+     }
+ 

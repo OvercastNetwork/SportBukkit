@@ -1,0 +1,47 @@
+--- a/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
++++ b/net/minecraft/server/PacketPlayOutNamedEntitySpawn.java
+@@ -16,6 +16,19 @@
+     private DataWatcher h;
+     private List<DataWatcher.Item<?>> i;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayOutNamedEntitySpawn(int id, UUID uuid, double xPos, double yPos, double zPos, byte yaw, byte pitch, List<DataWatcher.Item<?>> metadata) {
++        this.a = id;
++        this.b = uuid;
++        this.c = xPos;
++        this.d = yPos;
++        this.e = zPos;
++        this.f = yaw;
++        this.g = pitch;
++        this.i = metadata;
++    }
++    // SportBukkit end
++
+     public PacketPlayOutNamedEntitySpawn() {}
+ 
+     public PacketPlayOutNamedEntitySpawn(EntityHuman entityhuman) {
+@@ -27,6 +40,11 @@
+         this.f = (byte) ((int) (entityhuman.yaw * 256.0F / 360.0F));
+         this.g = (byte) ((int) (entityhuman.pitch * 256.0F / 360.0F));
+         this.h = entityhuman.getDataWatcher();
++
++        // SportBukkit start - send unshared copy of metadata
++        this.i = this.h.c();
++        DataWatcher.deepCopy(this.i);
++        // SportBukkit end
+     }
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+@@ -48,7 +66,11 @@
+         packetdataserializer.writeDouble(this.e);
+         packetdataserializer.writeByte(this.f);
+         packetdataserializer.writeByte(this.g);
+-        this.h.a(packetdataserializer);
++
++        // SportBukkit start - send unshared copy of metadata
++        // this.h.a(packetdataserializer);
++        DataWatcher.a(this.i, packetdataserializer);
++        // SportBukkit end
+     }
+ 
+     public void a(PacketListenerPlayOut packetlistenerplayout) {

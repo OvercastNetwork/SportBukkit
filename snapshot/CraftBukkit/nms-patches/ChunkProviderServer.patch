@@ -1,0 +1,192 @@
+--- a/net/minecraft/server/ChunkProviderServer.java
++++ b/net/minecraft/server/ChunkProviderServer.java
+@@ -15,6 +15,11 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.chunkio.ChunkIOExecutor;
++import org.bukkit.event.world.ChunkUnloadEvent;
++// CraftBukkit end
++
+ public class ChunkProviderServer implements IChunkProvider {
+ 
+     private static final Logger a = LogManager.getLogger();
+@@ -70,19 +75,82 @@
+         Chunk chunk = this.getLoadedChunkAt(i, j);
+ 
+         if (chunk == null) {
++            // CraftBukkit start
++            ChunkRegionLoader loader = null;
++
++            if (this.chunkLoader instanceof ChunkRegionLoader) {
++                loader = (ChunkRegionLoader) this.chunkLoader;
++            }
++            if (loader != null && loader.chunkExists(world, i, j)) {
++                chunk = ChunkIOExecutor.syncChunkLoad(world, loader, this, i, j);
++            }
++        }
++
++        return chunk;
++    }
++
++    @Nullable
++    public Chunk originalGetOrLoadChunkAt(int i, int j) {
++        // CraftBukkit end
++        Chunk chunk = this.getLoadedChunkAt(i, j);
++
++        if (chunk == null) {
+             chunk = this.loadChunk(i, j);
+             if (chunk != null) {
+                 this.chunks.put(ChunkCoordIntPair.a(i, j), chunk);
+                 chunk.addEntities();
+-                chunk.loadNearby(this, this.chunkGenerator);
++                chunk.loadNearby(this, this.chunkGenerator, false); // CraftBukkit
+             }
+         }
+ 
+         return chunk;
+     }
+ 
++    // CraftBukkit start
++    public Chunk getChunkIfLoaded(int x, int z) {
++        return chunks.get(ChunkCoordIntPair.a(x, z));
++    }
++    // CraftBukkit end
++
+     public Chunk getChunkAt(int i, int j) {
+-        Chunk chunk = this.getOrLoadChunkAt(i, j);
++        return getChunkAt(i, j, null);
++    }
++
++    public Chunk getChunkAt(int i, int j, Runnable runnable) {
++        return getChunkAt(i, j, runnable, true);
++    }
++
++    public Chunk getChunkAt(int i, int j, Runnable runnable, boolean generate) {
++        Chunk chunk = getChunkIfLoaded(i, j);
++        ChunkRegionLoader loader = null;
++
++        if (this.chunkLoader instanceof ChunkRegionLoader) {
++            loader = (ChunkRegionLoader) this.chunkLoader;
++
++        }
++        // We can only use the queue for already generated chunks
++        if (chunk == null && loader != null && loader.chunkExists(world, i, j)) {
++            if (runnable != null) {
++                ChunkIOExecutor.queueChunkLoad(world, loader, this, i, j, runnable);
++                return null;
++            } else {
++                chunk = ChunkIOExecutor.syncChunkLoad(world, loader, this, i, j);
++            }
++        } else if (chunk == null && generate) {
++            chunk = originalGetChunkAt(i, j);
++        }
++
++        // If we didn't load the chunk async and have a callback run it now
++        if (runnable != null) {
++            runnable.run();
++        }
++
++        return chunk;
++    }
++
++    public Chunk originalGetChunkAt(int i, int j) {
++        Chunk chunk = this.originalGetOrLoadChunkAt(i, j);
++        // CraftBukkit end
+ 
+         if (chunk == null) {
+             long k = ChunkCoordIntPair.a(i, j);
+@@ -101,7 +169,7 @@
+ 
+             this.chunks.put(k, chunk);
+             chunk.addEntities();
+-            chunk.loadNearby(this, this.chunkGenerator);
++            chunk.loadNearby(this, this.chunkGenerator, true); // CraftBukkit
+         }
+ 
+         return chunk;
+@@ -147,10 +215,12 @@
+ 
+     public boolean a(boolean flag) {
+         int i = 0;
+-        ArrayList arraylist = Lists.newArrayList(this.chunks.values());
+ 
+-        for (int j = 0; j < arraylist.size(); ++j) {
+-            Chunk chunk = (Chunk) arraylist.get(j);
++        // CraftBukkit start
++        Iterator iterator = this.chunks.values().iterator();
++        while (iterator.hasNext()) {
++            Chunk chunk = (Chunk) iterator.next();
++            // CraftBukkit end
+ 
+             if (flag) {
+                 this.saveChunkNOP(chunk);
+@@ -183,10 +253,12 @@
+                     Chunk chunk = (Chunk) this.chunks.get(olong);
+ 
+                     if (chunk != null && chunk.d) {
+-                        chunk.removeEntities();
+-                        this.saveChunk(chunk);
+-                        this.saveChunkNOP(chunk);
+-                        this.chunks.remove(olong);
++                        // CraftBukkit start - move unload logic to own method
++                        if (!unloadChunk(chunk, true)) {
++                            continue;
++                        }
++                        // CraftBukkit end
++
+                         ++i;
+                     }
+                 }
+@@ -198,6 +270,50 @@
+         return false;
+     }
+ 
++    // CraftBukkit start
++    public boolean unloadChunk(Chunk chunk, boolean save) {
++        ChunkUnloadEvent event = new ChunkUnloadEvent(chunk.bukkitChunk, save);
++        this.world.getServer().getPluginManager().callEvent(event);
++        if (event.isCancelled()) {
++            return false;
++        }
++        save = event.isSaveChunk();
++
++        // Update neighbor counts
++        for (int x = -2; x < 3; x++) {
++            for (int z = -2; z < 3; z++) {
++                if (x == 0 && z == 0) {
++                    continue;
++                }
++
++                Chunk neighbor = this.getChunkIfLoaded(chunk.locX + x, chunk.locZ + z);
++                if (neighbor != null) {
++                    neighbor.setNeighborUnloaded(-x, -z);
++                    chunk.setNeighborUnloaded(x, z);
++                }
++            }
++        }
++        // Moved from unloadChunks above
++        chunk.removeEntities();
++        if (save) {
++            this.saveChunk(chunk);
++            this.saveChunkNOP(chunk);
++        }
++        this.chunks.remove(chunk.chunkKey);
++        return true;
++    }
++    // CraftBukkit end
++
++    // SportBukkit start
++    public int unloadAllChunks(boolean save) {
++        int count = 0;
++        for(Chunk chunk : new ArrayList<>(chunks.values())) {
++            if(unloadChunk(chunk, save)) count++;
++        }
++        return count;
++    }
++    // SportBukkit end
++
+     public boolean e() {
+         return !this.world.savingDisabled;
+     }

@@ -1,0 +1,28 @@
+--- a/net/minecraft/server/EntityTippedArrow.java
++++ b/net/minecraft/server/EntityTippedArrow.java
+@@ -116,6 +116,25 @@
+         }
+     }
+ 
++    // CraftBukkit start accessor methods
++    public void refreshEffects() {
++        this.getDataWatcher().set(EntityTippedArrow.f, Integer.valueOf(PotionUtil.a((Collection) PotionUtil.a(this.potionRegistry, (Collection) this.effects))));
++    }
++
++    public String getType() {
++        return ((MinecraftKey) PotionRegistry.a.b(this.potionRegistry)).toString();
++    }
++
++    public void setType(String string) {
++        this.potionRegistry = PotionRegistry.a.get(new MinecraftKey(string));
++        this.datawatcher.set(EntityTippedArrow.f, Integer.valueOf(PotionUtil.a((Collection) PotionUtil.a(this.potionRegistry, (Collection) this.effects))));
++    }
++
++    public boolean isTipped() {
++        return !(this.effects.isEmpty() && this.potionRegistry == Potions.EMPTY);
++    }
++    // CraftBukkit end
++
+     public int o() {
+         return ((Integer) this.datawatcher.get(EntityTippedArrow.f)).intValue();
+     }

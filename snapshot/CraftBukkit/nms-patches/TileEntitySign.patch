@@ -1,0 +1,70 @@
+--- a/net/minecraft/server/TileEntitySign.java
++++ b/net/minecraft/server/TileEntitySign.java
+@@ -21,6 +21,12 @@
+             nbttagcompound.setString("Text" + (i + 1), s);
+         }
+ 
++        // CraftBukkit start
++        if (Boolean.getBoolean("convertLegacySigns")) {
++            nbttagcompound.setBoolean("Bukkit.isConverted", true);
++        }
++        // CraftBukkit end
++
+         this.i.b(nbttagcompound);
+         return nbttagcompound;
+     }
+@@ -74,14 +80,34 @@
+             }
+         };
+ 
++        // CraftBukkit start - Add an option to convert signs correctly
++        // This is done with a flag instead of all the time because
++        // we have no way to tell whether a sign is from 1.7.10 or 1.8
++
++        boolean oldSign = Boolean.getBoolean("convertLegacySigns") && !nbttagcompound.getBoolean("Bukkit.isConverted");
++
+         for (int i = 0; i < 4; ++i) {
+             String s = nbttagcompound.getString("Text" + (i + 1));
+-            IChatBaseComponent ichatbasecomponent = IChatBaseComponent.ChatSerializer.a(s);
++            if (s != null && s.length() > 2048) {
++                s = "\"\"";
++            }
+ 
+             try {
+-                this.lines[i] = ChatComponentUtils.filterForDisplay(icommandlistener, ichatbasecomponent, (Entity) null);
+-            } catch (CommandException commandexception) {
+-                this.lines[i] = ichatbasecomponent;
++                IChatBaseComponent ichatbasecomponent = IChatBaseComponent.ChatSerializer.a(s);
++
++                if (oldSign) {
++                    lines[i] = org.bukkit.craftbukkit.util.CraftChatMessage.fromString(s)[0];
++                    continue;
++                }
++                // CraftBukkit end
++
++                try {
++                    this.lines[i] = ChatComponentUtils.filterForDisplay(icommandlistener, ichatbasecomponent, (Entity) null);
++                } catch (CommandException commandexception) {
++                    this.lines[i] = ichatbasecomponent;
++                }
++            } catch (com.google.gson.JsonParseException jsonparseexception) {
++                this.lines[i] = new ChatComponentText(s);
+             }
+         }
+ 
+@@ -171,7 +197,14 @@
+                 ChatClickable chatclickable = chatmodifier.h();
+ 
+                 if (chatclickable.a() == ChatClickable.EnumClickAction.RUN_COMMAND) {
+-                    entityhuman.B_().getCommandHandler().a(icommandlistener, chatclickable.b());
++                    // CraftBukkit start
++                    // entityhuman.B_().getCommandHandler().a(icommandlistener, chatclickable.b());
++                    CommandBlockListenerAbstract.executeSafely(icommandlistener, new org.bukkit.craftbukkit.command.ProxiedNativeCommandSender(
++                            icommandlistener,
++                            new org.bukkit.craftbukkit.command.CraftBlockCommandSender(icommandlistener),
++                            entityhuman.getBukkitEntity()
++                    ), chatclickable.b());
++                    // CraftBukkit end
+                 }
+             }
+         }

@@ -1,0 +1,52 @@
+--- a/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
++++ b/net/minecraft/server/PacketPlayOutCustomSoundEffect.java
+@@ -15,6 +15,19 @@
+ 
+     public PacketPlayOutCustomSoundEffect() {}
+ 
++    // SportBukkit start - Add constructor that takes a SoundEffect.
++    // To make legacy support easy, we use this packet for ALL sounds,
++    // replacing all uses of PacketPlayOutNamedSoundEffect which,
++    // contrary to what its name would suggest, does NOT use names at all,
++    // but rather unstable numeric IDs that change between protocol versions.
++    // This packet DOES use names, and as far as I can tell, it can play all
++    // the same sounds as PacketPlayOutNamedSoundEffect, so there is no reason
++    // to ever use the latter.
++    public PacketPlayOutCustomSoundEffect(SoundEffect s, SoundCategory soundcategory, double d0, double d1, double d2, float f, float f1) {
++        this(SoundEffect.a.b(s).a(), soundcategory, d0, d1, d2, f, f1);
++    }
++    // SportBukkit end
++
+     public PacketPlayOutCustomSoundEffect(String s, SoundCategory soundcategory, double d0, double d1, double d2, float f, float f1) {
+         Validate.notNull(s, "name", new Object[0]);
+         this.a = s;
+@@ -33,7 +46,13 @@
+         this.d = packetdataserializer.readInt();
+         this.e = packetdataserializer.readInt();
+         this.f = packetdataserializer.readFloat();
+-        this.g = packetdataserializer.readFloat();
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 201) {
++            this.g = ((float) packetdataserializer.readUnsignedByte()) / 63f;
++        } else {
++            this.g = packetdataserializer.readFloat();
++        }
++        // SportBukkit end
+     }
+ 
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+@@ -43,7 +62,13 @@
+         packetdataserializer.writeInt(this.d);
+         packetdataserializer.writeInt(this.e);
+         packetdataserializer.writeFloat(this.f);
+-        packetdataserializer.writeFloat(this.g);
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 201) {
++            packetdataserializer.writeByte((byte) (this.g * 63f));
++        } else {
++            packetdataserializer.writeFloat(this.g);
++        }
++        // SportBukkit end
+     }
+ 
+     public void a(PacketListenerPlayOut packetlistenerplayout) {

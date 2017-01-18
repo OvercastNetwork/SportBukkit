@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/MobSpawnerAbstract.java
++++ b/net/minecraft/server/MobSpawnerAbstract.java
+@@ -39,7 +39,7 @@
+     private boolean h() {
+         BlockPosition blockposition = this.b();
+ 
+-        return this.a().isPlayerNearby((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, (double) this.requiredPlayerRange);
++        return this.a().isPlayerNearby((double) blockposition.getX() + 0.5D, (double) blockposition.getY() + 0.5D, (double) blockposition.getZ() + 0.5D, (double) this.requiredPlayerRange, EntityHuman.affectsSpawningFilter()); // SportBukkit - affectsSpawning filter
+     }
+ 
+     public void c() {
+@@ -102,7 +102,7 @@
+                             ((EntityInsentient) entity).prepare(world.D(new BlockPosition(entity)), (GroupDataEntity) null);
+                         }
+ 
+-                        ChunkRegionLoader.a(entity, world);
++                        ChunkRegionLoader.a(entity, world, org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER); // CraftBukkit
+                         world.triggerEffect(2004, blockposition, 0);
+                         if (entityinsentient != null) {
+                             entityinsentient.doSpawnEffect();

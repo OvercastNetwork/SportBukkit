@@ -1,0 +1,215 @@
+--- a/net/minecraft/server/BlockPosition.java
++++ b/net/minecraft/server/BlockPosition.java
+@@ -8,8 +8,93 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// SportBukkit start - implement Vec3
++import org.bukkit.geometry.MutableVec3;
++import org.bukkit.geometry.MutableVec3Coarse;
++import org.bukkit.geometry.Vec3Coarse;
++import org.bukkit.geometry.Vec3;
++import org.bukkit.util.ImVector;
++
+ @Immutable
+-public class BlockPosition extends BaseBlockPosition {
++public class BlockPosition extends BaseBlockPosition implements Vec3Coarse<BlockPosition> {
++
++    public static BlockPosition of(int x, int y, int z) {
++        if(x == 0 && y == 0 && z == 0) return ZERO;
++        return new BlockPosition(x, y, z);
++    }
++
++    public static BlockPosition of(Vec3 that) {
++        return that instanceof BlockPosition
++               ? (BlockPosition) that
++               : new BlockPosition(that.coarseX(), that.coarseY(), that.coarseZ());
++    }
++
++    public static BlockPosition copyOf(Vec3 that) {
++        return that instanceof BlockPosition && !that.isMutable()
++               ? (BlockPosition) that
++               : new BlockPosition(that.coarseX(), that.coarseY(), that.coarseZ());
++    }
++
++    @Override
++    public BlockPosition copy() {
++        return this;
++    }
++
++    @Override
++    public MutableVec3 mutableCopy() {
++        return new MutableBlockPosition(this);
++    }
++
++    @Override
++    public Vec3 fineCopy() {
++        return ImVector.cornerOf(this);
++    }
++
++    @Override
++    public Vec3 fineOf(double x, double y, double z) {
++        return ImVector.of(x, y, z);
++    }
++
++    @Override
++    public Vec3 fineZero() {
++        return ImVector.ofZero();
++    }
++
++    @Override
++    public BlockPosition coarseOf(int x, int y, int z) {
++        return new BlockPosition(x, y, z);
++    }
++
++    @Override
++    public BlockPosition coarseZero() {
++        return ZERO;
++    }
++
++    @Override
++    public boolean equals(Object obj) {
++        return this == obj || (obj instanceof Vec3 && equals((Vec3) obj));
++    }
++
++    @Override
++    public int hashCode() {
++        return coarseHashCode();
++    }
++
++    @Override
++    public int coarseX() {
++        return getX();
++    }
++
++    @Override
++    public int coarseY() {
++        return getY();
++    }
++
++    @Override
++    public int coarseZ() {
++        return getZ();
++    }
++    // SportBukkit end
+ 
+     private static final Logger b = LogManager.getLogger();
+     public static final BlockPosition ZERO = new BlockPosition(0, 0, 0);
+@@ -51,11 +136,11 @@
+     }
+ 
+     public BlockPosition a(BaseBlockPosition baseblockposition) {
+-        return this.a(baseblockposition.getX(), baseblockposition.getY(), baseblockposition.getZ());
++        return baseblockposition.getX() == 0 && baseblockposition.getY() == 0 && baseblockposition.getZ() == 0 ? this : new BlockPosition(this.getX() + baseblockposition.getX(), this.getY() + baseblockposition.getY(), this.getZ() + baseblockposition.getZ());
+     }
+ 
+     public BlockPosition b(BaseBlockPosition baseblockposition) {
+-        return this.a(-baseblockposition.getX(), -baseblockposition.getY(), -baseblockposition.getZ());
++        return baseblockposition.getX() == 0 && baseblockposition.getY() == 0 && baseblockposition.getZ() == 0 ? this : new BlockPosition(this.getX() - baseblockposition.getX(), this.getY() - baseblockposition.getY(), this.getZ() - baseblockposition.getZ());
+     }
+ 
+     public BlockPosition up() {
+@@ -114,23 +199,6 @@
+         return i == 0 ? this : new BlockPosition(this.getX() + enumdirection.getAdjacentX() * i, this.getY() + enumdirection.getAdjacentY() * i, this.getZ() + enumdirection.getAdjacentZ() * i);
+     }
+ 
+-    public BlockPosition a(EnumBlockRotation enumblockrotation) {
+-        switch (enumblockrotation) {
+-        case NONE:
+-        default:
+-            return this;
+-
+-        case CLOCKWISE_90:
+-            return new BlockPosition(-this.getZ(), this.getY(), this.getX());
+-
+-        case CLOCKWISE_180:
+-            return new BlockPosition(-this.getX(), this.getY(), -this.getZ());
+-
+-        case COUNTERCLOCKWISE_90:
+-            return new BlockPosition(this.getZ(), this.getY(), -this.getX());
+-        }
+-    }
+-
+     public BlockPosition c(BaseBlockPosition baseblockposition) {
+         return new BlockPosition(this.getY() * baseblockposition.getZ() - this.getZ() * baseblockposition.getY(), this.getZ() * baseblockposition.getX() - this.getX() * baseblockposition.getZ(), this.getX() * baseblockposition.getY() - this.getY() * baseblockposition.getX());
+     }
+@@ -334,7 +402,55 @@
+         }
+     }
+ 
+-    public static class MutableBlockPosition extends BlockPosition {
++    // SportBukkit start - implement MutableVec3
++    public static class MutableBlockPosition extends BlockPosition implements MutableVec3Coarse<BlockPosition, MutableBlockPosition> {
++        @Override
++        public Vec3 unmodifiable() {
++            return new BlockPosition(0, 0, 0) {
++                @Override public BlockPosition copy() {
++                    return MutableBlockPosition.this.copy();
++                }
++
++                @Override public int getX() {
++                    return MutableBlockPosition.this.getX();
++                }
++
++                @Override public int getY() {
++                    return MutableBlockPosition.this.getY();
++                }
++
++                @Override public int getZ() {
++                    return MutableBlockPosition.this.getZ();
++                }
++            };
++        }
++
++        @Override
++        public MutableBlockPosition setX(int x) {
++            this.b = x;
++            return this;
++        }
++
++        @Override
++        public MutableBlockPosition setY(int y) {
++            this.c = y;
++            return this;
++        }
++
++        @Override
++        public MutableBlockPosition setZ(int z) {
++            this.d = z;
++            return this;
++        }
++
++        @Override
++        public MutableBlockPosition set(int x, int y, int z) {
++            this.b = x;
++            this.c = y;
++            this.d = z;
++            return this;
++        }
++        // SportBukkit end
+ 
+         protected int b;
+         protected int c;
+@@ -355,22 +471,6 @@
+             this.d = k;
+         }
+ 
+-        public BlockPosition a(double d0, double d1, double d2) {
+-            return super.a(d0, d1, d2).h();
+-        }
+-
+-        public BlockPosition a(int i, int j, int k) {
+-            return super.a(i, j, k).h();
+-        }
+-
+-        public BlockPosition shift(EnumDirection enumdirection, int i) {
+-            return super.shift(enumdirection, i).h();
+-        }
+-
+-        public BlockPosition a(EnumBlockRotation enumblockrotation) {
+-            return super.a(enumblockrotation).h();
+-        }
+-
+         public int getX() {
+             return this.b;
+         }

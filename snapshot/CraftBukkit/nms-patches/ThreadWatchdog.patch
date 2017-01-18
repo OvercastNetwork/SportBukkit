@@ -1,0 +1,20 @@
+--- a/net/minecraft/server/ThreadWatchdog.java
++++ b/net/minecraft/server/ThreadWatchdog.java
+@@ -22,8 +22,17 @@
+         this.c = dedicatedserver.aQ();
+     }
+ 
++    // SportBukkit start
++    synchronized private void doSuspension() {
++        while(this.b.isSuspended()) {
++            try { wait(); } catch(InterruptedException ignored) {}
++        }
++    }
++    // SportBukkit end
++
+     public void run() {
+         while (this.b.isRunning()) {
++            doSuspension(); // SportBukkit
+             long i = this.b.aH();
+             long j = MinecraftServer.aw();
+             long k = j - i;

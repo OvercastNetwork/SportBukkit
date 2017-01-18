@@ -1,0 +1,58 @@
+--- a/net/minecraft/server/BlockShulkerBox.java
++++ b/net/minecraft/server/BlockShulkerBox.java
+@@ -3,10 +3,11 @@
+ public class BlockShulkerBox extends BlockTileEntity {
+ 
+     public static final BlockStateEnum<EnumDirection> a = BlockStateDirection.of("facing");
+-    private final EnumColor b;
++    public final EnumColor b; // PAIL: public, rename
+ 
+     public BlockShulkerBox(EnumColor enumcolor) {
+         super(Material.STONE, MaterialMapColor.b);
++        proto(307); // SportBukkit
+         this.b = enumcolor;
+         this.a(CreativeModeTab.c);
+         this.y(this.blockStateList.getBlockData().set(BlockShulkerBox.a, EnumDirection.UP));
+@@ -89,7 +90,32 @@
+         tileentityshulkerbox.d(entityhuman);
+     }
+ 
+-    public void dropNaturally(World world, BlockPosition blockposition, IBlockData iblockdata, float f, int i) {}
++    // CraftBukkit start - override to prevent duplication when dropping
++    public void dropNaturally(World world, BlockPosition blockposition, IBlockData iblockdata, float f, int i) {
++        TileEntity tileentity = world.getTileEntity(blockposition);
++
++        if (tileentity instanceof TileEntityShulkerBox) {
++            TileEntityShulkerBox tileentityshulkerbox = (TileEntityShulkerBox) tileentity;
++
++            if (!tileentityshulkerbox.r() && tileentityshulkerbox.F()) {
++                ItemStack itemstack = new ItemStack(Item.getItemOf(this));
++                NBTTagCompound nbttagcompound = new NBTTagCompound();
++                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
++
++                nbttagcompound.set("BlockEntityTag", ((TileEntityShulkerBox) tileentity).f(nbttagcompound1));
++                itemstack.setTag(nbttagcompound);
++                if (tileentityshulkerbox.hasCustomName()) {
++                    itemstack.g(tileentityshulkerbox.getName());
++                    tileentityshulkerbox.a("");
++                }
++
++                a(world, blockposition, itemstack);
++            }
++
++            world.updateAdjacentComparators(blockposition, iblockdata.getBlock());
++        }
++    }
++    // CraftBukkit end
+ 
+     public void postPlace(World world, BlockPosition blockposition, IBlockData iblockdata, EntityLiving entityliving, ItemStack itemstack) {
+         if (itemstack.hasName()) {
+@@ -105,7 +131,7 @@
+     public void remove(World world, BlockPosition blockposition, IBlockData iblockdata) {
+         TileEntity tileentity = world.getTileEntity(blockposition);
+ 
+-        if (tileentity instanceof TileEntityShulkerBox) {
++        if (false && tileentity instanceof TileEntityShulkerBox) { // CraftBukkit - moved up
+             TileEntityShulkerBox tileentityshulkerbox = (TileEntityShulkerBox) tileentity;
+ 
+             if (!tileentityshulkerbox.r() && tileentityshulkerbox.F()) {

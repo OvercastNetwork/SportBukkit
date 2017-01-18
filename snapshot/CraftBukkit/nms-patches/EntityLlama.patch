@@ -1,0 +1,54 @@
+--- a/net/minecraft/server/EntityLlama.java
++++ b/net/minecraft/server/EntityLlama.java
+@@ -4,11 +4,30 @@
+ import java.util.Iterator;
+ import javax.annotation.Nullable;
+ 
++// SportBukkit start
++import com.google.common.collect.Range;
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++// SportBukkit end
++
+ public class EntityLlama extends EntityHorseChestedAbstract implements IRangedEntity {
+ 
+-    private static final DataWatcherObject<Integer> bG = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
+-    private static final DataWatcherObject<Integer> bH = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
+-    private static final DataWatcherObject<Integer> bI = DataWatcher.a(EntityLlama.class, DataWatcherRegistry.b);
++    // SportBukkit start
++    private static final DataWatcherObject<Integer> bG = MetadataKey
++        .builder(EntityLlama.class, DataWatcherRegistry.b)
++        .id(Range.atLeast(301), 16)
++        .build();
++
++    private static final DataWatcherObject<Integer> bH = MetadataKey
++        .builder(EntityLlama.class, DataWatcherRegistry.b)
++        .id(Range.atLeast(301), 17)
++        .build();
++
++    private static final DataWatcherObject<Integer> bI = MetadataKey
++        .builder(EntityLlama.class, DataWatcherRegistry.b)
++        .id(Range.atLeast(301), 18)
++        .build();
++    // SportBukkit end
++
+     private boolean bJ;
+     @Nullable
+     private EntityLlama bK;
+@@ -20,7 +39,7 @@
+         this.setSize(0.9F, 1.87F);
+     }
+ 
+-    private void p(int i) {
++    public void p(int i) { // PAIL: private-> public, rename
+         this.datawatcher.set(EntityLlama.bG, Integer.valueOf(Math.max(1, Math.min(5, i))));
+     }
+ 
+@@ -30,7 +49,7 @@
+         this.p(1 + this.random.nextInt(i));
+     }
+ 
+-    public int dL() {
++    public int dL() { // PAIL: rename
+         return ((Integer) this.datawatcher.get(EntityLlama.bG)).intValue();
+     }
+ 

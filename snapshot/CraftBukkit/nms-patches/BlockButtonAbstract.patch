@@ -1,0 +1,110 @@
+--- a/net/minecraft/server/BlockButtonAbstract.java
++++ b/net/minecraft/server/BlockButtonAbstract.java
+@@ -4,6 +4,11 @@
+ import java.util.Random;
+ import javax.annotation.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.event.block.BlockRedstoneEvent;
++import org.bukkit.event.entity.EntityInteractEvent;
++// CraftBukkit end
++
+ public abstract class BlockButtonAbstract extends BlockDirectional {
+ 
+     public static final BlockStateBoolean POWERED = BlockStateBoolean.of("powered");
+@@ -123,6 +128,19 @@
+         if (((Boolean) iblockdata.get(BlockButtonAbstract.POWERED)).booleanValue()) {
+             return true;
+         } else {
++            // CraftBukkit start
++            boolean powered = ((Boolean) iblockdata.get(POWERED));
++            org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++            int old = (powered) ? 15 : 0;
++            int current = (!powered) ? 15 : 0;
++
++            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, old, current);
++            world.getServer().getPluginManager().callEvent(eventRedstone);
++
++            if ((eventRedstone.getNewCurrent() > 0) != (!powered)) {
++                return true;
++            }
++            // CraftBukkit end
+             world.setTypeAndData(blockposition, iblockdata.set(BlockButtonAbstract.POWERED, Boolean.valueOf(true)), 3);
+             world.b(blockposition, blockposition);
+             this.a(entityhuman, world, blockposition);
+@@ -164,6 +182,16 @@
+                 if (this.I) {
+                     this.d(iblockdata, world, blockposition);
+                 } else {
++                    // CraftBukkit start
++                    org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++
++                    BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, 15, 0);
++                    world.getServer().getPluginManager().callEvent(eventRedstone);
++
++                    if (eventRedstone.getNewCurrent() > 0) {
++                        return;
++                    }
++                    // CraftBukkit end
+                     world.setTypeUpdate(blockposition, iblockdata.set(BlockButtonAbstract.POWERED, Boolean.valueOf(false)));
+                     this.c(world, blockposition, (EnumDirection) iblockdata.get(BlockButtonAbstract.FACING));
+                     this.b(world, blockposition);
+@@ -189,7 +217,41 @@
+         boolean flag = !list.isEmpty();
+         boolean flag1 = ((Boolean) iblockdata.get(BlockButtonAbstract.POWERED)).booleanValue();
+ 
++        // CraftBukkit start - Call interact event when arrows turn on wooden buttons
++        if (flag1 != flag && flag) {
++            org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++            boolean allowed = false;
++
++            // If all of the events are cancelled block the button press, else allow
++            for (Object object : list) {
++                if (object != null) {
++                    EntityInteractEvent event = new EntityInteractEvent(((Entity) object).getBukkitEntity(), block);
++                    world.getServer().getPluginManager().callEvent(event);
++
++                    if (!event.isCancelled()) {
++                        allowed = true;
++                        break;
++                    }
++                }
++            }
++
++            if (!allowed) {
++                return;
++            }
++        }
++        // CraftBukkit end
++
+         if (flag && !flag1) {
++            // CraftBukkit start
++            org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++
++            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, 0, 15);
++            world.getServer().getPluginManager().callEvent(eventRedstone);
++
++            if (eventRedstone.getNewCurrent() <= 0) {
++                return;
++            }
++            // CraftBukkit end
+             world.setTypeUpdate(blockposition, iblockdata.set(BlockButtonAbstract.POWERED, Boolean.valueOf(true)));
+             this.c(world, blockposition, (EnumDirection) iblockdata.get(BlockButtonAbstract.FACING));
+             world.b(blockposition, blockposition);
+@@ -197,6 +259,16 @@
+         }
+ 
+         if (!flag && flag1) {
++            // CraftBukkit start
++            org.bukkit.block.Block block = world.getWorld().getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ());
++
++            BlockRedstoneEvent eventRedstone = new BlockRedstoneEvent(block, 15, 0);
++            world.getServer().getPluginManager().callEvent(eventRedstone);
++
++            if (eventRedstone.getNewCurrent() > 0) {
++                return;
++            }
++            // CraftBukkit end
+             world.setTypeUpdate(blockposition, iblockdata.set(BlockButtonAbstract.POWERED, Boolean.valueOf(false)));
+             this.c(world, blockposition, (EnumDirection) iblockdata.get(BlockButtonAbstract.FACING));
+             world.b(blockposition, blockposition);

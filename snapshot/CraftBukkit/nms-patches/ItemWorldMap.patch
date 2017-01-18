@@ -1,0 +1,109 @@
+--- a/net/minecraft/server/ItemWorldMap.java
++++ b/net/minecraft/server/ItemWorldMap.java
+@@ -5,6 +5,11 @@
+ import com.google.common.collect.Multisets;
+ import javax.annotation.Nullable;
+ 
++// CraftBukkit start
++import org.bukkit.Bukkit;
++import org.bukkit.event.server.MapInitializeEvent;
++// CraftBukkit end
++
+ public class ItemWorldMap extends ItemWorldMapBase {
+ 
+     protected ItemWorldMap() {
+@@ -12,17 +17,19 @@
+     }
+ 
+     public static ItemStack a(World world, double d0, double d1, byte b0, boolean flag, boolean flag1) {
+-        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, world.b("map"));
++        World worldMain = world.getServer().getServer().worlds.get(0); // CraftBukkit - store reference to primary world
++        ItemStack itemstack = new ItemStack(Items.FILLED_MAP, 1, worldMain.b("map")); // CraftBukkit - use primary world for maps
+         String s = "map_" + itemstack.getData();
+         WorldMap worldmap = new WorldMap(s);
+ 
+-        world.a(s, (PersistentBase) worldmap);
++        worldMain.a(s, (PersistentBase) worldmap); // CraftBukkit
+         worldmap.scale = b0;
+         worldmap.a(d0, d1, worldmap.scale);
+-        worldmap.map = (byte) world.worldProvider.getDimensionManager().getDimensionID();
++        worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - use bukkit dimension
+         worldmap.track = flag;
+         worldmap.unlimitedTracking = flag1;
+         worldmap.c();
++        org.bukkit.craftbukkit.event.CraftEventFactory.callEvent(new org.bukkit.event.server.MapInitializeEvent(worldmap.mapView)); // CraftBukkit
+         return itemstack;
+     }
+ 
+@@ -34,19 +41,39 @@
+         if (worldmap == null && !world.isClientSide) {
+             itemstack.setData(world.b("map"));
+             s = "map_" + itemstack.getData();
++            // Sportbukkit start
++            worldmap = getNewMap(s, world);
++        }
++        return worldmap;
++    }
++
++    public WorldMap getNewMap(World world, int id) {
++        return getNewMap("map_" + id, world);
++    }
++
++    private WorldMap getNewMap(String s, World world) {
++        WorldMap worldmap;
++        {
++            // Sportbukkit end
+             worldmap = new WorldMap(s);
+             worldmap.scale = 3;
+             worldmap.a((double) world.getWorldData().b(), (double) world.getWorldData().d(), worldmap.scale);
+-            worldmap.map = (byte) world.worldProvider.getDimensionManager().getDimensionID();
++            worldmap.map = (byte) ((WorldServer) world).dimension; // CraftBukkit - fixes Bukkit multiworld maps
+             worldmap.c();
+             world.a(s, (PersistentBase) worldmap);
++
++            // CraftBukkit start
++            MapInitializeEvent event = new MapInitializeEvent(worldmap.mapView);
++            Bukkit.getServer().getPluginManager().callEvent(event);
++            // CraftBukkit end
+         }
+ 
+         return worldmap;
+     }
+ 
+     public void a(World world, Entity entity, WorldMap worldmap) {
+-        if (world.worldProvider.getDimensionManager().getDimensionID() == worldmap.map && entity instanceof EntityHuman) {
++        // CraftBukkit - world.worldProvider -> ((WorldServer) world)
++        if (((WorldServer) world).dimension == worldmap.map && entity instanceof EntityHuman) {
+             int i = 1 << worldmap.scale;
+             int j = worldmap.centerX;
+             int k = worldmap.centerZ;
+@@ -318,6 +345,10 @@
+             worldmap1.map = worldmap.map;
+             worldmap1.c();
+             world.a("map_" + itemstack.getData(), (PersistentBase) worldmap1);
++            // CraftBukkit start
++            MapInitializeEvent event = new MapInitializeEvent(worldmap1.mapView);
++            Bukkit.getServer().getPluginManager().callEvent(event);
++            // CraftBukkit end
+         }
+ 
+     }
+@@ -325,6 +356,7 @@
+     protected static void b(ItemStack itemstack, World world) {
+         WorldMap worldmap = Items.FILLED_MAP.getSavedMap(itemstack, world);
+ 
++        world = world.getServer().getServer().worlds.get(0); // CraftBukkit - use primary world for maps
+         itemstack.setData(world.b("map"));
+         WorldMap worldmap1 = new WorldMap("map_" + itemstack.getData());
+ 
+@@ -336,6 +368,10 @@
+             worldmap1.map = worldmap.map;
+             worldmap1.c();
+             world.a("map_" + itemstack.getData(), (PersistentBase) worldmap1);
++            // CraftBukkit start
++            MapInitializeEvent event = new MapInitializeEvent(worldmap1.mapView);
++            Bukkit.getServer().getPluginManager().callEvent(event);
++            // CraftBukkit end
+         }
+ 
+     }

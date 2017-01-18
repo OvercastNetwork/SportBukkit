@@ -1,0 +1,16 @@
+--- a/net/minecraft/server/BlockReed.java
++++ b/net/minecraft/server/BlockReed.java
+@@ -32,8 +32,12 @@
+                     int j = ((Integer) iblockdata.get(BlockReed.AGE)).intValue();
+ 
+                     if (j == 15) {
+-                        world.setTypeUpdate(blockposition.up(), this.getBlockData());
++                        // CraftBukkit start
++                        // world.setTypeUpdate(blockposition.up(), this.getBlockData()); // CraftBukkit
++                        BlockPosition upPos = blockposition.up();
++                        org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockGrowEvent(world, upPos.getX(), upPos.getY(), upPos.getZ(), this, 0);
+                         world.setTypeAndData(blockposition, iblockdata.set(BlockReed.AGE, Integer.valueOf(0)), 4);
++                        // CraftBukkit end
+                     } else {
+                         world.setTypeAndData(blockposition, iblockdata.set(BlockReed.AGE, Integer.valueOf(j + 1)), 4);
+                     }

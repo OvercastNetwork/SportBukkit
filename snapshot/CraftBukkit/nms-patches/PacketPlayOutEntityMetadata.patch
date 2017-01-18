@@ -1,0 +1,24 @@
+--- a/net/minecraft/server/PacketPlayOutEntityMetadata.java
++++ b/net/minecraft/server/PacketPlayOutEntityMetadata.java
+@@ -5,8 +5,10 @@
+ 
+ public class PacketPlayOutEntityMetadata implements Packet<PacketListenerPlayOut> {
+ 
+-    private int a;
+-    private List<DataWatcher.Item<?>> b;
++    // SportBukkit start - make public
++    public int a;
++    public List<DataWatcher.Item<?>> b;
++    // SportBukkit end
+ 
+     public PacketPlayOutEntityMetadata() {}
+ 
+@@ -18,7 +20,7 @@
+         } else {
+             this.b = datawatcher.b();
+         }
+-
++        DataWatcher.deepCopy(this.b); // SportBukkit - send unshared copy of metadata
+     }
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {

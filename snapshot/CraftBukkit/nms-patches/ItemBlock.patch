@@ -1,0 +1,19 @@
+--- a/net/minecraft/server/ItemBlock.java
++++ b/net/minecraft/server/ItemBlock.java
+@@ -8,6 +8,7 @@
+ 
+     public ItemBlock(Block block) {
+         this.a = block;
++        proto(block.proto()); // SportBukkit - copy proto from block to item
+     }
+ 
+     public EnumInteractionResult a(EntityHuman entityhuman, World world, BlockPosition blockposition, EnumHand enumhand, EnumDirection enumdirection, float f, float f1, float f2) {
+@@ -33,7 +34,7 @@
+ 
+                 SoundEffectType soundeffecttype = this.a.getStepSound();
+ 
+-                world.a(entityhuman, blockposition, soundeffecttype.e(), SoundCategory.BLOCKS, (soundeffecttype.a() + 1.0F) / 2.0F, soundeffecttype.b() * 0.8F);
++                // world.a(entityhuman, blockposition, soundeffecttype.e(), SoundCategory.BLOCKS, (soundeffecttype.a() + 1.0F) / 2.0F, soundeffecttype.b() * 0.8F); // CraftBukkit - SPIGOT-1288
+                 itemstack.subtract(1);
+             }
+ 

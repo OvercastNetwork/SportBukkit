@@ -1,0 +1,160 @@
+--- a/net/minecraft/server/EntityZombie.java
++++ b/net/minecraft/server/EntityZombie.java
+@@ -5,14 +5,62 @@
+ import java.util.UUID;
+ import javax.annotation.Nullable;
+ 
++//CraftBukkit start
++import org.bukkit.event.entity.CreatureSpawnEvent;
++import org.bukkit.event.entity.EntityCombustByEntityEvent;
++import org.bukkit.event.entity.EntityCombustEvent;
++import org.bukkit.event.entity.EntityTargetEvent;
++//CraftBukkit end
++
++// SportBukkit start
++import com.google.common.collect.Range;
++import org.bukkit.craftbukkit.protocol.MetadataKey;
++// SportBukkit end
++
+ public class EntityZombie extends EntityMonster {
+ 
++    // SportBukkit start
++    public static final MetadataKey<Boolean> META_BABY = MetadataKey
++        .builder(EntityZombie.class, DataWatcherRegistry.h)
++        .id(Range.lessThan(201), 11)
++        .id(Range.atLeast(201), 12)
++        .build();
++
++    public static final MetadataKey<Integer> META_TYPE = MetadataKey
++        .builder(EntityZombie.class, DataWatcherRegistry.b)
++        .id(Range.lessThan(201), 12)
++        .id(Range.closedOpen(201, 301), 13)
++        .build();
++
++    public static final MetadataKey<Boolean> META_HANDS_UP = MetadataKey
++        .builder(EntityZombie.class, DataWatcherRegistry.h)
++        .id(Range.lessThan(201), 14)
++        .id(Range.closedOpen(201, 301), 15)
++        .id(Range.atLeast(301), 14)
++        .build();
++
++    public static final MetadataKey<Boolean> META_CONVERTING = MetadataKey
++        .builder(EntityZombie.class, DataWatcherRegistry.h)
++        .id(Range.lessThan(201), 13)
++        .id(Range.closedOpen(201, 301), 14)
++        .id(Range.atLeast(301), EntityZombieVillager.class, 15)
++        .build();
++
++    public static final MetadataKey<Integer> META_PROFESSION = MetadataKey
++        .builder(EntityZombie.class, DataWatcherRegistry.b)
++        .id(Range.lessThan(201), 12)
++        .id(Range.closedOpen(201, 301), 13)
++        .id(Range.atLeast(301), EntityZombieVillager.class, 16)
++        .transform(Range.lessThan(301), pro -> pro + 1)
++        .build();
++    // SportBukkit end
++
+     protected static final IAttribute a = (new AttributeRanged((IAttribute) null, "zombie.spawnReinforcements", 0.0D, 0.0D, 1.0D)).a("Spawn Reinforcements Chance");
+     private static final UUID b = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
+     private static final AttributeModifier c = new AttributeModifier(EntityZombie.b, "Baby speed boost", 0.5D, 1);
+-    private static final DataWatcherObject<Boolean> bw = DataWatcher.a(EntityZombie.class, DataWatcherRegistry.h);
+-    private static final DataWatcherObject<Integer> bx = DataWatcher.a(EntityZombie.class, DataWatcherRegistry.b);
+-    private static final DataWatcherObject<Boolean> by = DataWatcher.a(EntityZombie.class, DataWatcherRegistry.h);
++    private static final DataWatcherObject<Boolean> bw = META_BABY; // SportBukkit
++    private static final DataWatcherObject<Integer> bx = META_TYPE; // SportBukkit
++    private static final DataWatcherObject<Boolean> by = META_HANDS_UP ; // SportBukkit
+     private final PathfinderGoalBreakDoor bz = new PathfinderGoalBreakDoor(this);
+     private boolean bA;
+     private float bB = -1.0F;
+@@ -55,6 +103,11 @@
+         this.getDataWatcher().register(EntityZombie.bw, Boolean.valueOf(false));
+         this.getDataWatcher().register(EntityZombie.bx, Integer.valueOf(0));
+         this.getDataWatcher().register(EntityZombie.by, Boolean.valueOf(false));
++
++        // SportBukkit start
++        this.getDataWatcher().register(META_CONVERTING, false);
++        this.getDataWatcher().register(META_PROFESSION, 0);
++        // SportBukkit end
+     }
+ 
+     public void a(boolean flag) {
+@@ -133,7 +186,14 @@
+                 }
+ 
+                 if (flag) {
+-                    this.setOnFire(8);
++                    // CraftBukkit start
++                    EntityCombustEvent event = new EntityCombustEvent(this.getBukkitEntity(), 8);
++                    this.world.getServer().getPluginManager().callEvent(event);
++
++                    if (!event.isCancelled()) {
++                        this.setOnFire(event.getDuration());
++                    }
++                    // CraftBukkit end
+                 }
+             }
+         }
+@@ -166,9 +226,9 @@
+ 
+                     if (this.world.getType(new BlockPosition(i1, j1 - 1, k1)).r() && this.world.getLightLevel(new BlockPosition(i1, j1, k1)) < 10) {
+                         entityzombie.setPosition((double) i1, (double) j1, (double) k1);
+-                        if (!this.world.isPlayerNearby((double) i1, (double) j1, (double) k1, 7.0D) && this.world.a(entityzombie.getBoundingBox(), (Entity) entityzombie) && this.world.getCubes(entityzombie, entityzombie.getBoundingBox()).isEmpty() && !this.world.containsLiquid(entityzombie.getBoundingBox())) {
+-                            this.world.addEntity(entityzombie);
+-                            entityzombie.setGoalTarget(entityliving);
++                        if (!this.world.isPlayerNearby((double) i1, (double) j1, (double) k1, 7.0D, EntityHuman.affectsSpawningFilter()) && this.world.a(entityzombie.getBoundingBox(), (Entity) entityzombie) && this.world.getCubes(entityzombie, entityzombie.getBoundingBox()).isEmpty() && !this.world.containsLiquid(entityzombie.getBoundingBox())) { // SportBukkit - affectsSpawning filter
++                            this.world.addEntity(entityzombie, CreatureSpawnEvent.SpawnReason.REINFORCEMENTS); // CraftBukkit
++                            entityzombie.setGoalTarget(entityliving, EntityTargetEvent.TargetReason.REINFORCEMENT_TARGET, true);
+                             entityzombie.prepare(this.world.D(new BlockPosition(entityzombie)), (GroupDataEntity) null);
+                             this.getAttributeInstance(EntityZombie.a).b(new AttributeModifier("Zombie reinforcement caller charge", -0.05000000074505806D, 0));
+                             entityzombie.getAttributeInstance(EntityZombie.a).b(new AttributeModifier("Zombie reinforcement callee charge", -0.05000000074505806D, 0));
+@@ -191,7 +251,14 @@
+             float f = this.world.D(new BlockPosition(this)).b();
+ 
+             if (this.getItemInMainHand().isEmpty() && this.isBurning() && this.random.nextFloat() < f * 0.3F) {
+-                entity.setOnFire(2 * (int) f);
++                // CraftBukkit start
++                EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this.getBukkitEntity(), entity.getBukkitEntity(), 2 * (int) f); // PAIL: fixme
++                this.world.getServer().getPluginManager().callEvent(event);
++
++                if (!event.isCancelled()) {
++                    entity.setOnFire(event.getDuration());
++                }
++                // CraftBukkit end
+             }
+         }
+ 
+@@ -284,7 +351,7 @@
+                 entityzombievillager.setCustomNameVisible(entityvillager.getCustomNameVisible());
+             }
+ 
+-            this.world.addEntity(entityzombievillager);
++            this.world.addEntity(entityzombievillager, CreatureSpawnEvent.SpawnReason.INFECTION); // CraftBukkit - add SpawnReason
+             this.world.a((EntityHuman) null, 1026, new BlockPosition(this), 0);
+         }
+ 
+@@ -334,7 +401,7 @@
+                     entitychicken1.setPositionRotation(this.locX, this.locY, this.locZ, this.yaw, 0.0F);
+                     entitychicken1.prepare(difficultydamagescaler, (GroupDataEntity) null);
+                     entitychicken1.p(true);
+-                    this.world.addEntity(entitychicken1);
++                    this.world.addEntity(entitychicken1, CreatureSpawnEvent.SpawnReason.MOUNT); // CraftBukkit
+                     this.startRiding(entitychicken1);
+                 }
+             }
+@@ -392,7 +459,7 @@
+     }
+ 
+     public void die(DamageSource damagesource) {
+-        super.die(damagesource);
++        // super.die(damagesource); // CraftBukkit
+         if (damagesource.getEntity() instanceof EntityCreeper) {
+             EntityCreeper entitycreeper = (EntityCreeper) damagesource.getEntity();
+ 
+@@ -405,6 +472,7 @@
+                 }
+             }
+         }
++        super.die(damagesource); // CraftBukkit - moved from above
+ 
+     }
+ 

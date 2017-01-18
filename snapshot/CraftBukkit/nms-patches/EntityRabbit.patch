@@ -1,0 +1,41 @@
+--- a/net/minecraft/server/EntityRabbit.java
++++ b/net/minecraft/server/EntityRabbit.java
+@@ -16,8 +16,14 @@
+         this.setSize(0.4F, 0.5F);
+         this.g = new EntityRabbit.ControllerJumpRabbit(this);
+         this.moveController = new EntityRabbit.ControllerMoveRabbit(this);
++        this.initializePathFinderGoals(); // CraftBukkit - moved code
++    }
++
++    // CraftBukkit start - code from constructor
++    public void initializePathFinderGoals(){
+         this.c(0.0D);
+     }
++    // CraftBukkit end
+ 
+     protected void r() {
+         this.goalSelector.a(1, new PathfinderGoalFloat(this));
+@@ -400,9 +406,23 @@
+                     Integer integer = (Integer) iblockdata.get(BlockCarrots.AGE);
+ 
+                     if (integer.intValue() == 0) {
++                        // CraftBukkit start
++                        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(this.c, blockposition, Blocks.AIR, 0).isCancelled()) {
++                            return;
++                        }
++                        // CraftBukkit end
+                         world.setTypeAndData(blockposition, Blocks.AIR.getBlockData(), 2);
+                         world.setAir(blockposition, true);
+                     } else {
++                        // CraftBukkit start
++                        if (org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(
++                                this.c,
++                                blockposition,
++                                block, block.toLegacyData(iblockdata.set(BlockCarrots.AGE, Integer.valueOf(integer.intValue() - 1)))
++                        ).isCancelled()) {
++                            return;
++                        }
++                        // CraftBukkit end
+                         world.setTypeAndData(blockposition, iblockdata.set(BlockCarrots.AGE, Integer.valueOf(integer.intValue() - 1)), 2);
+                         world.triggerEffect(2001, blockposition, Block.getCombinedId(iblockdata));
+                     }

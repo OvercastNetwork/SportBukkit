@@ -1,0 +1,43 @@
+--- a/net/minecraft/server/CommandTp.java
++++ b/net/minecraft/server/CommandTp.java
+@@ -53,17 +53,11 @@
+             } else {
+                 Entity entity = b(minecraftserver, icommandlistener, astring[astring.length - 1]);
+ 
+-                if (entity.world != ((Entity) object).world) {
+-                    throw new CommandException("commands.tp.notSameDimension", new Object[0]);
+-                } else {
+-                    ((Entity) object).stopRiding();
+-                    if (object instanceof EntityPlayer) {
+-                        ((EntityPlayer) object).playerConnection.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
+-                    } else {
+-                        ((Entity) object).setPositionRotation(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
+-                    }
+-
++                // CraftBukkit Start
++                // Use Bukkit teleport method in all cases. It has cross dimensional handling, events
++                if (((Entity) object).getBukkitEntity().teleport(entity.getBukkitEntity(), org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.COMMAND)) {
+                     a(icommandlistener, (ICommand) this, "commands.tp.success", new Object[] { ((Entity) object).getName(), entity.getName()});
++                    // CraftBukkit End
+                 }
+             }
+         }
+@@ -126,10 +120,17 @@
+     }
+ 
+     public List<String> tabComplete(MinecraftServer minecraftserver, ICommandListener icommandlistener, String[] astring, @Nullable BlockPosition blockposition) {
+-        return astring.length != 1 && astring.length != 2 ? Collections.emptyList() : a(astring, minecraftserver.getPlayers());
++        return astring.length != 1 && astring.length != 2 ? Collections.<String>emptyList() : a(astring, minecraftserver.getPlayers()); // CraftBukkit - decompile error
+     }
+ 
+     public boolean isListStart(String[] astring, int i) {
+         return i == 0;
+     }
++
++    // CraftBukkit start - fix decompile error
++    @Override
++    public int compareTo(ICommand o) {
++        return a((ICommand) o);
++    }
++    // CraftBukkit end
+ }

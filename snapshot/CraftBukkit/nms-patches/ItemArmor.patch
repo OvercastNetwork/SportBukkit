@@ -1,0 +1,47 @@
+--- a/net/minecraft/server/ItemArmor.java
++++ b/net/minecraft/server/ItemArmor.java
+@@ -5,6 +5,11 @@
+ import java.util.List;
+ import java.util.UUID;
+ 
++// CraftBukkit start
++import org.bukkit.craftbukkit.inventory.CraftItemStack;
++import org.bukkit.event.block.BlockDispenseEvent;
++// CraftBukkit end
++
+ public class ItemArmor extends Item {
+ 
+     private static final int[] n = new int[] { 13, 15, 16, 11};
+@@ -33,6 +38,32 @@
+             EntityLiving entityliving = (EntityLiving) list.get(0);
+             EnumItemSlot enumitemslot = EntityInsentient.d(itemstack);
+             ItemStack itemstack1 = itemstack.cloneAndSubtract(1);
++            // CraftBukkit start
++            World world = isourceblock.getWorld();
++            org.bukkit.block.Block block = world.getWorld().getBlockAt(isourceblock.getBlockPosition().getX(), isourceblock.getBlockPosition().getY(), isourceblock.getBlockPosition().getZ());
++            CraftItemStack craftItem = CraftItemStack.asCraftMirror(itemstack1);
++
++            BlockDispenseEvent event = new BlockDispenseEvent(block, craftItem.clone(), new org.bukkit.util.Vector(0, 0, 0));
++            if (!BlockDispenser.eventFired) {
++                world.getServer().getPluginManager().callEvent(event);
++            }
++
++            if (event.isCancelled()) {
++                itemstack.add(1);
++                return itemstack;
++            }
++
++            if (!event.getItem().equals(craftItem)) {
++                itemstack.add(1);
++                // Chain to handler for new item
++                ItemStack eventStack = CraftItemStack.asNMSCopy(event.getItem());
++                IDispenseBehavior idispensebehavior = (IDispenseBehavior) BlockDispenser.REGISTRY.get(eventStack.getItem());
++                if (idispensebehavior != IDispenseBehavior.NONE && idispensebehavior != ItemArmor.b) {
++                    idispensebehavior.a(isourceblock, eventStack);
++                    return itemstack;
++                }
++            }
++            // CraftBukkit end
+ 
+             entityliving.setSlot(enumitemslot, itemstack1);
+             if (entityliving instanceof EntityInsentient) {

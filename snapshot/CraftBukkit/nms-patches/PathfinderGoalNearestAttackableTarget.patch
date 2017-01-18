@@ -1,0 +1,56 @@
+--- a/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java
++++ b/net/minecraft/server/PathfinderGoalNearestAttackableTarget.java
+@@ -35,7 +35,7 @@
+             }
+ 
+             public boolean apply(@Nullable Object object) {
+-                return this.a((EntityLiving) object);
++                return this.a((T) object); // CraftBukkit - fix decompile error
+             }
+         };
+     }
+@@ -50,11 +50,11 @@
+                 return false;
+             } else {
+                 Collections.sort(list, this.b);
+-                this.d = (EntityLiving) list.get(0);
++                this.d = (T) list.get(0); // CraftBukkit - fix decompile error
+                 return true;
+             }
+         } else {
+-            this.d = this.e.world.a(this.e.locX, this.e.locY + (double) this.e.getHeadHeight(), this.e.locZ, this.i(), this.i(), new Function() {
++            this.d = (T) this.e.world.a(this.e.locX, this.e.locY + (double) this.e.getHeadHeight(), this.e.locZ, this.i(), this.i(), new Function<EntityHuman, Double>() { // CraftBukkit - fix decompile error
+                 @Nullable
+                 public Double a(@Nullable EntityHuman entityhuman) {
+                     ItemStack itemstack = entityhuman.getEquipment(EnumItemSlot.HEAD);
+@@ -74,10 +74,10 @@
+                 }
+ 
+                 @Nullable
+-                public Object apply(@Nullable Object object) {
++                public Double apply(@Nullable EntityHuman object) { // CraftBukkit - fix decompile error
+                     return this.a((EntityHuman) object);
+                 }
+-            }, this.c);
++            }, (Predicate<EntityHuman>) this.c); // CraftBukkit - fix decompile error
+             return this.d != null;
+         }
+     }
+@@ -87,7 +87,7 @@
+     }
+ 
+     public void c() {
+-        this.e.setGoalTarget(this.d);
++        this.e.setGoalTarget(this.d, d instanceof EntityPlayer ? org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_PLAYER : org.bukkit.event.entity.EntityTargetEvent.TargetReason.CLOSEST_ENTITY, true); // Craftbukkit - reason
+         super.c();
+     }
+ 
+@@ -106,7 +106,7 @@
+             return d0 < d1 ? -1 : (d0 > d1 ? 1 : 0);
+         }
+ 
+-        public int compare(Object object, Object object1) {
++        public int compare(Entity object, Entity object1) { // CraftBukkit - fix decompile error
+             return this.a((Entity) object, (Entity) object1);
+         }
+     }

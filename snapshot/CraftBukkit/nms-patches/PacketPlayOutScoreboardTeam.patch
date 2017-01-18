@@ -1,0 +1,32 @@
+--- a/net/minecraft/server/PacketPlayOutScoreboardTeam.java
++++ b/net/minecraft/server/PacketPlayOutScoreboardTeam.java
+@@ -18,6 +18,29 @@
+     private int i;
+     private int j;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayOutScoreboardTeam(int action, String name, String displayName, String prefix, String suffix, int color, String nameTagVisibility, String collisionRule, int friendlyFire, Collection<String> playerNames) {
++        this.a = name;
++        this.b = displayName;
++        this.c = prefix;
++        this.d = suffix;
++        this.e = nameTagVisibility;
++        this.f = collisionRule;
++        this.g = color;
++        this.h = playerNames;
++        this.i = action;
++        this.j = friendlyFire;
++    }
++
++    public Collection<String> playerNames() {
++        return h;
++    }
++
++    public PacketPlayOutScoreboardTeam replacePlayerNames(Collection<String> playerNames) {
++        return new PacketPlayOutScoreboardTeam(i, a, b, c, d, g, e, f, j, playerNames);
++    }
++    // SportBukkit end
++
+     public PacketPlayOutScoreboardTeam() {
+         this.e = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS.e;
+         this.f = ScoreboardTeamBase.EnumTeamPush.ALWAYS.e;

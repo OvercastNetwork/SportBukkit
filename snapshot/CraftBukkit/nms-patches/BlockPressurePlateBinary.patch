@@ -1,0 +1,67 @@
+--- a/net/minecraft/server/BlockPressurePlateBinary.java
++++ b/net/minecraft/server/BlockPressurePlateBinary.java
+@@ -3,10 +3,13 @@
+ import java.util.Iterator;
+ import java.util.List;
+ 
++import org.bukkit.event.entity.EntityInteractEvent; // CraftBukkit
++
+ public class BlockPressurePlateBinary extends BlockPressurePlateAbstract {
+ 
+     public static final BlockStateBoolean POWERED = BlockStateBoolean.of("powered");
+     private final BlockPressurePlateBinary.EnumMobType e;
++    public java.util.Map<Entity, Boolean> entitiesOnPlate = new java.util.WeakHashMap<Entity, Boolean>(); // SportBukkit
+ 
+     protected BlockPressurePlateBinary(Material material, BlockPressurePlateBinary.EnumMobType blockpressureplatebinary_enummobtype) {
+         super(material);
+@@ -57,12 +60,50 @@
+             return 0;
+         }
+ 
++        this.entitiesOnPlate.keySet().retainAll(list); // SportBukkit - forget entities that have stepped off the plate
++
+         if (!list.isEmpty()) {
+             Iterator iterator = list.iterator();
+ 
+             while (iterator.hasNext()) {
+                 Entity entity = (Entity) iterator.next();
+ 
++                // CraftBukkit start - Call interact event when turning on a pressure plate
++                {
++                    org.bukkit.World bworld = world.getWorld();
++                    org.bukkit.plugin.PluginManager manager = world.getServer().getPluginManager();
++                    org.bukkit.event.Cancellable cancellable;
++
++                    if(entity == null || entity.isIgnoreBlockTrigger()) continue;;
++
++                    // SportBukkit - if entity was already on the plate, re-use their previous result
++                    final Boolean result = this.entitiesOnPlate.get(entity);
++                    if(result != null) {
++                        if(result) {
++                            // interaction was allowed
++                            return 15;
++                        } else {
++                            // interaction was cancelled
++                            continue;
++                        }
++                    }
++
++                    if (entity instanceof EntityHuman) {
++                        cancellable = org.bukkit.craftbukkit.event.CraftEventFactory.callPlayerInteractEvent((EntityHuman) entity, org.bukkit.event.block.Action.PHYSICAL, blockposition, null, null, null);
++                    } else {
++                        cancellable = new EntityInteractEvent(entity.getBukkitEntity(), bworld.getBlockAt(blockposition.getX(), blockposition.getY(), blockposition.getZ()));
++                        manager.callEvent((EntityInteractEvent) cancellable);
++                    }
++
++                    // SportBukkit - save event result as long as the entity stays on the plate
++                    this.entitiesOnPlate.put(entity, !cancellable.isCancelled());
++
++                    // We only want to block turning the plate on if all events are cancelled
++                    if (cancellable.isCancelled())
++                        continue;
++                }
++                // CraftBukkit end
++
+                 if (!entity.isIgnoreBlockTrigger()) {
+                     return 15;
+                 }

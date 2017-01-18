@@ -1,0 +1,231 @@
+--- a/net/minecraft/server/EntityTrackerEntry.java
++++ b/net/minecraft/server/EntityTrackerEntry.java
+@@ -9,6 +9,11 @@
+ import org.apache.logging.log4j.LogManager;
+ import org.apache.logging.log4j.Logger;
+ 
++// CraftBukkit start
++import org.bukkit.entity.Player;
++import org.bukkit.event.player.PlayerVelocityEvent;
++// CraftBukkit end
++
+ public class EntityTrackerEntry {
+ 
+     private static final Logger c = LogManager.getLogger();
+@@ -36,7 +41,12 @@
+     private boolean x;
+     private boolean y;
+     public boolean b;
+-    public final Set<EntityPlayer> trackedPlayers = Sets.newHashSet();
++    // SportBukkit start
++    // Replace trackedPlayers Set with a Map. The value is true until the player receives
++    // their first update (which is forced to have absolute coordinates), false afterward.
++    public final java.util.Map<EntityPlayer, Boolean> trackedPlayerMap = new java.util.HashMap<EntityPlayer, Boolean>();
++    public final Set<EntityPlayer> trackedPlayers = trackedPlayerMap.keySet();
++    // SportBukkit end
+ 
+     public EntityTrackerEntry(Entity entity, int i, int j, int k, boolean flag) {
+         this.tracker = entity;
+@@ -79,13 +89,14 @@
+             this.broadcast(new PacketPlayOutMount(this.tracker));
+         }
+ 
+-        if (this.tracker instanceof EntityItemFrame && this.a % 10 == 0) {
++        // PAIL : rename
++        if (this.tracker instanceof EntityItemFrame /*&& this.a % 10 == 0*/) { // CraftBukkit - Moved below, should always enter this block
+             EntityItemFrame entityitemframe = (EntityItemFrame) this.tracker;
+             ItemStack itemstack = entityitemframe.getItem();
+ 
+-            if (itemstack.getItem() instanceof ItemWorldMap) {
++            if (this.a % 10 == 0 && itemstack.getItem() instanceof ItemWorldMap) { // CraftBukkit - Moved this.a % 10 logic here so item frames do not enter the other blocks
+                 WorldMap worldmap = Items.FILLED_MAP.getSavedMap(itemstack, this.tracker.world);
+-                Iterator iterator = list.iterator();
++                Iterator iterator = this.trackedPlayers.iterator(); // CraftBukkit
+ 
+                 while (iterator.hasNext()) {
+                     EntityHuman entityhuman = (EntityHuman) iterator.next();
+@@ -137,6 +148,19 @@
+                 boolean flag2 = Math.abs(j1 - this.yRot) >= 1 || Math.abs(k1 - this.xRot) >= 1;
+ 
+                 if (this.a > 0 || this.tracker instanceof EntityArrow) {
++                    // CraftBukkit start - Code moved from below
++                    if (flag1) {
++                        this.xLoc = k;
++                        this.yLoc = l;
++                        this.zLoc = i1;
++                    }
++
++                    if (flag2) {
++                        this.yRot = j1;
++                        this.xRot = k1;
++                    }
++                    // CraftBukkit end
++
+                     if (l1 >= -32768L && l1 < 32768L && i2 >= -32768L && i2 < 32768L && j2 >= -32768L && j2 < 32768L && this.v <= 400 && !this.x && this.y == this.tracker.onGround) {
+                         if ((!flag1 || !flag2) && !(this.tracker instanceof EntityArrow)) {
+                             if (flag1) {
+@@ -150,6 +174,11 @@
+                     } else {
+                         this.y = this.tracker.onGround;
+                         this.v = 0;
++                        // CraftBukkit start - Refresh list of who can see a player before sending teleport packet
++                        if (this.tracker instanceof EntityPlayer) {
++                            this.scanPlayers(new java.util.ArrayList(this.trackedPlayers));
++                        }
++                        // CraftBukkit end
+                         this.c();
+                         object = new PacketPlayOutEntityTeleport(this.tracker);
+                     }
+@@ -177,10 +206,30 @@
+                 }
+ 
+                 if (object != null) {
+-                    this.broadcast((Packet) object);
++                    // SportBukkit start - ensure fresh viewers get an absolute position on their first update,
++                    // since we can't be certain what position they received in the spawn packet.
++                    if(object instanceof PacketPlayOutEntityTeleport) {
++                        this.broadcast((Packet) object);
++                    } else {
++                        PacketPlayOutEntityTeleport teleportPacket = null;
++
++                        for(java.util.Map.Entry<EntityPlayer, Boolean> viewer : trackedPlayerMap.entrySet()) {
++                            if(viewer.getValue()) {
++                                viewer.setValue(false);
++                                if(teleportPacket == null) {
++                                    teleportPacket = new PacketPlayOutEntityTeleport(this.tracker);
++                                }
++                                viewer.getKey().playerConnection.sendPacket(teleportPacket);
++                            } else {
++                                viewer.getKey().playerConnection.sendPacket((Packet) object);
++                            }
++                        }
++                    }
++                    // SportBukkit end
+                 }
+ 
+                 this.d();
++                /* CraftBukkit start - Code moved up
+                 if (flag1) {
+                     this.xLoc = k;
+                     this.yLoc = l;
+@@ -191,6 +240,7 @@
+                     this.yRot = j1;
+                     this.xRot = k1;
+                 }
++                // CraftBukkit end */
+ 
+                 this.x = false;
+             }
+@@ -205,11 +255,40 @@
+         }
+ 
+         ++this.a;
++        // SportBukkit start - velocity API
++        /*
+         if (this.tracker.velocityChanged) {
+-            this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
++            // CraftBukkit start - Create PlayerVelocity event
++            boolean cancelled = false;
++
++            if (this.tracker instanceof EntityPlayer) {
++                Player player = (Player) this.tracker.getBukkitEntity();
++                org.bukkit.util.Vector velocity = player.getVelocity();
++
++                PlayerVelocityEvent event = new PlayerVelocityEvent(player, velocity.clone());
++                this.tracker.world.getServer().getPluginManager().callEvent(event);
++
++                if (event.isCancelled()) {
++                    cancelled = true;
++                } else if (!velocity.equals(event.getVelocity())) {
++                    player.setVelocity(event.getVelocity());
++                }
++            }
++
++            if (!cancelled) {
++                this.broadcastIncludingSelf(new PacketPlayOutEntityVelocity(this.tracker));
++            }
++            // CraftBukkit end
+             this.tracker.velocityChanged = false;
+         }
+-
++        */
++        if(this.tracker instanceof EntityPlayer) {
++            ((EntityPlayer) this.tracker).sendVelocity();
++        } else if(this.tracker.velocityChanged) {
++            broadcast(new PacketPlayOutEntityVelocity(this.tracker));
++            this.tracker.velocityChanged = false;
++        }
++        // SportBukkit end
+     }
+ 
+     private void d() {
+@@ -224,6 +303,11 @@
+             Set set = attributemapserver.getAttributes();
+ 
+             if (!set.isEmpty()) {
++                // CraftBukkit start - Send scaled max health
++                if (this.tracker instanceof EntityPlayer) {
++                    ((EntityPlayer) this.tracker).getBukkitEntity().injectScaledMaxHealth(set, false);
++                }
++                // CraftBukkit end
+                 this.broadcastIncludingSelf(new PacketPlayOutUpdateAttributes(this.tracker.getId(), set));
+             }
+ 
+@@ -276,7 +360,17 @@
+         if (entityplayer != this.tracker) {
+             if (this.c(entityplayer)) {
+                 if (!this.trackedPlayers.contains(entityplayer) && (this.e(entityplayer) || this.tracker.attachedToPlayer)) {
+-                    this.trackedPlayers.add(entityplayer);
++                    // CraftBukkit start - respect vanish API
++                    if (this.tracker instanceof EntityPlayer) {
++                        Player player = ((EntityPlayer) this.tracker).getBukkitEntity();
++                        if (!entityplayer.getBukkitEntity().canSee(player)) {
++                            return;
++                        }
++                    }
++
++                    entityplayer.removeQueue.remove(Integer.valueOf(this.tracker.getId()));
++                    // CraftBukkit end
++                    this.trackedPlayerMap.put(entityplayer, true); // SportBukkit - remember that player has received initial position
+                     Packet packet = this.e();
+ 
+                     entityplayer.playerConnection.sendPacket(packet);
+@@ -290,6 +384,12 @@
+                         AttributeMapServer attributemapserver = (AttributeMapServer) ((EntityLiving) this.tracker).getAttributeMap();
+                         Collection collection = attributemapserver.c();
+ 
++                        // CraftBukkit start - If sending own attributes send scaled health instead of current maximum health
++                        if (this.tracker.getId() == entityplayer.getId()) {
++                            ((EntityPlayer) this.tracker).getBukkitEntity().injectScaledMaxHealth(collection, false);
++                        }
++                        // CraftBukkit end
++
+                         if (!collection.isEmpty()) {
+                             entityplayer.playerConnection.sendPacket(new PacketPlayOutUpdateAttributes(this.tracker.getId(), collection));
+                         }
+@@ -328,6 +428,13 @@
+                         }
+                     }
+ 
++                    // CraftBukkit start - Fix for nonsensical head yaw
++                    if(this.tracker instanceof EntityLiving) {
++                        this.headYaw = MathHelper.d(this.tracker.getHeadRotation() * 256.0F / 360.0F);
++                        entityplayer.playerConnection.sendPacket(new PacketPlayOutEntityHeadRotation(this.tracker, (byte) headYaw));
++                    }
++                    // CraftBukkit end
++
+                     if (this.tracker instanceof EntityLiving) {
+                         EntityLiving entityliving = (EntityLiving) this.tracker;
+                         Iterator iterator = entityliving.getEffects().iterator();
+@@ -380,7 +487,10 @@
+ 
+     private Packet<?> e() {
+         if (this.tracker.dead) {
+-            EntityTrackerEntry.c.warn("Fetching addPacket for removed entity");
++            // CraftBukkit start - Remove useless error spam, just return
++            // EntityTrackerEntry.d.warn("Fetching addPacket for removed entity");
++            return null;
++            // CraftBukkit end
+         }
+ 
+         if (this.tracker instanceof EntityPlayer) {

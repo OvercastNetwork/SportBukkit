@@ -1,0 +1,87 @@
+--- a/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
++++ b/net/minecraft/server/PacketPlayOutSpawnEntityLiving.java
+@@ -21,12 +21,30 @@
+     private DataWatcher m;
+     private List<DataWatcher.Item<?>> n;
+ 
++    // SportBukkit start - add constructor
++    public PacketPlayOutSpawnEntityLiving(int id, UUID uuid, int type, double xPos, double yPos, double zPos, int xVel, int yVel, int zVel, byte yaw, byte pitch, byte headPitch, List<DataWatcher.Item<?>> metadata) {
++        this.a = id;
++        this.b = uuid;
++        this.c = type;
++        this.d = xPos;
++        this.e = yPos;
++        this.f = zPos;
++        this.g = xVel;
++        this.h = yVel;
++        this.i = zVel;
++        this.j = yaw;
++        this.k = pitch;
++        this.l = headPitch;
++        this.n = metadata;
++    }
++    // SportBukkit end
++
+     public PacketPlayOutSpawnEntityLiving() {}
+ 
+     public PacketPlayOutSpawnEntityLiving(EntityLiving entityliving) {
+         this.a = entityliving.getId();
+         this.b = entityliving.getUniqueID();
+-        this.c = EntityTypes.b.a((Object) entityliving.getClass());
++        this.c = EntityTypes.b.a(entityliving.getClass()); // SportBukkit - fix decomp
+         this.d = entityliving.locX;
+         this.e = entityliving.locY;
+         this.f = entityliving.locZ;
+@@ -66,12 +84,23 @@
+         this.h = (int) (d2 * 8000.0D);
+         this.i = (int) (d3 * 8000.0D);
+         this.m = entityliving.getDataWatcher();
++
++        // SportBukkit start - send unshared copy of metadata
++        this.n = this.m.c();
++        DataWatcher.deepCopy(this.n);
++        // SportBukkit end
+     }
+ 
+     public void a(PacketDataSerializer packetdataserializer) throws IOException {
+         this.a = packetdataserializer.g();
+         this.b = packetdataserializer.i();
+-        this.c = packetdataserializer.g();
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 301) {
++            this.c = packetdataserializer.readByte();
++        } else {
++            this.c = packetdataserializer.readVarInt();
++        }
++        // SportBukkit end
+         this.d = packetdataserializer.readDouble();
+         this.e = packetdataserializer.readDouble();
+         this.f = packetdataserializer.readDouble();
+@@ -87,7 +116,13 @@
+     public void b(PacketDataSerializer packetdataserializer) throws IOException {
+         packetdataserializer.d(this.a);
+         packetdataserializer.a(this.b);
+-        packetdataserializer.d(this.c);
++        // SportBukkit start
++        if(packetdataserializer.protocolVersion < 301) {
++            packetdataserializer.writeByte(this.c);
++        } else {
++            packetdataserializer.writeVarInt(this.c);
++        }
++        // SportBukkit end
+         packetdataserializer.writeDouble(this.d);
+         packetdataserializer.writeDouble(this.e);
+         packetdataserializer.writeDouble(this.f);
+@@ -97,7 +132,11 @@
+         packetdataserializer.writeShort(this.g);
+         packetdataserializer.writeShort(this.h);
+         packetdataserializer.writeShort(this.i);
+-        this.m.a(packetdataserializer);
++
++        // SportBukkit start - send unshared copy of metadata
++        // this.m.a(packetdataserializer);
++        DataWatcher.a(this.n, packetdataserializer);
++        // SportBukkit end
+     }
+ 
+     public void a(PacketListenerPlayOut packetlistenerplayout) {

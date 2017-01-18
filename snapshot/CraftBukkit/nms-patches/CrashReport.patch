@@ -1,0 +1,34 @@
+--- a/net/minecraft/server/CrashReport.java
++++ b/net/minecraft/server/CrashReport.java
+@@ -22,6 +22,7 @@
+     private final String b;
+     private final Throwable c;
+     private final CrashReportSystemDetails d = new CrashReportSystemDetails(this, "System Details");
++    public List<CrashReportSystemDetails> extras() { return e; } // SportBukkit - alias
+     private final List<CrashReportSystemDetails> e = Lists.newArrayList();
+     private File f;
+     private boolean g = true;
+@@ -123,12 +124,15 @@
+                 return this.a();
+             }
+         });
++        this.d.a("CraftBukkit Information", (CrashReportCallable) new org.bukkit.craftbukkit.CraftCrashReport()); // CraftBukkit
+     }
+ 
++    public String activity() { return a(); } // SportBukkit alias
+     public String a() {
+         return this.b;
+     }
+ 
++    public Throwable exception() { return b(); } // SportBukkit - alias
+     public Throwable b() {
+         return this.c;
+     }
+@@ -254,6 +258,7 @@
+         }
+     }
+ 
++    public CrashReportSystemDetails details() { return g(); } // SportBukkit - alias
+     public CrashReportSystemDetails g() {
+         return this.d;
+     }

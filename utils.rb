@@ -1,17 +1,16 @@
 require 'digest'
-require 'ansi'
 require 'rake'
 
 def info(msg)
-    puts ANSI.green(msg)
+    puts "\e[32m#{msg}\e[0m"
 end
 
 def warning(msg)
-    puts ANSI.yellow(msg)
+    puts "\e[33m#{msg}\e[0m"
 end
 
 def error(msg)
-    puts ANSI.red(msg)
+    puts "\e[31m#{msg}\e[0m"
 end
 
 def relative_path(path, from: nil)

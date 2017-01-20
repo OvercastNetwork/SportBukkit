@@ -1,10 +1,28 @@
 --- a/net/minecraft/server/PacketPlayOutPlayerInfo.java
 +++ b/net/minecraft/server/PacketPlayOutPlayerInfo.java
-@@ -14,6 +14,20 @@
-     private PacketPlayOutPlayerInfo.EnumPlayerInfoAction a;
-     private final List<PacketPlayOutPlayerInfo.PlayerInfoData> b = Lists.newArrayList();
+@@ -9,7 +9,36 @@
+ import java.util.List;
+ import javax.annotation.Nullable;
  
-+    // SportBukkit start - add constructor
+-public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut> {
++// SportBukkit start
++import java.util.UUID;
++
++import net.md_5.bungee.api.chat.BaseComponent;
++import org.bukkit.GameMode;
++import org.bukkit.Skin;
++import org.bukkit.craftbukkit.protocol.RenderableComponent;
++import org.bukkit.craftbukkit.protocol.Renderable;
++import org.bukkit.craftbukkit.util.Skins;
++import org.bukkit.entity.Player;
++
++public class PacketPlayOutPlayerInfo implements Packet<PacketListenerPlayOut>, Renderable {
++
++    @Override
++    public void render(Player viewer) {
++        b.forEach(info -> RenderableComponent.render(info.e, viewer));
++    }
++
 +    public PacketPlayOutPlayerInfo(EnumPlayerInfoAction a) {
 +        this.a = a;
 +    }
@@ -17,48 +35,37 @@
 +        return this.b.isEmpty();
 +    }
 +    // SportBukkit end
-+
-     public PacketPlayOutPlayerInfo() {}
  
-     public PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction packetplayoutplayerinfo_enumplayerinfoaction, EntityPlayer... aentityplayer) {
-@@ -130,6 +144,15 @@
- 
-                 packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.c().getId());
-                 packetdataserializer.d(packetplayoutplayerinfo_playerinfodata.b());
-+
-+                // SportBukkit start
-+                if (packetplayoutplayerinfo_playerinfodata.displayName != null) {
-+                    packetdataserializer.writeBoolean(true);
-+                    packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(packetplayoutplayerinfo_playerinfodata.displayName));
-+                    break;
-+                }
-+                // SportBukkit end
-+
-                 if (packetplayoutplayerinfo_playerinfodata.d() == null) {
-                     packetdataserializer.writeBoolean(false);
-                 } else {
-@@ -150,6 +173,15 @@
- 
-             case UPDATE_DISPLAY_NAME:
-                 packetdataserializer.a(packetplayoutplayerinfo_playerinfodata.a().getId());
-+
-+                // SportBukkit start
-+                if (packetplayoutplayerinfo_playerinfodata.displayName != null) {
-+                    packetdataserializer.writeBoolean(true);
-+                    packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(packetplayoutplayerinfo_playerinfodata.displayName));
-+                    break;
-+                }
-+                // SportBukkit end
-+
-                 if (packetplayoutplayerinfo_playerinfodata.d() == null) {
-                     packetdataserializer.writeBoolean(false);
-                 } else {
-@@ -175,6 +207,8 @@
+     private PacketPlayOutPlayerInfo.EnumPlayerInfoAction a;
+     private final List<PacketPlayOutPlayerInfo.PlayerInfoData> b = Lists.newArrayList();
+@@ -175,6 +204,21 @@
  
      public class PlayerInfoData {
  
-+        public net.md_5.bungee.api.chat.BaseComponent[] displayName; // SportBukkit
++        // SportBukkit start
++        public PlayerInfoData(UUID uuid, String name, @Nullable BaseComponent displayName, GameMode gamemode, int ping, @Nullable Skin skin) {
++            this(new GameProfile(uuid, name),
++                 ping,
++                 EnumGamemode.getById(gamemode.getValue()),
++                 displayName == null ? null : new RenderableComponent(displayName));
++
++            if(skin != null) {
++                Skins.toProperties(skin).asMap().forEach(
++                    (k, v) -> d.getProperties().putAll(k, v)
++                );
++            }
++        }
++        // SportBukkit end
 +
          private final int b;
          private final EnumGamemode c;
          private final GameProfile d;
+@@ -184,7 +228,7 @@
+             this.d = gameprofile;
+             this.b = i;
+             this.c = enumgamemode;
+-            this.e = ichatbasecomponent;
++            this.e = RenderableComponent.wrap(ichatbasecomponent); // SportBukkit
+         }
+ 
+         public GameProfile a() {

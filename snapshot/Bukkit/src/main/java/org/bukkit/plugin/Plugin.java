@@ -2,7 +2,10 @@ package org.bukkit.plugin;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Logger;
+import javax.inject.Provider;
 
 import org.bukkit.Server;
 import org.bukkit.command.TabExecutor;
@@ -11,6 +14,7 @@ import org.bukkit.event.EventRegistry;
 import org.bukkit.generator.ChunkGenerator;
 
 import com.avaje.ebean.EbeanServer;
+import tc.oc.minecraft.api.text.TextRenderer;
 
 /**
  * Represents a Plugin
@@ -97,6 +101,10 @@ public interface Plugin extends TabExecutor, tc.oc.minecraft.api.plugin.Plugin, 
      * @return The {@link EventRegistry} belonging to this plugin.
      */
     EventRegistry eventRegistry();
+
+    default Collection<Provider<TextRenderer>> textRenderers() {
+        return Collections.emptyList();
+    }
 
     /**
      * Returns the Server instance currently running this plugin

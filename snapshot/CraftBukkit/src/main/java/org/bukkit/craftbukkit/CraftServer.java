@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import javax.inject.Provider;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -145,6 +146,8 @@ import org.bukkit.event.server.TabCompleteEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
 import tc.oc.minecraft.api.configuration.InvalidConfigurationException;
 import tc.oc.minecraft.api.plugin.PluginFinder;
+import tc.oc.minecraft.api.text.TextRenderContext;
+import tc.oc.minecraft.api.text.TextRenderer;
 
 public final class CraftServer extends CraftBukkitRuntime implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
@@ -2000,4 +2003,23 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
             }
         }
     }
+
+    @Override
+    public TextRenderContext textRenderContext() {
+        return textRenderContext;
+    }
+
+    private final TextRenderContext textRenderContext = new TextRenderContext() {
+        @Override
+        public BaseComponent render(BaseComponent text, tc.oc.minecraft.api.command.CommandSender viewer) {
+            for(Plugin plugin : getPluginManager().getPlugins()) {
+                if(plugin.isEnabled()) {
+                    for(Provider<TextRenderer> renderer : plugin.textRenderers()) {
+                        text = renderer.get().render(this, text, viewer);
+                    }
+                }
+            }
+            return text;
+        }
+    };
 }

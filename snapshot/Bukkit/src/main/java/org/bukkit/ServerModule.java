@@ -16,8 +16,10 @@ import org.bukkit.plugin.messaging.Messenger;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scoreboard.ScoreboardManager;
 import tc.oc.inject.SingletonModule;
+import tc.oc.minecraft.api.command.Console;
 import tc.oc.minecraft.api.plugin.PluginFinder;
 import tc.oc.minecraft.api.server.LocalServer;
+import tc.oc.minecraft.api.text.TextRenderContext;
 
 /**
  * Bindings for things that belong to a {@link Server}.
@@ -35,7 +37,7 @@ public class ServerModule extends SingletonModule {
         bind(tc.oc.minecraft.api.server.Server.class).to(LocalServer.class);
         bind(LocalServer.class).to(Server.class);
         bind(BukkitRuntime.class).to(Server.class);
-        bind(tc.oc.minecraft.api.command.ConsoleCommandSender.class).to(ConsoleCommandSender.class);
+        bind(Console.class).to(ConsoleCommandSender.class);
         bind(PluginFinder.class).to(PluginManager.class);
     }
 
@@ -82,6 +84,11 @@ public class ServerModule extends SingletonModule {
     @Provides
     ServicesManager servicesManager(Server server) {
         return server.getServicesManager();
+    }
+
+    @Provides
+    TextRenderContext textRenderContext(Server server) {
+        return server.textRenderContext();
     }
 
     @Provides

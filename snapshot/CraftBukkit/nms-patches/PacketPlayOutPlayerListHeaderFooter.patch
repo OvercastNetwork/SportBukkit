@@ -1,33 +1,29 @@
 --- a/net/minecraft/server/PacketPlayOutPlayerListHeaderFooter.java
 +++ b/net/minecraft/server/PacketPlayOutPlayerListHeaderFooter.java
-@@ -4,6 +4,8 @@
+@@ -2,7 +2,25 @@
  
- public class PacketPlayOutPlayerListHeaderFooter implements Packet<PacketListenerPlayOut> {
+ import java.io.IOException;
  
-+    public net.md_5.bungee.api.chat.BaseComponent[] header, footer; // SportBukkit
+-public class PacketPlayOutPlayerListHeaderFooter implements Packet<PacketListenerPlayOut> {
++// SportBukkit start
++import net.md_5.bungee.api.chat.BaseComponent;
++import org.bukkit.craftbukkit.protocol.RenderableComponent;
++import org.bukkit.craftbukkit.protocol.Renderable;
++import org.bukkit.entity.Player;
 +
++public class PacketPlayOutPlayerListHeaderFooter implements Packet<PacketListenerPlayOut>, Renderable {
++
++    @Override
++    public void render(Player viewer) {
++        RenderableComponent.render(a, viewer);
++        RenderableComponent.render(b, viewer);
++    }
++
++    public PacketPlayOutPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
++        a = new RenderableComponent(header);
++        b = new RenderableComponent(footer);
++    }
++    // SportBukkit end
+ 
      private IChatBaseComponent a;
      private IChatBaseComponent b;
- 
-@@ -19,8 +21,19 @@
-     }
- 
-     public void b(PacketDataSerializer packetdataserializer) throws IOException {
--        packetdataserializer.a(this.a);
--        packetdataserializer.a(this.b);
-+        // SportBukkit start
-+        if(this.header != null) {
-+            packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(this.header));
-+        } else {
-+            packetdataserializer.a(this.a);
-+        }
-+
-+        if(this.footer != null) {
-+            packetdataserializer.a(net.md_5.bungee.chat.ComponentSerializer.toString(this.footer));
-+        } else {
-+            packetdataserializer.a(this.b);
-+        }
-+        // SportBukkit end
-     }
- 
-     public void a(PacketListenerPlayOut packetlistenerplayout) {

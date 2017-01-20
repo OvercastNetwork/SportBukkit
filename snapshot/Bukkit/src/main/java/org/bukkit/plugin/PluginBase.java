@@ -1,5 +1,6 @@
 package org.bukkit.plugin;
 
+import java.util.Collection;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -9,6 +10,7 @@ import org.bukkit.event.EventRegistry;
 import org.bukkit.permissions.Permission;
 import tc.oc.minecraft.api.event.ListenerContext;
 import tc.oc.exception.ExceptionHandler;
+import tc.oc.minecraft.api.text.TextRenderer;
 
 /**
  * Represents a base {@link Plugin}
@@ -25,6 +27,7 @@ public abstract class PluginBase implements Plugin {
 
     @Inject private Set<Permission> permissions;
     @Inject private Provider<ListenerContext> listenerContext;
+    @Inject private Provider<Collection<Provider<TextRenderer>>> textRenderers;
 
     protected void assertInjected() {
         if(injector == null) {
@@ -48,6 +51,12 @@ public abstract class PluginBase implements Plugin {
     public ExceptionHandler exceptionHandler() {
         assertInjected();
         return exceptionHandler;
+    }
+
+    @Override
+    public Collection<Provider<TextRenderer>> textRenderers() {
+        assertInjected();
+        return textRenderers.get();
     }
 
     protected final void preEnable() {

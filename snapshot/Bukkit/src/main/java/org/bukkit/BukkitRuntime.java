@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionBrewRegistry;
 import org.bukkit.potion.PotionEffectRegistry;
 import org.bukkit.registry.Key;
 import org.bukkit.geometry.VectorFactory;
+import tc.oc.minecraft.api.text.TextRenderContext;
 
 public interface BukkitRuntime {
 
@@ -39,4 +40,8 @@ public interface BukkitRuntime {
     PotionBrewRegistry potionRegistry();
 
     PotionEffectRegistry potionEffectRegistry();
+
+    default TextRenderContext textRenderContext() {
+        return (text, viewer) -> text;
+    }
 }

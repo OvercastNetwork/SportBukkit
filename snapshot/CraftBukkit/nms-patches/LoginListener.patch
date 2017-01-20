@@ -129,7 +129,7 @@
                  }
  
                  @Nullable
-@@ -185,8 +213,77 @@
+@@ -185,8 +213,78 @@
          }
      }
  
@@ -141,6 +141,7 @@
 +        String playerName = i.getName();
 +        java.net.InetAddress address = ((java.net.InetSocketAddress) networkManager.getSocketAddress()).getAddress();
 +        java.util.UUID uniqueId = i.getId();
++        networkManager.playerId = uniqueId;
 +        final org.bukkit.craftbukkit.CraftServer server = LoginListener.this.server.server;
 +        AsyncPlayerPreLoginEvent asyncEvent = new AsyncPlayerPreLoginEvent(playerName, address, uniqueId);
 +

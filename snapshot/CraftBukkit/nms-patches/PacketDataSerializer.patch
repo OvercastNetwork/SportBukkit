@@ -1,20 +1,24 @@
 --- a/net/minecraft/server/PacketDataSerializer.java
 +++ b/net/minecraft/server/PacketDataSerializer.java
-@@ -21,8 +21,13 @@
+@@ -21,8 +21,17 @@
  import java.util.UUID;
  import javax.annotation.Nullable;
  
 +import org.bukkit.craftbukkit.inventory.CraftItemStack; // CraftBukkit
 +import org.bukkit.craftbukkit.protocol.Protocol; // SportBukkit
++import org.bukkit.craftbukkit.protocol.RenderableComponent;
 +
  public class PacketDataSerializer extends ByteBuf {
  
-+    public int protocolVersion = Protocol.LATEST; // SportBukkit
++    // SportBukkit start
++    public int protocolVersion = Protocol.LATEST;
++    public UUID playerId;
++    // SportBukkit end
 +
      private final ByteBuf a;
  
      public PacketDataSerializer(ByteBuf bytebuf) {
-@@ -114,6 +119,7 @@
+@@ -114,6 +123,7 @@
          return BlockPosition.fromLong(this.readLong());
      }
  
@@ -22,12 +26,18 @@
      public PacketDataSerializer a(BlockPosition blockposition) {
          this.writeLong(blockposition.asLong());
          return this;
-@@ -123,18 +129,21 @@
+@@ -123,18 +133,27 @@
          return IChatBaseComponent.ChatSerializer.a(this.e(32767));
      }
  
 +    public PacketDataSerializer writeChatComponent(IChatBaseComponent chat) { return a(chat); } // SportBukkit - alias
      public PacketDataSerializer a(IChatBaseComponent ichatbasecomponent) {
++        // SportBukkit start
++        if(ichatbasecomponent instanceof RenderableComponent) {
++            ((RenderableComponent) ichatbasecomponent).serialize(this);
++            return this;
++        } else
++        // SportBukkit end
          return this.a(IChatBaseComponent.ChatSerializer.a(ichatbasecomponent));
      }
  
@@ -45,7 +55,7 @@
      public int g() {
          int i = 0;
          int j = 0;
-@@ -179,6 +188,7 @@
+@@ -179,6 +198,7 @@
          return new UUID(this.readLong(), this.readLong());
      }
  
@@ -53,7 +63,7 @@
      public PacketDataSerializer d(int i) {
          while ((i & -128) != 0) {
              this.writeByte(i & 127 | 128);
-@@ -205,7 +215,7 @@
+@@ -205,7 +225,7 @@
          } else {
              try {
                  NBTCompressedStreamTools.a(nbttagcompound, (DataOutput) (new ByteBufOutputStream(this)));
@@ -62,21 +72,21 @@
                  throw new EncoderException(ioexception);
              }
          }
-@@ -232,8 +242,12 @@
+@@ -232,8 +252,12 @@
      }
  
      public PacketDataSerializer a(ItemStack itemstack) {
 -        if (itemstack.isEmpty()) {
 +        if (itemstack.isEmpty() || itemstack.getItem() == null) { // CraftBukkit - NPE fix itemstack.getItem()
-             this.writeShort(-1);
++            this.writeShort(-1);
 +        // SportBukkit start - legacy clients will crash if they get an unknown item
 +        } else if(protocolVersion < itemstack.getItem().proto()) {
-+            this.writeShort(-1);
+             this.writeShort(-1);
 +        // SportBukkit end
          } else {
              this.writeShort(Item.getId(itemstack.getItem()));
              this.writeByte(itemstack.getCount());
-@@ -261,6 +275,11 @@
+@@ -261,6 +285,11 @@
              ItemStack itemstack = new ItemStack(Item.getById(short0), b0, short1);
  
              itemstack.setTag(this.j());

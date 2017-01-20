@@ -12,3 +12,161 @@ diff --git a/README.md b/README.md
  ======
  A plugin API for [Minecraft](https://minecraft.net/) servers, currently maintained by [SpigotMC](http://www.spigotmc.org/).
  
+diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/bukkit/BukkitRuntime.java
+--- a/src/main/java/org/bukkit/BukkitRuntime.java
++++ b/src/main/java/org/bukkit/BukkitRuntime.java
+@@ -8,6 +8,7 @@ import org.bukkit.potion.PotionBrewRegistry;
+ import org.bukkit.potion.PotionEffectRegistry;
+ import org.bukkit.registry.Key;
+ import org.bukkit.geometry.VectorFactory;
++import tc.oc.minecraft.api.text.TextRenderContext;
+ 
+ public interface BukkitRuntime {
+ 
+@@ -39,4 +40,8 @@ public interface BukkitRuntime {
+     PotionBrewRegistry potionRegistry();
+ 
+     PotionEffectRegistry potionEffectRegistry();
++
++    default TextRenderContext textRenderContext() {
++        return (text, viewer) -> text;
++    }
+ }
+diff --git a/src/main/java/org/bukkit/ServerModule.java b/src/main/java/org/bukkit/ServerModule.java
+--- a/src/main/java/org/bukkit/ServerModule.java
++++ b/src/main/java/org/bukkit/ServerModule.java
+@@ -16,8 +16,10 @@ import org.bukkit.plugin.messaging.Messenger;
+ import org.bukkit.scheduler.BukkitScheduler;
+ import org.bukkit.scoreboard.ScoreboardManager;
+ import tc.oc.inject.SingletonModule;
++import tc.oc.minecraft.api.command.Console;
+ import tc.oc.minecraft.api.plugin.PluginFinder;
+ import tc.oc.minecraft.api.server.LocalServer;
++import tc.oc.minecraft.api.text.TextRenderContext;
+ 
+ /**
+  * Bindings for things that belong to a {@link Server}.
+@@ -35,7 +37,7 @@ public class ServerModule extends SingletonModule {
+         bind(tc.oc.minecraft.api.server.Server.class).to(LocalServer.class);
+         bind(LocalServer.class).to(Server.class);
+         bind(BukkitRuntime.class).to(Server.class);
+-        bind(tc.oc.minecraft.api.command.ConsoleCommandSender.class).to(ConsoleCommandSender.class);
++        bind(Console.class).to(ConsoleCommandSender.class);
+         bind(PluginFinder.class).to(PluginManager.class);
+     }
+ 
+@@ -85,6 +87,11 @@ public class ServerModule extends SingletonModule {
+     }
+ 
+     @Provides
++    TextRenderContext textRenderContext(Server server) {
++        return server.textRenderContext();
++    }
++
++    @Provides
+     Collection<World> worlds(Server server) {
+         return server.worldsById().values();
+     }
+diff --git a/src/main/java/org/bukkit/command/ConsoleCommandSender.java b/src/main/java/org/bukkit/command/ConsoleCommandSender.java
+--- a/src/main/java/org/bukkit/command/ConsoleCommandSender.java
++++ b/src/main/java/org/bukkit/command/ConsoleCommandSender.java
+@@ -1,6 +1,7 @@
+ package org.bukkit.command;
+ 
+ import org.bukkit.conversations.Conversable;
++import tc.oc.minecraft.api.command.Console;
+ 
+-public interface ConsoleCommandSender extends CommandSender, Conversable, tc.oc.minecraft.api.command.ConsoleCommandSender {
++public interface ConsoleCommandSender extends CommandSender, Conversable, Console {
+ }
+diff --git a/src/main/java/org/bukkit/plugin/Plugin.java b/src/main/java/org/bukkit/plugin/Plugin.java
+--- a/src/main/java/org/bukkit/plugin/Plugin.java
++++ b/src/main/java/org/bukkit/plugin/Plugin.java
+@@ -2,7 +2,10 @@ package org.bukkit.plugin;
+ 
+ import java.io.File;
+ import java.io.InputStream;
++import java.util.Collection;
++import java.util.Collections;
+ import java.util.logging.Logger;
++import javax.inject.Provider;
+ 
+ import org.bukkit.Server;
+ import org.bukkit.command.TabExecutor;
+@@ -11,6 +14,7 @@ import org.bukkit.event.EventRegistry;
+ import org.bukkit.generator.ChunkGenerator;
+ 
+ import com.avaje.ebean.EbeanServer;
++import tc.oc.minecraft.api.text.TextRenderer;
+ 
+ /**
+  * Represents a Plugin
+@@ -98,6 +102,10 @@ public interface Plugin extends TabExecutor, tc.oc.minecraft.api.plugin.Plugin,
+      */
+     EventRegistry eventRegistry();
+ 
++    default Collection<Provider<TextRenderer>> textRenderers() {
++        return Collections.emptyList();
++    }
++
+     /**
+      * Returns the Server instance currently running this plugin
+      *
+diff --git a/src/main/java/org/bukkit/plugin/PluginBase.java b/src/main/java/org/bukkit/plugin/PluginBase.java
+--- a/src/main/java/org/bukkit/plugin/PluginBase.java
++++ b/src/main/java/org/bukkit/plugin/PluginBase.java
+@@ -1,5 +1,6 @@
+ package org.bukkit.plugin;
+ 
++import java.util.Collection;
+ import java.util.Set;
+ import javax.inject.Inject;
+ import javax.inject.Provider;
+@@ -9,6 +10,7 @@ import org.bukkit.event.EventRegistry;
+ import org.bukkit.permissions.Permission;
+ import tc.oc.minecraft.api.event.ListenerContext;
+ import tc.oc.exception.ExceptionHandler;
++import tc.oc.minecraft.api.text.TextRenderer;
+ 
+ /**
+  * Represents a base {@link Plugin}
+@@ -25,6 +27,7 @@ public abstract class PluginBase implements Plugin {
+ 
+     @Inject private Set<Permission> permissions;
+     @Inject private Provider<ListenerContext> listenerContext;
++    @Inject private Provider<Collection<Provider<TextRenderer>>> textRenderers;
+ 
+     protected void assertInjected() {
+         if(injector == null) {
+@@ -50,6 +53,12 @@ public abstract class PluginBase implements Plugin {
+         return exceptionHandler;
+     }
+ 
++    @Override
++    public Collection<Provider<TextRenderer>> textRenderers() {
++        assertInjected();
++        return textRenderers.get();
++    }
++
+     protected final void preEnable() {
+         permissions.forEach(pluginManager::addPermission);
+         listenerContext.get().enable();
+diff --git a/src/main/java/org/bukkit/plugin/PluginModule.java b/src/main/java/org/bukkit/plugin/PluginModule.java
+--- a/src/main/java/org/bukkit/plugin/PluginModule.java
++++ b/src/main/java/org/bukkit/plugin/PluginModule.java
+@@ -11,6 +11,7 @@ import tc.oc.minecraft.api.event.ListenerBinder;
+ import tc.oc.exception.ExceptionHandler;
+ import tc.oc.minecraft.api.plugin.PluginDescription;
+ import tc.oc.minecraft.api.scheduler.Scheduler;
++import tc.oc.minecraft.api.text.TextRendererBinder;
+ 
+ /**
+  * Bindings for things belonging to a particular {@link Plugin}.
+@@ -26,6 +27,7 @@ public class PluginModule extends ProtectedModule {
+         // Ensure these collections have bindings
+         new PermissionBinder(binder());
+         new ListenerBinder(binder());
++        new TextRendererBinder(binder());
+ 
+         bind(tc.oc.minecraft.api.plugin.Plugin.class).to(Plugin.class);
+         bind(PluginDescription.class).to(PluginDescriptionFile.class);

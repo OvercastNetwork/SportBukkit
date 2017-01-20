@@ -1898,76 +1898,60 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
     }
 
     @Override
-    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent... message) {
+    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent message) {
         if ( getHandle().playerConnection == null ) return;
-
-        PacketPlayOutChat packet = new PacketPlayOutChat(null, (byte) position.ordinal());
-        if(position == ChatMessageType.ACTION_BAR) {
-            // Work around a client bug where component text above the hotbar is not formatted.
-            // The only way to format it is by wrapping legacy formatting in a text component.
-            packet.components = new BaseComponent[]{ new TextComponent(TextComponent.toLegacyText(message)) };
-        } else {
-            packet.components = message;
-        }
-        getHandle().playerConnection.sendPacket(packet);
+        getHandle().playerConnection.sendPacket(new PacketPlayOutChat(message, position));
     }
 
     @Override
-    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent message) {
-        sendMessage(position, new BaseComponent[] {message});
+    public void sendMessage(net.md_5.bungee.api.ChatMessageType position, BaseComponent... messages) {
+        sendMessage(position, new TextComponent(messages));
     }
 
     @Override
     public void sendMessage(BaseComponent component) {
-      sendMessage( new BaseComponent[] { component } );
+      sendMessage(ChatMessageType.CHAT, component);
     }
 
     @Override
     public void sendMessage(BaseComponent... components) {
-       if ( getHandle().playerConnection == null ) return;
-
-        PacketPlayOutChat packet = new PacketPlayOutChat();
-        packet.components = components;
-        getHandle().playerConnection.sendPacket(packet);
-    }
-
-    @Override
-    public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
-        PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
-        packet.header = header;
-        packet.footer = footer;
-        getHandle().playerConnection.sendPacket(packet);
+        sendMessage(ChatMessageType.CHAT, components);
     }
 
     @Override
     public void setPlayerListHeaderFooter(BaseComponent header, BaseComponent footer) {
-        this.setPlayerListHeaderFooter(header == null ? null : new BaseComponent[]{ header },
-                                       footer == null ? null : new BaseComponent[]{ footer });
+        getHandle().playerConnection.sendPacket(new PacketPlayOutPlayerListHeaderFooter(header, footer));
+    }
+
+    @Override
+    public void setPlayerListHeaderFooter(BaseComponent[] header, BaseComponent[] footer) {
+        this.setPlayerListHeaderFooter(header == null ? null : new TextComponent(header),
+                                       footer == null ? null : new TextComponent(footer));
     }
 
     @Override
     public void setTitleTimes(int fadeInTicks, int stayTicks, int fadeOutTicks) {
-        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (BaseComponent[]) null, fadeInTicks, stayTicks, fadeOutTicks));
+        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TIMES, (BaseComponent) null, fadeInTicks, stayTicks, fadeOutTicks));
     }
 
     @Override
     public void setSubtitle(BaseComponent[] subtitle) {
-        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitle, 0, 0, 0));
+        setSubtitle(new TextComponent(subtitle));
     }
 
     @Override
     public void setSubtitle(BaseComponent subtitle) {
-        setSubtitle(new BaseComponent[] { subtitle });
+        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, subtitle, 0, 0, 0));
     }
 
     @Override
     public void showTitle(BaseComponent[] title) {
-        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, title, 0, 0, 0));
+        showTitle(new TextComponent(title));
     }
 
     @Override
     public void showTitle(BaseComponent title) {
-        showTitle(new BaseComponent[] {title});
+        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, title, 0, 0, 0));
     }
 
     @Override
@@ -1986,7 +1970,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
 
     @Override
     public void hideTitle() {
-        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.CLEAR, (BaseComponent[]) null, 0, 0, 0));
+        getHandle().playerConnection.sendPacket(new PacketPlayOutTitle(PacketPlayOutTitle.EnumTitleAction.CLEAR, (BaseComponent) null, 0, 0, 0));
     }
 
     @Override

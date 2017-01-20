@@ -11,6 +11,7 @@ import tc.oc.minecraft.api.event.ListenerBinder;
 import tc.oc.exception.ExceptionHandler;
 import tc.oc.minecraft.api.plugin.PluginDescription;
 import tc.oc.minecraft.api.scheduler.Scheduler;
+import tc.oc.minecraft.api.text.TextRendererBinder;
 
 /**
  * Bindings for things belonging to a particular {@link Plugin}.
@@ -26,6 +27,7 @@ public class PluginModule extends ProtectedModule {
         // Ensure these collections have bindings
         new PermissionBinder(binder());
         new ListenerBinder(binder());
+        new TextRendererBinder(binder());
 
         bind(tc.oc.minecraft.api.plugin.Plugin.class).to(Plugin.class);
         bind(PluginDescription.class).to(PluginDescriptionFile.class);

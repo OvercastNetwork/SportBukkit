@@ -3186,6 +3186,146 @@ index 0000000..9d23a64
 +        packetlistenerplayout.a(this);
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutBoss.java b/src/main/java/net/minecraft/server/PacketPlayOutBoss.java
+new file mode 100644
+index 0000000..ba14c69
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutBoss.java
+@@ -0,0 +1,134 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++import java.util.UUID;
++
++public class PacketPlayOutBoss implements Packet<PacketListenerPlayOut> {
++
++    private UUID a;
++    private PacketPlayOutBoss.Action b;
++    private IChatBaseComponent c;
++    private float d;
++    private BossBattle.BarColor e;
++    private BossBattle.BarStyle f;
++    private boolean g;
++    private boolean h;
++    private boolean i;
++
++    public PacketPlayOutBoss() {}
++
++    public PacketPlayOutBoss(PacketPlayOutBoss.Action packetplayoutboss_action, BossBattle bossbattle) {
++        this.b = packetplayoutboss_action;
++        this.a = bossbattle.d();
++        this.c = bossbattle.e();
++        this.d = bossbattle.getProgress();
++        this.e = bossbattle.g();
++        this.f = bossbattle.h();
++        this.g = bossbattle.i();
++        this.h = bossbattle.j();
++        this.i = bossbattle.k();
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = packetdataserializer.i();
++        this.b = (PacketPlayOutBoss.Action) packetdataserializer.a(PacketPlayOutBoss.Action.class);
++        switch (this.b) {
++        case ADD:
++            this.c = packetdataserializer.f();
++            this.d = packetdataserializer.readFloat();
++            this.e = (BossBattle.BarColor) packetdataserializer.a(BossBattle.BarColor.class);
++            this.f = (BossBattle.BarStyle) packetdataserializer.a(BossBattle.BarStyle.class);
++            this.a(packetdataserializer.readUnsignedByte());
++
++        case REMOVE:
++        default:
++            break;
++
++        case UPDATE_PCT:
++            this.d = packetdataserializer.readFloat();
++            break;
++
++        case UPDATE_NAME:
++            this.c = packetdataserializer.f();
++            break;
++
++        case UPDATE_STYLE:
++            this.e = (BossBattle.BarColor) packetdataserializer.a(BossBattle.BarColor.class);
++            this.f = (BossBattle.BarStyle) packetdataserializer.a(BossBattle.BarStyle.class);
++            break;
++
++        case UPDATE_PROPERTIES:
++            this.a(packetdataserializer.readUnsignedByte());
++        }
++
++    }
++
++    private void a(int i) {
++        this.g = (i & 1) > 0;
++        this.h = (i & 2) > 0;
++        this.i = (i & 2) > 0;
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a(this.a);
++        packetdataserializer.a((Enum) this.b);
++        switch (this.b) {
++        case ADD:
++            packetdataserializer.a(this.c);
++            packetdataserializer.writeFloat(this.d);
++            packetdataserializer.a((Enum) this.e);
++            packetdataserializer.a((Enum) this.f);
++            packetdataserializer.writeByte(this.j());
++
++        case REMOVE:
++        default:
++            break;
++
++        case UPDATE_PCT:
++            packetdataserializer.writeFloat(this.d);
++            break;
++
++        case UPDATE_NAME:
++            packetdataserializer.a(this.c);
++            break;
++
++        case UPDATE_STYLE:
++            packetdataserializer.a((Enum) this.e);
++            packetdataserializer.a((Enum) this.f);
++            break;
++
++        case UPDATE_PROPERTIES:
++            packetdataserializer.writeByte(this.j());
++        }
++
++    }
++
++    private int j() {
++        int i = 0;
++
++        if (this.g) {
++            i |= 1;
++        }
++
++        if (this.h) {
++            i |= 2;
++        }
++
++        if (this.i) {
++            i |= 2;
++        }
++
++        return i;
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++
++    public static enum Action {
++
++        ADD, REMOVE, UPDATE_PCT, UPDATE_NAME, UPDATE_STYLE, UPDATE_PROPERTIES;
++
++        private Action() {}
++    }
++}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutChat.java b/src/main/java/net/minecraft/server/PacketPlayOutChat.java
 new file mode 100644
 index 0000000..24462f1
@@ -3272,6 +3412,89 @@ index 0000000..1678628
 +
 +    public void a(PacketListenerPlayOut packetlistenerplayout) {
 +        packetlistenerplayout.a(this);
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCombatEvent.java b/src/main/java/net/minecraft/server/PacketPlayOutCombatEvent.java
+new file mode 100644
+index 0000000..46885f9
+--- /dev/null
++++ b/src/main/java/net/minecraft/server/PacketPlayOutCombatEvent.java
+@@ -0,0 +1,77 @@
++package net.minecraft.server;
++
++import java.io.IOException;
++
++public class PacketPlayOutCombatEvent implements Packet<PacketListenerPlayOut> {
++
++    public PacketPlayOutCombatEvent.EnumCombatEventType a;
++    public int b;
++    public int c;
++    public int d;
++    public IChatBaseComponent e;
++
++    public PacketPlayOutCombatEvent() {}
++
++    public PacketPlayOutCombatEvent(CombatTracker combattracker, PacketPlayOutCombatEvent.EnumCombatEventType packetplayoutcombatevent_enumcombateventtype) {
++        this(combattracker, packetplayoutcombatevent_enumcombateventtype, true);
++    }
++
++    public PacketPlayOutCombatEvent(CombatTracker combattracker, PacketPlayOutCombatEvent.EnumCombatEventType packetplayoutcombatevent_enumcombateventtype, boolean flag) {
++        this.a = packetplayoutcombatevent_enumcombateventtype;
++        EntityLiving entityliving = combattracker.c();
++
++        switch (packetplayoutcombatevent_enumcombateventtype) {
++        case END_COMBAT:
++            this.d = combattracker.f();
++            this.c = entityliving == null ? -1 : entityliving.getId();
++            break;
++
++        case ENTITY_DIED:
++            this.b = combattracker.h().getId();
++            this.c = entityliving == null ? -1 : entityliving.getId();
++            if (flag) {
++                this.e = combattracker.getDeathMessage();
++            } else {
++                this.e = new ChatComponentText("");
++            }
++        }
++
++    }
++
++    public void a(PacketDataSerializer packetdataserializer) throws IOException {
++        this.a = (PacketPlayOutCombatEvent.EnumCombatEventType) packetdataserializer.a(PacketPlayOutCombatEvent.EnumCombatEventType.class);
++        if (this.a == PacketPlayOutCombatEvent.EnumCombatEventType.END_COMBAT) {
++            this.d = packetdataserializer.g();
++            this.c = packetdataserializer.readInt();
++        } else if (this.a == PacketPlayOutCombatEvent.EnumCombatEventType.ENTITY_DIED) {
++            this.b = packetdataserializer.g();
++            this.c = packetdataserializer.readInt();
++            this.e = packetdataserializer.f();
++        }
++
++    }
++
++    public void b(PacketDataSerializer packetdataserializer) throws IOException {
++        packetdataserializer.a((Enum) this.a);
++        if (this.a == PacketPlayOutCombatEvent.EnumCombatEventType.END_COMBAT) {
++            packetdataserializer.d(this.d);
++            packetdataserializer.writeInt(this.c);
++        } else if (this.a == PacketPlayOutCombatEvent.EnumCombatEventType.ENTITY_DIED) {
++            packetdataserializer.d(this.b);
++            packetdataserializer.writeInt(this.c);
++            packetdataserializer.a(this.e);
++        }
++
++    }
++
++    public void a(PacketListenerPlayOut packetlistenerplayout) {
++        packetlistenerplayout.a(this);
++    }
++
++    public static enum EnumCombatEventType {
++
++        ENTER_COMBAT, END_COMBAT, ENTITY_DIED;
++
++        private EnumCombatEventType() {}
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java b/src/main/java/net/minecraft/server/PacketPlayOutCustomSoundEffect.java

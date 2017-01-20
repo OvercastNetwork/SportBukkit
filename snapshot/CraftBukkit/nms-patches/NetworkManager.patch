@@ -9,7 +9,7 @@
  public class NetworkManager extends SimpleChannelInboundHandler<Packet<?>> {
  
      private static final Logger g = LogManager.getLogger();
-@@ -65,7 +67,12 @@
+@@ -65,7 +67,14 @@
      private final Queue<NetworkManager.QueuedPacket> i = Queues.newConcurrentLinkedQueue();
      private final ReentrantReadWriteLock j = new ReentrantReadWriteLock();
      public Channel channel;
@@ -18,12 +18,14 @@
 +    public SocketAddress l;
 +    public java.util.UUID spoofedUUID;
 +    public com.mojang.authlib.properties.Property[] spoofedProfile;
++
++    public int protocolVersion = Protocol.LATEST;
++    public java.util.UUID playerId;
 +    // SportBukkit End
-+    public int protocolVersion = Protocol.LATEST; // SportBukkit
      private PacketListener m;
      private IChatBaseComponent n;
      private boolean o;
-@@ -83,7 +90,7 @@
+@@ -83,7 +92,7 @@
          try {
              this.setProtocol(EnumProtocol.HANDSHAKING);
          } catch (Throwable throwable) {
@@ -32,7 +34,7 @@
          }
  
      }
-@@ -103,18 +110,19 @@
+@@ -103,18 +112,19 @@
  
          if (throwable instanceof TimeoutException) {
              chatmessage = new ChatMessage("disconnect.timeout", new Object[0]);
@@ -54,7 +56,7 @@
              } catch (CancelledPacketHandleException cancelledpackethandleexception) {
                  ;
              }
-@@ -233,7 +241,7 @@
+@@ -233,7 +243,7 @@
  
      public void close(IChatBaseComponent ichatbasecomponent) {
          if (this.channel.isOpen()) {
@@ -63,7 +65,7 @@
              this.n = ichatbasecomponent;
          }
  
-@@ -257,6 +265,7 @@
+@@ -257,6 +267,7 @@
          return this.channel == null;
      }
  
@@ -71,7 +73,7 @@
      public PacketListener i() {
          return this.m;
      }
-@@ -310,7 +319,7 @@
+@@ -310,7 +321,7 @@
          }
      }
  

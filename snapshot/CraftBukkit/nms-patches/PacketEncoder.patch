@@ -12,11 +12,14 @@
  
          if (PacketEncoder.a.isDebugEnabled()) {
              PacketEncoder.a.debug(PacketEncoder.b, "OUT: [{}:{}] {}", new Object[] { channelhandlercontext.channel().attr(NetworkManager.c).get(), integer, packet.getClass().getName()});
-@@ -30,19 +33,20 @@
+@@ -30,19 +33,23 @@
              throw new IOException("Can\'t serialize unregistered packet");
          } else {
              PacketDataSerializer packetdataserializer = new PacketDataSerializer(bytebuf);
-+            packetdataserializer.protocolVersion = networkManager.protocolVersion; // SportBukkit - set proto
++            // SportBukkit start
++            packetdataserializer.protocolVersion = networkManager.protocolVersion;
++            packetdataserializer.playerId = networkManager.playerId;
++            // SportBukkit end
  
              packetdataserializer.d(integer.intValue());
  

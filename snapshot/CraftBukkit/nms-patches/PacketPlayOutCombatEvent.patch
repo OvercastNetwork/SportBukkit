@@ -1,0 +1,33 @@
+--- a/net/minecraft/server/PacketPlayOutCombatEvent.java
++++ b/net/minecraft/server/PacketPlayOutCombatEvent.java
+@@ -2,7 +2,20 @@
+ 
+ import java.io.IOException;
+ 
+-public class PacketPlayOutCombatEvent implements Packet<PacketListenerPlayOut> {
++// SportBukkit start
++import org.bukkit.craftbukkit.protocol.RenderableComponent;
++import org.bukkit.craftbukkit.protocol.Renderable;
++import org.bukkit.entity.Player;
++
++public class PacketPlayOutCombatEvent implements Packet<PacketListenerPlayOut>, Renderable {
++
++    @Override
++    public void render(Player viewer) {
++        if(a == EnumCombatEventType.ENTITY_DIED) {
++            RenderableComponent.render(e, viewer);
++        }
++    }
++    // SportBukkit end
+ 
+     public PacketPlayOutCombatEvent.EnumCombatEventType a;
+     public int b;
+@@ -30,7 +43,7 @@
+             this.b = combattracker.h().getId();
+             this.c = entityliving == null ? -1 : entityliving.getId();
+             if (flag) {
+-                this.e = combattracker.getDeathMessage();
++                this.e = RenderableComponent.wrap(combattracker.getDeathMessage()); // SportBukkit
+             } else {
+                 this.e = new ChatComponentText("");
+             }

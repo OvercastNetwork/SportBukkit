@@ -1,4 +1,5 @@
 require 'digest'
+require 'pathname'
 require 'rake'
 
 def info(msg)

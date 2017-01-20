@@ -128,7 +128,7 @@ def modular_tasks(id:, name:, artifact:, work: nil)
             unless patched[]
                 Rake::Task["#{id}:apply"].invoke
             end
-            Dir.chdir(build) do
+            Dir.chdir build do
                 info "Compiling #{build}"
                 maven :clean, :install
             end
@@ -136,8 +136,10 @@ def modular_tasks(id:, name:, artifact:, work: nil)
 
         desc "Deploy #{name}"
         task :deploy => jar do
-            info "Deploying #{build}"
-            maven :deploy
+            Dir.chdir build do
+                info "Deploying #{build}"
+                maven :deploy
+            end
         end
 
         desc "Generate patches for #{name}"

@@ -3,6 +3,27 @@ Date: Sat, 7 Jan 2017 00:30:44 -0500
 Subject: [PATCH] Reduce ItemStack copying
 
 
+diff --git a/src/main/java/net/minecraft/server/EntityMinecartContainer.java b/src/main/java/net/minecraft/server/EntityMinecartContainer.java
+--- a/src/main/java/net/minecraft/server/EntityMinecartContainer.java
++++ b/src/main/java/net/minecraft/server/EntityMinecartContainer.java
+@@ -13,7 +13,7 @@ import org.bukkit.inventory.InventoryHolder;
+ 
+ public abstract class EntityMinecartContainer extends EntityMinecartAbstract implements ITileInventory, ILootable {
+ 
+-    private NonNullList<ItemStack> items;
++    private final NonNullList<ItemStack> items; // SportBukkit - add final
+     private boolean b;
+     private MinecraftKey c;
+     private long d;
+@@ -177,7 +177,7 @@ public abstract class EntityMinecartContainer extends EntityMinecartAbstract imp
+ 
+     protected void a(NBTTagCompound nbttagcompound) {
+         super.a(nbttagcompound);
+-        this.items = NonNullList.a(this.getSize(), ItemStack.a);
++        java.util.Collections.fill(this.items, ItemStack.a); // SportBukkit - fill list instead of creating a new one
+         if (nbttagcompound.hasKeyOfType("LootTable", 8)) {
+             this.c = new MinecraftKey(nbttagcompound.getString("LootTable"));
+             this.d = nbttagcompound.getLong("LootTableSeed");
 diff --git a/src/main/java/net/minecraft/server/ItemStack.java b/src/main/java/net/minecraft/server/ItemStack.java
 --- a/src/main/java/net/minecraft/server/ItemStack.java
 +++ b/src/main/java/net/minecraft/server/ItemStack.java
@@ -57,7 +78,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
  import net.md_5.bungee.api.chat.BaseComponent;
  import net.md_5.bungee.api.chat.TextComponent;
  import net.md_5.bungee.api.chat.TranslatableComponent;
-@@ -29,12 +32,15 @@ import org.bukkit.inventory.Inventory;
+@@ -29,12 +32,20 @@ import org.bukkit.inventory.Inventory;
  import org.bukkit.inventory.InventoryHolder;
  import org.bukkit.inventory.ItemStack;
  import org.bukkit.Material;
@@ -69,11 +90,16 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
  
      public CraftInventory(IInventory inventory) {
          this.inventory = inventory;
-+        this.contents = Lists.transform(inventory.getContents(), CraftItemStack::asCraftMirror);
++        List<net.minecraft.server.ItemStack> contents = inventory.getContents();
++        if(inventory.getSize() < contents.size()) {
++            // Some inventories have contents bigger than their size e.g. chest minecart
++            contents = contents.subList(0, inventory.getSize());
++        }
++        this.contents = Lists.transform(contents, CraftItemStack::asCraftMirror);
      }
  
      public IInventory getInventory() {
-@@ -69,36 +75,25 @@ public class CraftInventory implements Inventory {
+@@ -69,36 +80,25 @@ public class CraftInventory implements Inventory {
      }
  
      @Override
@@ -117,7 +143,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              }
          }
      }
-@@ -108,7 +103,7 @@ public class CraftInventory implements Inventory {
+@@ -108,7 +108,7 @@ public class CraftInventory implements Inventory {
      }
  
      public boolean contains(int materialId) {
@@ -126,7 +152,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              if (item != null && item.getTypeId() == materialId) {
                  return true;
              }
-@@ -122,22 +117,14 @@ public class CraftInventory implements Inventory {
+@@ -122,22 +122,14 @@ public class CraftInventory implements Inventory {
      }
  
      public boolean contains(ItemStack item) {
@@ -151,7 +177,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              if (item != null && item.getTypeId() == materialId) {
                  if ((amount -= item.getAmount()) <= 0) {
                      return true;
-@@ -159,7 +146,7 @@ public class CraftInventory implements Inventory {
+@@ -159,7 +151,7 @@ public class CraftInventory implements Inventory {
          if (amount <= 0) {
              return true;
          }
@@ -160,7 +186,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              if (item.equals(i) && --amount <= 0) {
                  return true;
              }
-@@ -174,7 +161,7 @@ public class CraftInventory implements Inventory {
+@@ -174,7 +166,7 @@ public class CraftInventory implements Inventory {
          if (amount <= 0) {
              return true;
          }
@@ -169,7 +195,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              if (item.isSimilar(i) && (amount -= i.getAmount()) <= 0) {
                  return true;
              }
-@@ -185,9 +172,9 @@ public class CraftInventory implements Inventory {
+@@ -185,9 +177,9 @@ public class CraftInventory implements Inventory {
      public HashMap<Integer, ItemStack> all(int materialId) {
          HashMap<Integer, ItemStack> slots = new HashMap<Integer, ItemStack>();
  
@@ -182,7 +208,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
              if (item != null && item.getTypeId() == materialId) {
                  slots.put(i, item);
              }
-@@ -203,10 +190,10 @@ public class CraftInventory implements Inventory {
+@@ -203,10 +195,10 @@ public class CraftInventory implements Inventory {
      public HashMap<Integer, ItemStack> all(ItemStack item) {
          HashMap<Integer, ItemStack> slots = new HashMap<Integer, ItemStack>();
          if (item != null) {
@@ -197,7 +223,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
                  }
              }
          }
-@@ -214,14 +201,7 @@ public class CraftInventory implements Inventory {
+@@ -214,14 +206,7 @@ public class CraftInventory implements Inventory {
      }
  
      public int first(int materialId) {
@@ -213,7 +239,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
      }
  
      public int first(Material material) {
-@@ -237,36 +217,19 @@ public class CraftInventory implements Inventory {
+@@ -237,36 +222,19 @@ public class CraftInventory implements Inventory {
          if (item == null) {
              return -1;
          }
@@ -257,7 +283,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
      }
  
      public int firstPartial(Material material) {
-@@ -275,18 +238,12 @@ public class CraftInventory implements Inventory {
+@@ -275,18 +243,12 @@ public class CraftInventory implements Inventory {
      }
  
      protected int firstPartial(ItemStack item) {
@@ -282,7 +308,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftInventory.java 
      }
  
      public HashMap<Integer, ItemStack> addItem(ItemStack... items) {
-@@ -401,27 +358,28 @@ public class CraftInventory implements Inventory {
+@@ -401,27 +363,28 @@ public class CraftInventory implements Inventory {
          return getInventory().getMaxStackSize();
      }
  

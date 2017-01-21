@@ -40,7 +40,12 @@ public class CraftInventory implements Inventory {
 
     public CraftInventory(IInventory inventory) {
         this.inventory = inventory;
-        this.contents = Lists.transform(inventory.getContents(), CraftItemStack::asCraftMirror);
+        List<net.minecraft.server.ItemStack> contents = inventory.getContents();
+        if(inventory.getSize() < contents.size()) {
+            // Some inventories have contents bigger than their size e.g. chest minecart
+            contents = contents.subList(0, inventory.getSize());
+        }
+        this.contents = Lists.transform(contents, CraftItemStack::asCraftMirror);
     }
 
     public IInventory getInventory() {

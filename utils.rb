@@ -1,5 +1,6 @@
 require 'digest'
 require 'pathname'
+require 'shellwords'
 require 'rake'
 
 def info(msg)

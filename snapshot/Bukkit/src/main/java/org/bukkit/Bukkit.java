@@ -190,39 +190,13 @@ public final class Bukkit {
      */
     public static int getMaxPlayers() {
         return server.getMaxPlayers();
-
-    }
-    /**
-     * Get the port number specified in the server configuration.
-     * If this is 0, the port is dynamically allocated, and can be
-     * retrieved with {@link #getPort()}.
-     *
-     * @return the configured listening port
-     */
-    public static int getConfiguredPort() {
-        return server.getConfiguredPort();
     }
 
     /**
-     * Get the port that the server is currently listening on.
-     * If the port is dynamic, this method can be used to detect the
-     * ephemeral port that was allocated. If the server is not bound
-     * to a port, this will return 0, which should only happen if
-     * binding failed for some reason.
-     *
-     * @return the currently bound listening port
-     */
-    public static int getBoundPort() {
-        return server.getBoundPort();
-    }
-
-    /**
-     * Get the port that the server is currently listening on,
-     * or the configured port if the server is not currently listening.
+     * Get the game port that the server runs on.
      *
      * @return the port number of this server
      */
-    @Deprecated
     public static int getPort() {
         return server.getPort();
     }

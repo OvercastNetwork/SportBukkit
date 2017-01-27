@@ -56,7 +56,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
          Bukkit.server = server;
          server.getLogger().info("This server is running " + getName() + " version " + getVersion() + " (Implementing API version " + getBukkitVersion() + ")");
      }
-@@ -1117,7 +1137,7 @@ public final class Bukkit {
+@@ -1091,7 +1111,7 @@ public final class Bukkit {
       * @see ItemFactory
       */
      public static ItemFactory getItemFactory() {
@@ -65,7 +65,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
      }
  
      /**
-@@ -1207,12 +1227,12 @@ public final class Bukkit {
+@@ -1181,12 +1201,12 @@ public final class Bukkit {
  
      /**
       * Create a ChunkData for use in a generator.
@@ -81,7 +81,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
       */
      public static ChunkGenerator.ChunkData createChunkData(World world) {
          return server.createChunkData(world);
-@@ -1258,4 +1278,12 @@ public final class Bukkit {
+@@ -1232,4 +1252,12 @@ public final class Bukkit {
      public static void broadcast(net.md_5.bungee.api.chat.BaseComponent... components) {
          server.broadcast(components);
      }

@@ -1321,7 +1321,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
  import org.bukkit.craftbukkit.scheduler.CraftScheduler;
  import org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager;
  import org.bukkit.craftbukkit.util.CraftIconCache;
-@@ -1891,7 +1892,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1875,7 +1876,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      @Override
      public Set<Integer> getProtocolVersions() {

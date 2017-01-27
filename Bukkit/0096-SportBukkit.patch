@@ -1,0 +1,105 @@
+From: Jedediah Smith <jedediah@silencegreys.com>
+Date: Tue, 17 Jan 2017 07:10:05 -0500
+Subject: [PATCH] SportBukkit
+
+
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -1,4 +1,4 @@
+-Bukkit
++SportBukkit-API
+ ======
+ A plugin API for [Minecraft](https://minecraft.net/) servers, currently maintained by [SpigotMC](http://www.spigotmc.org/).
+ 
+diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
+--- a/src/main/java/org/bukkit/OfflinePlayer.java
++++ b/src/main/java/org/bukkit/OfflinePlayer.java
+@@ -1,6 +1,7 @@
+ package org.bukkit;
+ 
+ import java.util.Date;
++import java.util.Optional;
+ import java.util.UUID;
+ 
+ import org.bukkit.configuration.serialization.ConfigurationSerializable;
+@@ -10,7 +11,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
+ import org.bukkit.event.player.PlayerQuitEvent;
+ import org.bukkit.permissions.ServerOperator;
+ 
+-public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable {
++public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, tc.oc.minecraft.api.entity.OfflinePlayer {
+ 
+     /**
+      * Checks if this player is currently online
+@@ -37,6 +38,11 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
+      */
+     public String getName();
+ 
++    @Override
++    default Optional<String> getLastKnownName() {
++        return Optional.ofNullable(getName());
++    }
++
+     /**
+      * Returns the UUID of this player
+      *
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -679,6 +679,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+      */
+     public void shutdown();
+ 
++    @Override
++    default void stop() {
++        shutdown();
++    }
++
+     /**
+      * Broadcasts the specified message to every user with the given
+      * permission name.
+diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
+--- a/src/main/java/org/bukkit/entity/Player.java
++++ b/src/main/java/org/bukkit/entity/Player.java
+@@ -2,6 +2,7 @@ package org.bukkit.entity;
+ 
+ import java.net.InetSocketAddress;
+ import java.util.List;
++import java.util.Optional;
+ import java.util.Set;
+ 
+ import net.md_5.bungee.api.chat.BaseComponent;
+@@ -34,6 +35,11 @@ import org.bukkit.util.Vector;
+  */
+ public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, tc.oc.minecraft.api.entity.Player {
+ 
++    @Override
++    default Optional<String> getLastKnownName() {
++        return Optional.of(getName());
++    }
++
+     /**
+      * Set a fake name for this player when viewed by the given player.
+      * If the name is null then the fake name is cleared.
+diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+--- a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
++++ b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
+@@ -24,6 +24,7 @@ import org.yaml.snakeyaml.nodes.Tag;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableMap;
+ import com.google.common.collect.ImmutableSet;
++import tc.oc.collection.ConcatenatedList;
+ 
+ /**
+  * This type is the runtime-container for the information in the plugin.yml.
+@@ -952,7 +953,8 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
+             classLoaderOf = map.get("class-loader-of").toString();
+         }
+ 
+-        depend = makePluginNameList(map, "depend");
++        depend = ConcatenatedList.of(makePluginNameList(map, "depend"),
++                                     makePluginNameList(map, "depends"));
+         softDepend = makePluginNameList(map, "softdepend");
+         loadBefore = makePluginNameList(map, "loadbefore");
+ 

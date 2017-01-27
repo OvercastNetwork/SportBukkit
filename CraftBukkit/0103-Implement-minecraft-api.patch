@@ -66,7 +66,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
  
  public final class CraftServer implements Server {
      private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
-@@ -653,6 +655,11 @@ public final class CraftServer implements Server {
+@@ -637,6 +639,11 @@ public final class CraftServer implements Server {
      }
  
      @Override
@@ -78,7 +78,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      public CraftScheduler getScheduler() {
          return scheduler;
      }
-@@ -1810,4 +1817,9 @@ public final class CraftServer implements Server {
+@@ -1794,4 +1801,9 @@ public final class CraftServer implements Server {
              player.sendMessage(components);
          }
      }

@@ -8,7 +8,7 @@
  import java.util.Collections;
  import java.util.Iterator;
  import java.util.List;
-@@ -58,8 +59,15 @@
+@@ -58,8 +59,24 @@
      };
      private final MinecraftServer f;
      public volatile boolean d;
@@ -20,13 +20,22 @@
 +    // SportBukkit end
 +
 +    // SportBukkit start
-+    private int port;
-+    public int getPort() { return port; }
++    private java.net.InetSocketAddress localAddress;
++    public java.net.InetSocketAddress localAddress() {
++        if(localAddress != null) {
++            // If connected, return bound address (with potentially dynamic port)
++            return localAddress;
++        } else {
++            // If not connected yet, return configured address and port (which may be 0)
++            return java.net.InetSocketAddress.createUnresolved(this.f.getServerIp(),
++                                                               this.f.getConfiguredPort());
++        }
++    }
 +    // SportBukkit end
  
      public ServerConnection(MinecraftServer minecraftserver) {
          this.f = minecraftserver;
-@@ -97,8 +105,11 @@
+@@ -97,8 +114,11 @@
                      ServerConnection.this.h.add(networkmanager);
                      channel.pipeline().addLast("packet_handler", networkmanager);
                      networkmanager.setPacketListener(new HandshakeListener(ServerConnection.this.f, networkmanager));
@@ -34,11 +43,11 @@
                  }
              }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
 +
-+            this.port = ((java.net.InetSocketAddress) this.g.get(0).channel().localAddress()).getPort(); // SportBukkit
++            this.localAddress = (java.net.InetSocketAddress) this.g.get(0).channel().localAddress(); // SportBukkit
          }
      }
  
-@@ -106,16 +117,27 @@
+@@ -106,16 +126,27 @@
          this.d = false;
          Iterator iterator = this.g.iterator();
  
@@ -70,7 +79,7 @@
      }
  
      public void c() {
-@@ -151,7 +173,7 @@
+@@ -151,7 +182,7 @@
                              ServerConnection.e.warn("Failed to handle packet for {}", new Object[] { networkmanager.getSocketAddress(), exception});
                              final ChatComponentText chatcomponenttext = new ChatComponentText("Internal server error");
  
@@ -79,7 +88,7 @@
                                  public void operationComplete(Future<? super Void> future) throws Exception {
                                      networkmanager.close(chatcomponenttext);
                                  }
-@@ -171,4 +193,10 @@
+@@ -171,4 +202,10 @@
      public MinecraftServer d() {
          return this.f;
      }

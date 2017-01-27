@@ -6,7 +6,7 @@ Subject: [PATCH] Plugin isolation
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -369,6 +369,13 @@ public final class Bukkit {
+@@ -343,6 +343,13 @@ public final class Bukkit {
      }
  
      /**
@@ -23,7 +23,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -304,6 +304,11 @@ public interface Server extends PluginMessageRecipient {
+@@ -279,6 +279,11 @@ public interface Server extends PluginMessageRecipient {
      public boolean getWaterPushesTNT();
  
      /**

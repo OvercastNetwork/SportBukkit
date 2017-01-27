@@ -15,7 +15,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  import org.bukkit.registry.Key;
  import org.bukkit.scheduler.BukkitScheduler;
  import org.bukkit.scoreboard.ScoreboardManager;
-@@ -1286,4 +1288,12 @@ public final class Bukkit {
+@@ -1260,4 +1262,12 @@ public final class Bukkit {
      public static Key key(String id) {
          return runtime().key(id);
      }

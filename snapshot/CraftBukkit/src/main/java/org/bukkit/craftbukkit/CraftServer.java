@@ -6,6 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -194,6 +198,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     public int reloadCount;
     public boolean bungee = false;
     public static final com.google.gson.Gson gson = new com.google.gson.Gson();
+    private final Path root;
 
     private @Nullable Instant emptySince;
 
@@ -208,6 +213,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
 
     public CraftServer(MinecraftServer console, PlayerList playerList) {
         this.console = console;
+        this.root = Paths.get(".").toAbsolutePath();
         this.eventBus = new SimpleEventBus(this.console.primaryThread, pluginManager);
         this.playerList = (DedicatedPlayerList) playerList;
         this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, EntityPlayer::getBukkitEntity));
@@ -549,25 +555,9 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
 
     // NOTE: These are dependent on the corresponding call in MinecraftServer
     // so if that changes this will need to as well
-
-    @Override
-    public int getConfiguredPort() {
-        return this.getConfigInt("server-port", 25565);
-    }
-
-    @Override
-    public int getBoundPort() {
-        return getHandle().getServer().getServerConnection().getPort();
-    }
-
     @Override
     public int getPort() {
-        int port = getBoundPort();
-        if(port > 0) {
-            return port;
-        } else {
-            return getConfiguredPort();
-        }
+        return getAddress().getPort();
     }
 
     @Override
@@ -577,7 +567,12 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
 
     @Override
     public String getIp() {
-        return this.getConfigString("server-ip", "");
+        return getAddress().getHostString();
+    }
+
+    @Override
+    public InetSocketAddress getAddress() {
+        return getHandle().getServer().getServerConnection().localAddress();
     }
 
     @Override
@@ -651,6 +646,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     }
 
     // End Temporary calls
+
+    @Override
+    public Path getRootPath() {
+        return root;
+    }
 
     @Override
     public String getUpdateFolder() {
@@ -1443,6 +1443,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     }
 
     @Override
+    public boolean isStopping() {
+        return !console.isRunning();
+    }
+
+    @Override
     public int broadcast(String message, String permission) {
         int count = 0;
         Set<Permissible> permissibles = getPluginManager().getPermissionSubscriptions(permission);
@@ -1635,21 +1640,29 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     }
 
     @Override
-    public OfflinePlayer[] getOfflinePlayers() {
-        WorldNBTStorage storage = (WorldNBTStorage) console.worlds.get(0).getDataManager();
-        String[] files = storage.getPlayerDir().list(new DatFileFilter());
-        Set<OfflinePlayer> players = new HashSet<OfflinePlayer>();
-
-        for (String file : files) {
+    public Set<OfflinePlayer> getSavedPlayers() {
+        final Set<OfflinePlayer> players = new HashSet<>();
+        for (String file : ((WorldNBTStorage) console.worlds.get(0).getDataManager()).getPlayerDir().list(new DatFileFilter())) {
             try {
                 players.add(getOfflinePlayer(UUID.fromString(file.substring(0, file.length() - 4))));
             } catch (IllegalArgumentException ex) {
                 // Who knows what is in this directory, just ignore invalid files
             }
         }
-
         players.addAll(getOnlinePlayers());
+        return players;
+    }
 
+    @Override
+    public Optional<OfflinePlayer> tryOfflinePlayer(UUID id) {
+        final WorldNBTStorage storage = (WorldNBTStorage) console.worlds.get(0).getDataManager();
+        return storage.hasPlayerData(id) ? Optional.of(getOfflinePlayer(id))
+                                         : Optional.empty();
+    }
+
+    @Override
+    public OfflinePlayer[] getOfflinePlayers() {
+        final Set<OfflinePlayer> players = getSavedPlayers();
         return players.toArray(new OfflinePlayer[players.size()]);
     }
 

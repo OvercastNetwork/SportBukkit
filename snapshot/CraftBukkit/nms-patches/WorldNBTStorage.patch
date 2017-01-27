@@ -20,7 +20,7 @@
  
      public WorldNBTStorage(File file, String s, boolean flag, DataConverterManager dataconvertermanager) {
          this.a = dataconvertermanager;
-@@ -168,12 +174,38 @@
+@@ -168,12 +174,46 @@
          }
  
          if (nbttagcompound != null) {
@@ -41,6 +41,14 @@
      }
  
 +    // CraftBukkit start
++    public File getPlayerFile(UUID id) {
++        return new File(this.playerDir, id + ".dat");
++    }
++
++    public boolean hasPlayerData(UUID id) {
++        return getPlayerFile(id).isFile();
++    }
++
 +    public NBTTagCompound getPlayerData(String s) {
 +        try {
 +            File file1 = new File(this.playerDir, s + ".dat");
@@ -59,7 +67,7 @@
      public IPlayerFileData getPlayerFileData() {
          return this;
      }
-@@ -203,4 +235,50 @@
+@@ -203,4 +243,50 @@
      public DefinedStructureManager h() {
          return this.h;
      }

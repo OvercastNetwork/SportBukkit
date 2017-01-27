@@ -6,7 +6,7 @@ Subject: [PATCH] Enhanced boss bar API
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1794,7 +1794,7 @@ public final class CraftServer implements Server {
+@@ -1778,7 +1778,7 @@ public final class CraftServer implements Server {
      }
  
      @Override

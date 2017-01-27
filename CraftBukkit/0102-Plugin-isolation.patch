@@ -6,7 +6,7 @@ Subject: [PATCH] Plugin isolation
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -633,6 +633,11 @@ public final class CraftServer implements Server {
+@@ -617,6 +617,11 @@ public final class CraftServer implements Server {
      }
  
      @Override

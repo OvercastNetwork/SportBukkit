@@ -14,7 +14,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.ServicesManager;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -1310,4 +1311,12 @@ public final class Bukkit {
+@@ -1284,4 +1285,12 @@ public final class Bukkit {
      public static PotionEffectRegistry potionEffectRegistry() {
          return runtime().potionEffectRegistry();
      }
@@ -38,7 +38,7 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
  import org.bukkit.plugin.PluginManager;
  import org.bukkit.plugin.ServicesManager;
  import org.bukkit.plugin.messaging.Messenger;
-@@ -1053,4 +1054,26 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1028,4 +1029,26 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       * @param components the components to send
       */
      public void broadcast(net.md_5.bungee.api.chat.BaseComponent... components);

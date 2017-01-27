@@ -6,7 +6,7 @@ Subject: [PATCH] Server suspend API
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -280,6 +280,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -275,6 +275,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                      thread1.setName("Server Watchdog");
                      thread1.setDaemon(true);
                      thread1.start();
@@ -14,7 +14,7 @@ diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/
                  }
  
                  return true;
-@@ -386,6 +387,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -381,6 +382,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
  
      public void issueCommand(String s, ICommandListener icommandlistener) {
          this.serverCommandQueue.add(new ServerCommand(s, icommandlistener));
@@ -172,7 +172,7 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
          /*
          synchronized (this.j) {
              while (!this.j.isEmpty()) {
-@@ -1467,6 +1557,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1465,6 +1555,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
              synchronized (this.j) {
                  this.j.add(listenablefuturetask);
@@ -180,7 +180,7 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
                  return listenablefuturetask;
              }
          } else {
-@@ -1500,6 +1591,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1498,6 +1589,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
                  taskQueue.addLast(task);
              }
          }
@@ -191,7 +191,7 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -192,4 +192,10 @@ public class ServerConnection {
+@@ -185,4 +185,10 @@ public class ServerConnection {
      public MinecraftServer d() {
          return this.f;
      }
@@ -261,7 +261,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      private final class BooleanWrapper {
          private boolean value = true;
      }
-@@ -682,6 +687,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -666,6 +671,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override
@@ -278,7 +278,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      public PluginManager getPluginManager() {
          return pluginManager;
      }
-@@ -1918,4 +1933,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1902,4 +1917,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
          return task instanceof Wrapped ? task : new Wrapped();
      }

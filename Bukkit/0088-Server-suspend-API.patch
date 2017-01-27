@@ -36,7 +36,7 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
       * Get the maximum amount of players which can login to this server.
       *
       * @return the amount of players this server allows
-@@ -360,6 +369,13 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -335,6 +344,13 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
      public int getTicksPerMonsterSpawns();
  
      /**
@@ -50,7 +50,7 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
       * Gets a player object by the given username.
       * <p>
       * This method may not return objects for offline players.
-@@ -1090,4 +1106,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -1065,4 +1081,65 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       *         false if it was added to the main thread queue
       */
      boolean runOnMainThread(Plugin plugin, boolean priority, Runnable task);

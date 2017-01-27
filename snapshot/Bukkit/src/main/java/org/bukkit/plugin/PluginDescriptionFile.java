@@ -24,6 +24,7 @@ import org.yaml.snakeyaml.nodes.Tag;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import tc.oc.collection.ConcatenatedList;
 
 /**
  * This type is the runtime-container for the information in the plugin.yml.
@@ -952,7 +953,8 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
             classLoaderOf = map.get("class-loader-of").toString();
         }
 
-        depend = makePluginNameList(map, "depend");
+        depend = ConcatenatedList.of(makePluginNameList(map, "depend"),
+                                     makePluginNameList(map, "depends"));
         softDepend = makePluginNameList(map, "softdepend");
         loadBefore = makePluginNameList(map, "loadbefore");
 

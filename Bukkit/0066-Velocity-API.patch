@@ -6,7 +6,7 @@ Subject: [PATCH] Velocity API
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -392,6 +392,13 @@ public final class Bukkit {
+@@ -366,6 +366,13 @@ public final class Bukkit {
      }
  
      /**
@@ -23,7 +23,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -304,6 +304,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -279,6 +279,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
      public boolean getWaterPushesTNT();
  
      /**

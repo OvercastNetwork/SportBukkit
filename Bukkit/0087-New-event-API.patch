@@ -14,7 +14,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  import org.bukkit.event.inventory.InventoryType;
  import org.bukkit.event.server.ServerListPingEvent;
  import org.bukkit.help.HelpMap;
-@@ -556,6 +557,10 @@ public final class Bukkit {
+@@ -530,6 +531,10 @@ public final class Bukkit {
          return server.getServicesManager();
      }
  
@@ -25,7 +25,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
      /**
       * Gets a list of all worlds on this server.
       *
-@@ -1146,6 +1151,10 @@ public final class Bukkit {
+@@ -1120,6 +1125,10 @@ public final class Bukkit {
          return server.getWarningState();
      }
  
@@ -132,7 +132,7 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
      /**
       * Get the maximum amount of players which can login to this server.
       *
-@@ -440,12 +443,21 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -415,12 +418,21 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
      public ServicesManager getServicesManager();
  
      /**
@@ -154,7 +154,7 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
      /**
       * Check for a level.dat file belonging to a world with the given name.
       * If found, return a {@link WorldCreator} configured to match the settings
-@@ -930,6 +942,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -905,6 +917,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       */
      public WarningState getWarningState();
  

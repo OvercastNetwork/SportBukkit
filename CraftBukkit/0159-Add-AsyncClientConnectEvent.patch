@@ -6,14 +6,14 @@ Subject: [PATCH] Add AsyncClientConnectEvent
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -105,6 +105,7 @@ public class ServerConnection {
+@@ -100,6 +100,7 @@ public class ServerConnection {
                      ServerConnection.this.h.add(networkmanager);
                      channel.pipeline().addLast("packet_handler", networkmanager);
                      networkmanager.setPacketListener(new HandshakeListener(ServerConnection.this.f, networkmanager));
 +                    f.server.eventBus().callEvent(new org.bukkit.craftbukkit.event.AsyncClientConnectEvent(channel, networkmanager)); // SportBukkit
                  }
              }).group((EventLoopGroup) lazyinitvar.c()).localAddress(inetaddress, i)).bind().syncUninterruptibly());
- 
+         }
 diff --git a/src/main/java/org/bukkit/craftbukkit/event/AsyncClientConnectEvent.java b/src/main/java/org/bukkit/craftbukkit/event/AsyncClientConnectEvent.java
 new file mode 100644
 index 0000000..b6d8ba9

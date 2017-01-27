@@ -14,7 +14,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  
  /**
   * Represents the Bukkit core, for version and Server singleton handling
-@@ -619,6 +620,10 @@ public final class Bukkit {
+@@ -593,6 +594,10 @@ public final class Bukkit {
          return server.getWorld(uid);
      }
  
@@ -25,7 +25,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
      /**
       * Gets the map from the given item ID.
       *
-@@ -1289,6 +1294,8 @@ public final class Bukkit {
+@@ -1263,6 +1268,8 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -578,7 +578,7 @@ diff --git a/src/main/java/org/bukkit/Location.java b/src/main/java/org/bukkit/L
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -509,6 +509,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -484,6 +484,8 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       */
      public World getWorld(UUID uid);
  

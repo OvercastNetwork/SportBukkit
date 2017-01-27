@@ -6,7 +6,7 @@ Subject: [PATCH] Don't tick empty worlds
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -230,6 +230,10 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -205,6 +205,10 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       */
      public boolean getGenerateStructures();
  

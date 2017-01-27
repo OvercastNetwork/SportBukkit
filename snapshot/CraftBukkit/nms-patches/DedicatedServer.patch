@@ -116,8 +116,8 @@
              try {
                  this.an().a(inetaddress, this.P());
 +                // SportBukkit start
-+                if(this.getServerConnection().getPort() != this.getConfiguredPort()) {
-+                    DedicatedServer.LOGGER.info("Bound to port " + this.getServerConnection().getPort());
++                if(this.getServerConnection().localAddress().getPort() != this.getConfiguredPort()) {
++                    DedicatedServer.LOGGER.info("Bound to port " + this.getServerConnection().localAddress().getPort());
 +                }
 +                // SportBukkit end
              } catch (IOException ioexception) {
@@ -191,16 +191,16 @@
      public void issueCommand(String s, ICommandListener icommandlistener) {
          this.serverCommandQueue.add(new ServerCommand(s, icommandlistener));
 +        interrupt(); // SportBukkit
-+    }
-+
+     }
+ 
 +    // SportBukkit start
 +    @Override
 +    protected void processTasks() {
 +        super.processTasks();
 +        processCommands();
-     }
++    }
 +    // SportBukkit end
- 
++
 +    public void processCommands() { aM(); } // SportBukkit - alias
      public void aM() {
          while (!this.serverCommandQueue.isEmpty()) {
@@ -219,24 +219,16 @@
          }
  
      }
-@@ -374,9 +458,15 @@
-         return this.getServerIp();
+@@ -375,7 +459,7 @@
      }
  
-+    // SportBukkit start - return dynamic port, if set, otherwise configured port
      public int e_() {
 -        return this.P();
-+        if(this.getServerConnection().getPort() != 0) {
-+            return this.getServerConnection().getPort();
-+        } else {
-+            return this.getConfiguredPort();
-+        }
++        return getServerConnection().localAddress().getPort(); // SportBukkit - return dynamic port, if set, otherwise configured port
      }
-+    // SportBukkit end
  
      public String f_() {
-         return this.getMotd();
-@@ -534,16 +624,70 @@
+@@ -534,16 +618,70 @@
      }
  
      public String getPlugins() {

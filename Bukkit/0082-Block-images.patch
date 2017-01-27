@@ -14,7 +14,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  import org.bukkit.permissions.Permissible;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.PluginManager;
-@@ -1302,6 +1303,7 @@ public final class Bukkit {
+@@ -1276,6 +1277,7 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -49,7 +49,7 @@ diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/buk
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -1013,12 +1013,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -988,12 +988,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
  
      /**
       * Create a ChunkData for use in a generator.

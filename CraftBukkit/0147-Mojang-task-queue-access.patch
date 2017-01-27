@@ -6,7 +6,7 @@ Subject: [PATCH] Mojang task queue access
 diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/java/net/minecraft/server/DedicatedServer.java
 --- a/src/main/java/net/minecraft/server/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/DedicatedServer.java
-@@ -363,7 +363,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -358,7 +358,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
  
      public void D() { // CraftBukkit - fix decompile error
          super.D();
@@ -15,7 +15,7 @@ diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/
      }
  
      public boolean getAllowNether() {
-@@ -388,6 +388,15 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -383,6 +383,15 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
          this.serverCommandQueue.add(new ServerCommand(s, icommandlistener));
      }
  
@@ -31,7 +31,7 @@ diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/
      public void aM() {
          while (!this.serverCommandQueue.isEmpty()) {
              ServerCommand servercommand = (ServerCommand) this.serverCommandQueue.remove(0);
-@@ -657,7 +666,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
+@@ -646,7 +655,7 @@ public class DedicatedServer extends MinecraftServer implements IMinecraftServer
                  return remoteControlCommandListener.getMessages();
              }
          };
@@ -121,7 +121,7 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
  
          org.bukkit.craftbukkit.chunkio.ChunkIOExecutor.tick();
  
-@@ -1475,6 +1487,47 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1473,6 +1485,47 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          return Thread.currentThread() == this.serverThread;
      }
  
@@ -202,7 +202,7 @@ diff --git a/src/main/java/net/minecraft/server/PlayerConnection.java b/src/main
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
-@@ -126,14 +126,8 @@ public class ServerConnection {
+@@ -119,14 +119,8 @@ public class ServerConnection {
          }
  
          for(;;) {
@@ -230,7 +230,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.PluginLoadOrder;
  import org.bukkit.plugin.PluginManager;
-@@ -1832,4 +1833,44 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1816,4 +1817,44 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      public Set<Integer> getProtocolVersions() {
          return ImmutableSet.of(315);
      }

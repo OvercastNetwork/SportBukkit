@@ -228,6 +228,7 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
     private Map<?, ?> lazyPermissions = null;
     private PermissionDefault defaultPerm = PermissionDefault.OP;
     private Set<PluginAwareness> awareness = ImmutableSet.of();
+    private boolean isolate;
 
     public PluginDescriptionFile(final InputStream stream) throws InvalidDescriptionException {
         loadMap(asMap(YAML.get().load(stream)));
@@ -874,6 +875,11 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
         return classLoaderOf;
     }
 
+    @Override
+    public boolean isIsolated() {
+        return isolate;
+    }
+
     public void setDatabaseEnabled(boolean database) {
         this.database = database;
     }
@@ -1035,6 +1041,10 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
 
         if (map.get("prefix") != null) {
             prefix = map.get("prefix").toString();
+        }
+
+        if(map.get("isolate") instanceof Boolean) {
+            isolate = (Boolean) map.get("isolate");
         }
     }
 

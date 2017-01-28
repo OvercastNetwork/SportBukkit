@@ -17,9 +17,9 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
 +    }
 +
 +    /**
-      * Should plugins be able to access classes from other plugins that are not explicit dependencies?
-      */
-     public static boolean getIsolatePlugins() {
+      * Gets default ticks per animal spawns value.
+      * <p>
+      * <b>Example Usage:</b>
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
@@ -32,9 +32,9 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
 +    public boolean getLegacyKnockback();
 +
 +    /**
-      * Should plugins be able to access classes from other plugins that are not explicit dependencies?
-      */
-     public boolean getIsolatePlugins();
+      * Gets default ticks per animal spawns value.
+      * <p>
+      * <b>Example Usage:</b>
 diff --git a/src/main/java/org/bukkit/entity/Entity.java b/src/main/java/org/bukkit/entity/Entity.java
 --- a/src/main/java/org/bukkit/entity/Entity.java
 +++ b/src/main/java/org/bukkit/entity/Entity.java

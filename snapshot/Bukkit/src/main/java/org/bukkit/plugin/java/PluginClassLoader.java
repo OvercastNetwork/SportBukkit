@@ -11,7 +11,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.inject.Module;
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.InvalidPluginException;
 import org.bukkit.plugin.PluginDescriptionFile;
 
@@ -26,7 +25,6 @@ final class PluginClassLoader extends URLClassLoader {
     private final PluginDescriptionFile description;
     private final File dataFolder;
     private final File file;
-    private final boolean isolate;
     JavaPlugin plugin;
 
     static {
@@ -45,8 +43,6 @@ final class PluginClassLoader extends URLClassLoader {
 
         this.dependencies = dependencies;
         linearizeDependencies();
-
-        this.isolate = Bukkit.getIsolatePlugins();
     }
 
     JavaPlugin createPlugin() throws InvalidPluginException {
@@ -97,7 +93,7 @@ final class PluginClassLoader extends URLClassLoader {
      */
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-        if(isolate) {
+        if(description.isIsolated()) {
             // Local, dependencies, Bukkit
             try {
                 // Search local plugin, followed by dependencies
@@ -148,15 +144,17 @@ final class PluginClassLoader extends URLClassLoader {
     }
 
     /**
-     * Load a class from the first plugin that provides it (including this plugin), in loading order.
+     * Load a class from the first non-isolated plugin that provides it (including this plugin), in loading order.
      */
     Class<?> loadPluginClass(String name, boolean resolve) throws ClassNotFoundException {
         pluginLoader.loaderLock.readLock().lock();
         try {
             for(PluginClassLoader loader : pluginLoader.loaders.values()) {
-                try {
-                    return loader.loadLocalClass(name, resolve);
-                } catch(ClassNotFoundException ignored) {}
+                if(!loader.description.isIsolated()) {
+                    try {
+                        return loader.loadLocalClass(name, resolve);
+                    } catch(ClassNotFoundException ignored) {}
+                }
             }
         } finally {
             pluginLoader.loaderLock.readLock().unlock();

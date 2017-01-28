@@ -6,7 +6,7 @@ Subject: [PATCH] Enhanced boss bar API
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -1202,7 +1202,7 @@ public final class Bukkit {
+@@ -1195,7 +1195,7 @@ public final class Bukkit {
       * @param flags an optional list of flags to set on the boss bar
       * @return the created boss bar
       */
@@ -18,7 +18,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -999,7 +999,7 @@ public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.serv
+@@ -994,7 +994,7 @@ public interface Server extends PluginMessageRecipient, tc.oc.minecraft.api.serv
       * @param flags an optional list of flags to set on the boss bar
       * @return the created boss bar
       */

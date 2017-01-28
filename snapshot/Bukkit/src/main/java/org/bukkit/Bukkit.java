@@ -376,13 +376,6 @@ public final class Bukkit {
     }
 
     /**
-     * Should plugins be able to access classes from other plugins that are not explicit dependencies?
-     */
-    public static boolean getIsolatePlugins() {
-        return server.getIsolatePlugins();
-    }
-
-    /**
      * Gets default ticks per animal spawns value.
      * <p>
      * <b>Example Usage:</b>

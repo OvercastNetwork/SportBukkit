@@ -47,7 +47,7 @@ diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/buk
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -679,6 +679,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -674,6 +674,11 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
       */
      public void shutdown();
  
@@ -93,7 +93,7 @@ diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/ma
  
  /**
   * This type is the runtime-container for the information in the plugin.yml.
-@@ -952,7 +953,8 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
+@@ -958,7 +959,8 @@ public final class PluginDescriptionFile implements tc.oc.minecraft.api.plugin.P
              classLoaderOf = map.get("class-loader-of").toString();
          }
  

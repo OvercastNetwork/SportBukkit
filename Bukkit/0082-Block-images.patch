@@ -14,7 +14,7 @@ diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Buk
  import org.bukkit.permissions.Permissible;
  import org.bukkit.plugin.Plugin;
  import org.bukkit.plugin.PluginManager;
-@@ -1276,6 +1277,7 @@ public final class Bukkit {
+@@ -1269,6 +1270,7 @@ public final class Bukkit {
          return runtime().key(id);
      }
  
@@ -46,25 +46,6 @@ diff --git a/src/main/java/org/bukkit/BukkitRuntime.java b/src/main/java/org/buk
      /**
       * Gets the instance of the item factory (for {@link ItemMeta}).
       *
-diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
---- a/src/main/java/org/bukkit/Server.java
-+++ b/src/main/java/org/bukkit/Server.java
-@@ -988,12 +988,12 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
- 
-     /**
-      * Create a ChunkData for use in a generator.
--     * 
-+     *
-      * See {@link ChunkGenerator#generateChunkData(org.bukkit.World, java.util.Random, int, int, org.bukkit.generator.ChunkGenerator.BiomeGrid)}
--     * 
-+     *
-      * @param world the world to create the ChunkData for
-      * @return a new ChunkData for the world
--     * 
-+     *
-      */
-     public ChunkGenerator.ChunkData createChunkData(World world);
- 
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java

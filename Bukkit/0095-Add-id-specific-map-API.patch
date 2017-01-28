@@ -6,7 +6,7 @@ Subject: [PATCH] Add id specific map API
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -543,6 +543,16 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
+@@ -538,6 +538,16 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
      public MapView createMap(World world);
  
      /**

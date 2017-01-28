@@ -301,11 +301,6 @@ public interface Server extends PluginMessageRecipient, BukkitRuntime, tc.oc.min
     public boolean getLegacyKnockback();
 
     /**
-     * Should plugins be able to access classes from other plugins that are not explicit dependencies?
-     */
-    public boolean getIsolatePlugins();
-
-    /**
      * Gets default ticks per animal spawns value.
      * <p>
      * <b>Example Usage:</b>

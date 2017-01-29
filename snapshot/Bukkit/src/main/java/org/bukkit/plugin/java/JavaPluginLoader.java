@@ -17,6 +17,9 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.hash.HashCode;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Server;
 import org.bukkit.event.Event;
@@ -38,7 +41,8 @@ import org.yaml.snakeyaml.error.YAMLException;
 public final class JavaPluginLoader implements PluginLoader {
     final Server server;
     private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
-    final Map<String, PluginClassLoader> loaders = new LinkedHashMap<String, PluginClassLoader>();
+    final Cache<HashCode, Class<?>> classes = CacheBuilder.newBuilder().build();
+    final Map<String, PluginClassLoader> loaders = new LinkedHashMap<>();
     final ReadWriteLock loaderLock = new ReentrantReadWriteLock();
 
     /**

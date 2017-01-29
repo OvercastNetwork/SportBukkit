@@ -232,7 +232,7 @@ diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -9,10 +9,12 @@ import java.lang.reflect.Method;
+@@ -9,21 +9,24 @@ import java.lang.reflect.Method;
  import java.util.Arrays;
  import java.util.HashMap;
  import java.util.HashSet;
@@ -247,7 +247,12 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
  import java.util.jar.JarEntry;
  import java.util.jar.JarFile;
  import java.util.logging.Level;
-@@ -22,8 +24,6 @@ import org.apache.commons.lang.Validate;
+ import java.util.regex.Pattern;
+ 
++import com.google.common.cache.Cache;
++import com.google.common.cache.CacheBuilder;
++import com.google.common.hash.HashCode;
+ import org.apache.commons.lang.Validate;
  import org.bukkit.Server;
  import org.bukkit.Warning;
  import org.bukkit.Warning.WarningState;
@@ -256,18 +261,19 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
  import org.bukkit.event.Event;
  import org.bukkit.event.EventException;
  import org.bukkit.event.EventHandler;
-@@ -48,8 +48,8 @@ import org.yaml.snakeyaml.error.YAMLException;
+@@ -48,8 +51,9 @@ import org.yaml.snakeyaml.error.YAMLException;
  public final class JavaPluginLoader implements PluginLoader {
      final Server server;
      private final Pattern[] fileFilters = new Pattern[] { Pattern.compile("\\.jar$"), };
 -    private final Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
 -    private final List<PluginClassLoader> loaders = new CopyOnWriteArrayList<PluginClassLoader>();
-+    final Map<String, PluginClassLoader> loaders = new LinkedHashMap<String, PluginClassLoader>();
++    final Cache<HashCode, Class<?>> classes = CacheBuilder.newBuilder().build();
++    final Map<String, PluginClassLoader> loaders = new LinkedHashMap<>();
 +    final ReadWriteLock loaderLock = new ReentrantReadWriteLock();
  
      /**
       * This class was not meant to be constructed explicitly
-@@ -114,26 +114,50 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -114,26 +118,50 @@ public final class JavaPluginLoader implements PluginLoader {
              ));
          }
  
@@ -327,7 +333,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
      }
  
      public PluginDescriptionFile getPluginDescription(File file) throws InvalidDescriptionException {
-@@ -178,49 +202,6 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -178,49 +206,6 @@ public final class JavaPluginLoader implements PluginLoader {
          return fileFilters.clone();
      }
  
@@ -377,7 +383,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
      public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, final Plugin plugin) {
          Validate.notNull(plugin, "Plugin can not be null");
          Validate.notNull(listener, "Listener can not be null");
-@@ -318,11 +299,15 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -318,11 +303,15 @@ public final class JavaPluginLoader implements PluginLoader {
  
              JavaPlugin jPlugin = (JavaPlugin) plugin;
  
@@ -397,7 +403,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
              }
  
              try {
-@@ -355,14 +340,21 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -355,14 +344,21 @@ public final class JavaPluginLoader implements PluginLoader {
                  server.getLogger().log(Level.SEVERE, "Error occurred while disabling " + plugin.getDescription().getFullName() + " (Is it up to date?)", ex);
              }
  
@@ -429,7 +435,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-@@ -4,9 +4,10 @@ import java.io.File;
+@@ -4,10 +4,14 @@ import java.io.File;
  import java.net.MalformedURLException;
  import java.net.URL;
  import java.net.URLClassLoader;
@@ -440,9 +446,13 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
 +import java.util.concurrent.locks.ReadWriteLock;
 +import java.util.concurrent.locks.ReentrantReadWriteLock;
  
++import com.google.common.hash.Hashing;
++import com.google.common.hash.HashingInputStream;
++import com.google.common.io.ByteStreams;
  import org.apache.commons.lang.Validate;
  import org.bukkit.plugin.InvalidPluginException;
-@@ -16,28 +17,39 @@ import org.bukkit.plugin.PluginDescriptionFile;
+ import org.bukkit.plugin.PluginDescriptionFile;
+@@ -16,28 +20,39 @@ import org.bukkit.plugin.PluginDescriptionFile;
   * A ClassLoader for plugins, to allow shared classes across multiple plugins
   */
  final class PluginClassLoader extends URLClassLoader {
@@ -491,7 +501,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
              } catch (ClassNotFoundException ex) {
                  throw new InvalidPluginException("Cannot find main class `" + description.getMain() + "'", ex);
              }
-@@ -50,6 +62,7 @@ final class PluginClassLoader extends URLClassLoader {
+@@ -50,6 +65,7 @@ final class PluginClassLoader extends URLClassLoader {
              }
  
              plugin = pluginClass.newInstance();
@@ -499,7 +509,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
          } catch (IllegalAccessException ex) {
              throw new InvalidPluginException("No public constructor", ex);
          } catch (InstantiationException ex) {
-@@ -57,50 +70,120 @@ final class PluginClassLoader extends URLClassLoader {
+@@ -57,50 +73,134 @@ final class PluginClassLoader extends URLClassLoader {
          }
      }
  
@@ -581,8 +591,23 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
 +    Class<?> loadLocalClass(String name, boolean resolve) throws ClassNotFoundException {
 +        synchronized(getClassLoadingLock(name)) {
 +            Class<?> cls = findLoadedClass(name);
-+            if(cls == null) cls = findClass(name);
-+            if(resolve) resolveClass(cls);
++            if(cls == null) {
++                final URL url = findResource(name.replace('.', '/').concat(".class"));
++                if(url == null) {
++                    throw new ClassNotFoundException(name);
++                }
++                try(HashingInputStream istream = new HashingInputStream(Hashing.sha256(), url.openStream())) {
++                    ByteStreams.copy(istream, ByteStreams.nullOutputStream());
++                    cls = pluginLoader.classes.get(istream.hash(), () -> findClass(name));
++                } catch(Exception e) {
++                    throw new ClassNotFoundException(name, e);
+                 }
+             }
+ 
+-            classes.put(name, result);
++            if(resolve) {
++                resolveClass(cls);
++            }
 +            return cls;
 +        }
 +    }
@@ -598,10 +623,8 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
 +                    try {
 +                        return loader.loadLocalClass(name, resolve);
 +                    } catch(ClassNotFoundException ignored) {}
-                 }
-             }
--
--            classes.put(name, result);
++                }
++            }
 +        } finally {
 +            pluginLoader.loaderLock.readLock().unlock();
          }

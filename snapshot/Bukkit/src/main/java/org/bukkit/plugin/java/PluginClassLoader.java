@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.google.common.hash.Hashing;
+import com.google.common.hash.HashingInputStream;
+import com.google.common.io.ByteStreams;
 import com.google.inject.Module;
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.InvalidPluginException;
@@ -137,8 +140,22 @@ final class PluginClassLoader extends URLClassLoader {
     Class<?> loadLocalClass(String name, boolean resolve) throws ClassNotFoundException {
         synchronized(getClassLoadingLock(name)) {
             Class<?> cls = findLoadedClass(name);
-            if(cls == null) cls = findClass(name);
-            if(resolve) resolveClass(cls);
+            if(cls == null) {
+                final URL url = findResource(name.replace('.', '/').concat(".class"));
+                if(url == null) {
+                    throw new ClassNotFoundException(name);
+                }
+                try(HashingInputStream istream = new HashingInputStream(Hashing.sha256(), url.openStream())) {
+                    ByteStreams.copy(istream, ByteStreams.nullOutputStream());
+                    cls = pluginLoader.classes.get(istream.hash(), () -> findClass(name));
+                } catch(Exception e) {
+                    throw new ClassNotFoundException(name, e);
+                }
+            }
+
+            if(resolve) {
+                resolveClass(cls);
+            }
             return cls;
         }
     }

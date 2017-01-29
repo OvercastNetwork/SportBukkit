@@ -2477,8 +2477,8 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
  import java.util.HashMap;
  import java.util.HashSet;
  import java.util.LinkedHashMap;
-@@ -22,23 +19,16 @@ import java.util.regex.Pattern;
- 
+@@ -25,23 +22,16 @@ import com.google.common.cache.CacheBuilder;
+ import com.google.common.hash.HashCode;
  import org.apache.commons.lang.Validate;
  import org.bukkit.Server;
 -import org.bukkit.Warning;
@@ -2501,7 +2501,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/ma
  import org.bukkit.plugin.UnknownDependencyException;
  import org.yaml.snakeyaml.error.YAMLException;
  
-@@ -203,92 +193,12 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -207,92 +197,12 @@ public final class JavaPluginLoader implements PluginLoader {
      }
  
      public Map<Class<? extends Event>, Set<RegisteredListener>> createRegisteredListeners(Listener listener, final Plugin plugin) {
@@ -2627,15 +2627,15 @@ index 0000000..98941df
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-@@ -9,6 +9,7 @@ import java.util.Set;
- import java.util.concurrent.locks.ReadWriteLock;
- import java.util.concurrent.locks.ReentrantReadWriteLock;
- 
+@@ -12,6 +12,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
+ import com.google.common.hash.Hashing;
+ import com.google.common.hash.HashingInputStream;
+ import com.google.common.io.ByteStreams;
 +import com.google.inject.Module;
  import org.apache.commons.lang.Validate;
  import org.bukkit.plugin.InvalidPluginException;
  import org.bukkit.plugin.PluginDescriptionFile;
-@@ -54,14 +55,16 @@ final class PluginClassLoader extends URLClassLoader {
+@@ -57,14 +58,16 @@ final class PluginClassLoader extends URLClassLoader {
                  throw new InvalidPluginException("Cannot find main class `" + description.getMain() + "'", ex);
              }
  
@@ -2658,7 +2658,7 @@ diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/m
              return plugin;
          } catch (IllegalAccessException ex) {
              throw new InvalidPluginException("No public constructor", ex);
-@@ -178,7 +181,6 @@ final class PluginClassLoader extends URLClassLoader {
+@@ -195,7 +198,6 @@ final class PluginClassLoader extends URLClassLoader {
  
      synchronized void initialize(JavaPlugin javaPlugin) {
          Validate.notNull(javaPlugin, "Initializing plugin cannot be null");

@@ -3,8 +3,6 @@ SportBukkit
 
 CraftBukkit modifications and Bukkit API additions that fix bugs, add new features, and improve the quality of life
 
-Public build server: https://build.oc.tc/job/SportBukkit/
-
 File Structure
 --------------
 
@@ -20,6 +18,18 @@ These are contained entirely in a single patch at the end of each sequence, call
 
 For readability purposes, a copy of the final *patched* SportBukkit source code is stored in the `snapshot` folder.
 This code is updated automatically by scripts, and should not be manually edited or compiled.
+
+
+Requirements
+------------
+
+The SportBukkit build system uses Rake, which comes with [Ruby](https://www.ruby-lang.org/).
+You will need Ruby version 2.1.0 or later.
+
+Currently, the only known way to build on Windows is with [WSL](https://blogs.msdn.microsoft.com/wsl/).
+Other approaches run into problems with wildcard expansion.
+There are plans to fix this so that SportBukkit can at least be built with any Windows version of Bash,
+and possibly just the plain Windows shell.
 
 
 How To

@@ -239,11 +239,11 @@ file REMAPPED_JAR => [DATA, CACHE, TEMP] do
 
     info "Installing in Maven repository"
     sh "mvn", "install:install-file",
-       %{-Dfile=#{REMAPPED_JAR}},
+       "-Dfile=#{REMAPPED_JAR}",
        "-Dpackaging=jar",
        "-DgroupId=org.spigotmc",
        "-DartifactId=minecraft-server",
-       %{-Dversion="#{NMS_VERSION}-SNAPSHOT"}
+       "-Dversion=#{NMS_VERSION}-SNAPSHOT"
 end
 
 desc "Decompile NMS classes"

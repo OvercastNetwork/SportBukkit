@@ -6,7 +6,7 @@ Subject: [PATCH] BungeeCord Chat API
 diff --git a/pom.xml b/pom.xml
 --- a/pom.xml
 +++ b/pom.xml
-@@ -82,6 +82,14 @@
+@@ -93,6 +93,14 @@
              <version>1.17</version>
              <scope>compile</scope>
          </dependency>

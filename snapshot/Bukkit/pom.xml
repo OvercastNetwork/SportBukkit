@@ -23,14 +23,25 @@
         <url>https://github.com/Bukkit/Bukkit/tree/master/</url>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>pa-snapshots</id>
+            <url>https://repo.extension.ws/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>pa-releases</id>
+            <url>https://repo.extension.ws/content/repositories/releases</url>
+        </repository>
+    </repositories>
+
     <distributionManagement>
         <repository>
-            <id>overcast-deployment</id>
-            <url>https://repo.oc.tc/content/repositories/releases</url>
+            <id>pa-deployment</id>
+            <url>https://repo.extension.ws/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
-            <id>overcast-deployment</id>
-            <url>https://repo.oc.tc/content/repositories/snapshots</url>
+            <id>pa-deployment</id>
+            <url>https://repo.extension.ws/content/repositories/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
 

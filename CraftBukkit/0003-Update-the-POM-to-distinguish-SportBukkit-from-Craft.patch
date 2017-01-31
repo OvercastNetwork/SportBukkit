@@ -6,7 +6,7 @@ Subject: [PATCH] Update the POM to distinguish SportBukkit from CraftBukkit.
 diff --git a/pom.xml b/pom.xml
 --- a/pom.xml
 +++ b/pom.xml
-@@ -1,29 +1,39 @@
+@@ -1,29 +1,50 @@
  <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
      <modelVersion>4.0.0</modelVersion>
@@ -36,14 +36,25 @@ diff --git a/pom.xml b/pom.xml
 +        <maven.compiler.target>1.8</maven.compiler.target>
      </properties>
  
++    <repositories>
++        <repository>
++            <id>pa-snapshots</id>
++            <url>https://repo.extension.ws/content/repositories/snapshots</url>
++        </repository>
++        <repository>
++            <id>pa-releases</id>
++            <url>https://repo.extension.ws/content/repositories/releases</url>
++        </repository>
++    </repositories>
++
 +    <distributionManagement>
 +        <repository>
-+            <id>overcast-deployment</id>
-+            <url>https://repo.oc.tc/content/repositories/releases/</url>
++            <id>pa-deployment</id>
++            <url>https://repo.extension.ws/content/repositories/releases</url>
 +        </repository>
 +        <snapshotRepository>
-+            <id>overcast-deployment</id>
-+            <url>https://repo.oc.tc/content/repositories/snapshots/</url>
++            <id>pa-deployment</id>
++            <url>https://repo.extension.ws/content/repositories/snapshots</url>
 +        </snapshotRepository>
 +    </distributionManagement>
 +
@@ -56,7 +67,7 @@ diff --git a/pom.xml b/pom.xml
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -57,6 +67,16 @@
+@@ -57,6 +78,16 @@
              <version>5.1.39</version>
              <scope>compile</scope>
          </dependency>
@@ -73,7 +84,7 @@ diff --git a/pom.xml b/pom.xml
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
-@@ -70,6 +90,12 @@
+@@ -70,6 +101,12 @@
              <version>1.3</version>
              <scope>test</scope>
          </dependency>
@@ -86,7 +97,7 @@ diff --git a/pom.xml b/pom.xml
      </dependencies>
  
      <!-- required until fixed plexus-compiler-eclipse is deployed -->
-@@ -152,8 +178,8 @@
+@@ -152,8 +189,8 @@
                  <configuration>
                      <signature>
                          <groupId>org.codehaus.mojo.signature</groupId>
@@ -97,7 +108,7 @@ diff --git a/pom.xml b/pom.xml
                      </signature>
                  </configuration>
              </plugin>
-@@ -185,17 +211,6 @@
+@@ -185,17 +222,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>
                                  </relocation>

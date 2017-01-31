@@ -6,7 +6,7 @@ Subject: [PATCH] Fix jar being shaded multiple times
 diff --git a/pom.xml b/pom.xml
 --- a/pom.xml
 +++ b/pom.xml
-@@ -130,6 +130,7 @@
+@@ -141,6 +141,7 @@
                  <artifactId>maven-jar-plugin</artifactId>
                  <version>3.0.2</version>
                  <configuration>

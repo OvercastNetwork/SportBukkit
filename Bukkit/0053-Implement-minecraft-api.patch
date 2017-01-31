@@ -6,7 +6,7 @@ Subject: [PATCH] Implement minecraft-api
 diff --git a/pom.xml b/pom.xml
 --- a/pom.xml
 +++ b/pom.xml
-@@ -84,10 +84,8 @@
+@@ -95,10 +95,8 @@
          </dependency>
          <dependency>
              <groupId>tc.oc</groupId>

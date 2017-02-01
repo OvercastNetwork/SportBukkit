@@ -59,6 +59,8 @@ def modular_tasks(id:, name:, artifact:, work: nil)
     work_abs = File.absolute_path(work)
 
     patches = name
+    patch_list = "#{name}-patches"
+    patch_list_abs = File.absolute_path(patch_list)
     patches_abs = File.absolute_path(patches)
     patches_glob = File.join(patches, "*.patch")
 
@@ -113,7 +115,8 @@ def modular_tasks(id:, name:, artifact:, work: nil)
                 Git.remote_add remote: "upstream", url: work_abs
                 Git.assert_clean_work_tree
                 Git.reset remote: "upstream", branch: "upstream"
-                Git.apply patches_abs
+                Git.apply_patches dir: patches_abs,
+                                  list: patch_list_abs
             end
         end
 
@@ -153,9 +156,12 @@ def modular_tasks(id:, name:, artifact:, work: nil)
             end
 
             Dir.chdir build do
-                Git.generate_patches from: "upstream/upstream", patches: patches_abs
+                Git.generate_patches from: "upstream/upstream",
+                                     dir:  patches_abs,
+                                     list: patch_list_abs
             end
 
+            sh "git", "add", patch_list
             sh "git", "add", "--all", patches
 
             if complete

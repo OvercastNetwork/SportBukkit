@@ -53,7 +53,8 @@ def download(file:, url:, md5:)
 end
 
 def maven(*goals)
-    sh %{MAVEN_OPTS="$MAVEN_OPTS -Xmx512M" mvn #{goals.join(' ')}}
+    system({"MAVEN_OPTS" => [*ENV["MAVEN_OPTS"], "-Xmx512M"].join(' ')},
+           "mvn", *goals.map(&:to_s))
 end
 
 module Git
@@ -102,14 +103,19 @@ module Git
         sh "git", "reset", "--hard", "#{remote}/#{branch}"
     end
 
-    def apply(patches)
-        patches = relative_path(patches)
-        info "Applying #{Dir[File.join(patches, "*.patch")].size} patches from #{patches}"
+    def apply_patches(dir:, list:)
+        patches = File.read(list).lines
+            .select{|line| line =~ /\S/ }
+            .map{|name| relative_path(File.join(dir, "#{name.chomp}.patch")) }
+
+        info "Applying #{patches.size} patches"
+
         if `git status` =~ /You are in the middle of an am session/
             sh "git am --abort"
         end
+
         sh "git clean -df"
-        sh "git am --3way --ignore-whitespace --committer-date-is-author-date #{Shellwords.escape(patches)}/*.patch" do |ok, res|
+        sh "git am --3way --ignore-whitespace --committer-date-is-author-date #{patches.join(' ')}" do |ok, res|
             unless ok
                 error "A patch did not apply cleanly"
                 raise
@@ -139,22 +145,35 @@ module Git
         `git log -n 1 --format=%s`.chomp
     end
 
-    def generate_patches(from:, patches:)
-        patches = relative_path(patches)
-        sh "git", "format-patch", "--no-stat", "--no-signature", "-N", "-o", patches, from
-        Dir[File.join(patches, "*.patch")].each do |patch|
-            lines = File.read(patch).lines
-            File.open(patch, 'w') do |io|
-                if lines[0] =~ /^From \h+/
-                    # Remove the initial "From sha date" line
-                    lines = lines[1..-1]
-                end
+    def generate_patches(from:, dir:, list:)
+        dir = relative_path(dir)
+        sh "git", "format-patch", "--no-stat", "--no-signature", "-N", "-o", dir, from
+        File.open(list, 'w') do |listfile|
+            Dir[File.join(dir, "*.patch")].each do |patch|
+                patch_dir = File.dirname(patch)
+                patch_base = File.basename(patch)
+                if patch_base =~ /^\d\d\d\d-(.+)\.patch$/
+                    patch_name = $1
+                    lines = File.read(patch).lines
+                    FileUtils.rm(patch)
 
-                lines.reject do |line|
-                    # Remove "index sha..sha mode" lines
-                    line =~ /^index \h+\.\.\h+ \d+\s*$/
-                end.each do |line|
-                    io.write(line)
+                    listfile.puts(patch_name)
+
+                    File.open(File.join(patch_dir, "#{patch_name}.patch"), 'w') do |io|
+                        if lines[0] =~ /^From \h+/
+                            # Remove the initial "From sha date" line
+                            lines = lines[1..-1]
+                        end
+
+                        lines.reject do |line|
+                            # Remove "index sha..sha mode" lines
+                            line =~ /^index \h+\.\.\h+ \d+\s*$/
+                        end.each do |line|
+                            io.write(line)
+                        end
+                    end
+                else
+                    warning "Skipping weird patch file #{patch}"
                 end
             end
         end

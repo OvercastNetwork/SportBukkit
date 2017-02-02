@@ -1,17 +1,12 @@
 --- a/net/minecraft/server/TileEntitySkull.java
 +++ b/net/minecraft/server/TileEntitySkull.java
-@@ -115,7 +115,13 @@
-                     Property property = (Property) Iterables.getFirst(gameprofile1.getProperties().get("textures"), (Object) null);
+@@ -106,6 +106,9 @@
+         if (gameprofile != null && !UtilColor.b(gameprofile.getName())) {
+             if (gameprofile.isComplete() && gameprofile.getProperties().containsKey("textures")) {
+                 return gameprofile;
++            } else if(!org.bukkit.Bukkit.getFetchSkulls()) {
++                org.bukkit.Bukkit.getLogger().warning("Skull-fetching is disabled, so not fetching skin for '" + gameprofile.getName() + "'");
++                return gameprofile;
+             } else if (TileEntitySkull.j != null && TileEntitySkull.k != null) {
+                 GameProfile gameprofile1 = TileEntitySkull.j.getProfile(gameprofile.getName());
  
-                     if (property == null) {
--                        gameprofile1 = TileEntitySkull.k.fillProfileProperties(gameprofile1, true);
-+                        // CraftBukkit start - implement settings.fetch-skulls
-+                        if(org.bukkit.Bukkit.getFetchSkulls()) {
-+                            gameprofile1 = TileEntitySkull.k.fillProfileProperties(gameprofile1, true);
-+                        } else {
-+                            org.bukkit.Bukkit.getLogger().warning("Skull-fetching is disabled, so not fetching skin for \"" + gameprofile1.getName() + "\"");
-+                        }
-+                        // CraftBukkit end
-                     }
- 
-                     return gameprofile1;

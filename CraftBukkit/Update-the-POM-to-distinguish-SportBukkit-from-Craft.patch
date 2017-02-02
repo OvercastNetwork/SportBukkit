@@ -67,7 +67,18 @@ diff --git a/pom.xml b/pom.xml
              <version>${project.version}</version>
              <scope>compile</scope>
          </dependency>
-@@ -57,6 +78,16 @@
+@@ -46,17 +67,21 @@
+             <scope>compile</scope>
+         </dependency>
+         <dependency>
+-            <groupId>org.xerial</groupId>
+-            <artifactId>sqlite-jdbc</artifactId>
+-            <version>3.15.1</version>
+-            <scope>compile</scope>
+-        </dependency>
+-        <dependency>
+             <groupId>mysql</groupId>
+             <artifactId>mysql-connector-java</artifactId>
              <version>5.1.39</version>
              <scope>compile</scope>
          </dependency>
@@ -84,7 +95,7 @@ diff --git a/pom.xml b/pom.xml
          <!-- testing -->
          <dependency>
              <groupId>junit</groupId>
-@@ -70,6 +101,12 @@
+@@ -70,6 +95,12 @@
              <version>1.3</version>
              <scope>test</scope>
          </dependency>
@@ -97,7 +108,7 @@ diff --git a/pom.xml b/pom.xml
      </dependencies>
  
      <!-- required until fixed plexus-compiler-eclipse is deployed -->
-@@ -152,8 +189,8 @@
+@@ -152,8 +183,8 @@
                  <configuration>
                      <signature>
                          <groupId>org.codehaus.mojo.signature</groupId>
@@ -108,7 +119,7 @@ diff --git a/pom.xml b/pom.xml
                      </signature>
                  </configuration>
              </plugin>
-@@ -185,17 +222,6 @@
+@@ -185,17 +216,6 @@
                                      <pattern>org.gjt</pattern>
                                      <shadedPattern>org.bukkit.craftbukkit.libs.org.gjt</shadedPattern>
                                  </relocation>

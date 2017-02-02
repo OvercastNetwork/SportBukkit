@@ -1,7 +1,6 @@
 package org.bukkit;
 
 import java.util.Date;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -10,8 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.ServerOperator;
+import tc.oc.minecraft.api.user.User;
 
-public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, tc.oc.minecraft.api.entity.OfflinePlayer {
+public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, User {
 
     /**
      * Checks if this player is currently online
@@ -37,11 +37,6 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
      * @return Player name or null if we have not seen a name for this player yet
      */
     public String getName();
-
-    @Override
-    default Optional<String> getLastKnownName() {
-        return Optional.ofNullable(getName());
-    }
 
     /**
      * Returns the UUID of this player

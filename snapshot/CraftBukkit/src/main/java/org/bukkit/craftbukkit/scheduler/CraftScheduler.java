@@ -9,11 +9,11 @@ import java.util.PriorityQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
+import javax.inject.Inject;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.plugin.IllegalPluginAccessException;
@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scheduler.BukkitWorker;
+import tc.oc.minecraft.api.scheduler.Async;
 
 /**
  * The fundamental concepts for this implementation:
@@ -76,7 +77,7 @@ public class CraftScheduler implements BukkitScheduler {
      */
     private final ConcurrentHashMap<Integer, CraftTask> runners = new ConcurrentHashMap<Integer, CraftTask>();
     private volatile int currentTick = -1;
-    private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("Craft Scheduler Thread - %1$d").build()); // Spigot
+    private @Inject @Async Executor executor;
     private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
     private CraftAsyncDebugger debugTail = debugHead;
     private static final int RECENT_TICKS;

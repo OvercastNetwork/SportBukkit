@@ -20,14 +20,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Guice;
@@ -137,7 +137,6 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.MapMaker;
 import com.mojang.authlib.GameProfile;
 
 import io.netty.buffer.ByteBuf;
@@ -147,8 +146,10 @@ import io.netty.handler.codec.base64.Base64;
 import jline.console.ConsoleReader;
 import org.bukkit.event.server.TabCompleteEvent;
 import net.md_5.bungee.api.chat.BaseComponent;
+import tc.oc.inject.Providers;
 import tc.oc.minecraft.api.configuration.InvalidConfigurationException;
 import tc.oc.minecraft.api.plugin.PluginFinder;
+import tc.oc.minecraft.api.user.UserFinder;
 
 public final class CraftServer extends CraftBukkitRuntime implements Server {
     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
@@ -157,7 +158,8 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     private final String bukkitVersion = Versioning.getBukkitVersion();
     private final Logger logger = Logger.getLogger("Minecraft");
     private final ServicesManager servicesManager = new SimpleServicesManager();
-    private final CraftScheduler scheduler = new CraftScheduler();
+    private @Inject Provider<CraftScheduler> scheduler = Providers.unavailable(CraftScheduler.class);
+    private @Inject Provider<UserFinder> userFinder = Providers.unavailable(UserFinder.class);
     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
     private final StandardMessenger messenger = new StandardMessenger();
@@ -165,6 +167,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     private final EventBus eventBus;
     protected final MinecraftServer console;
     protected final DedicatedPlayerList playerList;
+    public WorldServer overworld;
     private final Map<String, World> worlds = new LinkedHashMap<String, World>();
     private final Map<String, World> worldsView = new CaseInsensitiveNameMap<>(worlds.values(), World::getName);
     private final Map<UUID, World> worldsById = new LinkedHashMap<>();
@@ -172,7 +175,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     private YamlConfiguration configuration;
     private YamlConfiguration commandsConfiguration;
     private final Yaml yaml = new Yaml(new SafeConstructor());
-    private final Map<UUID, OfflinePlayer> offlinePlayers = new MapMaker().softValues().makeMap();
     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
     private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
     private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
@@ -191,7 +193,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     private boolean printSaveWarning;
     private CraftIconCache icon;
     private boolean overrideAllCommandBlockCommands = false;
-    private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
     private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
     private final List<CraftPlayer> playerView;
     private final Map<UUID, Player> playersById;
@@ -335,7 +336,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
             logger.info("Creating injector in stage " + stage);
 
             try {
-                injector = Guice.createInjector(stage, new ServerInstanceModule(this, Arrays.asList(plugins)));
+                injector = Guice.createInjector(
+                    stage,
+                    new CraftServerModule(),
+                    new ServerInstanceModule(this, Arrays.asList(plugins))
+                );
             } catch(RuntimeException ex) {
                 logger.log(Level.SEVERE, "Injector creation failed, server will shut down", ex);
                 throw ex;
@@ -714,7 +719,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
 
     @Override
     public CraftScheduler getScheduler() {
-        return scheduler;
+        return scheduler.get();
     }
 
     @Override
@@ -1461,53 +1466,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     @Override
     @Deprecated
     public OfflinePlayer getOfflinePlayer(String name) {
-        Validate.notNull(name, "Name cannot be null");
-
-        // If the name given cannot ever be a valid username give a dummy return, for scoreboard plugins
-        if (!validUserPattern.matcher(name).matches()) {
-            return new CraftOfflinePlayer(this, new GameProfile(invalidUserUUID, name));
-        }
-
-        OfflinePlayer result = getPlayerExact(name);
-        if (result == null) {
-            // This is potentially blocking :(
-            GameProfile profile = console.getUserCache().getProfile(name);
-            if (profile == null) {
-                // Make an OfflinePlayer using an offline mode UUID since the name has no profile
-                result = getOfflinePlayer(new GameProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.toLowerCase()).getBytes(Charsets.UTF_8)), name));
-            } else {
-                // Use the GameProfile even when we get a UUID so we ensure we still have a name
-                result = getOfflinePlayer(profile);
-            }
-        } else {
-            offlinePlayers.remove(result.getUniqueId());
-        }
-
-        return result;
+        return (OfflinePlayer) userFinder.get().findUser(name);
     }
 
     @Override
     public OfflinePlayer getOfflinePlayer(UUID id) {
-        Validate.notNull(id, "UUID cannot be null");
-
-        OfflinePlayer result = getPlayer(id);
-        if (result == null) {
-            result = offlinePlayers.get(id);
-            if (result == null) {
-                result = new CraftOfflinePlayer(this, new GameProfile(id, null));
-                offlinePlayers.put(id, result);
-            }
-        } else {
-            offlinePlayers.remove(id);
-        }
-
-        return result;
+        return (OfflinePlayer) userFinder.get().findUser(id);
     }
 
     public OfflinePlayer getOfflinePlayer(GameProfile profile) {
-        OfflinePlayer player = new CraftOfflinePlayer(this, profile);
-        offlinePlayers.put(profile.getId(), player);
-        return player;
+        return new CraftOfflinePlayer(this, profile);
     }
 
     @Override
@@ -1646,13 +1614,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
         }
         players.addAll(getOnlinePlayers());
         return players;
-    }
-
-    @Override
-    public Optional<OfflinePlayer> tryOfflinePlayer(UUID id) {
-        final WorldNBTStorage storage = (WorldNBTStorage) console.worlds.get(0).getDataManager();
-        return storage.hasPlayerData(id) ? Optional.of(getOfflinePlayer(id))
-                                         : Optional.empty();
     }
 
     @Override
@@ -1918,6 +1879,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     @Override
     public Set<Integer> getProtocolVersions() {
         return Protocol.SUPPORTED;
+    }
+
+    @Override
+    public boolean isMainThread() {
+        return getHandle().getServer().isMainThread();
     }
 
     @Override

@@ -39,7 +39,15 @@ diff --git a/src/main/java/net/minecraft/server/DedicatedServer.java b/src/main/
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1187,6 +1187,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -295,6 +295,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+ 
+                 world.a(worldsettings);
+                 this.server.scoreboardManager = new org.bukkit.craftbukkit.scoreboard.CraftScoreboardManager(this, world.getScoreboard());
++                this.server.overworld = world;
+             } else {
+                 String dim = "DIM" + dimension;
+ 
+@@ -1187,6 +1188,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
          return this.I;
      }
  
@@ -47,7 +55,7 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
      public int P() {
          return this.u;
      }
-@@ -1417,6 +1418,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
+@@ -1417,6 +1419,7 @@ public abstract class MinecraftServer implements Runnable, ICommandListener, IAs
  
      }
  
@@ -106,6 +114,130 @@ diff --git a/src/main/java/net/minecraft/server/WorldNBTStorage.java b/src/main/
      public NBTTagCompound getPlayerData(String s) {
          try {
              File file1 = new File(this.playerDir, s + ".dat");
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+--- a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayer.java
+@@ -2,12 +2,13 @@ package org.bukkit.craftbukkit;
+ 
+ import com.mojang.authlib.GameProfile;
+ import java.io.File;
++import java.time.Instant;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
++import java.util.Optional;
+ import java.util.UUID;
+ 
+-import net.minecraft.server.EntityPlayer;
+ import net.minecraft.server.NBTTagCompound;
+ import net.minecraft.server.WorldNBTStorage;
+ 
+@@ -21,18 +22,34 @@ import org.bukkit.configuration.serialization.SerializableAs;
+ import org.bukkit.entity.Player;
+ import org.bukkit.metadata.MetadataValue;
+ import org.bukkit.plugin.Plugin;
++import tc.oc.collection.Optionals;
++
++import static com.google.common.base.Preconditions.checkArgument;
++import static com.google.common.base.Preconditions.checkNotNull;
+ 
+ @SerializableAs("Player")
+ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializable {
+     private final GameProfile profile;
+     private final CraftServer server;
+     private final WorldNBTStorage storage;
++    private final Optional<Instant> updatedAt;
+ 
+     protected CraftOfflinePlayer(CraftServer server, GameProfile profile) {
++        this(server, profile, Optional.empty());
++    }
++
++    protected CraftOfflinePlayer(CraftServer server, GameProfile profile, Optional<Instant> updatedAt) {
++        checkNotNull(profile.getId(), "OfflinePlayer must have a UUID");
++        checkArgument(!(updatedAt.isPresent() && profile.getName() == null), "OfflinePlayer has an update timestamp, but no username");
+         this.server = server;
+         this.profile = profile;
+-        this.storage = (WorldNBTStorage) (server.console.worlds.get(0).getDataManager());
++        this.updatedAt = updatedAt;
++        this.storage = (WorldNBTStorage) (server.overworld.getDataManager());
++    }
+ 
++    @Override
++    public Optional<Instant> updatedAt() {
++        return Optionals.first(lastPlayedAt(), updatedAt);
+     }
+ 
+     public GameProfile getProfile() {
+@@ -213,6 +230,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
+         }
+     }
+ 
++    @Override
++    public Optional<Instant> lastPlayedAt() {
++        final long milli = getLastPlayed();
++        return milli == 0 ? Optional.empty() : Optional.of(Instant.ofEpochMilli(milli));
++    }
++
+     public long getLastPlayed() {
+         Player player = getPlayer();
+         if (player != null) return player.getLastPlayed();
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayerFactory.java b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayerFactory.java
+new file mode 100644
+index 0000000..e9c460e
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/CraftOfflinePlayerFactory.java
+@@ -0,0 +1,51 @@
++package org.bukkit.craftbukkit;
++
++import java.time.Instant;
++import java.util.Optional;
++import java.util.UUID;
++import javax.inject.Inject;
++import javax.inject.Provider;
++import javax.inject.Singleton;
++
++import com.mojang.authlib.GameProfile;
++import tc.oc.minecraft.api.user.User;
++import tc.oc.minecraft.api.user.UserFactory;
++import tc.oc.minecraft.api.user.UserUtils;
++
++import static com.google.common.base.Preconditions.checkNotNull;
++
++@Singleton
++public class CraftOfflinePlayerFactory implements UserFactory {
++
++    private final Provider<CraftServer> server;
++
++    @Inject CraftOfflinePlayerFactory(Provider<CraftServer> server) {
++        this.server = server;
++    }
++
++    public CraftOfflinePlayer createUser(GameProfile profile, Optional<Instant> updatedAt) {
++        return new CraftOfflinePlayer(server.get(), profile, updatedAt);
++    }
++
++    @Override
++    public CraftOfflinePlayer createUser(UUID id) {
++        return createUser(new GameProfile(checkNotNull(id), null), Optional.empty());
++    }
++
++    @Override
++    public CraftOfflinePlayer createUser(String name) {
++        return createUser(new GameProfile(UserUtils.offlinePlayerId(name), name), Optional.empty());
++    }
++
++    @Override
++    public CraftOfflinePlayer createUser(UUID id, String name, Instant updatedAt) {
++        return createUser(new GameProfile(checkNotNull(id), checkNotNull(name)), Optional.of(updatedAt));
++    }
++
++    @Override
++    public CraftOfflinePlayer copyUser(User user) {
++        return user instanceof CraftOfflinePlayer
++               ? (CraftOfflinePlayer) user
++               : (CraftOfflinePlayer) UserFactory.super.copyUser(user);
++    }
++}
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
@@ -119,15 +251,71 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
  import java.time.Duration;
  import java.time.Instant;
  import java.util.ArrayList;
-@@ -17,6 +20,7 @@ import java.util.LinkedHashMap;
- import java.util.LinkedHashSet;
- import java.util.List;
- import java.util.Map;
-+import java.util.Optional;
- import java.util.Set;
+@@ -21,9 +24,10 @@ import java.util.Set;
  import java.util.UUID;
  import java.util.logging.Level;
-@@ -194,6 +198,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+ import java.util.logging.Logger;
+-import java.util.regex.Pattern;
+ import javax.annotation.Nullable;
+ import javax.imageio.ImageIO;
++import javax.inject.Inject;
++import javax.inject.Provider;
+ 
+ import com.google.common.collect.Maps;
+ import com.google.inject.Guice;
+@@ -133,7 +137,6 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
+ import com.google.common.base.Charsets;
+ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.Lists;
+-import com.google.common.collect.MapMaker;
+ import com.mojang.authlib.GameProfile;
+ 
+ import io.netty.buffer.ByteBuf;
+@@ -143,8 +146,10 @@ import io.netty.handler.codec.base64.Base64;
+ import jline.console.ConsoleReader;
+ import org.bukkit.event.server.TabCompleteEvent;
+ import net.md_5.bungee.api.chat.BaseComponent;
++import tc.oc.inject.Providers;
+ import tc.oc.minecraft.api.configuration.InvalidConfigurationException;
+ import tc.oc.minecraft.api.plugin.PluginFinder;
++import tc.oc.minecraft.api.user.UserFinder;
+ 
+ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     private static final Player[] EMPTY_PLAYER_ARRAY = new Player[0];
+@@ -153,7 +158,8 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+     private final ServicesManager servicesManager = new SimpleServicesManager();
+-    private final CraftScheduler scheduler = new CraftScheduler();
++    private @Inject Provider<CraftScheduler> scheduler = Providers.unavailable(CraftScheduler.class);
++    private @Inject Provider<UserFinder> userFinder = Providers.unavailable(UserFinder.class);
+     private final SimpleCommandMap commandMap = new SimpleCommandMap(this);
+     private final SimpleHelpMap helpMap = new SimpleHelpMap(this);
+     private final StandardMessenger messenger = new StandardMessenger();
+@@ -161,6 +167,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     private final EventBus eventBus;
+     protected final MinecraftServer console;
+     protected final DedicatedPlayerList playerList;
++    public WorldServer overworld;
+     private final Map<String, World> worlds = new LinkedHashMap<String, World>();
+     private final Map<String, World> worldsView = new CaseInsensitiveNameMap<>(worlds.values(), World::getName);
+     private final Map<UUID, World> worldsById = new LinkedHashMap<>();
+@@ -168,7 +175,6 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     private YamlConfiguration configuration;
+     private YamlConfiguration commandsConfiguration;
+     private final Yaml yaml = new Yaml(new SafeConstructor());
+-    private final Map<UUID, OfflinePlayer> offlinePlayers = new MapMaker().softValues().makeMap();
+     private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
+     private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
+     private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
+@@ -187,13 +193,13 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     private boolean printSaveWarning;
+     private CraftIconCache icon;
+     private boolean overrideAllCommandBlockCommands = false;
+-    private final Pattern validUserPattern = Pattern.compile("^[a-zA-Z0-9_]{2,16}$");
+     private final UUID invalidUserUUID = UUID.nameUUIDFromBytes("InvalidUsername".getBytes(Charsets.UTF_8));
+     private final List<CraftPlayer> playerView;
+     private final Map<UUID, Player> playersById;
      public int reloadCount;
      public boolean bungee = false;
      public static final com.google.gson.Gson gson = new com.google.gson.Gson();
@@ -135,7 +323,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
  
      private @Nullable Instant emptySince;
  
-@@ -208,6 +213,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -208,6 +214,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      public CraftServer(MinecraftServer console, PlayerList playerList) {
          this.console = console;
@@ -143,7 +331,20 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
          this.eventBus = new SimpleEventBus(this.console.primaryThread, pluginManager);
          this.playerList = (DedicatedPlayerList) playerList;
          this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, EntityPlayer::getBukkitEntity));
-@@ -551,7 +557,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -329,7 +336,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+             logger.info("Creating injector in stage " + stage);
+ 
+             try {
+-                injector = Guice.createInjector(stage, new ServerInstanceModule(this, Arrays.asList(plugins)));
++                injector = Guice.createInjector(
++                    stage,
++                    new CraftServerModule(),
++                    new ServerInstanceModule(this, Arrays.asList(plugins))
++                );
+             } catch(RuntimeException ex) {
+                 logger.log(Level.SEVERE, "Injector creation failed, server will shut down", ex);
+                 throw ex;
+@@ -551,7 +562,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      // so if that changes this will need to as well
      @Override
      public int getPort() {
@@ -152,7 +353,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      }
  
      @Override
-@@ -561,7 +567,12 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -561,7 +572,12 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
      @Override
      public String getIp() {
@@ -166,7 +367,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      }
  
      @Override
-@@ -637,6 +648,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -637,6 +653,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      // End Temporary calls
  
      @Override
@@ -178,7 +379,16 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      public String getUpdateFolder() {
          return this.configuration.getString("settings.update-folder", "update");
      }
-@@ -1422,6 +1438,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -698,7 +719,7 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+ 
+     @Override
+     public CraftScheduler getScheduler() {
+-        return scheduler;
++        return scheduler.get();
+     }
+ 
+     @Override
+@@ -1422,6 +1443,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override
@@ -190,7 +400,64 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      public int broadcast(String message, String permission) {
          int count = 0;
          Set<Permissible> permissibles = getPluginManager().getPermissionSubscriptions(permission);
-@@ -1614,21 +1635,29 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1440,53 +1466,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     @Override
+     @Deprecated
+     public OfflinePlayer getOfflinePlayer(String name) {
+-        Validate.notNull(name, "Name cannot be null");
+-
+-        // If the name given cannot ever be a valid username give a dummy return, for scoreboard plugins
+-        if (!validUserPattern.matcher(name).matches()) {
+-            return new CraftOfflinePlayer(this, new GameProfile(invalidUserUUID, name));
+-        }
+-
+-        OfflinePlayer result = getPlayerExact(name);
+-        if (result == null) {
+-            // This is potentially blocking :(
+-            GameProfile profile = console.getUserCache().getProfile(name);
+-            if (profile == null) {
+-                // Make an OfflinePlayer using an offline mode UUID since the name has no profile
+-                result = getOfflinePlayer(new GameProfile(UUID.nameUUIDFromBytes(("OfflinePlayer:" + name.toLowerCase()).getBytes(Charsets.UTF_8)), name));
+-            } else {
+-                // Use the GameProfile even when we get a UUID so we ensure we still have a name
+-                result = getOfflinePlayer(profile);
+-            }
+-        } else {
+-            offlinePlayers.remove(result.getUniqueId());
+-        }
+-
+-        return result;
++        return (OfflinePlayer) userFinder.get().findUser(name);
+     }
+ 
+     @Override
+     public OfflinePlayer getOfflinePlayer(UUID id) {
+-        Validate.notNull(id, "UUID cannot be null");
+-
+-        OfflinePlayer result = getPlayer(id);
+-        if (result == null) {
+-            result = offlinePlayers.get(id);
+-            if (result == null) {
+-                result = new CraftOfflinePlayer(this, new GameProfile(id, null));
+-                offlinePlayers.put(id, result);
+-            }
+-        } else {
+-            offlinePlayers.remove(id);
+-        }
+-
+-        return result;
++        return (OfflinePlayer) userFinder.get().findUser(id);
+     }
+ 
+     public OfflinePlayer getOfflinePlayer(GameProfile profile) {
+-        OfflinePlayer player = new CraftOfflinePlayer(this, profile);
+-        offlinePlayers.put(profile.getId(), player);
+-        return player;
++        return new CraftOfflinePlayer(this, profile);
+     }
+ 
+     @Override
+@@ -1614,21 +1603,22 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override
@@ -215,15 +482,256 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
 +    }
  
 +    @Override
-+    public Optional<OfflinePlayer> tryOfflinePlayer(UUID id) {
-+        final WorldNBTStorage storage = (WorldNBTStorage) console.worlds.get(0).getDataManager();
-+        return storage.hasPlayerData(id) ? Optional.of(getOfflinePlayer(id))
-+                                         : Optional.empty();
-+    }
-+
-+    @Override
 +    public OfflinePlayer[] getOfflinePlayers() {
 +        final Set<OfflinePlayer> players = getSavedPlayers();
          return players.toArray(new OfflinePlayer[players.size()]);
      }
  
+@@ -1892,6 +1882,11 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+     }
+ 
+     @Override
++    public boolean isMainThread() {
++        return getHandle().getServer().isMainThread();
++    }
++
++    @Override
+     public void postToMainThread(Plugin plugin, boolean priority, Runnable task) {
+         getHandle().getServer().addMainThreadTask(priority, wrapTask(plugin, task));
+     }
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServerModule.java b/src/main/java/org/bukkit/craftbukkit/CraftServerModule.java
+new file mode 100644
+index 0000000..5a9bb0a
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServerModule.java
+@@ -0,0 +1,56 @@
++package org.bukkit.craftbukkit;
++
++import javax.inject.Singleton;
++
++import com.google.inject.AbstractModule;
++import com.google.inject.Provides;
++import com.google.inject.multibindings.OptionalBinder;
++import com.mojang.authlib.GameProfileRepository;
++import com.mojang.authlib.minecraft.MinecraftSessionService;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Server;
++import org.bukkit.ServerModule;
++import org.bukkit.craftbukkit.event.CraftServerEventRegistry;
++import org.bukkit.craftbukkit.scheduler.CraftScheduler;
++import org.bukkit.craftbukkit.user.MojangUserSource;
++import org.bukkit.craftbukkit.user.UserUpdateListener;
++import tc.oc.minecraft.api.user.UserFactory;
++import tc.oc.minecraft.api.user.UserSourceBinder;
++
++public class CraftServerModule extends AbstractModule {
++
++    @Override
++    protected void configure() {
++        install(new ServerModule());
++
++        bind(CraftServerEventRegistry.class);
++        bind(CraftScheduler.class).in(Singleton.class);
++        bind(UserUpdateListener.class).asEagerSingleton();
++
++        OptionalBinder.newOptionalBinder(binder(), UserFactory.class)
++                      .setBinding().to(CraftOfflinePlayerFactory.class);
++
++        new UserSourceBinder(binder())
++            .addBinding().to(MojangUserSource.class);
++    }
++
++    @Provides
++    CraftServer craftServer(Server server) {
++        return (CraftServer) server;
++    }
++
++    @Provides
++    MinecraftServer minecraftServer(CraftServer craftServer) {
++        return craftServer.getServer();
++    }
++
++    @Provides
++    MinecraftSessionService minecraftSessionService(MinecraftServer minecraftServer) {
++        return minecraftServer.az();
++    }
++
++    @Provides
++    GameProfileRepository gameProfileRepository(MinecraftServer minecraftServer) {
++        return minecraftServer.getGameProfileRepository();
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/event/CraftServerEventRegistry.java b/src/main/java/org/bukkit/craftbukkit/event/CraftServerEventRegistry.java
+new file mode 100644
+index 0000000..5da2c15
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/event/CraftServerEventRegistry.java
+@@ -0,0 +1,16 @@
++package org.bukkit.craftbukkit.event;
++
++import javax.inject.Inject;
++
++import org.bukkit.event.SimpleEventRegistry;
++import tc.oc.minecraft.api.server.ServerExceptionHandler;
++
++/**
++ * Used internally to register event listeners that don't belong to any plugin
++ */
++public class CraftServerEventRegistry extends SimpleEventRegistry {
++
++    @Inject CraftServerEventRegistry(ServerExceptionHandler exceptionHandler) {
++        super(exceptionHandler);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+--- a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
++++ b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java
+@@ -9,11 +9,11 @@ import java.util.PriorityQueue;
+ import java.util.concurrent.Callable;
+ import java.util.concurrent.ConcurrentHashMap;
+ import java.util.concurrent.Executor;
+-import java.util.concurrent.Executors;
+ import java.util.concurrent.Future;
+ import java.util.concurrent.atomic.AtomicInteger;
+ import java.util.concurrent.atomic.AtomicReference;
+ import java.util.logging.Level;
++import javax.inject.Inject;
+ 
+ import org.apache.commons.lang.Validate;
+ import org.bukkit.plugin.IllegalPluginAccessException;
+@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
+ import org.bukkit.scheduler.BukkitScheduler;
+ import org.bukkit.scheduler.BukkitTask;
+ import org.bukkit.scheduler.BukkitWorker;
++import tc.oc.minecraft.api.scheduler.Async;
+ 
+ /**
+  * The fundamental concepts for this implementation:
+@@ -76,7 +77,7 @@ public class CraftScheduler implements BukkitScheduler {
+      */
+     private final ConcurrentHashMap<Integer, CraftTask> runners = new ConcurrentHashMap<Integer, CraftTask>();
+     private volatile int currentTick = -1;
+-    private final Executor executor = Executors.newCachedThreadPool(new com.google.common.util.concurrent.ThreadFactoryBuilder().setNameFormat("Craft Scheduler Thread - %1$d").build()); // Spigot
++    private @Inject @Async Executor executor;
+     private CraftAsyncDebugger debugHead = new CraftAsyncDebugger(-1, null, null) {@Override StringBuilder debugTo(StringBuilder string) {return string;}};
+     private CraftAsyncDebugger debugTail = debugHead;
+     private static final int RECENT_TICKS;
+diff --git a/src/main/java/org/bukkit/craftbukkit/user/MojangUserSource.java b/src/main/java/org/bukkit/craftbukkit/user/MojangUserSource.java
+new file mode 100644
+index 0000000..655927f
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/user/MojangUserSource.java
+@@ -0,0 +1,68 @@
++package org.bukkit.craftbukkit.user;
++
++import java.time.Instant;
++import java.util.Optional;
++import java.util.UUID;
++import java.util.function.Supplier;
++import javax.annotation.Nullable;
++import javax.inject.Inject;
++import javax.inject.Singleton;
++
++import com.mojang.authlib.Agent;
++import com.mojang.authlib.GameProfile;
++import com.mojang.authlib.GameProfileRepository;
++import com.mojang.authlib.ProfileLookupCallback;
++import com.mojang.authlib.minecraft.MinecraftSessionService;
++import org.bukkit.craftbukkit.CraftOfflinePlayer;
++import org.bukkit.craftbukkit.CraftOfflinePlayerFactory;
++import tc.oc.minecraft.api.user.User;
++import tc.oc.minecraft.api.user.UserSearch;
++import tc.oc.minecraft.api.user.UserSource;
++
++@Singleton
++public class MojangUserSource implements UserSource {
++
++    private final CraftOfflinePlayerFactory userFactory;
++    private final MinecraftSessionService sessions;
++    private final GameProfileRepository profiles;
++
++    @Inject MojangUserSource(CraftOfflinePlayerFactory userFactory, MinecraftSessionService sessions, GameProfileRepository profiles) {
++        this.userFactory = userFactory;
++        this.sessions = sessions;
++        this.profiles = profiles;
++    }
++
++    @Override
++    public User search(UserSearch search, Supplier<User> next) {
++        // Never fetch on the main thread
++        if(search.sync()) return next.get();
++
++        final CraftOfflinePlayer op;
++        if(search.query() instanceof UUID) {
++            op = userFactory.createUser(
++                sessions.fillProfileProperties(new GameProfile((UUID) search.query(), null), true),
++                Optional.of(Instant.now())
++            );
++        } else {
++            // Despite the weird callback, this does appear to be entirely synchronous
++            final NameCallback callback = new NameCallback();
++            profiles.findProfilesByNames(new String[] {(String) search.query()}, Agent.MINECRAFT, callback);
++            if(callback.user == null) return next.get();
++            op = callback.user;
++        }
++        return search.filter().test(op) ? op : next.get();
++    }
++
++    private class NameCallback implements ProfileLookupCallback {
++
++        @Nullable CraftOfflinePlayer user;
++
++        @Override
++        public void onProfileLookupSucceeded(GameProfile profile) {
++            user = userFactory.createUser(profile, Optional.of(Instant.now()));
++        }
++
++        @Override
++        public void onProfileLookupFailed(GameProfile profile, Exception e) {}
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/user/UserUpdateListener.java b/src/main/java/org/bukkit/craftbukkit/user/UserUpdateListener.java
+new file mode 100644
+index 0000000..c89efb7
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/user/UserUpdateListener.java
+@@ -0,0 +1,39 @@
++package org.bukkit.craftbukkit.user;
++
++import java.time.Instant;
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++import java.util.Set;
++import javax.inject.Inject;
++
++import org.bukkit.craftbukkit.event.CraftServerEventRegistry;
++import org.bukkit.event.EventException;
++import org.bukkit.event.EventHandler;
++import org.bukkit.event.Listener;
++import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
++import tc.oc.minecraft.api.user.User;
++import tc.oc.minecraft.api.user.UserFactory;
++import tc.oc.minecraft.api.user.UserSource;
++
++/**
++ * Refreshes all {@link UserSource}s when a player logs in
++ */
++public class UserUpdateListener implements Listener {
++
++    private final List<UserSource> userSources;
++    private final UserFactory userFactory;
++
++    @Inject UserUpdateListener(Set<UserSource> userSources, UserFactory userFactory, CraftServerEventRegistry eventRegistry) {
++        this.userSources = new ArrayList<>(userSources);
++        Collections.reverse(this.userSources); // Update sources in the same order as cache propagates
++        this.userFactory = userFactory;
++        eventRegistry.registerListener(this);
++    }
++
++    @EventHandler
++    public void callEvent(AsyncPlayerPreLoginEvent event) throws EventException {
++        final User user = userFactory.createUser(event.getUniqueId(), event.getName(), Instant.now());
++        userSources.forEach(source -> source.update(user));
++    }
++}

@@ -2,12 +2,13 @@ package org.bukkit.craftbukkit;
 
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
-import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.NBTTagCompound;
 import net.minecraft.server.WorldNBTStorage;
 
@@ -21,18 +22,34 @@ import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
+import tc.oc.collection.Optionals;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @SerializableAs("Player")
 public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializable {
     private final GameProfile profile;
     private final CraftServer server;
     private final WorldNBTStorage storage;
+    private final Optional<Instant> updatedAt;
 
     protected CraftOfflinePlayer(CraftServer server, GameProfile profile) {
+        this(server, profile, Optional.empty());
+    }
+
+    protected CraftOfflinePlayer(CraftServer server, GameProfile profile, Optional<Instant> updatedAt) {
+        checkNotNull(profile.getId(), "OfflinePlayer must have a UUID");
+        checkArgument(!(updatedAt.isPresent() && profile.getName() == null), "OfflinePlayer has an update timestamp, but no username");
         this.server = server;
         this.profile = profile;
-        this.storage = (WorldNBTStorage) (server.console.worlds.get(0).getDataManager());
+        this.updatedAt = updatedAt;
+        this.storage = (WorldNBTStorage) (server.overworld.getDataManager());
+    }
 
+    @Override
+    public Optional<Instant> updatedAt() {
+        return Optionals.first(lastPlayedAt(), updatedAt);
     }
 
     public GameProfile getProfile() {
@@ -211,6 +228,12 @@ public class CraftOfflinePlayer implements OfflinePlayer, ConfigurationSerializa
         } else {
             return 0;
         }
+    }
+
+    @Override
+    public Optional<Instant> lastPlayedAt() {
+        final long milli = getLastPlayed();
+        return milli == 0 ? Optional.empty() : Optional.of(Instant.ofEpochMilli(milli));
     }
 
     public long getLastPlayed() {

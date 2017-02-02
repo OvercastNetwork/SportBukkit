@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import tc.oc.inject.SingletonModule;
 import tc.oc.minecraft.api.plugin.PluginFinder;
 import tc.oc.minecraft.api.server.LocalServer;
+import tc.oc.minecraft.api.server.MinecraftServerModule;
 
 /**
  * Bindings for things that belong to a {@link Server}.
@@ -31,6 +32,7 @@ public class ServerModule extends SingletonModule {
     @Override
     protected void configure() {
         install(new BukkitModule());
+        install(new MinecraftServerModule());
 
         bind(tc.oc.minecraft.api.server.Server.class).to(LocalServer.class);
         bind(LocalServer.class).to(Server.class);

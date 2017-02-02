@@ -1,8 +1,6 @@
 package org.bukkit.entity;
 
 import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -34,11 +32,6 @@ import org.bukkit.util.Vector;
  * Represents a player, connected or not
  */
 public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, tc.oc.minecraft.api.entity.Player {
-
-    @Override
-    default Optional<String> getLastKnownName() {
-        return Optional.of(getName());
-    }
 
     /**
      * Set a fake name for this player when viewed by the given player.

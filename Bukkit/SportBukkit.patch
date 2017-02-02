@@ -15,35 +15,17 @@ diff --git a/README.md b/README.md
 diff --git a/src/main/java/org/bukkit/OfflinePlayer.java b/src/main/java/org/bukkit/OfflinePlayer.java
 --- a/src/main/java/org/bukkit/OfflinePlayer.java
 +++ b/src/main/java/org/bukkit/OfflinePlayer.java
-@@ -1,6 +1,7 @@
- package org.bukkit;
- 
- import java.util.Date;
-+import java.util.Optional;
- import java.util.UUID;
- 
- import org.bukkit.configuration.serialization.ConfigurationSerializable;
-@@ -10,7 +11,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
+@@ -9,8 +9,9 @@ import org.bukkit.entity.Player;
+ import org.bukkit.event.player.PlayerLoginEvent;
  import org.bukkit.event.player.PlayerQuitEvent;
  import org.bukkit.permissions.ServerOperator;
++import tc.oc.minecraft.api.user.User;
  
 -public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable {
-+public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, tc.oc.minecraft.api.entity.OfflinePlayer {
++public interface OfflinePlayer extends ServerOperator, AnimalTamer, ConfigurationSerializable, User {
  
      /**
       * Checks if this player is currently online
-@@ -37,6 +38,11 @@ public interface OfflinePlayer extends ServerOperator, AnimalTamer, Configuratio
-      */
-     public String getName();
- 
-+    @Override
-+    default Optional<String> getLastKnownName() {
-+        return Optional.ofNullable(getName());
-+    }
-+
-     /**
-      * Returns the UUID of this player
-      *
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
@@ -59,29 +41,36 @@ diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Ser
      /**
       * Broadcasts the specified message to every user with the given
       * permission name.
+diff --git a/src/main/java/org/bukkit/ServerModule.java b/src/main/java/org/bukkit/ServerModule.java
+--- a/src/main/java/org/bukkit/ServerModule.java
++++ b/src/main/java/org/bukkit/ServerModule.java
+@@ -18,6 +18,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
+ import tc.oc.inject.SingletonModule;
+ import tc.oc.minecraft.api.plugin.PluginFinder;
+ import tc.oc.minecraft.api.server.LocalServer;
++import tc.oc.minecraft.api.server.MinecraftServerModule;
+ 
+ /**
+  * Bindings for things that belong to a {@link Server}.
+@@ -31,6 +32,7 @@ public class ServerModule extends SingletonModule {
+     @Override
+     protected void configure() {
+         install(new BukkitModule());
++        install(new MinecraftServerModule());
+ 
+         bind(tc.oc.minecraft.api.server.Server.class).to(LocalServer.class);
+         bind(LocalServer.class).to(Server.class);
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -2,6 +2,7 @@ package org.bukkit.entity;
+@@ -1,7 +1,6 @@
+ package org.bukkit.entity;
  
  import java.net.InetSocketAddress;
- import java.util.List;
-+import java.util.Optional;
+-import java.util.List;
  import java.util.Set;
  
  import net.md_5.bungee.api.chat.BaseComponent;
-@@ -34,6 +35,11 @@ import org.bukkit.util.Vector;
-  */
- public interface Player extends HumanEntity, Conversable, CommandSender, OfflinePlayer, PluginMessageRecipient, tc.oc.minecraft.api.entity.Player {
- 
-+    @Override
-+    default Optional<String> getLastKnownName() {
-+        return Optional.of(getName());
-+    }
-+
-     /**
-      * Set a fake name for this player when viewed by the given player.
-      * If the name is null then the fake name is cleared.
 diff --git a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
 --- a/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java
 +++ b/src/main/java/org/bukkit/plugin/PluginDescriptionFile.java

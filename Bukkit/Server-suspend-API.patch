@@ -186,6 +186,72 @@ index 0000000..2a844e6
 +        return true;
 +    }
 +}
+diff --git a/src/main/java/org/bukkit/event/SimpleEventBus.java b/src/main/java/org/bukkit/event/SimpleEventBus.java
+--- a/src/main/java/org/bukkit/event/SimpleEventBus.java
++++ b/src/main/java/org/bukkit/event/SimpleEventBus.java
+@@ -1,19 +1,23 @@
+ package org.bukkit.event;
+ 
++import java.util.concurrent.ExecutionException;
++import java.util.concurrent.Executor;
+ import javax.annotation.Nullable;
+ 
++import com.google.common.util.concurrent.SettableFuture;
++
+ public class SimpleEventBus implements EventBus {
+ 
+     private final Thread primaryThread;
+-    private final Object lock;
++    private final Executor syncExecutor;
+ 
+     public SimpleEventBus() {
+         this(null, null);
+     }
+ 
+-    public SimpleEventBus(@Nullable Thread primaryThread, @Nullable Object lock) {
++    public SimpleEventBus(@Nullable Thread primaryThread, @Nullable Executor syncExecutor) {
+         this.primaryThread = primaryThread != null ? primaryThread : Thread.currentThread();
+-        this.lock = lock != null ? lock : new Object();
++        this.syncExecutor = syncExecutor != null ? syncExecutor : Runnable::run;
+     }
+ 
+     @Override
+@@ -34,16 +38,30 @@ public class SimpleEventBus implements EventBus {
+     @Override
+     public <T extends Event, X extends Throwable> void callEvent(T event, @Nullable EventPriority priority, @Nullable EventBody<? super T, X> body) throws X {
+         if(event.isAsynchronous()) {
+-            if(Thread.holdsLock(lock)) {
+-                throw new IllegalStateException(event.getEventName() + " cannot be called asynchronously from inside synchronized code.");
+-            }
+             if(Thread.currentThread().equals(primaryThread)) {
+                 throw new IllegalStateException(event.getEventName() + " cannot be called asynchronously from primary thread.");
+             }
+             callEvent0(event, priority, body);
+         } else {
+-            synchronized(lock) {
+-                callEvent0(event, priority, body);
++            final SettableFuture future = SettableFuture.create();
++            syncExecutor.execute(() -> {
++                try {
++                    callEvent0(event, priority, body);
++                    future.set(null);
++                } catch(Throwable ex) {
++                    future.setException(ex);
++                }
++            });
++
++            for(;;) {
++                try {
++                    future.get();
++                    return;
++                } catch(InterruptedException e) {
++                    // try again
++                } catch(ExecutionException e) {
++                    throw (X) e.getCause();
++                }
+             }
+         }
+     }
 diff --git a/src/main/java/org/bukkit/event/server/ServerSuspendEvent.java b/src/main/java/org/bukkit/event/server/ServerSuspendEvent.java
 new file mode 100644
 index 0000000..aac9118
@@ -208,3 +274,83 @@ index 0000000..aac9118
 +public class ServerSuspendEvent extends ServerEvent {
 +    private static final HandlerList<ServerSuspendEvent> handlers = new HandlerList<>();
 +}
+diff --git a/src/test/java/org/bukkit/TestServer.java b/src/test/java/org/bukkit/TestServer.java
+--- a/src/test/java/org/bukkit/TestServer.java
++++ b/src/test/java/org/bukkit/TestServer.java
+@@ -86,7 +86,7 @@ public class TestServer implements InvocationHandler {
+             Server instance = Proxy.getProxyClass(Server.class.getClassLoader(), Server.class).asSubclass(Server.class).getConstructor(InvocationHandler.class).newInstance(server);
+             Bukkit.setServer(instance);
+             server.pluginManager = new SimplePluginManager(instance, new SimpleCommandMap(instance));
+-            server.eventBus = new SimpleEventBus(null, server.pluginManager);
++            server.eventBus = new SimpleEventBus(null, null);
+         } catch (Throwable t) {
+             throw new Error(t);
+         }
+diff --git a/src/test/java/org/bukkit/event/EventBusTest.java b/src/test/java/org/bukkit/event/EventBusTest.java
+--- a/src/test/java/org/bukkit/event/EventBusTest.java
++++ b/src/test/java/org/bukkit/event/EventBusTest.java
+@@ -20,13 +20,12 @@ public class EventBusTest {
+     static class Oops extends Exception {}
+ 
+     ExceptionHandler exceptionHandler = new TestExceptionHandler();
+-    Object lock;
+     SimpleEventBus bus;
+     List<String> flow;
+ 
+     @Before
+     public void setUp() throws Exception {
+-        bus = new SimpleEventBus(Thread.currentThread(), lock = new Object());
++        bus = new SimpleEventBus(Thread.currentThread(), null);
+         flow = new ArrayList<>();
+     }
+ 
+@@ -79,17 +78,6 @@ public class EventBusTest {
+     }
+ 
+     @Test
+-    public void asyncEventHoldingLockThrows() throws Throwable {
+-        TestThread.join(() -> {
+-            synchronized(lock) {
+-                assertThrows(IllegalStateException.class, () ->
+-                    bus.callEvent(new TestEvent(true))
+-                );
+-            }
+-        });
+-    }
+-
+-    @Test
+     public void eventWithBody() throws Exception {
+         bus.callEvent(new TestEvent(), event ->
+             flow("body")
+diff --git a/src/test/java/org/bukkit/plugin/PluginManagerTest.java b/src/test/java/org/bukkit/plugin/PluginManagerTest.java
+--- a/src/test/java/org/bukkit/plugin/PluginManagerTest.java
++++ b/src/test/java/org/bukkit/plugin/PluginManagerTest.java
+@@ -39,28 +39,6 @@ public class PluginManagerTest {
+     }
+ 
+     @Test
+-    public void testAsyncLocked() throws InterruptedException {
+-        final Event event = new TestEvent(true);
+-        Thread secondThread = new Thread(
+-            new Runnable() {
+-                public void run() {
+-                    try {
+-                        synchronized (pm) {
+-                            pm.callEvent(event);
+-                        }
+-                    } catch (Throwable ex) {
+-                        store.value = ex;
+-                    }
+-                }
+-            }
+-        );
+-        secondThread.start();
+-        secondThread.join();
+-        assertThat(store.value, is(instanceOf(IllegalStateException.class)));
+-        assertThat(event.getEventName() + " cannot be called asynchronously from inside synchronized code.", is(((Throwable) store.value).getMessage()));
+-    }
+-
+-    @Test
+     public void testAsyncUnlocked() throws InterruptedException {
+         final Event event = new TestEvent(true);
+         Thread secondThread = new Thread(

@@ -215,7 +215,15 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
     public CraftServer(MinecraftServer console, PlayerList playerList) {
         this.console = console;
         this.root = Paths.get(".").toAbsolutePath();
-        this.eventBus = new SimpleEventBus(this.console.primaryThread, pluginManager);
+
+        this.eventBus = new SimpleEventBus(this.console.primaryThread, task -> {
+            if(console.isMainThread()) {
+                task.run();
+            } else {
+                console.addMainThreadTask(task);
+            }
+        });
+
         this.playerList = (DedicatedPlayerList) playerList;
         this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, EntityPlayer::getBukkitEntity));
         this.playersById = Collections.unmodifiableMap(Maps.transformValues(playerList.playersById(), EntityPlayer::getBukkitEntity));

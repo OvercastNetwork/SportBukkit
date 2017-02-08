@@ -1,19 +1,23 @@
 package org.bukkit.event;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
+
+import com.google.common.util.concurrent.SettableFuture;
 
 public class SimpleEventBus implements EventBus {
 
     private final Thread primaryThread;
-    private final Object lock;
+    private final Executor syncExecutor;
 
     public SimpleEventBus() {
         this(null, null);
     }
 
-    public SimpleEventBus(@Nullable Thread primaryThread, @Nullable Object lock) {
+    public SimpleEventBus(@Nullable Thread primaryThread, @Nullable Executor syncExecutor) {
         this.primaryThread = primaryThread != null ? primaryThread : Thread.currentThread();
-        this.lock = lock != null ? lock : new Object();
+        this.syncExecutor = syncExecutor != null ? syncExecutor : Runnable::run;
     }
 
     @Override
@@ -34,16 +38,30 @@ public class SimpleEventBus implements EventBus {
     @Override
     public <T extends Event, X extends Throwable> void callEvent(T event, @Nullable EventPriority priority, @Nullable EventBody<? super T, X> body) throws X {
         if(event.isAsynchronous()) {
-            if(Thread.holdsLock(lock)) {
-                throw new IllegalStateException(event.getEventName() + " cannot be called asynchronously from inside synchronized code.");
-            }
             if(Thread.currentThread().equals(primaryThread)) {
                 throw new IllegalStateException(event.getEventName() + " cannot be called asynchronously from primary thread.");
             }
             callEvent0(event, priority, body);
         } else {
-            synchronized(lock) {
-                callEvent0(event, priority, body);
+            final SettableFuture future = SettableFuture.create();
+            syncExecutor.execute(() -> {
+                try {
+                    callEvent0(event, priority, body);
+                    future.set(null);
+                } catch(Throwable ex) {
+                    future.setException(ex);
+                }
+            });
+
+            for(;;) {
+                try {
+                    future.get();
+                    return;
+                } catch(InterruptedException e) {
+                    // try again
+                } catch(ExecutionException e) {
+                    throw (X) e.getCause();
+                }
             }
         }
     }

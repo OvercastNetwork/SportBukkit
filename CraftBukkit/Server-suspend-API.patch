@@ -261,7 +261,24 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      private final class BooleanWrapper {
          private boolean value = true;
      }
-@@ -661,6 +666,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -202,7 +207,15 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+ 
+     public CraftServer(MinecraftServer console, PlayerList playerList) {
+         this.console = console;
+-        this.eventBus = new SimpleEventBus(this.console.primaryThread, pluginManager);
++
++        this.eventBus = new SimpleEventBus(this.console.primaryThread, task -> {
++            if(console.isMainThread()) {
++                task.run();
++            } else {
++                console.addMainThreadTask(task);
++            }
++        });
++
+         this.playerList = (DedicatedPlayerList) playerList;
+         this.playerView = Collections.unmodifiableList(Lists.transform(playerList.players, EntityPlayer::getBukkitEntity));
+         this.playersById = Collections.unmodifiableMap(Maps.transformValues(playerList.playersById(), EntityPlayer::getBukkitEntity));
+@@ -661,6 +674,16 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
      }
  
      @Override
@@ -278,7 +295,7 @@ diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/ja
      public PluginManager getPluginManager() {
          return pluginManager;
      }
-@@ -1897,4 +1912,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
+@@ -1897,4 +1920,53 @@ public final class CraftServer extends CraftBukkitRuntime implements Server {
  
          return task instanceof Wrapped ? task : new Wrapped();
      }

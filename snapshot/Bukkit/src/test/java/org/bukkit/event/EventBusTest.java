@@ -20,13 +20,12 @@ public class EventBusTest {
     static class Oops extends Exception {}
 
     ExceptionHandler exceptionHandler = new TestExceptionHandler();
-    Object lock;
     SimpleEventBus bus;
     List<String> flow;
 
     @Before
     public void setUp() throws Exception {
-        bus = new SimpleEventBus(Thread.currentThread(), lock = new Object());
+        bus = new SimpleEventBus(Thread.currentThread(), null);
         flow = new ArrayList<>();
     }
 
@@ -76,17 +75,6 @@ public class EventBusTest {
         assertThrows(IllegalStateException.class, () ->
             bus.callEvent(new TestEvent(true))
         );
-    }
-
-    @Test
-    public void asyncEventHoldingLockThrows() throws Throwable {
-        TestThread.join(() -> {
-            synchronized(lock) {
-                assertThrows(IllegalStateException.class, () ->
-                    bus.callEvent(new TestEvent(true))
-                );
-            }
-        });
     }
 
     @Test

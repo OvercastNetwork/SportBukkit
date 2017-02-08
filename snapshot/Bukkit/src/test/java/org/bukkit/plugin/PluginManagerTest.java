@@ -39,28 +39,6 @@ public class PluginManagerTest {
     }
 
     @Test
-    public void testAsyncLocked() throws InterruptedException {
-        final Event event = new TestEvent(true);
-        Thread secondThread = new Thread(
-            new Runnable() {
-                public void run() {
-                    try {
-                        synchronized (pm) {
-                            pm.callEvent(event);
-                        }
-                    } catch (Throwable ex) {
-                        store.value = ex;
-                    }
-                }
-            }
-        );
-        secondThread.start();
-        secondThread.join();
-        assertThat(store.value, is(instanceOf(IllegalStateException.class)));
-        assertThat(event.getEventName() + " cannot be called asynchronously from inside synchronized code.", is(((Throwable) store.value).getMessage()));
-    }
-
-    @Test
     public void testAsyncUnlocked() throws InterruptedException {
         final Event event = new TestEvent(true);
         Thread secondThread = new Thread(

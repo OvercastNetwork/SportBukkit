@@ -99,7 +99,7 @@ module Git
     def reset(remote:, branch:)
         ref = "refs/remotes/#{remote}/#{branch}"
         info "Resetting to #{ref}"
-        sh "git", "fetch", remote, branch
+        sh "git", "fetch", remote, "+#{branch}:#{ref}"
         sh "git", "reset", "--hard", "#{remote}/#{branch}"
     end
 

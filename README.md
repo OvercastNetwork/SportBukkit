@@ -23,8 +23,12 @@ This code is updated automatically by scripts, and should not be manually edited
 Requirements
 ------------
 
-The SportBukkit build system uses Rake, which comes with [Ruby](https://www.ruby-lang.org/).
-You will need Ruby version 2.1.0 or later.
+To build SportBukkit, the following will need to be installed and available from your shell:
+
+* [JDK 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) version 121 or later (older versions *might* work, but some are known not to)
+* [Git](https://git-scm.com)
+* [Maven](https://maven.apache.org)
+* [Ruby](https://www.ruby-lang.org/) version 2.1 or later
 
 Currently, the only known way to build on Windows is with [WSL](https://blogs.msdn.microsoft.com/wsl/).
 Other approaches run into problems with wildcard expansion.

@@ -32,6 +32,8 @@ REMAPPED_JAR        = "#{TEMP}/mapped.jar"
 NMS_CLASSES         = "#{TEMP}/classes"
 NMS_SRC             = "#{WORK}/nms-src"
 
+FORCE               = ARGV.include?('--force')
+
 
 # BuildData
 
@@ -173,7 +175,6 @@ def modular_tasks(id:, name:, artifact:, work: nil)
         task :snapshot => build do
             unless patched[]
                 error "Cannot update snapshot because #{name} is not fully patched"
-                raise
             end
 
             info "Updating snapshot in #{snapshot}"

@@ -3,16 +3,40 @@ require 'pathname'
 require 'shellwords'
 require 'rake'
 
+module Ansi
+    extend self
+
+    COLORS = [:black, :red, :green, :yellow, :blue, :purple, :aqua]
+
+    def color(code, text = nil)
+        if text
+            "#{color(code)}#{text}#{reset}"
+        else
+            "\e[#{code}m"
+        end
+    end
+
+    def reset
+        color(0)
+    end
+
+    COLORS.each_with_index do |name, code|
+        define_method name do |text = nil|
+            color(30 + code, text)
+        end
+    end
+end
+
 def info(msg)
-    puts "\e[32m#{msg}\e[0m"
+    puts "#{Ansi.green "[INFO]"} #{Ansi.aqua msg}"
 end
 
 def warning(msg)
-    puts "\e[33m#{msg}\e[0m"
+    puts "#{Ansi.yellow "[WARNING]"} #{Ansi.aqua msg}"
 end
 
 def error(msg)
-    puts "\e[31m#{msg}\e[0m"
+    raise "#{Ansi.red "[ERROR]"} #{Ansi.aqua msg}"
 end
 
 def relative_path(path, from: nil)
@@ -48,7 +72,6 @@ def download(file:, url:, md5:)
     actual_md5 = Digest::MD5.file(file).hexdigest
     unless md5 == actual_md5
         error "Downloaded file is corrupted (expected MD5 #{md5}, got #{actual_md5}"
-        raise
     end
 end
 
@@ -118,25 +141,22 @@ module Git
         sh "git am --3way --ignore-whitespace --committer-date-is-author-date #{patches.join(' ')}" do |ok, res|
             unless ok
                 error "A patch did not apply cleanly"
-                raise
             end
         end
     end
 
     def assert_clean_work_tree
-        sh "git update-index -q --ignore-submodules --refresh"
-        sh "git diff-files --quiet --ignore-submodules --" do |ok, res|
-            unless ok
-                error "Cannot apply patches to unclean work tree"
-                sh "git diff-files --name-status -r --ignore-submodules --" # show the changes
-                raise
-            end
-        end
-        sh "git diff-index --cached --quiet HEAD --ignore-submodules --" do |ok, res|
-            unless ok
-                error "Cannot apply patches to unclean work tree"
-                sh "git diff-index --cached --name-status -r --ignore-submodules HEAD --" # show the changes
-                raise
+        unless FORCE
+            sh "git update-index -q --ignore-submodules --refresh"
+            ["git diff-files --quiet --ignore-submodules --",
+             "git diff-index --cached --quiet HEAD --ignore-submodules --"].each do |cmd|
+                sh cmd do |ok, res|
+                    unless ok
+                        error "Cannot apply patches because there are uncommitted changes in #{Ansi.purple Dir.pwd}#{Ansi.aqua}\n" +
+                              "Unless you have edited the code yourself, these are probably left over from a previous failure.\n" +
+                              "You can force the changes to be discarded by running rake with #{Ansi.yellow "-- --force"}#{Ansi.aqua} at the end."
+                    end
+                end
             end
         end
     end

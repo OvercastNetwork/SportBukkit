@@ -1,7 +1,9 @@
 package org.bukkit.event.server;
 
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Player;
@@ -19,6 +21,7 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
     private String motd;
     private final int numPlayers;
     private int maxPlayers;
+    private final Map<String, Object> extra = new HashMap<>();
 
     public ServerListPingEvent(final InetAddress address, final String motd, final int numPlayers, final int maxPlayers) {
         Validate.isTrue(numPlayers >= 0, "Cannot have negative number of players online", numPlayers);
@@ -117,6 +120,14 @@ public class ServerListPingEvent extends ServerEvent implements Iterable<Player>
      */
     public void setServerIcon(CachedServerIcon icon) throws IllegalArgumentException, UnsupportedOperationException {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Return a mutable {@link Map} of all custom fields that will be included
+     * in the JSON response. This can be modified to add/remove fields.
+     */
+    public Map<String, Object> getExtra() {
+        return extra;
     }
 
     @Override

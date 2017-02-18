@@ -63,6 +63,56 @@ diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/
      public ServerConnection an() {
          return this.p;
      }
+diff --git a/src/main/java/net/minecraft/server/PacketStatusListener.java b/src/main/java/net/minecraft/server/PacketStatusListener.java
+--- a/src/main/java/net/minecraft/server/PacketStatusListener.java
++++ b/src/main/java/net/minecraft/server/PacketStatusListener.java
+@@ -6,6 +6,8 @@ import io.netty.channel.ChannelFutureListener;
+ import java.net.InetSocketAddress;
+ import java.util.Iterator;
+ 
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.protocol.CraftServerPing;
+ import org.bukkit.craftbukkit.util.CraftIconCache;
+ import org.bukkit.entity.Player;
+ 
+@@ -110,12 +112,13 @@ public class PacketStatusListener implements PacketStatusInListener {
+             ServerPing.ServerPingPlayerSample playerSample = new ServerPing.ServerPingPlayerSample(event.getMaxPlayers(), profiles.size());
+             playerSample.a(profiles.toArray(new GameProfile[profiles.size()]));
+ 
+-            ServerPing ping = new ServerPing();
++            CraftServerPing ping = new CraftServerPing();
+             ping.setFavicon(event.icon.value);
+             ping.setMOTD(new ChatComponentText(event.getMotd()));
+             ping.setPlayerSample(playerSample);
+             int version = minecraftServer.getServerPing().getServerData().getProtocolVersion();
+             ping.setServerInfo(new ServerPing.ServerData(minecraftServer.getServerModName() + " " + minecraftServer.getVersion(), version));
++            event.getExtra().forEach((name, value) -> ping.put(name, CraftServer.gson.toJsonTree(value)));
+ 
+             this.networkManager.sendPacket(new PacketStatusOutServerInfo(ping));
+         }
+diff --git a/src/main/java/net/minecraft/server/PacketStatusOutServerInfo.java b/src/main/java/net/minecraft/server/PacketStatusOutServerInfo.java
+--- a/src/main/java/net/minecraft/server/PacketStatusOutServerInfo.java
++++ b/src/main/java/net/minecraft/server/PacketStatusOutServerInfo.java
+@@ -2,11 +2,18 @@ package net.minecraft.server;
+ 
+ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
++import org.bukkit.craftbukkit.protocol.CraftServerPing;
++
+ import java.io.IOException;
+ 
+ public class PacketStatusOutServerInfo implements Packet<PacketStatusOutListener> {
+ 
+-    private static final Gson a = (new GsonBuilder()).registerTypeAdapter(ServerPing.ServerData.class, new ServerPing.ServerData.ServerData$Serializer()).registerTypeAdapter(ServerPing.ServerPingPlayerSample.class, new ServerPing.ServerPingPlayerSample.ServerPingPlayerSample$Serializer()).registerTypeAdapter(ServerPing.class, new ServerPing.Serializer()).registerTypeHierarchyAdapter(IChatBaseComponent.class, new IChatBaseComponent.ChatSerializer()).registerTypeHierarchyAdapter(ChatModifier.class, new ChatModifier.ChatModifierSerializer()).registerTypeAdapterFactory(new ChatTypeAdapterFactory()).create();
++    // SportBukkit start - add CraftServerPing.Serializer
++    private static final Gson a = (new GsonBuilder()).registerTypeAdapter(ServerPing.ServerData.class, new ServerPing.ServerData.Serializer()).registerTypeAdapter(ServerPing.ServerPingPlayerSample.class, new ServerPing.ServerPingPlayerSample.Serializer()).registerTypeAdapter(ServerPing.class, new ServerPing.Serializer()).registerTypeHierarchyAdapter(IChatBaseComponent.class, new IChatBaseComponent.ChatSerializer()).registerTypeHierarchyAdapter(ChatModifier.class, new ChatModifier.ChatModifierSerializer()).registerTypeAdapterFactory(new ChatTypeAdapterFactory())
++                                                     .registerTypeAdapter(CraftServerPing.class, new CraftServerPing.Serializer())
++                                                     .create();
++    // SportBukkit end
++
+     private ServerPing b;
+ 
+     public PacketStatusOutServerInfo() {}
 diff --git a/src/main/java/net/minecraft/server/ServerConnection.java b/src/main/java/net/minecraft/server/ServerConnection.java
 --- a/src/main/java/net/minecraft/server/ServerConnection.java
 +++ b/src/main/java/net/minecraft/server/ServerConnection.java
@@ -581,6 +631,43 @@ index 0000000..5da2c15
 +
 +    @Inject CraftServerEventRegistry(ServerExceptionHandler exceptionHandler) {
 +        super(exceptionHandler);
++    }
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/protocol/CraftServerPing.java b/src/main/java/org/bukkit/craftbukkit/protocol/CraftServerPing.java
+new file mode 100644
+index 0000000..1ada7b6
+--- /dev/null
++++ b/src/main/java/org/bukkit/craftbukkit/protocol/CraftServerPing.java
+@@ -0,0 +1,31 @@
++package org.bukkit.craftbukkit.protocol;
++
++import java.lang.reflect.Type;
++import java.util.HashMap;
++import java.util.Map;
++
++import com.google.gson.JsonElement;
++import com.google.gson.JsonObject;
++import com.google.gson.JsonSerializationContext;
++import com.google.gson.JsonSerializer;
++import net.minecraft.server.ServerPing;
++
++public class CraftServerPing extends ServerPing {
++
++    private final Map<String, JsonElement> extra = new HashMap<>();
++
++    public void put(String name, JsonElement value) {
++        extra.put(name, value);
++    }
++
++    private static final ServerPing.Serializer parentSerializer = new ServerPing.Serializer();
++
++    public static class Serializer implements JsonSerializer<CraftServerPing> {
++        @Override
++        public JsonElement serialize(CraftServerPing ping, Type type, JsonSerializationContext context) {
++            final JsonObject json = (JsonObject) parentSerializer.serialize(ping, ServerPing.class, context);
++            ping.extra.forEach(json::add);
++            return json;
++        }
 +    }
 +}
 diff --git a/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java b/src/main/java/org/bukkit/craftbukkit/scheduler/CraftScheduler.java

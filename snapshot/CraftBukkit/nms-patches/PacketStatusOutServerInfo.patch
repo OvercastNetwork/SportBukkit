@@ -1,0 +1,22 @@
+--- a/net/minecraft/server/PacketStatusOutServerInfo.java
++++ b/net/minecraft/server/PacketStatusOutServerInfo.java
+@@ -2,11 +2,18 @@
+ 
+ import com.google.gson.Gson;
+ import com.google.gson.GsonBuilder;
++import org.bukkit.craftbukkit.protocol.CraftServerPing;
++
+ import java.io.IOException;
+ 
+ public class PacketStatusOutServerInfo implements Packet<PacketStatusOutListener> {
+ 
+-    private static final Gson a = (new GsonBuilder()).registerTypeAdapter(ServerPing.ServerData.class, new ServerPing.ServerData.ServerData$Serializer()).registerTypeAdapter(ServerPing.ServerPingPlayerSample.class, new ServerPing.ServerPingPlayerSample.ServerPingPlayerSample$Serializer()).registerTypeAdapter(ServerPing.class, new ServerPing.Serializer()).registerTypeHierarchyAdapter(IChatBaseComponent.class, new IChatBaseComponent.ChatSerializer()).registerTypeHierarchyAdapter(ChatModifier.class, new ChatModifier.ChatModifierSerializer()).registerTypeAdapterFactory(new ChatTypeAdapterFactory()).create();
++    // SportBukkit start - add CraftServerPing.Serializer
++    private static final Gson a = (new GsonBuilder()).registerTypeAdapter(ServerPing.ServerData.class, new ServerPing.ServerData.Serializer()).registerTypeAdapter(ServerPing.ServerPingPlayerSample.class, new ServerPing.ServerPingPlayerSample.Serializer()).registerTypeAdapter(ServerPing.class, new ServerPing.Serializer()).registerTypeHierarchyAdapter(IChatBaseComponent.class, new IChatBaseComponent.ChatSerializer()).registerTypeHierarchyAdapter(ChatModifier.class, new ChatModifier.ChatModifierSerializer()).registerTypeAdapterFactory(new ChatTypeAdapterFactory())
++                                                     .registerTypeAdapter(CraftServerPing.class, new CraftServerPing.Serializer())
++                                                     .create();
++    // SportBukkit end
++
+     private ServerPing b;
+ 
+     public PacketStatusOutServerInfo() {}

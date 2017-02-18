@@ -1,6 +1,6 @@
 --- a/net/minecraft/server/PacketStatusListener.java
 +++ b/net/minecraft/server/PacketStatusListener.java
-@@ -1,5 +1,16 @@
+@@ -1,5 +1,18 @@
  package net.minecraft.server;
  
 +// CraftBukkit start
@@ -9,6 +9,8 @@
 +import java.net.InetSocketAddress;
 +import java.util.Iterator;
 +
++import org.bukkit.craftbukkit.CraftServer;
++import org.bukkit.craftbukkit.protocol.CraftServerPing;
 +import org.bukkit.craftbukkit.util.CraftIconCache;
 +import org.bukkit.entity.Player;
 +
@@ -17,7 +19,7 @@
  public class PacketStatusListener implements PacketStatusInListener {
  
      private static final IChatBaseComponent a = new ChatComponentText("Status request has been handled.");
-@@ -19,8 +30,96 @@
+@@ -19,8 +32,97 @@
              this.networkManager.close(PacketStatusListener.a);
          } else {
              this.d = true;
@@ -102,12 +104,13 @@
 +            ServerPing.ServerPingPlayerSample playerSample = new ServerPing.ServerPingPlayerSample(event.getMaxPlayers(), profiles.size());
 +            playerSample.a(profiles.toArray(new GameProfile[profiles.size()]));
 +
-+            ServerPing ping = new ServerPing();
++            CraftServerPing ping = new CraftServerPing();
 +            ping.setFavicon(event.icon.value);
 +            ping.setMOTD(new ChatComponentText(event.getMotd()));
 +            ping.setPlayerSample(playerSample);
 +            int version = minecraftServer.getServerPing().getServerData().getProtocolVersion();
 +            ping.setServerInfo(new ServerPing.ServerData(minecraftServer.getServerModName() + " " + minecraftServer.getVersion(), version));
++            event.getExtra().forEach((name, value) -> ping.put(name, CraftServer.gson.toJsonTree(value)));
 +
 +            this.networkManager.sendPacket(new PacketStatusOutServerInfo(ping));
          }

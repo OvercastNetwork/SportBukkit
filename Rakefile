@@ -285,7 +285,7 @@ Git::Rake.repo CB_WORK => [CB_BASE, NMS_SRC] do
         sh "git checkout upstream"
         sh "git fetch origin upstream"
         sh "git reset --hard origin/upstream"
-        sh "./applyPatches.sh ../nms-src"
+        sh "bash applyPatches.sh ../nms-src"
         sh "git add src/main/java/net/minecraft/server/*"
         sh "git", "commit", "-m", "CraftBukkit #{Time.now.utc.iso8601}"
     end

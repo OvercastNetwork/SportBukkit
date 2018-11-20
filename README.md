@@ -30,11 +30,7 @@ To build SportBukkit, the following will need to be installed and available from
 * [Maven](https://maven.apache.org)
 * [Ruby](https://www.ruby-lang.org/) version 2.1 or later
 
-Currently, the only known way to build on Windows is with [WSL](https://blogs.msdn.microsoft.com/wsl/).
-Other approaches run into problems with wildcard expansion.
-There are plans to fix this so that SportBukkit can at least be built with any Windows version of Bash,
-and possibly just the plain Windows shell.
-
+To build on Windows you'll need to use the git bash console.
 
 How To
 ------

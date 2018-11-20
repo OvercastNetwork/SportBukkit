@@ -3,6 +3,8 @@ SportBukkit
 
 CraftBukkit modifications and Bukkit API additions that fix bugs, add new features, and improve the quality of life
 
+**NOTE**: This repository is no longer maintained, but a popular [fork](https://github.com/StratusNetwork/SportBukkit) is still active. If you are looking to also support Minecraft 1.8, a new project called [SportPaper](https://github.com/Electroid/SportPaper) has that additional functionality.
+
 File Structure
 --------------
 
